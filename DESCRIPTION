@@ -1,0 +1,29 @@
+Package: jamma
+Title: MA-plots for omics data
+Version: 0.0.0.9000
+Authors@R: person("James", "Ward", email="jmw86069@gmail.com", role=c("aut", "cre"))
+Description: Create omics data MA-plots with options for specific control
+    samples, within sample groups.
+Depends: R (>= 3.3.2)
+Imports: jamba,
+    grDevices,
+    KernSmooth,
+    methods,
+    rgeos,
+    sp
+Suggests: crayon,
+    matrixStats,
+    knitr,
+    rmarkdown
+License: GPL-2
+Encoding: UTF-8
+LazyData: true
+URL: http://github.com/jmw86069/jamma
+BugReports: http://github.com/jmw86069/jamma/issues
+RoxygenNote: 6.0.1
+VignetteBuilder: knitr
+Remotes: jmw86069/jamba
+RemoteType: github
+RemoteHost: https://api.github.com
+RemoteRepo: jamba
+RemoteUsername: jmw86069
