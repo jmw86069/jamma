@@ -12,12 +12,12 @@ experimental subsets.
 }
 \section{MA-plots functions}{
 
-   jammaplot,
-   centerGeneData
+jammaplot,
+centerGeneData
 }
 
 \section{Additional plot functions}{
 
-   points2polygonHull
+points2polygonHull
 }
 

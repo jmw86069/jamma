@@ -18,7 +18,7 @@
 #' The jamma package creates MA-plots for omics data, with
 #' important customizations to handle specific controls, and
 #' experimental subsets.
-#' 
+#'
 #' @section MA-plots functions:
 #'    jammaplot,
 #'    centerGeneData
@@ -103,6 +103,9 @@ NULL
 #'    \item{Make it efficient to convey group information, for example
 #'       define titleBoxColor with group colors, allow centerByGroup==TRUE
 #'       which would re-use known sample group information.'}
+#'    \item{Adjust the suffix to indicate when \code{centerGroups} are being
+#'       used. For example indicate 'sampleID vs groupA' instead of
+#'       'sampleID vs median'.}
 #' }
 #'
 #' @param object numeric matrix typically containing log-normal measurements,
@@ -267,6 +270,9 @@ NULL
 #'    samples in its center group. If all samples are noisy, it would define
 #'    a high MAD value, and therefore all samples would be expected to have
 #'    similar MAD factors, near 1.
+#' @param groupedMAD logical indicating whether the MAD calculation should
+#'    operate only within `centerGroups` (`groupedMAD=TRUE`) or whether the
+#'    MAD calculation is shared across all samples (`groupedMAD=FALSE`).
 #' @param outlierMAD the MAD factor threshold to define a sample an outlier.
 #' @param outlierRowMin the minimum value as displayed on the x-axis, for
 #'    a row in \code{object} to be used in the MAD outlier calculations. This
@@ -303,7 +309,7 @@ NULL
 jammaplot <- function
 (object,
  colramp=c("white", "lightblue", "blue", "navy", "orange", "orangered2"),
- colrampOutlier=c("lightyellow1", "lightblue", "blue", "navy", "orange", "orangered2"),
+ colrampOutlier=c("palegoldenrod", "lightblue", "blue", "navy", "orange", "orangered2"),
  whichSamples=NULL,
  maintitle=NULL,
  subtitle=NULL,
@@ -348,6 +354,7 @@ jammaplot <- function
  blankPlotPos=NULL,
  outlierMAD=5,
  outlierRowMin=5,
+ groupedMAD=TRUE,
  displayMAD=FALSE,
  fillBackground=TRUE,
  verbose=FALSE,
@@ -499,7 +506,7 @@ jammaplot <- function
    if (class(object) %in% "data.frame") {
       object <- as.matrix(object);
    }
-   if (class(object) %in% "list" && 
+   if (class(object) %in% "list" &&
       all(c("x", "y") %in% colnames(object[[1]]))) {
       ## We are given MVA data from previous run, or from another source.
       gaveMVA <- TRUE;
@@ -584,8 +591,11 @@ jammaplot <- function
             x <- object[,i];
          }
          mvaValues <- c(y, (x - y));
-         mvaData <- matrix(data=mvaValues, nrow=length(x), byrow=FALSE,
-            dimnames=list(genes=rownames(object), MAcoords=c("x", "y")));
+         mvaData <- matrix(data=mvaValues,
+            nrow=length(x),
+            byrow=FALSE,
+            dimnames=list(genes=rownames(object),
+               MAcoords=c("x", "y")));
          mvaDatas[[i]] <- mvaData;
          names(mvaDatas)[i] <- colnames(object)[i];
       }
@@ -594,7 +604,7 @@ jammaplot <- function
    ## Optionally calculate the MAD per panel
    ## assumptions: that zero should be the median, all deviations are absolute values since
    ## we are comparing with zero, and we are not subtracting an actual median value
-   if (!is.null(outlierMAD)) {
+   if (length(outlierMAD) > 0) {
       if (verbose) {
          printDebug("Calculating MVA data MAD factors.");
       }
@@ -607,10 +617,21 @@ jammaplot <- function
          median(abs(mvaData[abs(mvaData[,"x"]) >= outlierRowMin,"y",drop=FALSE]),
             na.rm=TRUE);
       });
-      ## The median MAD is used across all samples, to define the threshold cutoff
-      mvaMAD <- median(mvaMADs);
-      mvaMADfactors <- mvaMADs/mvaMAD;
-      mvaMADthreshold <- outlierMAD * mvaMAD;
+
+      ## Calculate MAD factor, a ratio to the median
+      if (groupedMAD && length(centerGroups) > 0) {
+         ## if grouped, use the median of each center group
+         mvaMADfactors <- unlist(unname(
+            tapply(mvaMADs, centerGroups, function(i){
+               i / median(i);
+            })))[names(mvaMADs)];
+      } else {
+         ## if not grouped, use the overall median across all samples
+         mvaMAD <- median(mvaMADs);
+         mvaMADfactors <- mvaMADs/mvaMAD;
+      }
+
+      #mvaMADthreshold <- outlierMAD * mvaMAD;
       names(mvaMADfactors) <- whichSamples;
       names(mvaMADs) <- whichSamples;
       mvaMADoutliers <- colnames(object)[whichSamples][which(mvaMADfactors >= outlierMAD)];
@@ -805,7 +826,7 @@ jammaplot <- function
       }
 
       ## Optionally print the MAD factor in the bottom right corner
-      if (!is.null(outlierMAD) && displayMAD == 1) {
+      if (length(outlierMAD) > 0 && displayMAD == 1) {
          legend("bottomright", inset=0.02, cex=titleCex[i],
             text.font=titleFont[i],
             legend=paste0("MAD:",
@@ -815,7 +836,7 @@ jammaplot <- function
                "red3", "grey40"),
             title.col=ifelse(mvaMADfactors[as.character(i)] > outlierMAD,
                "red3", "grey40"));
-      } else if (!is.null(outlierMAD) && displayMAD == 2) {
+      } else if (length(outlierMAD) > 0 && displayMAD == 2) {
          legend("bottomright", inset=0.02, cex=titleCex[i],
             text.font=titleFont[i],
             legend=paste0("MAD:", format(digits=2, mvaMADs[as.character(i)])),
