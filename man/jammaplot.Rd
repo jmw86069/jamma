@@ -13,10 +13,9 @@
 \alias{mva.plot}
 \title{Produce MA-plot of omics data.}
 \usage{
-jammaplot(object, colramp = colorRampPalette(c("white", "lightblue", "blue",
-  "navy", "orange", "orangered2")),
-  colrampOutlier = colorRampPalette(c("lightyellow1", "lightblue", "blue",
-  "navy", "orange", "orangered2")), whichSamples = NULL, maintitle = NULL,
+jammaplot(object, colramp = c("white", "lightblue", "blue", "navy", "orange",
+  "orangered2"), colrampOutlier = c("palegoldenrod", "lightblue", "blue",
+  "navy", "orange", "orangered2"), whichSamples = NULL, maintitle = NULL,
   subtitle = NULL, maintitleSep = "\\n", titleCexFactor = 0.5,
   titleCex = NULL, doTitleBox = ncol(object) <= 49,
   titleBoxColor = "#DDBB9977", titleColor = "black", titleFont = 2,
@@ -34,7 +33,8 @@ jammaplot(object, colramp = colorRampPalette(c("white", "lightblue", "blue",
   smoothScatterFunc = plotSmoothScatter, applyRangeCeiling = TRUE,
   doTxtplot = FALSE, ablineV = 0, ablineH = c(-2, 0, 2),
   blankPlotPos = NULL, outlierMAD = 5, outlierRowMin = 5,
-  displayMAD = TRUE, fillBackground = TRUE, verbose = FALSE, ...)
+  groupedMAD = TRUE, displayMAD = FALSE, fillBackground = TRUE,
+  verbose = FALSE, ...)
 }
 \arguments{
 \item{object}{numeric matrix typically containing log-normal measurements,
@@ -228,6 +228,10 @@ a sample outlier would need to have greater than five times median
 absolute deviation compared to its center group, based only upon
 measurements above noise.}
 
+\item{groupedMAD}{logical indicating whether the MAD calculation should
+operate only within \code{centerGroups} (\code{groupedMAD=TRUE}) or whether the
+MAD calculation is shared across all samples (\code{groupedMAD=FALSE}).}
+
 \item{displayMAD}{logical whether to display MAD (median absolute deviation)
 values for each panel. MAD values are defined for each centerGroup if
 supplied, or globally if not. The MAD value is CALCULATED by taking the
@@ -261,7 +265,7 @@ only relative to other samples of the same cell type. See
 }
 \value{
 List of data used by jamma() to produce an MA-plot, sufficient
-         to use as input to produce another MA-plot.
+to use as input to produce another MA-plot.
 }
 \description{
 Produce MA-plot of omics data.
@@ -327,15 +331,18 @@ used as the MAD.
 These MAD values are used to calculate the global MAD, and individual
 MADs are divided by global MAD to determine a MAD factor.
 The outlierMAD is the threshold above which a MAD factor is considered
- an outlier.
+an outlier.
 
 To do:
 \itemize{
-   \item{Accept other object types as input, including Bioconductor
-      classes: ExpressionSet, SummarizedExperiment, MultiExperimentSet.}
-   \item{Make it efficient to convey group information, for example
-      define titleBoxColor with group colors, allow centerByGroup==TRUE
-      which would re-use known sample group information.'}
+\item{Accept other object types as input, including Bioconductor
+classes: ExpressionSet, SummarizedExperiment, MultiExperimentSet.}
+\item{Make it efficient to convey group information, for example
+define titleBoxColor with group colors, allow centerByGroup==TRUE
+which would re-use known sample group information.'}
+\item{Adjust the suffix to indicate when \code{centerGroups} are being
+used. For example indicate 'sampleID vs groupA' instead of
+'sampleID vs median'.}
 }
 }
 \examples{
@@ -346,6 +353,6 @@ jammaplot(x)
 }
 \seealso{
 \code{\link{plotSmoothScatter}} for enhanced
-   \code{\link{smoothScatter}}, \code{\link{centerGeneData}},
-   \code{\link{imageDefault}}, \code{\link{nullPlot}}
+\code{\link{smoothScatter}}, \code{\link{centerGeneData}},
+\code{\link{imageDefault}}, \code{\link{nullPlot}}
 }
