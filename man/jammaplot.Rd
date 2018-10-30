@@ -14,12 +14,11 @@
 \title{Produce MA-plot of omics data.}
 \usage{
 jammaplot(object, colramp = c("white", "lightblue", "blue", "navy", "orange",
-  "orangered2"), colrampOutlier = c("palegoldenrod", "lightblue", "blue",
-  "navy", "orange", "orangered2"), whichSamples = NULL, maintitle = NULL,
-  subtitle = NULL, maintitleSep = "\\n", titleCexFactor = 0.5,
-  titleCex = NULL, doTitleBox = ncol(object) <= 49,
-  titleBoxColor = "#DDBB9977", titleColor = "black", titleFont = 2,
-  xlab = "A", xlabline = 2, ylab = "M", ylabline = 1.5,
+  "orangered2"), colrampOutlier = NULL, outlierColor = "palegoldenrod",
+  whichSamples = NULL, maintitle = NULL, subtitle = NULL,
+  maintitleSep = "\\n", titleCexFactor = 1, titleCex = NULL,
+  doTitleBox = TRUE, titleBoxColor = "#DDBB9977", titleColor = "black",
+  titleFont = 2, xlab = "A", xlabline = 2, ylab = "M", ylabline = 1.5,
   groupSuffix = " vs. Median", highlightPoints = NULL, highlightPch = 21,
   highlightCex = 1, highlightColor = "#00AAAA66",
   doHighlightPolygon = FALSE, highlightPolygonAlpha = 0.3,
@@ -51,6 +50,11 @@ a vector of R colors.}
 outliers based upon MAD outlier logic. Typically the color ramp is
 identical to \code{colramp} except the background color indicates
 an error, for example yellow background instead of white.}
+
+\item{outlierColor}{character R color, used when \code{colrampOutlier is NULL}
+to substitute as the first color from \code{colramp}. This method keeps the
+color ramp consistent, but changes the background color to highlight
+the plot panel as an outlier.}
 
 \item{whichSamples}{NULL or integer vector, representing an index of samples
 to include in the MA-plots. Note that all samples are used to create
@@ -352,7 +356,7 @@ jammaplot(x)
 
 }
 \seealso{
-\code{\link{plotSmoothScatter}} for enhanced
-\code{\link{smoothScatter}}, \code{\link{centerGeneData}},
-\code{\link{imageDefault}}, \code{\link{nullPlot}}
+\code{jamba::plotSmoothScatter()} for enhanced
+\code{graphics::smoothScatter()}, \code{centerGeneData()},
+\code{jamba::imageDefault()}, \code{jamba::nullPlot()}
 }

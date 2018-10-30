@@ -11,7 +11,7 @@
 ## Requires: KernSmooth,sp,rgeos
 ## Suggests: matrixStats
 ##
-## devtools::create("/Users/wardjm/Projects/Ward/jamma")
+
 
 #' jamma: MA-plots for omics data
 #'
@@ -120,6 +120,10 @@ NULL
 #'    outliers based upon MAD outlier logic. Typically the color ramp is
 #'    identical to \code{colramp} except the background color indicates
 #'    an error, for example yellow background instead of white.
+#' @param outlierColor character R color, used when `colrampOutlier is NULL`
+#'    to substitute as the first color from `colramp`. This method keeps the
+#'    color ramp consistent, but changes the background color to highlight
+#'    the plot panel as an outlier.
 #' @param applyRangeCeiling see \code{\link{plotSmoothScatter}} for details,
 #'    logical whether to apply a noise floor and ceiling to display points
 #'    outside the plot region at the boundaries of the plot. This parameter
@@ -293,12 +297,14 @@ NULL
 #' @return List of data used by jamma() to produce an MA-plot, sufficient
 #'          to use as input to produce another MA-plot.
 #'
-#' @seealso \code{\link{plotSmoothScatter}} for enhanced
-#'    \code{\link{smoothScatter}}, \code{\link{centerGeneData}},
-#'    \code{\link{imageDefault}}, \code{\link{nullPlot}}
+#' @seealso `jamba::plotSmoothScatter()` for enhanced
+#'    `graphics::smoothScatter()`, `centerGeneData()`,
+#'    `jamba::imageDefault()`, `jamba::nullPlot()`
 #'
 #' @aliases MAplot, MVAplotMED, MVAplotMEDsmooth, MVAplot, plotMA, plotMVA,
 #'    ma.plot, plot.ma, mva.plot
+#'
+#' @family jam plot functions
 #'
 #' @examples
 #' \dontrun{
@@ -309,14 +315,15 @@ NULL
 jammaplot <- function
 (object,
  colramp=c("white", "lightblue", "blue", "navy", "orange", "orangered2"),
- colrampOutlier=c("palegoldenrod", "lightblue", "blue", "navy", "orange", "orangered2"),
+ colrampOutlier=NULL,
+ outlierColor="palegoldenrod",
  whichSamples=NULL,
  maintitle=NULL,
  subtitle=NULL,
  maintitleSep="\n",
- titleCexFactor=0.5,
+ titleCexFactor=1,
  titleCex=NULL,
- doTitleBox=ncol(object)<=49,
+ doTitleBox=TRUE,
  titleBoxColor="#DDBB9977",
  titleColor="black",
  titleFont=2,
@@ -440,12 +447,30 @@ jammaplot <- function
       colnames(object) <- makeNames(rep("V", ncol(object)));
    }
 
-   ## Verify color ramps are proper functions
+   ## If colramp is "character" we use getColorRamp() to work it out
    if ("character" %in% class(colramp)) {
       colramp <- colorRampPalette(getColorRamp(colramp));
    }
-   if ("character" %in% class(colrampOutlier)) {
-      colrampOutlier <- colorRampPalette(getColorRamp(colrampOutlier));
+   firstColor <- head(colramp(10), 1);
+   if (length(colrampOutlier) > 0) {
+      if (igrepHas("character", class(colrampOutlier))) {
+         colrampOutlier <- colorRampPalette(getColorRamp(colrampOutlier));
+      }
+   }
+   if (length(colrampOutlier) == 0 ||
+         !is.function(colrampOutlier)) {
+      firstColorL <- col2hcl(firstColor)["L",];
+      if (length(outlierColor) < 1) {
+         if (col2hcl(firstColor)["L",] < 70) {
+            outlierColor <- "#551100";
+         } else {
+            outlierColor <- "palegoldenrod";
+         }
+      }
+      colrampOutlier <- colorRampPalette(
+         c(outlierColor,
+            tail(colramp(101), 100)
+      ));
    }
 
    groupSuffix <- rep(groupSuffix, length.out=ncol(object));
@@ -475,7 +500,8 @@ jammaplot <- function
    }
    titleCex <- rep(titleCex, length.out=nsamples);
    if (verbose) {
-      printDebug("titleCex:", head(titleCex, 10), ", length=", length(titleCex));
+      printDebug("jammaplot(): ",
+         "titleCex:", head(titleCex, 10), ", length=", length(titleCex));
    }
    titleBoxColor <- rep(titleBoxColor, length.out=nsamples);
    ## Adjust titleColor to have contrast from the titleBoxColor
@@ -518,6 +544,10 @@ jammaplot <- function
       }
       mvaDatas <- object;
    } else {
+      if (verbose) {
+         printDebug("jammaplot(): ",
+            "Processing matrix input type, dim(object)", dim(object));
+      }
       if (filterNA) {
          object[is.na(object)] <- filterNAreplacement;
       }
@@ -548,6 +578,12 @@ jammaplot <- function
             });
          }
       }
+      if (verbose) {
+         printDebug("jammaplot(): ",
+            "Processing matrix input type, dim(object)", dim(object));
+         printDebug("jammaplot(): ",
+            "Processing matrix input type, dim(y):", dim(y));
+      }
       if (is.null(xlim)) {
          ## Calculate x range using the range of data overall
          xlim <- range(c(range(object, na.rm=TRUE), range(y, na.rm=TRUE)));
@@ -558,11 +594,16 @@ jammaplot <- function
    }
 
    if (!is.null(centerGroups)) {
-      objectCtr <- centerGeneData(indata=object, centerGroups=centerGroups,
-         mean=useMean, needsLog=FALSE, returnGroupedValues=FALSE,
-         controlSamples=controlSamples);
+      objectCtr <- centerGeneData(indata=object,
+         centerGroups=centerGroups,
+         mean=useMean,
+         needsLog=FALSE,
+         returnGroupedValues=FALSE,
+         controlSamples=controlSamples,
+         verbose=verbose);
       if (verbose) {
-         printDebug("objectCtr:");
+         printDebug("jammaplot(): ",
+            "objectCtr:");
          ch(objectCtr, rows=2);
          printDebug("head(y): ", round(head(y), digits=2),
             fgText=c("orange", "lightblue"));
@@ -927,6 +968,8 @@ jammaplot <- function
 #' and centered to specific control samples, is it important to keep this
 #' information during downstream scrutiny of results.
 #'
+#' @family jam matrix functions
+#'
 #' @export
 centerGeneData <- function
 (indata,
@@ -938,6 +981,7 @@ centerGeneData <- function
  returnGroupedValues=FALSE,
  showGroups=FALSE,
  scale=c("none", "row"),
+ verbose=FALSE,
  ...)
 {
    ## Purpose is to provide quik data-centering (subtracting average from each row, usually
@@ -998,11 +1042,16 @@ centerGeneData <- function
    controlCols <- colnames(indata)[controls];
 
    ## We will try to auto-detect whether to log2 transform the data
-   if (is.null(needsLog)) {
-      needsLog <- max(indata, na.rm=TRUE) > 40;
+   if (length(needsLog) == 0) {
+      needsLog <- max(indata, na.rm=TRUE) > 100;
    }
    if (needsLog) {
-      indata <- log2(indata);
+      if (verbose) {
+         printDebug("centerGeneData(): ",
+            "applying log2 transform:",
+            "log(1 + x)");
+      }
+      indata <- log2(1+indata);
    }
 
    ## Create summary data.frame
@@ -1010,21 +1059,31 @@ centerGeneData <- function
       centerGroups=centerGroups,
       centerControl=colnames(indata) %in% controlCols)));
    #centerDF <- mmixedOrderDF(centerDF, byCols=c(2,-3));
+   if (verbose) {
+      printDebug("centerGeneData(): ",
+         "dim(indata)", dim(indata));
+      printDebug("centerGeneData(): ",
+         "dim(centerDF)", dim(centerDF));
+      print(head(centerDF));
+   }
    rownames(centerDF) <- centerDF[,"sample"];
 
    ## optionally show summary for visual confirmation
-   if (showGroups && !is.null(centerGroups)) {
+   if (showGroups && length(centerGroups) > 0) {
       print(centerDF);
       ## We avoid including ch() and colsHead() for now.
       #ch(centerDF, maxRows=nrow(centerDF), orderBy=c(-2,3));
    }
 
    ## Optionally center groups separately
-   if (!is.null(centerGroups)) {
+   if (length(centerGroups) > 0) {
       if (!igrepHas("list", class(centerGroups))) {
-         if (!is.null(names(centerGroups)) &&
-            all(colnames(indata) %in% names(centerGroups))) {
-            centerGroups <- centerGroups[colnames(indata)];
+         if (length(names(centerGroups)) > 0) {
+            if (all(colnames(indata) %in% names(centerGroups))) {
+               centerGroups <- centerGroups[colnames(indata)];
+            } else {
+               stop("colnames(indata) must be contained in names(centerGroups) when centerGroups has names.");
+            }
          }
          centerGroups <- split(colnames(indata), centerGroups);
       }
@@ -1102,8 +1161,8 @@ centerGeneData <- function
 #'
 #' A polygon hull can be useful as a visual indicator of the location
 #' of a set of points. This function creates a polygon around all points,
-#' and not just the most dense region of points, using the
-#' \code{\link[rgeos]{gConvexHull}} function. Since that function returns
+#' and not just the most dense region of points, using
+#' `rgeos::gConvexHull()`. Since that function returns
 #' an object of class SpatialPolygons, this function is mainly a wrapper
 #' which returns the set of coordinates, either as a matrix or as the
 #' SpatialPolygons object type.
@@ -1114,9 +1173,19 @@ centerGeneData <- function
 #'    SpatialPolygons.
 #' @param verbose logical whether to print verbose output'
 #'
+#' @return
+#' A numeric matrix of polygon coordinates, unless the parameter
+#' `returnClass="SpatialPolygons"` is set, in which case it returns
+#' a `sp::SpatialPolygons` object.
+#'
+#' @seealso `sp::SpatialPolygons`, `rgeos::gConvexHull()`
+#'
+#' @family jam spatial functions
+#'
 #' @export
 points2polygonHull <- function
-(x, returnClass=c("matrix","SpatialPolygons"),
+(x,
+ returnClass=c("matrix","SpatialPolygons"),
  ...)
 {
    ## Purpose is to take coordinates of a set of points, and return

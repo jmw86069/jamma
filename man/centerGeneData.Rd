@@ -7,7 +7,7 @@
 centerGeneData(indata, floor = NA, controlSamples = NA,
   centerGroups = NULL, needsLog = NULL, mean = FALSE,
   returnGroupedValues = FALSE, showGroups = FALSE, scale = c("none",
-  "row"), ...)
+  "row"), verbose = FALSE, ...)
 }
 \arguments{
 \item{indata}{numeric matrix typically containing measurements (genes)

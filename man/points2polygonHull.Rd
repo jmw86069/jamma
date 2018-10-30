@@ -15,15 +15,23 @@ SpatialPolygons.}
 
 \item{verbose}{logical whether to print verbose output'}
 }
+\value{
+A numeric matrix of polygon coordinates, unless the parameter
+\code{returnClass="SpatialPolygons"} is set, in which case it returns
+a \code{sp::SpatialPolygons} object.
+}
 \description{
 Defines a polygon hull to encompass a set of data points
 }
 \details{
 A polygon hull can be useful as a visual indicator of the location
 of a set of points. This function creates a polygon around all points,
-and not just the most dense region of points, using the
-\code{\link[rgeos]{gConvexHull}} function. Since that function returns
+and not just the most dense region of points, using
+\code{rgeos::gConvexHull()}. Since that function returns
 an object of class SpatialPolygons, this function is mainly a wrapper
 which returns the set of coordinates, either as a matrix or as the
 SpatialPolygons object type.
+}
+\seealso{
+\code{sp::SpatialPolygons}, \code{rgeos::gConvexHull()}
 }
