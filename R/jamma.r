@@ -767,17 +767,20 @@ jammaplot <- function
       ## Optionally highlight some subset of points
       if (!is.null(highlightPoints)) {
          if (!class(highlightPoints) %in% c("list")) {
-            highlightPoints <- as.list(highlightPoints);
+            highlightPoints <- list(highlightPoints=highlightPoints);
          }
          if (!class(highlightColor) %in% c("list")) {
-            highlightColor <- as.list(highlightColor);
+            highlightColor <- rep(as.list(highlightColor),
+               length.out=length(highlightPoints));
          }
-         highlightColor <- rep(highlightColor,
-            length.out=length(highlightPoints));
          if (!class(highlightPch) %in% c("list")) {
-            highlightPch <- list(highlightPch);
+            highlightPch <- rep(as.list(highlightPch),
+               length.out=length(highlightPoints));
          }
-         highlightPch <- rep(highlightPch, length.out=length(highlightPoints));
+         if (!class(highlightCex) %in% c("list")) {
+            highlightCex <- rep(as.list(highlightCex),
+               length.out=length(highlightPoints));
+         }
          hp1 <- lapply(seq_along(highlightPoints), function(highI){
             highP <- highlightPoints[[highI]];
             hiData <- mvaData[which(rownames(mvaData) %in% highP),,drop=FALSE];
@@ -801,23 +804,30 @@ jammaplot <- function
                   border=highlightPolyColor);
             }
             ## Draw the highlighted points
-            points(x=hiData[,"x"], y=yValues, pch=highlightPch[[highI]],
+            points(x=hiData[,"x"],
+               y=yValues,
+               pch=highlightPch[[highI]],
                bg=highlightColor[[highI]],
-               col=makeColorDarker(darkFactor=1.2, sFactor=1.5,
+               col=makeColorDarker(darkFactor=1.2,
+                  sFactor=1.5,
                   highlightColor[[highI]]),
-               xpd=FALSE, cex=highlightCex);
+               xpd=FALSE,
+               cex=highlightCex[[highI]]);
          })
       }
       ## Optionally draw title boxes as labels per plot
       if (verbose) {
-         printDebug("titleFont:", titleFont, c("orange", "lightblue"));
+         printDebug("jammaplot(): ",
+            "titleFont:",
+            titleFont);
       }
       titleBoxTextColor <- ifelse(colnames(object)[i] %in% mvaMADoutliers,
          blendColors(rep(c(titleColor[i], "red"), c(3,1))),
          titleColor[i]);
       if (doTitleBox) {
          if (verbose) {
-            printDebug("   titleBoxColor:", titleBoxColor[i],
+            printDebug("jammaplot(): ",
+               "   titleBoxColor:", titleBoxColor[i],
                list("orange",titleBoxColor[i]));
          }
          parXpd <- par("xpd");
@@ -839,9 +849,12 @@ jammaplot <- function
                text.font=titleFont[i],
                legend=subtitle,
                title=NULL);
-            rect(xleft=b1$rect$left, ybottom=b1$rect$top-b1$rect$h,
-               xright=b1$rect$left+b1$rect$w, ytop=b1$rect$top,
-               col=titleBoxColor[i], border="black");
+            rect(xleft=b1$rect$left,
+               ybottom=b1$rect$top-b1$rect$h,
+               xright=b1$rect$left+b1$rect$w,
+               ytop=b1$rect$top,
+               col=titleBoxColor[i],
+               border="black");
             text(x=b1$rect$left+b1$rect$w/2,
                y=b1$rect$top-b1$rect$h/2,
                labels=subtitle,

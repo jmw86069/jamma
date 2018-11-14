@@ -35,3 +35,4 @@ SpatialPolygons object type.
 \seealso{
 \code{sp::SpatialPolygons}, \code{rgeos::gConvexHull()}
 }
+\concept{jam spatial functions}

@@ -76,3 +76,4 @@ row control value via controlSamples, Similarly, columns can be grouped,
 where columns are centered versus their relevant control samples within
 each group of columns.
 }
+\concept{jam matrix functions}

@@ -13,27 +13,28 @@
 \alias{mva.plot}
 \title{Produce MA-plot of omics data.}
 \usage{
-jammaplot(object, colramp = c("white", "lightblue", "blue", "navy", "orange",
-  "orangered2"), colrampOutlier = NULL, outlierColor = "palegoldenrod",
-  whichSamples = NULL, maintitle = NULL, subtitle = NULL,
-  maintitleSep = "\\n", titleCexFactor = 1, titleCex = NULL,
-  doTitleBox = TRUE, titleBoxColor = "#DDBB9977", titleColor = "black",
-  titleFont = 2, xlab = "A", xlabline = 2, ylab = "M", ylabline = 1.5,
-  groupSuffix = " vs. Median", highlightPoints = NULL, highlightPch = 21,
-  highlightCex = 1, highlightColor = "#00AAAA66",
+jammaplot(object, colramp = c("white", "lightblue", "blue", "navy",
+  "orange", "orangered2"), colrampOutlier = NULL,
+  outlierColor = "palegoldenrod", whichSamples = NULL,
+  maintitle = NULL, subtitle = NULL, maintitleSep = "\\n",
+  titleCexFactor = 1, titleCex = NULL, doTitleBox = TRUE,
+  titleBoxColor = "#DDBB9977", titleColor = "black", titleFont = 2,
+  xlab = "A", xlabline = 2, ylab = "M", ylabline = 1.5,
+  groupSuffix = " vs. Median", highlightPoints = NULL,
+  highlightPch = 21, highlightCex = 1, highlightColor = "#00AAAA66",
   doHighlightPolygon = FALSE, highlightPolygonAlpha = 0.3,
   smoothPtCol = "#00000055", margins = c(3.5, 3, 0.7, 0.5),
-  useRaster = TRUE, ncol = NULL, nrow = NULL, doPar = TRUE, las = 2,
-  ylim = c(-4, 4), xlim = NULL, controlSamples = colnames(object),
-  centerGroups = NULL, useMean = FALSE, customFunc = NULL,
-  filterNA = TRUE, filterNAreplacement = NA, filterNeg = TRUE,
-  filterFloor = 0, filterFloorReplacement = filterFloor,
-  transFactor = 0.18, nrpoints = 50,
-  smoothScatterFunc = plotSmoothScatter, applyRangeCeiling = TRUE,
-  doTxtplot = FALSE, ablineV = 0, ablineH = c(-2, 0, 2),
-  blankPlotPos = NULL, outlierMAD = 5, outlierRowMin = 5,
-  groupedMAD = TRUE, displayMAD = FALSE, fillBackground = TRUE,
-  verbose = FALSE, ...)
+  useRaster = TRUE, ncol = NULL, nrow = NULL, doPar = TRUE,
+  las = 2, ylim = c(-4, 4), xlim = NULL,
+  controlSamples = colnames(object), centerGroups = NULL,
+  useMean = FALSE, customFunc = NULL, filterNA = TRUE,
+  filterNAreplacement = NA, filterNeg = TRUE, filterFloor = 0,
+  filterFloorReplacement = filterFloor, transFactor = 0.18,
+  nrpoints = 50, smoothScatterFunc = plotSmoothScatter,
+  applyRangeCeiling = TRUE, doTxtplot = FALSE, ablineV = 0,
+  ablineH = c(-2, 0, 2), blankPlotPos = NULL, outlierMAD = 5,
+  outlierRowMin = 5, groupedMAD = TRUE, displayMAD = FALSE,
+  fillBackground = TRUE, verbose = FALSE, ...)
 }
 \arguments{
 \item{object}{numeric matrix typically containing log-normal measurements,
@@ -360,3 +361,4 @@ jammaplot(x)
 \code{graphics::smoothScatter()}, \code{centerGeneData()},
 \code{jamba::imageDefault()}, \code{jamba::nullPlot()}
 }
+\concept{jam plot functions}

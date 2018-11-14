@@ -1,3 +1,17 @@
+# jamma version 0.0.3.900
+
+## enhancements
+
+* `jammaplot()` now more consistently handles highlight
+point parameters, where each are expected in list form:
+`highlightPoints`, `highlightPch`, `highlightCex`, and
+`highlightCex`. If `highlightPoints` is sent as a vector,
+it is converted to a one-vector list. If `highlightPoints`
+is a list, then the other parameters are converted to list
+as needed (`as.list()`) and expanded to `length(highlightPoints)`.
+This way, each highlight set of points can have custom
+color, size, and shape, to help visually discern them.
+
 # jamma version 0.0.2.900
 
 ## new functions
