@@ -1,3 +1,9 @@
+# jamma version 0.0.4.900
+
+## enhancements
+
+* Bumped the version number to cover a few smaller updates.
+
 # jamma version 0.0.3.900
 
 ## enhancements

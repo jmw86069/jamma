@@ -770,17 +770,21 @@ jammaplot <- function
             highlightPoints <- list(highlightPoints=highlightPoints);
          }
          if (!class(highlightColor) %in% c("list")) {
-            highlightColor <- rep(as.list(highlightColor),
-               length.out=length(highlightPoints));
+            highlightColor <- as.list(highlightColor);
          }
+         highlightColor <- rep(highlightColor,
+            length.out=length(highlightPoints));
          if (!class(highlightPch) %in% c("list")) {
-            highlightPch <- rep(as.list(highlightPch),
-               length.out=length(highlightPoints));
+            highlightPch <- as.list(highlightPch);
          }
+         highlightPch <- rep(highlightPch,
+            length.out=length(highlightPoints));
          if (!class(highlightCex) %in% c("list")) {
-            highlightCex <- rep(as.list(highlightCex),
-               length.out=length(highlightPoints));
+            highlightCex <- as.list(highlightCex);
          }
+         highlightCex <- rep(highlightCex,
+            length.out=length(highlightPoints));
+
          hp1 <- lapply(seq_along(highlightPoints), function(highI){
             highP <- highlightPoints[[highI]];
             hiData <- mvaData[which(rownames(mvaData) %in% highP),,drop=FALSE];
@@ -813,7 +817,7 @@ jammaplot <- function
                   highlightColor[[highI]]),
                xpd=FALSE,
                cex=highlightCex[[highI]]);
-         })
+         });
       }
       ## Optionally draw title boxes as labels per plot
       if (verbose) {
