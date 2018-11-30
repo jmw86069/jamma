@@ -345,6 +345,7 @@ jammaplot <- function
  xlim=NULL,
  controlSamples=colnames(object),
  centerGroups=NULL,
+ groupedX=TRUE,
  useMean=FALSE,
  customFunc=NULL,
  filterNA=TRUE,
@@ -364,6 +365,7 @@ jammaplot <- function
  groupedMAD=TRUE,
  displayMAD=FALSE,
  fillBackground=TRUE,
+ doPlot=TRUE,
  verbose=FALSE,
  ...)
 {
@@ -565,17 +567,39 @@ jammaplot <- function
             controlSamples <- colnames(object);
          }
       }
-      if (!is.null(customFunc)) {
-         y <- customFunc(object[,controlSamples,drop=FALSE], na.rm=TRUE);
-      } else if (useMean) {
-         y <- rowMeans(object[,controlSamples,drop=FALSE], na.rm=TRUE);
-      } else {
-         if (doMS) {
-            y <- rowMedians(object[,controlSamples,drop=FALSE], na.rm=TRUE);
+      ## Calculate the summary value per row of input data object,
+      ## used as the x-axis value for each panel
+      if (groupedX && length(unique(centerGroups)) > 1) {
+         yM <- centerGeneData(object,
+            controlSamples=controlSamples,
+            centerGroups=centerGroups,
+            returnValues=FALSE,
+            returnGroupedValues=TRUE);
+         centerGroups <- nameVector(centerGroups, colnames(object));
+         if (useMean) {
+            y <- rowMeans(yM, na.rm=TRUE);
          } else {
-            y <- apply(object[,controlSamples,drop=FALSE], 1, function(i){
-               median(i, na.rm=TRUE);
-            });
+            if (doMS) {
+               y <- rowMedians(yM, na.rm=TRUE);
+            } else {
+               y <- apply(yM, 1, function(i){
+                  median(i, na.rm=TRUE);
+               });
+            }
+         }
+      } else {
+         if (!is.null(customFunc)) {
+            y <- customFunc(object[,controlSamples,drop=FALSE], na.rm=TRUE);
+         } else if (useMean) {
+            y <- rowMeans(object[,controlSamples,drop=FALSE], na.rm=TRUE);
+         } else {
+            if (doMS) {
+               y <- rowMedians(object[,controlSamples,drop=FALSE], na.rm=TRUE);
+            } else {
+               y <- apply(object[,controlSamples,drop=FALSE], 1, function(i){
+                  median(i, na.rm=TRUE);
+               });
+            }
          }
       }
       if (verbose) {
@@ -599,6 +623,7 @@ jammaplot <- function
          mean=useMean,
          needsLog=FALSE,
          returnGroupedValues=FALSE,
+         returnValues=TRUE,
          controlSamples=controlSamples,
          verbose=verbose);
       if (verbose) {
@@ -614,14 +639,23 @@ jammaplot <- function
    ## so we can test for outliers beforehand
    if (!gaveMVA) {
       if (verbose) {
-         printDebug("Calculating MVA data.");
+         printDebug("jammaplot(): ",
+            "Calculating MVA data.");
       }
       for (i in whichSamples) {
-         if (!is.null(centerGroups)) {
+         if (groupedX && length(unique(centerGroups)) > 1) {
             ## Optionally, if centerGroups are supplied,
             ## we center within each controlGroup,
             ## and plot the difference within each controlGroup
-            x <- objectCtr[,i] + y;
+            iCol <- colnames(object)[i];
+            iGroup <- centerGroups[iCol];
+            yUse <- yM[,iGroup];
+            #x <- objectCtr[,i] + y;
+            x <- objectCtr[,i] + yUse;
+            if (verbose) {
+               printDebug("jammaplot(): ",
+                  "Applying unique x per centerGroups");
+            }
          } else {
             ## Typical values use difference from median on y-axis and
             ## average of current with median on x-axis
@@ -630,8 +664,9 @@ jammaplot <- function
             ## but use the median on the x-axis
             #mvaValues <- c((x + y)/2, (x - y));
             x <- object[,i];
+            yUse <- y;
          }
-         mvaValues <- c(y, (x - y));
+         mvaValues <- c(yUse, (x - yUse));
          mvaData <- matrix(data=mvaValues,
             nrow=length(x),
             byrow=FALSE,
@@ -694,236 +729,239 @@ jammaplot <- function
 
    ## iPanelNumber keeps track of the numbered panels as they are plotted,
    ## so we can insert blank panels at the specified positions.
-   iPanelNumber <- 0;
-   for(i in whichSamples) {
-      mvaData <- mvaDatas[[i]];
-      iPanelNumber <- iPanelNumber + 1;
-      if (verbose) {
-         printDebug("iPanelNumber: ", iPanelNumber,
-            fgText=c("orange", "lightgreen"));
+   if (doPlot) {
+      iPanelNumber <- 0;
+      for(i in whichSamples) {
+         mvaData <- mvaDatas[[i]];
+         iPanelNumber <- iPanelNumber + 1;
+         if (verbose) {
+            printDebug("iPanelNumber: ", iPanelNumber,
+               fgText=c("orange", "lightgreen"));
+         }
+         if (length(blankPlotPos) > 0) {
+            while(iPanelNumber %in% blankPlotPos) {
+               nullPlot(doBoxes=FALSE);
+               if (verbose) {
+                  printDebug("   Inserted a blank panel at position: ",
+                     iPanelNumber, fgText=c("orange", "lightblue"));
+               }
+               iPanelNumber <- iPanelNumber + 1;
+               if (verbose) {
+                  printDebug("new iPanelNumber: ", iPanelNumber,
+                     fgText=c("orange", "lightgreen"));
+               }
+            }
+         }
+         par("mar"=margins);
+         if (!is.null(maintitle)) {
+            what <- paste(c(maintitle, colnames(object)[i], groupSuffix[i]),
+               collapse=maintitleSep);
+            groupName <- paste(c(colnames(object)[i], groupSuffix[i]),
+               collapse="");
+         } else {
+            what <- paste(c(colnames(object)[i], groupSuffix[i]),
+               collapse=maintitleSep);
+            groupName <- paste(c(colnames(object)[i], groupSuffix[i]),
+               collapse="");
+         }
+         titleText <- names(mvaDatas)[i];
+
+         ## Calculate the MAD, i.e. the median absolute deviation from zero
+         mvaMAD <- median(abs(mvaData[,"y"]), na.rm=TRUE);
+
+         colrampUse <- colramp;
+         if (!is.null(outlierMAD) && colnames(object)[i] %in% mvaMADoutliers) {
+            colrampUse <- colrampOutlier;
+         }
+         mva <- smoothScatterFunc(mvaData[,c("x","y")],
+            colramp=colrampUse,
+            xlab="",
+            ylab="",
+            las=las,
+            xlim=xlim,
+            ylim=ylim,
+            transformation=transformation,
+            col=smoothPtCol,
+            useRaster=useRaster,
+            nrpoints=nrpoints,
+            fillBackground=fillBackground,
+            applyRangeCeiling=applyRangeCeiling,
+            ...);
+         ## Add axis labels
+         title(xlab=xlab, line=xlabline);
+         title(ylab=ylab, line=ylabline);
+
+         ## Add some axis lines across the plot for easy visual reference
+         if (!is.null(ablineH)) {
+            abline(h=ablineH, col="#44444488", lty="dashed", lwd=1, ...);
+         }
+         if (!is.null(ablineV) && any(xlim[1] < ablineV & xlim[2] > ablineV)) {
+            ablineVuse <- ablineV[(xlim[1] < ablineV & xlim[2] > ablineV)];
+            abline(col="grey30", v=ablineVuse, lty="dashed", ...);
+         }
+
+         ## Optionally highlight some subset of points
+         if (!is.null(highlightPoints)) {
+            if (!class(highlightPoints) %in% c("list")) {
+               highlightPoints <- list(highlightPoints=highlightPoints);
+            }
+            if (!class(highlightColor) %in% c("list")) {
+               highlightColor <- as.list(highlightColor);
+            }
+            highlightColor <- rep(highlightColor,
+               length.out=length(highlightPoints));
+            if (!class(highlightPch) %in% c("list")) {
+               highlightPch <- as.list(highlightPch);
+            }
+            highlightPch <- rep(highlightPch,
+               length.out=length(highlightPoints));
+            if (!class(highlightCex) %in% c("list")) {
+               highlightCex <- as.list(highlightCex);
+            }
+            highlightCex <- rep(highlightCex,
+               length.out=length(highlightPoints));
+
+            hp1 <- lapply(seq_along(highlightPoints), function(highI){
+               highP <- highlightPoints[[highI]];
+               hiData <- mvaData[which(rownames(mvaData) %in% highP),,drop=FALSE];
+
+               ## Make sure to restrict the y-values to fit within the axis limits,
+               ## consistent with smoothScatterFunc().
+               yValues <- noiseFloor(hiData[,"y"], minimum=min(ylim),
+                  ceiling=max(ylim), ...);
+
+               ## Optionally draw a polygon hull around highlighted points.
+               if (doHighlightPolygon && length(yValues) > 2) {
+                  hiHull <- points2polygonHull(data.frame(x=hiData[,"x"],
+                     y=yValues),
+                     returnClass="matrix");
+                  if (is.null(highlightPolygonAlpha)) {
+                     highlightPolyAlpha <- col2alpha(highlightColor[[highI]]) / 2;
+                  }
+                  highlightPolyColor <- alpha2col(highlightColor[[highI]],
+                     alpha=highlightPolyAlpha);
+                  polygon(hiHull, add=TRUE, col=highlightPolyColor,
+                     border=highlightPolyColor);
+               }
+               ## Draw the highlighted points
+               points(x=hiData[,"x"],
+                  y=yValues,
+                  pch=highlightPch[[highI]],
+                  bg=highlightColor[[highI]],
+                  col=makeColorDarker(darkFactor=1.2,
+                     sFactor=1.5,
+                     highlightColor[[highI]]),
+                  xpd=FALSE,
+                  cex=highlightCex[[highI]]);
+            });
+         }
+         ## Optionally draw title boxes as labels per plot
+         if (verbose) {
+            printDebug("jammaplot(): ",
+               "titleFont:",
+               titleFont);
+         }
+         titleBoxTextColor <- ifelse(colnames(object)[i] %in% mvaMADoutliers,
+            blendColors(rep(c(titleColor[i], "red"), c(3,1))),
+            titleColor[i]);
+         if (doTitleBox) {
+            if (verbose) {
+               printDebug("jammaplot(): ",
+                  "   titleBoxColor:", titleBoxColor[i],
+                  list("orange",titleBoxColor[i]));
+            }
+            parXpd <- par("xpd");
+            par("xpd"=NA);
+            legend("topright",
+               inset=0.02,
+               cex=titleCex[i],
+               text.font=titleFont[i],
+               legend=paste(titleText, groupSuffix[i]),
+               adj=c(0,0.5),
+               bg=titleBoxColor[i],
+               title.col=titleBoxTextColor,
+               text.col=titleBoxTextColor,
+               title=maintitle);
+            ## Subtitle using tricks to center the label
+            if (!is.null(subtitle)) {
+               b1 <- legend("bottom", inset=0.02, plot=FALSE,
+                  cex=titleCex[i],
+                  text.font=titleFont[i],
+                  legend=subtitle,
+                  title=NULL);
+               rect(xleft=b1$rect$left,
+                  ybottom=b1$rect$top-b1$rect$h,
+                  xright=b1$rect$left+b1$rect$w,
+                  ytop=b1$rect$top,
+                  col=titleBoxColor[i],
+                  border="black");
+               text(x=b1$rect$left+b1$rect$w/2,
+                  y=b1$rect$top-b1$rect$h/2,
+                  labels=subtitle,
+                  cex=titleCex[i],
+                  font=titleFont[i],
+                  col=titleBoxTextColor);
+            }
+            par("xpd"=parXpd);
+         } else {
+            titleLine <- margins[3] - 1.5;
+            title(main=maintitle,
+               sub=subtitle,
+               cex.sub=titleCex[i],
+               cex.main=titleCex[i],
+               line=titleLine,
+               col.main=titleBoxTextColor,
+               font.main=titleFont[i], ...);
+            title(main=paste(titleText, groupSuffix[i]),
+               cex.main=titleCex[i],
+               line=titleLine-1,
+               col.main=titleBoxTextColor,
+               font.main=titleFont[i], ...);
+         }
+
+         ## Optionally print the MAD factor in the bottom right corner
+         if (length(outlierMAD) > 0 && displayMAD == 1) {
+            legend("bottomright", inset=0.02, cex=titleCex[i],
+               text.font=titleFont[i],
+               legend=paste0("MAD:",
+                  format(digits=2, mvaMADfactors[as.character(i)])),
+               bg="transparent", box.lty=0,
+               text.col=ifelse(mvaMADfactors[as.character(i)] > outlierMAD,
+                  "red3", "grey40"),
+               title.col=ifelse(mvaMADfactors[as.character(i)] > outlierMAD,
+                  "red3", "grey40"));
+         } else if (length(outlierMAD) > 0 && displayMAD == 2) {
+            legend("bottomright", inset=0.02, cex=titleCex[i],
+               text.font=titleFont[i],
+               legend=paste0("MAD:", format(digits=2, mvaMADs[as.character(i)])),
+               bg="transparent", box.lty=0,
+               text.col=ifelse(mvaMADfactors[as.character(i)] > outlierMAD,
+                  "red3", "grey40"),
+               title.col=ifelse(mvaMADfactors[as.character(i)] > outlierMAD,
+                  "red3", "grey40"));
+         }
+         mvaData;
       }
+
+      ## End of the per-panel MVA plot loop
+      ## Now check to see if we should pad blank panels at the end of the sequence
       if (length(blankPlotPos) > 0) {
+         iPanelNumber <- iPanelNumber + 1;
+         if (verbose) {
+            printDebug("iPanelNumber: ", iPanelNumber,
+               fgText=c("orange", "lightgreen"));
+         }
          while(iPanelNumber %in% blankPlotPos) {
             nullPlot(doBoxes=FALSE);
             if (verbose) {
-               printDebug("   Inserted a blank panel at position: ",
-                  iPanelNumber, fgText=c("orange", "lightblue"));
+               printDebug("Inserted a blank panel at position: ", iPanelNumber,
+                  fgText=c("orange", "lightblue"));
             }
             iPanelNumber <- iPanelNumber + 1;
-            if (verbose) {
-               printDebug("new iPanelNumber: ", iPanelNumber,
-                  fgText=c("orange", "lightgreen"));
-            }
          }
       }
-      par("mar"=margins);
-      if (!is.null(maintitle)) {
-         what <- paste(c(maintitle, colnames(object)[i], groupSuffix[i]),
-            collapse=maintitleSep);
-         groupName <- paste(c(colnames(object)[i], groupSuffix[i]),
-            collapse="");
-      } else {
-         what <- paste(c(colnames(object)[i], groupSuffix[i]),
-            collapse=maintitleSep);
-         groupName <- paste(c(colnames(object)[i], groupSuffix[i]),
-            collapse="");
-      }
-      titleText <- names(mvaDatas)[i];
-
-      ## Calculate the MAD, i.e. the median absolute deviation from zero
-      mvaMAD <- median(abs(mvaData[,"y"]), na.rm=TRUE);
-
-      colrampUse <- colramp;
-      if (!is.null(outlierMAD) && colnames(object)[i] %in% mvaMADoutliers) {
-         colrampUse <- colrampOutlier;
-      }
-      mva <- smoothScatterFunc(mvaData[,c("x","y")],
-         colramp=colrampUse,
-         xlab="",
-         ylab="",
-         las=las,
-         xlim=xlim,
-         ylim=ylim,
-         transformation=transformation,
-         col=smoothPtCol,
-         useRaster=useRaster,
-         nrpoints=nrpoints,
-         fillBackground=fillBackground,
-         applyRangeCeiling=applyRangeCeiling,
-         ...);
-      ## Add axis labels
-      title(xlab=xlab, line=xlabline);
-      title(ylab=ylab, line=ylabline);
-
-      ## Add some axis lines across the plot for easy visual reference
-      if (!is.null(ablineH)) {
-         abline(h=ablineH, col="#44444488", lty="dashed", lwd=1, ...);
-      }
-      if (!is.null(ablineV) && any(xlim[1] < ablineV & xlim[2] > ablineV)) {
-         ablineVuse <- ablineV[(xlim[1] < ablineV & xlim[2] > ablineV)];
-         abline(col="grey30", v=ablineVuse, lty="dashed", ...);
-      }
-
-      ## Optionally highlight some subset of points
-      if (!is.null(highlightPoints)) {
-         if (!class(highlightPoints) %in% c("list")) {
-            highlightPoints <- list(highlightPoints=highlightPoints);
-         }
-         if (!class(highlightColor) %in% c("list")) {
-            highlightColor <- as.list(highlightColor);
-         }
-         highlightColor <- rep(highlightColor,
-            length.out=length(highlightPoints));
-         if (!class(highlightPch) %in% c("list")) {
-            highlightPch <- as.list(highlightPch);
-         }
-         highlightPch <- rep(highlightPch,
-            length.out=length(highlightPoints));
-         if (!class(highlightCex) %in% c("list")) {
-            highlightCex <- as.list(highlightCex);
-         }
-         highlightCex <- rep(highlightCex,
-            length.out=length(highlightPoints));
-
-         hp1 <- lapply(seq_along(highlightPoints), function(highI){
-            highP <- highlightPoints[[highI]];
-            hiData <- mvaData[which(rownames(mvaData) %in% highP),,drop=FALSE];
-
-            ## Make sure to restrict the y-values to fit within the axis limits,
-            ## consistent with smoothScatterFunc().
-            yValues <- noiseFloor(hiData[,"y"], minimum=min(ylim),
-               ceiling=max(ylim), ...);
-
-            ## Optionally draw a polygon hull around highlighted points.
-            if (doHighlightPolygon && length(yValues) > 2) {
-               hiHull <- points2polygonHull(data.frame(x=hiData[,"x"],
-                  y=yValues),
-                  returnClass="matrix");
-               if (is.null(highlightPolygonAlpha)) {
-                  highlightPolyAlpha <- col2alpha(highlightColor[[highI]]) / 2;
-               }
-               highlightPolyColor <- alpha2col(highlightColor[[highI]],
-                  alpha=highlightPolyAlpha);
-               polygon(hiHull, add=TRUE, col=highlightPolyColor,
-                  border=highlightPolyColor);
-            }
-            ## Draw the highlighted points
-            points(x=hiData[,"x"],
-               y=yValues,
-               pch=highlightPch[[highI]],
-               bg=highlightColor[[highI]],
-               col=makeColorDarker(darkFactor=1.2,
-                  sFactor=1.5,
-                  highlightColor[[highI]]),
-               xpd=FALSE,
-               cex=highlightCex[[highI]]);
-         });
-      }
-      ## Optionally draw title boxes as labels per plot
-      if (verbose) {
-         printDebug("jammaplot(): ",
-            "titleFont:",
-            titleFont);
-      }
-      titleBoxTextColor <- ifelse(colnames(object)[i] %in% mvaMADoutliers,
-         blendColors(rep(c(titleColor[i], "red"), c(3,1))),
-         titleColor[i]);
-      if (doTitleBox) {
-         if (verbose) {
-            printDebug("jammaplot(): ",
-               "   titleBoxColor:", titleBoxColor[i],
-               list("orange",titleBoxColor[i]));
-         }
-         parXpd <- par("xpd");
-         par("xpd"=NA);
-         legend("topright",
-            inset=0.02,
-            cex=titleCex[i],
-            text.font=titleFont[i],
-            legend=paste(titleText, groupSuffix[i]),
-            adj=c(0,0.5),
-            bg=titleBoxColor[i],
-            title.col=titleBoxTextColor,
-            text.col=titleBoxTextColor,
-            title=maintitle);
-         ## Subtitle using tricks to center the label
-         if (!is.null(subtitle)) {
-            b1 <- legend("bottom", inset=0.02, plot=FALSE,
-               cex=titleCex[i],
-               text.font=titleFont[i],
-               legend=subtitle,
-               title=NULL);
-            rect(xleft=b1$rect$left,
-               ybottom=b1$rect$top-b1$rect$h,
-               xright=b1$rect$left+b1$rect$w,
-               ytop=b1$rect$top,
-               col=titleBoxColor[i],
-               border="black");
-            text(x=b1$rect$left+b1$rect$w/2,
-               y=b1$rect$top-b1$rect$h/2,
-               labels=subtitle,
-               cex=titleCex[i],
-               font=titleFont[i],
-               col=titleBoxTextColor);
-         }
-         par("xpd"=parXpd);
-      } else {
-         titleLine <- margins[3] - 1.5;
-         title(main=maintitle,
-            sub=subtitle,
-            cex.sub=titleCex[i],
-            cex.main=titleCex[i],
-            line=titleLine,
-            col.main=titleBoxTextColor,
-            font.main=titleFont[i], ...);
-         title(main=paste(titleText, groupSuffix[i]),
-            cex.main=titleCex[i],
-            line=titleLine-1,
-            col.main=titleBoxTextColor,
-            font.main=titleFont[i], ...);
-      }
-
-      ## Optionally print the MAD factor in the bottom right corner
-      if (length(outlierMAD) > 0 && displayMAD == 1) {
-         legend("bottomright", inset=0.02, cex=titleCex[i],
-            text.font=titleFont[i],
-            legend=paste0("MAD:",
-               format(digits=2, mvaMADfactors[as.character(i)])),
-            bg="transparent", box.lty=0,
-            text.col=ifelse(mvaMADfactors[as.character(i)] > outlierMAD,
-               "red3", "grey40"),
-            title.col=ifelse(mvaMADfactors[as.character(i)] > outlierMAD,
-               "red3", "grey40"));
-      } else if (length(outlierMAD) > 0 && displayMAD == 2) {
-         legend("bottomright", inset=0.02, cex=titleCex[i],
-            text.font=titleFont[i],
-            legend=paste0("MAD:", format(digits=2, mvaMADs[as.character(i)])),
-            bg="transparent", box.lty=0,
-            text.col=ifelse(mvaMADfactors[as.character(i)] > outlierMAD,
-               "red3", "grey40"),
-            title.col=ifelse(mvaMADfactors[as.character(i)] > outlierMAD,
-               "red3", "grey40"));
-      }
-      mvaData;
    }
 
-   ## End of the per-panel MVA plot loop
-   ## Now check to see if we should pad blank panels at the end of the sequence
-   if (length(blankPlotPos) > 0) {
-      iPanelNumber <- iPanelNumber + 1;
-      if (verbose) {
-         printDebug("iPanelNumber: ", iPanelNumber,
-            fgText=c("orange", "lightgreen"));
-      }
-      while(iPanelNumber %in% blankPlotPos) {
-         nullPlot(doBoxes=FALSE);
-         if (verbose) {
-            printDebug("Inserted a blank panel at position: ", iPanelNumber,
-               fgText=c("orange", "lightblue"));
-         }
-         iPanelNumber <- iPanelNumber + 1;
-      }
-   }
    invisible(mvaDatas);
 }
 
@@ -996,6 +1034,8 @@ centerGeneData <- function
  needsLog=NULL,
  mean=FALSE,
  returnGroupedValues=FALSE,
+ returnValues=TRUE,
+ groupPrefix="group",
  showGroups=FALSE,
  scale=c("none", "row"),
  verbose=FALSE,
@@ -1031,7 +1071,13 @@ centerGeneData <- function
    ## mean divided by standard deviation
 
    scale <- match.arg(scale);
-
+   if (!returnValues && !returnGroupedValues) {
+      stop("One must be TRUE: returnValues or returnGroupedValues.");
+   }
+   useMS <- FALSE;
+   if (suppressPackageStartupMessages(require(matrixStats, quietly=TRUE))) {
+      useMS <- TRUE;
+   }
    hasCharColumns <- FALSE;
    if (!class(indata) %in% c("matrix", "numeric")) {
       colClass <- sapply(1:ncol(indata), function(i){class(indata[,i])});
@@ -1105,61 +1151,121 @@ centerGeneData <- function
          centerGroups <- split(colnames(indata), centerGroups);
       }
       ## Now iterate through the list
-      centeredSubsets <- lapply(centerGroups, function(iGroup){
+      #centeredSubsets <- lapply(centerGroups, function(iGroup){
+      centeredSubsets <- lapply(nameVectorN(centerGroups), function(iGroupN){
+         iGroup <- centerGroups[[iGroupN]];
          iGroupCols <- colnames(indata[,iGroup,drop=FALSE]);
          iControls <- intersect(iGroupCols, controlCols);
-         centerGeneData(indata[,iGroup,drop=FALSE], controlSamples=iControls,
-            needsLog=needsLog, floor=floor, mean=mean,
-            returnGroupedValues=FALSE, centerGroups=NULL, scale=scale);
-      })
+         iM <- centerGeneData(indata[,iGroup,drop=FALSE],
+            controlSamples=iControls,
+            needsLog=needsLog,
+            floor=floor,
+            mean=mean,
+            returnGroupedValues=returnGroupedValues,
+            returnValues=returnValues,
+            groupPrefix=iGroupN,
+            centerGroups=NULL,
+            scale=scale);
+         #if (!returnValues) {
+         #   iM <- iM[,!colnames(iM) %in% iGroup,drop=FALSE];
+         #}
+         iM;
+      });
       centeredData <- do.call(cbind, centeredSubsets);
       if (length(tcount(colnames(centeredData), minCount=2)) > 0) {
          colnames(centeredData) <- gsub("_v0$", "",
             makeNames(colnames(centeredData), startN=0));
       }
       centeredData <- centeredData[,unique(c(intersect(colnames(indata),
-         colnames(centeredData)), colnames(centeredData)))];
+         colnames(centeredData)), colnames(centeredData))), drop=FALSE];
       attr(centeredData, "centerGroups") <- centerGroups;
       #return(centeredData);
    } else if (mean) {
       ## Note: Switched to using sweep() because it is much faster than apply()
       indataMeans <- rowMeans(indata[,controls,drop=FALSE]);
-      centeredData <- sweep(indata, 1, indataMeans);
-      if (scale %in% "row") {
-         indataSds <- rowSds(centeredData);
-         ## Make sure no sd values are zero
-         indataSds[indataSds == 0] <- mean(indataSds[indataSds != 0]);
-         indataSds[indataSds == 0] <- 1;
-         centeredData <- sweep(centeredData, 1, indataSds, "/")
-      }
-      if (returnGroupedValues) {
-         centeredData <- cbind(centeredData, "mean"=indataMeans);
+      if (returnGroupedValues && !returnValues) {
+         centeredData <- matrix(indataMeans,
+            ncol=1,
+            dimnames=list(rownames(indata), groupPrefix));
+      } else {
+         centeredData <- sweep(indata, 1, indataMeans);
          if (scale %in% "row") {
-            centeredData <- cbind(centeredData, "SD"=indataSds);
+            if (useMS) {
+               indataSds <- rowSds(centeredData[,controls,drop=FALSE], na.rm=TRUE);
+            } else {
+               indataSds <- apply(indata[,controls, drop=FALSE], 1, function(x){
+                  sd(x, na.rm=TRUE);
+               });
+            }
+            ## Make sure no sd values are zero
+            indataSds[indataSds == 0] <- mean(indataSds[indataSds != 0]);
+            indataSds[indataSds == 0] <- 1;
+            centeredData <- sweep(centeredData, 1, indataSds, "/")
+         }
+         if (returnGroupedValues) {
+            centeredData <- cbind(centeredData, "mean"=indataMeans);
+            if (length(groupPrefix) > 0 && nchar(groupPrefix) > 0) {
+               n1 <- ncol(centeredData);
+               colnames(centeredData)[n1] <- paste(
+                  c(groupPrefix, colnames(centeredData)[n1]),
+                  collapse="_");
+            }
+            if (scale %in% "row") {
+               centeredData <- cbind(centeredData, "SD"=indataSds);
+               if (length(groupPrefix) > 0 && nchar(groupPrefix) > 0) {
+                  n1 <- ncol(centeredData);
+                  colnames(centeredData)[n1] <- paste(
+                     c(groupPrefix, colnames(centeredData)[n1]),
+                     collapse="_");
+               }
+            }
          }
       }
    } else {
-      if (suppressPackageStartupMessages(require(matrixStats, quietly=TRUE))) {
+      ## Center by median
+      if (useMS) {
          indataMedians <- rowMedians(indata[,controls,drop=FALSE], na.rm=TRUE);
       } else {
-         printDebug("Note: Install ", "matrixStats",
-            " package for markedly faster centerGeneData() operations.");
          indataMedians <- apply(indata[,controls,drop=FALSE], 1, function(x){
             median(x, na.rm=TRUE);
          });
       }
-      centeredData <- sweep(indata, 1, indataMedians);
-      if (scale %in% "row") {
-         indataMads <- rowMads(centeredData);
-         ## Make sure no sd values are zero
-         indataMads[indataMads == 0] <- mean(indataMads[indataMads != 0]);
-         indataMads[indataMads == 0] <- 1;
-         centeredData <- sweep(centeredData, 1, indataMads, "/")
-      }
-      if (returnGroupedValues) {
-         centeredData <- cbind(centeredData, "median"=indataMedians);
+      if (returnGroupedValues && !returnValues) {
+         centeredData <- matrix(indataMedians,
+            ncol=1,
+            dimnames=list(rownames(indata), groupPrefix));
+      } else {
+         centeredData <- sweep(indata, 1, indataMedians);
          if (scale %in% "row") {
-            centeredData <- cbind(centeredData, "MAD"=indataMads);
+            if (useMS) {
+               indataMads <- rowMads(centeredData[,controls, drop=FALSE], na.rm=TRUE);
+            } else {
+               indataMads <- apply(indata[,controls, drop=FALSE], 1, function(x){
+                  mad(x, na.rm=TRUE);
+               });
+            }
+            ## Make sure no sd values are zero
+            indataMads[indataMads == 0] <- mean(indataMads[indataMads != 0]);
+            indataMads[indataMads == 0] <- 1;
+            centeredData <- sweep(centeredData, 1, indataMads, "/")
+         }
+         if (returnGroupedValues) {
+            centeredData <- cbind(centeredData, "median"=indataMedians);
+            if (length(groupPrefix) > 0 && nchar(groupPrefix) > 0) {
+               n1 <- ncol(centeredData);
+               colnames(centeredData)[n1] <- paste(
+                  c(groupPrefix, colnames(centeredData)[n1]),
+                  collapse="_");
+            }
+            if (scale %in% "row") {
+               centeredData <- cbind(centeredData, "MAD"=indataMads);
+               if (length(groupPrefix) > 0 && nchar(groupPrefix) > 0) {
+                  n1 <- ncol(centeredData);
+                  colnames(centeredData)[n1] <- paste(
+                     c(groupPrefix, colnames(centeredData)[n1]),
+                     collapse="_");
+               }
+            }
          }
       }
    }

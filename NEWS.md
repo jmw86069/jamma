@@ -1,3 +1,21 @@
+# jamma version 0.0.5.900
+
+## changes to existing functions
+
+* `jammaplot()` had a fairly substantial shift in default behavior,
+concerning the x-axis coordinate when using `centerGroups` to
+center a subset of samples. Previous default was to use one global
+x-axis coordinate across all samples, regardless of the `centerGroups`.
+New default behavior is to calculate an x-axis value for each
+`centerGroups` so within each group the data is self-contained.
+This behavior can be controlled with `groupX=TRUE` which applies
+grouping to the x-axis, and `groupX=FALSE` for the previous
+behavior. I admit, this change has pros and cons. On the one hand,
+there is inherent benefit for keeping each
+subset grouping independent, with the possible downside that
+comparisons across groupings may not be visible.
+
+
 # jamma version 0.0.4.900
 
 ## enhancements
