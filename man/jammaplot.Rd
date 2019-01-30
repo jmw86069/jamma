@@ -27,14 +27,15 @@ jammaplot(object, colramp = c("white", "lightblue", "blue", "navy",
   useRaster = TRUE, ncol = NULL, nrow = NULL, doPar = TRUE,
   las = 2, ylim = c(-4, 4), xlim = NULL,
   controlSamples = colnames(object), centerGroups = NULL,
-  useMean = FALSE, customFunc = NULL, filterNA = TRUE,
-  filterNAreplacement = NA, filterNeg = TRUE, filterFloor = 0,
-  filterFloorReplacement = filterFloor, transFactor = 0.18,
-  nrpoints = 50, smoothScatterFunc = plotSmoothScatter,
+  groupedX = TRUE, useMean = FALSE, customFunc = NULL,
+  filterNA = TRUE, filterNAreplacement = NA, filterNeg = TRUE,
+  filterFloor = 0, filterFloorReplacement = filterFloor,
+  transFactor = 0.18, nrpoints = 50,
+  smoothScatterFunc = jamba::plotSmoothScatter,
   applyRangeCeiling = TRUE, doTxtplot = FALSE, ablineV = 0,
   ablineH = c(-2, 0, 2), blankPlotPos = NULL, outlierMAD = 5,
   outlierRowMin = 5, groupedMAD = TRUE, displayMAD = FALSE,
-  fillBackground = TRUE, verbose = FALSE, ...)
+  fillBackground = TRUE, doPlot = TRUE, verbose = FALSE, ...)
 }
 \arguments{
 \item{object}{numeric matrix typically containing log-normal measurements,
@@ -77,11 +78,11 @@ split on multiple lines.}
 
 \item{titleBoxColor}{vector of colors applied to title text. When doTitleBox=TRUE
 one or no value is supplied, it defines colors using
-\code{\link{setTextContrastColor}} to use a contrasting color.}
+\code{\link{jamba::setTextContrastColor}} to use a contrasting color.}
 
 \item{titleColor}{vector of colors applied to title text. When doTitleBox=TRUE
 one or no value is supplied, it defines colors using
-\code{\link{setTextContrastColor}} to use a contrasting color.}
+\code{\link{jamba::setTextContrastColor}} to use a contrasting color.}
 
 \item{titleFont}{integer font compatible with \code{par("font")}. Values
 are recycled across panels.}
@@ -120,13 +121,13 @@ alpha transparency to use for the polygon color, based upon
 highlightColor.}
 
 \item{smoothPtCol}{color used when nrpoints>0, and
-\code{\link{plotSmoothScatter}} draws this many points in the extremities.}
+\code{\link{jamba::plotSmoothScatter}} draws this many points in the extremities.}
 
 \item{margins}{vector of margins compatible with \code{par("mar")}. Defaults
 are applied, but provided here for convenient override.}
 
 \item{useRaster}{logical whether to define \code{useRaster=TRUE} in
-\code{\link{plotSmoothScatter}}, which ultimately calls
+\code{\link{jamba::plotSmoothScatter}}, which ultimately calls
 \code{\link{imageDefault}}. When TRUE, it creates a much smaller
 plot object, because it returns a raster image instead of a set of
 rectangles when rendering the image.}
@@ -190,18 +191,18 @@ zero. For some platform data , it might be useful to define a
 \code{filterFloor} roughly equivalent to its noise threshold.}
 
 \item{transFactor}{numeric adjustment used by
-\code{\link{plotSmoothScatter}}. The default is defined, but available
+\code{\link{jamba::plotSmoothScatter}}. The default is defined, but available
 here as a convenient override. The value is used in a power function in
 the form \code{transformation=function(x)x^transFactor}. Lower values
 make the scatterplot point density more intense.}
 
 \item{nrpoints}{integer or NULL, the number of points to display on the
-extremity, as used by \code{\link{plotSmoothScatter}}.}
+extremity, as used by \code{\link{jamba::plotSmoothScatter}}.}
 
 \item{smoothScatterFunc}{function used to plot smooth scatter plot, by
-default \code{\link{plotSmoothScatter}}.}
+default \code{\link{jamba::plotSmoothScatter}}.}
 
-\item{applyRangeCeiling}{see \code{\link{plotSmoothScatter}} for details,
+\item{applyRangeCeiling}{see \code{\link{jamba::plotSmoothScatter}} for details,
 logical whether to apply a noise floor and ceiling to display points
 outside the plot region at the boundaries of the plot. This parameter
 is useful to set FALSE when cropping a plot, in order to remove outlier
@@ -251,7 +252,7 @@ samples in its center group. If all samples are noisy, it would define
 a high MAD value, and therefore all samples would be expected to have
 similar MAD factors, near 1.}
 
-\item{fillBackground}{logical sent to \code{\link{plotSmoothScatter}}
+\item{fillBackground}{logical sent to \code{\link{jamba::plotSmoothScatter}}
 indicating whether to fill the plot panel with the background color,
 which is typically the first value in the \code{colramp}. Set to TRUE
 when axis ranges may be defined which are outside the range of values
@@ -260,7 +261,7 @@ for any particular column in \code{object}.}
 \item{verbose}{logical indicating whether to print verbose output.}
 
 \item{...}{additional parameters sent to downstream functions,
-\code{\link{plotSmoothScatter}}, \code{\link{centerGeneData}}.}
+\code{\link{jamba::plotSmoothScatter}}, \code{\link{centerGeneData}}.}
 
 \item{centerGoups}{vector of groups, of \code{length(colnames(object))}
 indicating optional subgroups to use when performing data centering.
@@ -360,5 +361,7 @@ jammaplot(x)
 \code{jamba::plotSmoothScatter()} for enhanced
 \code{graphics::smoothScatter()}, \code{centerGeneData()},
 \code{jamba::imageDefault()}, \code{jamba::nullPlot()}
+
+Other jam plot functions: \code{\link{drawLabels}}
 }
 \concept{jam plot functions}

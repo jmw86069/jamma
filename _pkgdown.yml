@@ -1,0 +1,17 @@
+template:
+  params:
+    bootswatch: cosmo
+reference:
+- title: Plot functions
+  desc: Functions that assist with R plotting
+  contents:
+  - has_concept("jam plot functions")
+- title: Matrix functions
+  desc: Functions that manipulate numeric matrix data
+  contents:
+  - has_concept("jam matrix functions")
+- title: Spatial functions
+  desc: Functions that manipulate coordinates, and spatial data
+  contents:
+  - has_concept("jam spatial functions")
+

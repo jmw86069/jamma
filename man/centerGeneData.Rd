@@ -6,7 +6,8 @@
 \usage{
 centerGeneData(indata, floor = NA, controlSamples = NA,
   centerGroups = NULL, needsLog = NULL, mean = FALSE,
-  returnGroupedValues = FALSE, showGroups = FALSE, scale = c("none",
+  returnGroupedValues = FALSE, returnValues = TRUE,
+  groupPrefix = "group", showGroups = FALSE, scale = c("none",
   "row"), verbose = FALSE, ...)
 }
 \arguments{

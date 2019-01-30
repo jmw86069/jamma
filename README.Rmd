@@ -14,7 +14,6 @@ knitr::opts_chunk$set(
   comment="#>",
   fig.path="man/figures/README-"
 );
-library(jamba);
 ```
 # jamma
 
@@ -34,6 +33,8 @@ A reasonable example MA-plot can be created using data from the affydata
 package, if installed.
 
 ```{r Dilution, results="hide", fig.height=8, fig.width=8}
+library(jamma);
+library(jamba);
 if (suppressPackageStartupMessages(require(affydata))) {
    data(Dilution);
    edata <- log2(1+exprs(Dilution));
@@ -60,18 +61,22 @@ with new technologies.
 First, we show the same MA-plot using single pixel points:
 
 ```{r pch1, results="hide", fig.height=4, fig.width=8}
-jammaplot(edata[,2:3], ylim=c(-1.5,1.5), titleCexFactor=0.8,
-   smoothScatterFunc=function(col="navy",...){plot(pch=".",col="#000077",...)},
-   maintitle="plot(pch='.')");
+if (exists("edata")) {
+   jammaplot(edata[,2:3], ylim=c(-1.5,1.5), titleCexFactor=0.8,
+      smoothScatterFunc=function(col="navy",...){plot(pch=".",col="#000077",...)},
+      maintitle="plot(pch='.')");
+}
 ```
 
 The overall range of points is clearly shown, but the density of points is
 not clear from that plot. Adding alpha transparency helps somewhat:
 
 ```{r pchAlpha, results="hide", fig.height=4, fig.width=8}
-jammaplot(edata[,2:3], ylim=c(-1.5,1.5), titleCexFactor=0.8,
-   smoothScatterFunc=function(col="navy",...){plot(pch=".",col="#00007711",...)},
-   maintitle="plot(pch='.', alpha=0.07)");
+if (exists("edata")) {
+   jammaplot(edata[,2:3], ylim=c(-1.5,1.5), titleCexFactor=0.8,
+      smoothScatterFunc=function(col="navy",...){plot(pch=".",col="#00007711",...)},
+      maintitle="plot(pch='.', alpha=0.07)");
+}
 ```
 
 The transparency helps visualize the massive number of points in the middle,
@@ -80,18 +85,22 @@ next step in R is to use smoothScatter(), shown below using its default
 color ramp:
 
 ```{r Smooth, results="hide", fig.height=4, fig.width=8}
-jammaplot(edata[,2:3], ylim=c(-1.5,1.5), titleCexFactor=0.8,
-   smoothScatterFunc=smoothScatter, colramp="Blues",
-   maintitle="smoothScatter()");
+if (exists("edata")) {
+   jammaplot(edata[,2:3], ylim=c(-1.5,1.5), titleCexFactor=0.8,
+      smoothScatterFunc=smoothScatter, colramp="Blues",
+      maintitle="smoothScatter()");
+}
 ```
 
 Again, the visualization is improved, but the default "Blues" color ramp
 (credit Brewer colors from RColorBrewer) could perhaps be improved.
 
 ```{r Smoove, results="hide", fig.height=4, fig.width=8}
-jammaplot(edata[,2:3], ylim=c(-1.5,1.5), titleCexFactor=0.8,
-   smoothScatterFunc=smoothScatter,
-   maintitle="smoothScatter()");
+if (exists("edata")) {
+   jammaplot(edata[,2:3], ylim=c(-1.5,1.5), titleCexFactor=0.8,
+      smoothScatterFunc=smoothScatter,
+      maintitle="smoothScatter()");
+}
 ```
 
 Now the figure depicts the full range of data, while also conveying the
@@ -116,8 +125,10 @@ enhancements. It uses a density function based upon plot space, but also adds
 detail, so smaller features are less blurry.
 
 ```{r plotSmoove, results="hide", fig.height=4, fig.width=8}
-jammaplot(edata[,2:3], ylim=c(-1.5,1.5), titleCexFactor=0.8,
-   maintitle="plotSmoothScatter()");
+if (exists("edata")) {
+   jammaplot(edata[,2:3], ylim=c(-1.5,1.5), titleCexFactor=0.8,
+      maintitle="plotSmoothScatter()");
+}
 ```
 
 It looks like a small effect here, but the density around single points is
@@ -129,13 +140,15 @@ fills the complete plot panel with the correct background color, which is not
 done by smoothScatter().
 
 ```{r SmoothViridis, results="hide", fig.height=8, fig.width=8}
-par("mfrow"=c(2,2));
-jammaplot(edata[,2:3], ylim=c(-2,2), titleCexFactor=0.8,
-   colramp="viridis", doPar=FALSE,
-   smoothScatterFunc=smoothScatter,
-   maintitle="smoothScatter(colramp='viridis')");
-jammaplot(edata[,2:3], ylim=c(-2,2), titleCexFactor=0.8,
-   colramp="viridis", doPar=FALSE,
-   maintitle="plotSmoothScatter(colramp='viridis')");
+if (exists("edata")) {
+   par("mfrow"=c(2,2));
+   jammaplot(edata[,2:3], ylim=c(-2,2), titleCexFactor=0.8,
+      colramp="viridis", doPar=FALSE,
+      smoothScatterFunc=smoothScatter,
+      maintitle="smoothScatter(colramp='viridis')");
+   jammaplot(edata[,2:3], ylim=c(-2,2), titleCexFactor=0.8,
+      colramp="viridis", doPar=FALSE,
+      maintitle="plotSmoothScatter(colramp='viridis')");
+}
 ```
 

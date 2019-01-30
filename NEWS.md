@@ -1,3 +1,22 @@
+# jamma version 0.0.6.900
+
+## new functions
+
+* `drawLabels()` which draws a colored box with label inside, positioned
+by default at the center of the x and y coordinates provided. This function
+will be tested then moved to the "jamba" package.
+
+## changes to existing functions
+
+* `jammaplot()` by default will use `drawLabels()` to print a label in
+each panel, instead of the previous method which used `legend()` and was
+not properly centered. In future, labels may detect whether to enforce
+word-wrap in order to keep labels from overlapping adjacent panels.
+
+## other changes
+
+* pkgdown was added to the site documentation.
+
 # jamma version 0.0.5.900
 
 ## changes to existing functions
