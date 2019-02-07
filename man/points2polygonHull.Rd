@@ -37,7 +37,7 @@ xy <- cbind(x=1:10,
 xyhull <- points2polygonHull(xy);
 plot(xy, pch=20, cex=3, col="purple4",
    main="Polygon hull around points");
-polygon(xyhull, border="purple2", fill="transparent");
+polygon(xyhull, border="purple2", col="transparent");
 
 }
 \seealso{

@@ -128,10 +128,11 @@
     <pre class="usage"><span class='fu'>jammaplot</span>(<span class='no'>object</span>, <span class='kw'>colramp</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"white"</span>, <span class='st'>"lightblue"</span>, <span class='st'>"blue"</span>, <span class='st'>"navy"</span>,
   <span class='st'>"orange"</span>, <span class='st'>"orangered2"</span>), <span class='kw'>colrampOutlier</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>outlierColor</span> <span class='kw'>=</span> <span class='st'>"palegoldenrod"</span>, <span class='kw'>whichSamples</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>maintitle</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>subtitle</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>maintitleSep</span> <span class='kw'>=</span> <span class='st'>"\n"</span>,
-  <span class='kw'>titleCexFactor</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>titleCex</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>doTitleBox</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>titleBoxColor</span> <span class='kw'>=</span> <span class='st'>"#DDBB9977"</span>, <span class='kw'>titleColor</span> <span class='kw'>=</span> <span class='st'>"black"</span>, <span class='kw'>titleFont</span> <span class='kw'>=</span> <span class='fl'>2</span>,
-  <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"A"</span>, <span class='kw'>xlabline</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"M"</span>, <span class='kw'>ylabline</span> <span class='kw'>=</span> <span class='fl'>1.5</span>,
+  <span class='kw'>maintitle</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>subtitle</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>subtitlePreset</span> <span class='kw'>=</span> <span class='st'>"bottom"</span>,
+  <span class='kw'>maintitleSep</span> <span class='kw'>=</span> <span class='st'>"\n"</span>, <span class='kw'>titleCexFactor</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>titleCex</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>doTitleBox</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>titleBoxColor</span> <span class='kw'>=</span> <span class='st'>"#DDBB9977"</span>,
+  <span class='kw'>titleColor</span> <span class='kw'>=</span> <span class='st'>"black"</span>, <span class='kw'>titleFont</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>titlePreset</span> <span class='kw'>=</span> <span class='st'>"top"</span>,
+  <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>""</span>, <span class='kw'>xlabline</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>""</span>, <span class='kw'>ylabline</span> <span class='kw'>=</span> <span class='fl'>1.5</span>,
   <span class='kw'>groupSuffix</span> <span class='kw'>=</span> <span class='st'>" vs. Median"</span>, <span class='kw'>highlightPoints</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>highlightPch</span> <span class='kw'>=</span> <span class='fl'>21</span>, <span class='kw'>highlightCex</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>highlightColor</span> <span class='kw'>=</span> <span class='st'>"#00AAAA66"</span>,
   <span class='kw'>doHighlightPolygon</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>highlightPolygonAlpha</span> <span class='kw'>=</span> <span class='fl'>0.3</span>,
@@ -199,6 +200,12 @@ title box when doTitleBox=TRUE, or atop each panel when doTitleBox=FALSE.</p></t
 of each plot panel.</p></td>
     </tr>
     <tr>
+      <th>subtitlePreset</th>
+      <td><p>character value describing where to position the
+subtitle, using terms valid in <code><a href='coordPresets.html'>coordPresets()</a></code>. The default "bottom"
+centers the subtitle at the bottom of each panel.</p></td>
+    </tr>
+    <tr>
       <th>maintitleSep</th>
       <td><p>character separator used to combine multiple values
 for the maintitle, used to keep all information either on one line or
@@ -224,6 +231,12 @@ one or no value is supplied, it defines colors using
       <th>titleFont</th>
       <td><p>integer font compatible with <code><a href='https://www.rdocumentation.org/packages/graphics/topics/par'>par("font")</a></code>. Values
 are recycled across panels.</p></td>
+    </tr>
+    <tr>
+      <th>titlePreset</th>
+      <td><p>character value describing where to position the
+subtitle, using terms valid in <code><a href='coordPresets.html'>coordPresets()</a></code>. The default is
+"top" which centers the label at the top of each panel.</p></td>
     </tr>
     <tr>
       <th>xlab, ylab</th>
@@ -557,9 +570,15 @@ used. For example indicate 'sampleID vs groupA' instead of
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='co'># NOT RUN {</span>
-<span class='fu'>jammaplot</span>(<span class='no'>x</span>)
-<span class='co'># }</span><div class='input'>
+    <pre class="examples"><div class='input'><span class='co'># Note the example data requires the affydata Bioconductor package</span>
+<span class='kw'>if</span> (<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/message'>suppressPackageStartupMessages</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>require</a></span>(<span class='no'>affydata</span>))) {
+   <span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/data'>data</a></span>(<span class='no'>Dilution</span>);
+   <span class='no'>edata</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/Log'>log2</a></span>(<span class='fl'>1</span>+<span class='fu'>exprs</span>(<span class='no'>Dilution</span>));
+   <span class='fu'>jammaplot</span>(<span class='no'>edata</span>);
+}</div><div class='output co'>#&gt;      Package    LibPath                               Item      
+#&gt; [1,] "affydata" "/Users/wardjm/Library/R/3.5/library" "Dilution"
+#&gt;      Title                        
+#&gt; [1,] "AffyBatch instance Dilution"</div><div class='img'><img src='jammaplot-1.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

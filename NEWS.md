@@ -10,9 +10,9 @@ need to install the rgeos package.
 `boxCexAdjust` on the label box size, making the x- and y-adjustment
 more consistent when using long labels; it also uses `jamba::getPlotAspect()`
 to correct for aspect ratio. Note it is probably far less useful to supply
-x and y values for `boxCexAdjust`. Todo: make adjustments based upon the
-single-line height and not the total height, mostly affecting multi-line
-labels.
+x and y values for `boxCexAdjust`.
+* made adjustments based upon the single-line height and not the total
+string height, affecting multi-line labels.
 
 # jamma version 0.0.6.900
 

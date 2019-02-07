@@ -143,6 +143,9 @@ NULL
 #'    split on multiple lines.
 #' @param subtitle NULL or character text to be drawn at the bottom center
 #'    of each plot panel.
+#' @param subtitlePreset character value describing where to position the
+#'    subtitle, using terms valid in `coordPresets()`. The default "bottom"
+#'    centers the subtitle at the bottom of each panel.
 #' @param titleBoxColor vector of colors applied to title text. When doTitleBox=TRUE
 #'    one or no value is supplied, it defines colors using
 #'    \code{\link{jamba::setTextContrastColor}} to use a contrasting color.
@@ -152,6 +155,9 @@ NULL
 #' @param doTitleBox logical whether to draw plot titles using a colored box.
 #' @param titleFont integer font compatible with \code{par("font")}. Values
 #'    are recycled across panels.
+#' @param titlePreset character value describing where to position the
+#'    subtitle, using terms valid in `coordPresets()`. The default is
+#'    "top" which centers the label at the top of each panel.
 #' @param xlab,ylab character x- and y-axis labels.
 #' @param xlabline,ylabline numeric number of text lines as used by
 #'    \code{title} to position labels relative to the plot area.
@@ -307,8 +313,11 @@ NULL
 #' @family jam plot functions
 #'
 #' @examples
-#' \dontrun{
-#' jammaplot(x)
+#' # Note the example data requires the affydata Bioconductor package
+#' if (suppressPackageStartupMessages(require(affydata))) {
+#'    data(Dilution);
+#'    edata <- log2(1+exprs(Dilution));
+#'    jammaplot(edata);
 #' }
 #'
 #' @export
@@ -320,6 +329,7 @@ jammaplot <- function
  whichSamples=NULL,
  maintitle=NULL,
  subtitle=NULL,
+ subtitlePreset="bottom",
  maintitleSep="\n",
  titleCexFactor=1,
  titleCex=NULL,
@@ -327,8 +337,11 @@ jammaplot <- function
  titleBoxColor="#DDBB9977",
  titleColor="black",
  titleFont=2,
- xlab="A", xlabline=2,
- ylab="M", ylabline=1.5,
+ titlePreset="top",
+ xlab="",
+ xlabline=2,
+ ylab="",
+ ylabline=1.5,
  groupSuffix=" vs. Median",
  highlightPoints=NULL,
  highlightPch=21,
@@ -496,8 +509,8 @@ jammaplot <- function
       }
       par(mfrow=c(nrow, ncol));
    }
-   if (is.null(titleCex)) {
-      if (is.null(maintitle)) {
+   if (length(titleCex) == 0) {
+      if (length(maintitle) == 0) {
          titleCex <- titleCexFactor;
       } else {
          titleCex <- titleCexFactor + 1/(log2(10 + nchar(maintitle)));
@@ -756,15 +769,20 @@ jammaplot <- function
             }
          }
          par("mar"=margins);
-         if (!is.null(maintitle)) {
-            what <- paste(c(maintitle, colnames(object)[i], groupSuffix[i]),
+         if (length(maintitle) > 0) {
+            what <- paste(c(maintitle,
+               colnames(object)[i],
+               groupSuffix[i]),
                collapse=maintitleSep);
-            groupName <- paste(c(colnames(object)[i], groupSuffix[i]),
+            groupName <- paste(c(colnames(object)[i],
+               groupSuffix[i]),
                collapse="");
          } else {
-            what <- paste(c(colnames(object)[i], groupSuffix[i]),
+            what <- paste(c(colnames(object)[i],
+               groupSuffix[i]),
                collapse=maintitleSep);
-            groupName <- paste(c(colnames(object)[i], groupSuffix[i]),
+            groupName <- paste(c(colnames(object)[i],
+               groupSuffix[i]),
                collapse="");
          }
          titleText <- names(mvaDatas)[i];
@@ -898,48 +916,30 @@ jammaplot <- function
                   title=maintitle);
             } else {
                ## Use drawLabels() for more control over the text box
-               drawLabels(preset="top",
-                  txt=paste(titleText, groupSuffix[i]),
+               drawLabels(preset=titlePreset,
+                  txt=paste0(titleText, groupSuffix[i]),
                   boxColor=titleBoxColor[i],
                   boxBorderColor=jamba::makeColorDarker(titleBoxColor[i]),
                   labelCol=titleColor[i],
                   labelCex=titleCex[i],
                   drawBox=doTitleBox,
                   #boxCexAdjust=c(1.1,1.3),
-                  font=titleFont[i]);
+                  font=titleFont[i],
+                  ...);
             }
             ## Subtitle using tricks to center the label
             if (length(subtitle) > 0) {
-               if (1 == 2) {
-                  b1 <- legend("bottom", inset=0.02, plot=FALSE,
-                     cex=titleCex[i],
-                     text.font=titleFont[i],
-                     legend=subtitle,
-                     title=NULL);
-                  rect(xleft=b1$rect$left,
-                     ybottom=b1$rect$top-b1$rect$h,
-                     xright=b1$rect$left+b1$rect$w,
-                     ytop=b1$rect$top,
-                     col=titleBoxColor[i],
-                     border="black");
-                  text(x=b1$rect$left+b1$rect$w/2,
-                     y=b1$rect$top-b1$rect$h/2,
-                     labels=subtitle,
-                     cex=titleCex[i],
-                     font=titleFont[i],
-                     col=titleBoxTextColor);
-               } else {
-                  ## Use drawLabels() for more control over the text box
-                  drawLabels(preset="bottom",
-                     txt=subtitle[i],
-                     boxColor=titleBoxColor[i],
-                     boxBorderColor=jamba::makeColorDarker(titleBoxColor[i]),
-                     labelCol=titleColor[i],
-                     labelCex=titleCex[i],
-                     drawBox=doTitleBox,
-                     #boxCexAdjust=c(1.1,1.3),
-                     font=titleFont[i]);
-               }
+               ## Use drawLabels() for more control over the text box
+               drawLabels(preset=subtitlePreset,
+                  txt=subtitle[i],
+                  boxColor=titleBoxColor[i],
+                  boxBorderColor=jamba::makeColorDarker(titleBoxColor[i]),
+                  labelCol=titleColor[i],
+                  labelCex=titleCex[i],
+                  drawBox=doTitleBox,
+                  #boxCexAdjust=c(1.1,1.3),
+                  font=titleFont[i],
+                  ...);
             }
             par("xpd"=parXpd);
          } else {
@@ -960,24 +960,27 @@ jammaplot <- function
 
          ## Optionally print the MAD factor in the bottom right corner
          if (length(outlierMAD) > 0 && displayMAD == 1) {
-            legend("bottomright", inset=0.02, cex=titleCex[i],
-               text.font=titleFont[i],
-               legend=paste0("MAD:",
-                  format(digits=2, mvaMADfactors[as.character(i)])),
-               bg="transparent", box.lty=0,
-               text.col=ifelse(mvaMADfactors[as.character(i)] > outlierMAD,
-                  "red3", "grey40"),
-               title.col=ifelse(mvaMADfactors[as.character(i)] > outlierMAD,
-                  "red3", "grey40"));
+            drawLabels(preset="bottomright",
+               labelCex=titleCex[i],
+               font=titleFont[i],
+               txt=paste0("MAD x",
+                  format(digits=2,
+                     mvaMADfactors[as.character(i)])),
+               drawBox=FALSE,
+               labelCol=ifelse(mvaMADfactors[as.character(i)] > outlierMAD,
+                  "red3", "grey40")
+               );
          } else if (length(outlierMAD) > 0 && displayMAD == 2) {
-            legend("bottomright", inset=0.02, cex=titleCex[i],
-               text.font=titleFont[i],
-               legend=paste0("MAD:", format(digits=2, mvaMADs[as.character(i)])),
-               bg="transparent", box.lty=0,
-               text.col=ifelse(mvaMADfactors[as.character(i)] > outlierMAD,
-                  "red3", "grey40"),
-               title.col=ifelse(mvaMADfactors[as.character(i)] > outlierMAD,
-                  "red3", "grey40"));
+            drawLabels(preset="bottomright",
+               labelCex=titleCex[i],
+               font=titleFont[i],
+               txt=paste0("MAD:",
+                  format(digits=2,
+                     mvaMADs[as.character(i)])),
+               drawBox=FALSE,
+               labelCol=ifelse(mvaMADfactors[as.character(i)] > outlierMAD,
+                  "red3", "grey40")
+            );
          }
          mvaData;
       }
@@ -1347,7 +1350,7 @@ centerGeneData <- function
 #' xyhull <- points2polygonHull(xy);
 #' plot(xy, pch=20, cex=3, col="purple4",
 #'    main="Polygon hull around points");
-#' polygon(xyhull, border="purple2", fill="transparent");
+#' polygon(xyhull, border="purple2", col="transparent");
 #'
 #' @export
 points2polygonHull <- function
@@ -1514,7 +1517,7 @@ drawLabels <- function
  drawLabels=TRUE,
  font=1,
  labelCex=0.8,
- boxCexAdjust=1.3,
+ boxCexAdjust=1.9,
  labelCol=jamba::alpha2col(alpha=0.8, jamba::setTextContrastColor(boxColor)),
  doPlot=TRUE,
  xpd=NA,
@@ -1575,6 +1578,7 @@ drawLabels <- function
          adjPreset <- presetL$adjPreset;
       }
       newCoords <- data.frame(
+         stringsAsFactors=FALSE,
          x=x,
          y=y,
          txt=txt,
@@ -1642,11 +1646,16 @@ drawLabels <- function
          print(newCoords);
       }
       ## New strategy intended to keep the bottom-left edge fixed
-      #newCoords$h <- newCoords$h * boxCexAdjust[2];
-      #newCoords$w <- newCoords$w * boxCexAdjust[1];
+      ##
+      ## Use single-line height as a basis for adjustments
+      numLines <- lengths(strsplit(as.character(newCoords$txt), "\n"));
+      ## Assuming the buffer between lines is 1/5 the line height
+      ## calculate the per-line height without the buffer
+      perLineH <- 5*newCoords$h / (6*numLines-1);
+
       ## Change 07feb2019 to use height as scaling indicator
-      newCoords$h <- newCoords$h + newCoords$h * (boxCexAdjust[2]-1);
-      newCoords$w <- newCoords$w + newCoords$h/jamba::getPlotAspect() * (boxCexAdjust[1]-1);
+      newCoords$h <- newCoords$h + perLineH * (boxCexAdjust[2]-1);
+      newCoords$w <- newCoords$w + perLineH/jamba::getPlotAspect() * (boxCexAdjust[1]-1) / 1;
       ##
       newCoords$x <- newCoords$x - adjX * newCoords$w;
       newCoords$y <- newCoords$y - adjY * newCoords$h;
@@ -1830,7 +1839,6 @@ drawLabels <- function
          labels=newCoords$txt[whichLabels],
          col=newCoords$labelCol[whichLabels],
          cex=newCoords$labelCex[whichLabels],
-         outer=TRUE,
          adj=c(0.5,0.5),
          xpd=xpd,
          ...);

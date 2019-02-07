@@ -90,11 +90,16 @@
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#jamma" class="anchor"></a>jamma</h1></div>
 <p>The goal of jamma is to create MA-plots with several useful and powerful capabilities that are intended to provide a more thorough understanding of the data.</p>
-<p>The main function provided is jammaplot(). It is distinct from similar MA-plot functions in that it uses smooth scatter by default, and in fact inspired the creation of a custom smooth scatter function provided by the jamba package, plotSmoothScatter().</p>
+<p>The main function provided is <code><a href="reference/jammaplot.html">jammaplot()</a></code>. It is distinct from similar MA-plot functions in that it uses smooth scatter by default, and in fact inspired the creation of a custom smooth scatter function provided by <code><a href="https://www.rdocumentation.org/packages/jamba/topics/plotSmoothScatter">jamba::plotSmoothScatter()</a></code>.</p>
+<div id="package-reference" class="section level2">
+<h2 class="hasAnchor">
+<a href="#package-reference" class="anchor"></a>Package Reference</h2>
+<p>A full online function reference is available via the pkgdown documentation:</p>
+<p><a href="https://jmw86069.github.io/jamma">Full jamma command reference</a></p>
 <div id="example-ma-plot" class="section level3">
 <h3 class="hasAnchor">
 <a href="#example-ma-plot" class="anchor"></a>Example MA-plot</h3>
-<p>A reasonable example MA-plot can be created using data from the affydata package, if installed.</p>
+<p>A reasonable example MA-plot can be created using data from the <code>affydata</code> package, if installed.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(jamma);
 <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(jamba);
 <span class="cf">if</span> (<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/message">suppressPackageStartupMessages</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(affydata))) {
@@ -159,6 +164,7 @@
       <span class="dt">maintitle=</span><span class="st">"plotSmoothScatter(colramp='viridis')"</span>);
 }</code></pre></div>
 <p><img src="reference/figures/README-SmoothViridis-1.png" width="768"></p>
+</div>
 </div>
 </div>
   </div>

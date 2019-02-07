@@ -16,10 +16,11 @@
 jammaplot(object, colramp = c("white", "lightblue", "blue", "navy",
   "orange", "orangered2"), colrampOutlier = NULL,
   outlierColor = "palegoldenrod", whichSamples = NULL,
-  maintitle = NULL, subtitle = NULL, maintitleSep = "\\n",
-  titleCexFactor = 1, titleCex = NULL, doTitleBox = TRUE,
-  titleBoxColor = "#DDBB9977", titleColor = "black", titleFont = 2,
-  xlab = "A", xlabline = 2, ylab = "M", ylabline = 1.5,
+  maintitle = NULL, subtitle = NULL, subtitlePreset = "bottom",
+  maintitleSep = "\\n", titleCexFactor = 1, titleCex = NULL,
+  doTitleBox = TRUE, titleBoxColor = "#DDBB9977",
+  titleColor = "black", titleFont = 2, titlePreset = "top",
+  xlab = "", xlabline = 2, ylab = "", ylabline = 1.5,
   groupSuffix = " vs. Median", highlightPoints = NULL,
   highlightPch = 21, highlightCex = 1, highlightColor = "#00AAAA66",
   doHighlightPolygon = FALSE, highlightPolygonAlpha = 0.3,
@@ -70,6 +71,10 @@ title box when doTitleBox=TRUE, or atop each panel when doTitleBox=FALSE.}
 \item{subtitle}{NULL or character text to be drawn at the bottom center
 of each plot panel.}
 
+\item{subtitlePreset}{character value describing where to position the
+subtitle, using terms valid in \code{coordPresets()}. The default "bottom"
+centers the subtitle at the bottom of each panel.}
+
 \item{maintitleSep}{character separator used to combine multiple values
 for the maintitle, used to keep all information either on one line or
 split on multiple lines.}
@@ -86,6 +91,10 @@ one or no value is supplied, it defines colors using
 
 \item{titleFont}{integer font compatible with \code{par("font")}. Values
 are recycled across panels.}
+
+\item{titlePreset}{character value describing where to position the
+subtitle, using terms valid in \code{coordPresets()}. The default is
+"top" which centers the label at the top of each panel.}
 
 \item{xlab, ylab}{character x- and y-axis labels.}
 
@@ -352,8 +361,11 @@ used. For example indicate 'sampleID vs groupA' instead of
 }
 }
 \examples{
-\dontrun{
-jammaplot(x)
+# Note the example data requires the affydata Bioconductor package
+if (suppressPackageStartupMessages(require(affydata))) {
+   data(Dilution);
+   edata <- log2(1+exprs(Dilution));
+   jammaplot(edata);
 }
 
 }

@@ -1,7 +1,5 @@
 ---
-output:
-  md_document:
-    variant: markdown_github
+output: github_document
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -21,15 +19,21 @@ The goal of jamma is to create MA-plots with several useful and powerful
 capabilities that are intended to provide a more thorough understanding
 of the data.
 
-The main function provided is jammaplot(). It is distinct from similar
+The main function provided is `jammaplot()`. It is distinct from similar
 MA-plot functions in that it uses smooth scatter by default, and in
 fact inspired the creation of a custom smooth scatter function provided
-by the jamba package, plotSmoothScatter().
+by `jamba::plotSmoothScatter()`.
 
+## Package Reference
+
+A full online function reference is available via the pkgdown
+documentation:
+
+[Full jamma command reference](https://jmw86069.github.io/jamma)
 
 ### Example MA-plot
 
-A reasonable example MA-plot can be created using data from the affydata
+A reasonable example MA-plot can be created using data from the `affydata`
 package, if installed.
 
 ```{r Dilution, results="hide", fig.height=8, fig.width=8}
