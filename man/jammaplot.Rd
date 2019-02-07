@@ -114,7 +114,7 @@ can be supplied.}
 highlighted points. If highlightPoints is a list, a polygon is drawn
 around each list element subset of points, using the appropriate
 highlightColors for each list element. The polygon is defined by
-\code{\link{points2polygonHull}}.}
+\code{grDevices::chull()}.}
 
 \item{highlightPolygonAlpha}{numeric value between 0 and 1 indicating the
 alpha transparency to use for the polygon color, based upon
@@ -362,6 +362,8 @@ jammaplot(x)
 \code{graphics::smoothScatter()}, \code{centerGeneData()},
 \code{jamba::imageDefault()}, \code{jamba::nullPlot()}
 
-Other jam plot functions: \code{\link{drawLabels}}
+Other jam plot functions: \code{\link{coordPresets}},
+  \code{\link{drawLabels}},
+  \code{\link{points2polygonHull}}
 }
 \concept{jam plot functions}

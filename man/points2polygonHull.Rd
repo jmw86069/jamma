@@ -4,7 +4,7 @@
 \alias{points2polygonHull}
 \title{define a polygon hull around points}
 \usage{
-points2polygonHull(x, returnClass = c("matrix", "SpatialPolygons"), ...)
+points2polygonHull(x, returnClass = c("matrix"), ...)
 }
 \arguments{
 \item{x}{two-column numeric matrix of data points, or an object of
@@ -16,9 +16,7 @@ SpatialPolygons.}
 \item{verbose}{logical whether to print verbose output'}
 }
 \value{
-A numeric matrix of polygon coordinates, unless the parameter
-\code{returnClass="SpatialPolygons"} is set, in which case it returns
-a \code{sp::SpatialPolygons} object.
+A numeric matrix of polygon coordinates.
 }
 \description{
 Defines a polygon hull to encompass a set of data points
@@ -32,7 +30,18 @@ an object of class SpatialPolygons, this function is mainly a wrapper
 which returns the set of coordinates, either as a matrix or as the
 SpatialPolygons object type.
 }
-\seealso{
-\code{sp::SpatialPolygons}, \code{rgeos::gConvexHull()}
+\examples{
+set.seed(123);
+xy <- cbind(x=1:10,
+   y=sample(1:10, 10));
+xyhull <- points2polygonHull(xy);
+plot(xy, pch=20, cex=3, col="purple4",
+   main="Polygon hull around points");
+polygon(xyhull, border="purple2", fill="transparent");
+
 }
-\concept{jam spatial functions}
+\seealso{
+Other jam plot functions: \code{\link{coordPresets}},
+  \code{\link{drawLabels}}, \code{\link{jammaplot}}
+}
+\concept{jam plot functions}

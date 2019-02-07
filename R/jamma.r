@@ -174,7 +174,7 @@ NULL
 #'    highlighted points. If highlightPoints is a list, a polygon is drawn
 #'    around each list element subset of points, using the appropriate
 #'    highlightColors for each list element. The polygon is defined by
-#'    \code{\link{points2polygonHull}}.
+#'    `grDevices::chull()`.
 #' @param highlightPolygonAlpha numeric value between 0 and 1 indicating the
 #'    alpha transparency to use for the polygon color, based upon
 #'    highlightColor.
@@ -439,7 +439,10 @@ jammaplot <- function
    if (doTxtplot) {
       blankPlotPos <- NULL;
       smoothScatterFunc <- function(...){
-         plotTextSmoothScatter(height=20, width=80, doLegend=FALSE, ...);
+         plotTextSmoothScatter(height=20,
+            width=80,
+            doLegend=FALSE,
+            ...);
       }
    }
    transformation <- function(x){
@@ -832,13 +835,18 @@ jammaplot <- function
 
                ## Optionally draw a polygon hull around highlighted points.
                if (doHighlightPolygon && length(yValues) > 2) {
-                  hiHull <- points2polygonHull(data.frame(x=hiData[,"x"],
-                     y=yValues),
-                     returnClass="matrix");
+                  hiM <- cbind(x=hiData[,"x"],
+                     y=yValues);
+                  hiHull <- hiM[grDevices::chull(hiM),,drop=FALSE];
+                  #hiHull <- points2polygonHull(data.frame(x=hiData[,"x"],
+                  #   y=yValues),
+                  #   returnClass="matrix");
                   if (is.null(highlightPolygonAlpha)) {
-                     highlightPolyAlpha <- jamba::col2alpha(highlightColor[[highI]]) / 2;
+                     highlightPolyAlpha <- jamba::col2alpha(
+                        highlightColor[[highI]]) / 2;
                   }
-                  highlightPolyColor <- jamba::alpha2col(highlightColor[[highI]],
+                  highlightPolyColor <- jamba::alpha2col(
+                     highlightColor[[highI]],
                      alpha=highlightPolyAlpha);
                   polygon(hiHull,
                      add=TRUE,
@@ -897,7 +905,7 @@ jammaplot <- function
                   labelCol=titleColor[i],
                   labelCex=titleCex[i],
                   drawBox=doTitleBox,
-                  boxCexAdjust=c(1.1,1.3),
+                  #boxCexAdjust=c(1.1,1.3),
                   font=titleFont[i]);
             }
             ## Subtitle using tricks to center the label
@@ -929,7 +937,7 @@ jammaplot <- function
                      labelCol=titleColor[i],
                      labelCex=titleCex[i],
                      drawBox=doTitleBox,
-                     boxCexAdjust=c(1.1,1.3),
+                     #boxCexAdjust=c(1.1,1.3),
                      font=titleFont[i]);
                }
             }
@@ -1328,18 +1336,23 @@ centerGeneData <- function
 #' @param verbose logical whether to print verbose output'
 #'
 #' @return
-#' A numeric matrix of polygon coordinates, unless the parameter
-#' `returnClass="SpatialPolygons"` is set, in which case it returns
-#' a `sp::SpatialPolygons` object.
+#' A numeric matrix of polygon coordinates.
 #'
-#' @seealso `sp::SpatialPolygons`, `rgeos::gConvexHull()`
+#' @family jam plot functions
 #'
-#' @family jam spatial functions
+#' @examples
+#' set.seed(123);
+#' xy <- cbind(x=1:10,
+#'    y=sample(1:10, 10));
+#' xyhull <- points2polygonHull(xy);
+#' plot(xy, pch=20, cex=3, col="purple4",
+#'    main="Polygon hull around points");
+#' polygon(xyhull, border="purple2", fill="transparent");
 #'
 #' @export
 points2polygonHull <- function
 (x,
- returnClass=c("matrix","SpatialPolygons"),
+ returnClass=c("matrix"),
  ...)
 {
    ## Purpose is to take coordinates of a set of points, and return
@@ -1371,7 +1384,7 @@ points2polygonHull <- function
    }
 
    ## Determine convex hull coordinates
-   gH <- gConvexHull(x);
+   gH <- rgeos::gConvexHull(x);
    if (returnClass %in% "matrix") {
       if (jamba::igrepHas("polygons", class(gH))) {
          gHcoords <- gH@polygons[[1]]@Polygons[[1]]@coords;
@@ -1501,30 +1514,12 @@ drawLabels <- function
  drawLabels=TRUE,
  font=1,
  labelCex=0.8,
- boxCexAdjust=c(1,1.2),
+ boxCexAdjust=1.3,
  labelCol=jamba::alpha2col(alpha=0.8, jamba::setTextContrastColor(boxColor)),
  doPlot=TRUE,
  xpd=NA,
- preset=c("default",
-   "top",
-   "topright",
-   "right",
-   "bottomright",
-   "topleft",
-   "left",
-   "bottomleft",
-   "bottom",
-   "center"),
- adjPreset=c("default",
-   "top",
-   "topright",
-   "right",
-   "bottomright",
-   "topleft",
-   "left",
-   "bottomleft",
-   "bottom",
-   "center"),
+ preset="default",
+ adjPreset="default",
  adjX=0.5,
  adjY=0.5,
  trimReturns=TRUE,
@@ -1538,9 +1533,24 @@ drawLabels <- function
       boxCexAdjust <- 1;
    }
    boxCexAdjust <- rep(boxCexAdjust, length.out=2);
-   preset <- match.arg(preset);
-   adjPreset <- match.arg(adjPreset);
-
+   presetValid <- c("default",
+      "top",
+      "topright",
+      "right",
+      "bottomright",
+      "topleft",
+      "left",
+      "bottomleft",
+      "bottom",
+      "center");
+   if (!all(preset %in% presetValid)) {
+      stop(paste0("preset must be one of ",
+         jamba::cPaste(presetValid)));
+   }
+   if (!all(adjPreset %in% presetValid)) {
+      stop(paste0("adjPreset must be one of ",
+         jamba::cPaste(presetValid)));
+   }
 
    if (length(newCoords) == 0) {
       ## Create a basic data.frame
@@ -1555,7 +1565,8 @@ drawLabels <- function
             y=y,
             adjPreset=adjPreset,
             adjX=adjX,
-            adjY=adjY);
+            adjY=adjY,
+            verbose=verbose);
          x <- presetL$x;
          y <- presetL$y;
          adjX <- presetL$adjX;
@@ -1631,8 +1642,12 @@ drawLabels <- function
          print(newCoords);
       }
       ## New strategy intended to keep the bottom-left edge fixed
-      newCoords$h <- newCoords$h * boxCexAdjust[2];
-      newCoords$w <- newCoords$w * boxCexAdjust[1];
+      #newCoords$h <- newCoords$h * boxCexAdjust[2];
+      #newCoords$w <- newCoords$w * boxCexAdjust[1];
+      ## Change 07feb2019 to use height as scaling indicator
+      newCoords$h <- newCoords$h + newCoords$h * (boxCexAdjust[2]-1);
+      newCoords$w <- newCoords$w + newCoords$h/jamba::getPlotAspect() * (boxCexAdjust[1]-1);
+      ##
       newCoords$x <- newCoords$x - adjX * newCoords$w;
       newCoords$y <- newCoords$y - adjY * newCoords$h;
    } else {
@@ -1858,6 +1873,8 @@ drawLabels <- function
 #' after adjustment, where the number of rows is determined by the
 #' longest input argument.
 #'
+#' @family jam plot functions
+#'
 #' @param preset character vector of coordinate positions, or "default"
 #'    to use the `x,y` coordinates.
 #' @param x,y numeric vectors indicating the default coordinates `x,y`.
@@ -1928,28 +1945,62 @@ coordPresets <- function
       preset,
       adjPreset
    )));
+   parUsr <- par("usr");
+   if (length(x) == 0) {
+      x <- mean(parUsr[1:2]);
+   }
+   if (length(y) == 0) {
+      y <- mean(parUsr[3:4]);
+   }
    x <- rep(x, length.out=n);
    y <- rep(y, length.out=n);
+
+   ## Verify preset is valid
+   presetValid <- c("default",
+      "top",
+      "topright",
+      "right",
+      "bottomright",
+      "topleft",
+      "left",
+      "bottomleft",
+      "bottom",
+      "center");
+   if (length(preset) == 0) {
+      preset <- "default";
+   }
+   if (length(adjPreset) == 0) {
+      adjPreset <- "default";
+   }
+   if (!all(preset %in% presetValid)) {
+      stop(paste0("preset must be one of ",
+         jamba::cPaste(presetValid)));
+   }
+   if (!all(adjPreset %in% presetValid)) {
+      stop(paste0("adjPreset must be one of ",
+         jamba::cPaste(presetValid)));
+   }
    preset <- rep(preset, length.out=n);
    adjPreset <- rep(adjPreset, length.out=n);
+
+   if (length(adjX) == 0) {
+      adjX <- 0.5;
+   }
+   if (length(adjY) == 0) {
+      adjY <- 0.5;
+   }
    adjX <- rep(adjX, length.out=n);
    adjY <- rep(adjY, length.out=n);
    if (verbose) {
       jamba::printDebug("coordPresets(): ",
          "n:",
          n);
-      jamba::printDebug("coordPresets(): ",
-         "preset:",
-         preset);
-      jamba::printDebug("coordPresets(): ",
-         "adjPreset:",
-         adjPreset);
    }
 
    ## Process the preset logic
-   x <- ifelse(grepl("right", preset), par("usr")[2],
-      ifelse(grepl("left", preset), par("usr")[1],
-         ifelse(grepl("center|top|bottom", preset), mean(par("usr")[1:2]),
+   x <- ifelse(grepl("right", preset), parUsr[2],
+      ifelse(grepl("left", preset), parUsr[1],
+         ifelse(grepl("center|top|bottom", preset), mean(parUsr[1:2]),
             x)));
    if (verbose) {
       jamba::printDebug("coordPresets(): ",
@@ -1965,9 +2016,9 @@ coordPresets <- function
          ifelse(grepl("left", adjPreset), 1+adjOffsetX,
             ifelse(grepl("center|top|bottom", adjPreset), 0.5,
                adjX))));
-   y <- ifelse(grepl("top", preset), par("usr")[4],
-      ifelse(grepl("bottom", preset), par("usr")[3],
-         ifelse(grepl("center|left|right", preset), mean(par("usr")[3:4]),
+   y <- ifelse(grepl("top", preset), parUsr[4],
+      ifelse(grepl("bottom", preset), parUsr[3],
+         ifelse(grepl("center|left|right", preset), mean(parUsr[3:4]),
             y)));
    adjY <- ifelse(grepl("default", adjPreset),
       ifelse(grepl("top", preset), 1+adjOffsetY,

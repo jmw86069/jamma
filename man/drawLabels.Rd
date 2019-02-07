@@ -8,13 +8,10 @@ drawLabels(newCoords = NULL, x = NULL, y = NULL, txt = NULL,
   lx = NULL, ly = NULL, segmentLwd = 1, segmentCol = "#00000088",
   drawSegments = TRUE, boxBorderColor = "#000000AA",
   boxColor = "#DDAA77", boxLwd = 1, drawBox = TRUE,
-  drawLabels = TRUE, font = 1, labelCex = 0.8, boxCexAdjust = c(1,
-  1.2), labelCol = jamba::alpha2col(alpha = 0.8,
+  drawLabels = TRUE, font = 1, labelCex = 0.8, boxCexAdjust = 1.3,
+  labelCol = jamba::alpha2col(alpha = 0.8,
   jamba::setTextContrastColor(boxColor)), doPlot = TRUE, xpd = NA,
-  preset = c("default", "top", "topright", "right", "bottomright",
-  "topleft", "left", "bottomleft", "bottom", "center"),
-  adjPreset = c("default", "top", "topright", "right", "bottomright",
-  "topleft", "left", "bottomleft", "bottom", "center"), adjX = 0.5,
+  preset = "default", adjPreset = "default", adjX = 0.5,
   adjY = 0.5, trimReturns = TRUE, verbose = FALSE, ...)
 }
 \arguments{
@@ -137,6 +134,7 @@ points(x=c(par("usr")[1], par("usr")[2],
 
 }
 \seealso{
-Other jam plot functions: \code{\link{jammaplot}}
+Other jam plot functions: \code{\link{coordPresets}},
+  \code{\link{jammaplot}}, \code{\link{points2polygonHull}}
 }
 \concept{jam plot functions}

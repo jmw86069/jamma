@@ -1,3 +1,19 @@
+# jamma version 0.0.7.900
+
+## changes
+
+* Based upon feedback regarding difficulty installing the "rgeos" package,
+changed `jammaplot()` to use `grDevices::chull()` when
+`doHighlightPolygon=TRUE`. The output should be identical, without the
+need to install the rgeos package.
+* changed `drawLabels()` now uses label height to define the effects of
+`boxCexAdjust` on the label box size, making the x- and y-adjustment
+more consistent when using long labels; it also uses `jamba::getPlotAspect()`
+to correct for aspect ratio. Note it is probably far less useful to supply
+x and y values for `boxCexAdjust`. Todo: make adjustments based upon the
+single-line height and not the total height, mostly affecting multi-line
+labels.
+
 # jamma version 0.0.6.900
 
 ## new functions

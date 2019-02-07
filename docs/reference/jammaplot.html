@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.6.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.7.900</span>
       </span>
     </div>
 
@@ -143,11 +143,11 @@
   <span class='kw'>filterNA</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>filterNAreplacement</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>filterNeg</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>filterFloor</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>filterFloorReplacement</span> <span class='kw'>=</span> <span class='no'>filterFloor</span>,
   <span class='kw'>transFactor</span> <span class='kw'>=</span> <span class='fl'>0.18</span>, <span class='kw'>nrpoints</span> <span class='kw'>=</span> <span class='fl'>50</span>,
-  <span class='kw'>smoothScatterFunc</span> <span class='kw'>=</span> <span class='no'>plotSmoothScatter</span>, <span class='kw'>applyRangeCeiling</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>doTxtplot</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>ablineV</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>ablineH</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(-<span class='fl'>2</span>, <span class='fl'>0</span>, <span class='fl'>2</span>),
-  <span class='kw'>blankPlotPos</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>outlierMAD</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>outlierRowMin</span> <span class='kw'>=</span> <span class='fl'>5</span>,
-  <span class='kw'>groupedMAD</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>displayMAD</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>fillBackground</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>doPlot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)</pre>
+  <span class='kw'>smoothScatterFunc</span> <span class='kw'>=</span> <span class='kw pkg'>jamba</span><span class='kw ns'>::</span><span class='no'><a href='https://www.rdocumentation.org/packages/jamba/topics/plotSmoothScatter'>plotSmoothScatter</a></span>,
+  <span class='kw'>applyRangeCeiling</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>doTxtplot</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>ablineV</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+  <span class='kw'>ablineH</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(-<span class='fl'>2</span>, <span class='fl'>0</span>, <span class='fl'>2</span>), <span class='kw'>blankPlotPos</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>outlierMAD</span> <span class='kw'>=</span> <span class='fl'>5</span>,
+  <span class='kw'>outlierRowMin</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>groupedMAD</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>displayMAD</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>fillBackground</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>doPlot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -212,13 +212,13 @@ split on multiple lines.</p></td>
       <th>titleBoxColor</th>
       <td><p>vector of colors applied to title text. When doTitleBox=TRUE
 one or no value is supplied, it defines colors using
-<code>setTextContrastColor</code> to use a contrasting color.</p></td>
+<code><a href='https://www.rdocumentation.org/packages/jamba/topics/setTextContrastColor'>jamba::setTextContrastColor</a></code> to use a contrasting color.</p></td>
     </tr>
     <tr>
       <th>titleColor</th>
       <td><p>vector of colors applied to title text. When doTitleBox=TRUE
 one or no value is supplied, it defines colors using
-<code>setTextContrastColor</code> to use a contrasting color.</p></td>
+<code><a href='https://www.rdocumentation.org/packages/jamba/topics/setTextContrastColor'>jamba::setTextContrastColor</a></code> to use a contrasting color.</p></td>
     </tr>
     <tr>
       <th>titleFont</th>
@@ -264,7 +264,7 @@ can be supplied.</p></td>
 highlighted points. If highlightPoints is a list, a polygon is drawn
 around each list element subset of points, using the appropriate
 highlightColors for each list element. The polygon is defined by
-<code><a href='points2polygonHull.html'>points2polygonHull</a></code>.</p></td>
+<code><a href='https://www.rdocumentation.org/packages/grDevices/topics/chull'>grDevices::chull()</a></code>.</p></td>
     </tr>
     <tr>
       <th>highlightPolygonAlpha</th>
@@ -275,7 +275,7 @@ highlightColor.</p></td>
     <tr>
       <th>smoothPtCol</th>
       <td><p>color used when nrpoints&gt;0, and
-<code>plotSmoothScatter</code> draws this many points in the extremities.</p></td>
+<code><a href='https://www.rdocumentation.org/packages/jamba/topics/plotSmoothScatter'>jamba::plotSmoothScatter</a></code> draws this many points in the extremities.</p></td>
     </tr>
     <tr>
       <th>margins</th>
@@ -285,7 +285,7 @@ are applied, but provided here for convenient override.</p></td>
     <tr>
       <th>useRaster</th>
       <td><p>logical whether to define <code>useRaster=TRUE</code> in
-<code>plotSmoothScatter</code>, which ultimately calls
+<code><a href='https://www.rdocumentation.org/packages/jamba/topics/plotSmoothScatter'>jamba::plotSmoothScatter</a></code>, which ultimately calls
 <code>imageDefault</code>. When TRUE, it creates a much smaller
 plot object, because it returns a raster image instead of a set of
 rectangles when rendering the image.</p></td>
@@ -369,7 +369,7 @@ zero. For some platform data , it might be useful to define a
     <tr>
       <th>transFactor</th>
       <td><p>numeric adjustment used by
-<code>plotSmoothScatter</code>. The default is defined, but available
+<code><a href='https://www.rdocumentation.org/packages/jamba/topics/plotSmoothScatter'>jamba::plotSmoothScatter</a></code>. The default is defined, but available
 here as a convenient override. The value is used in a power function in
 the form <code>transformation=function(x)x^transFactor</code>. Lower values
 make the scatterplot point density more intense.</p></td>
@@ -377,16 +377,16 @@ make the scatterplot point density more intense.</p></td>
     <tr>
       <th>nrpoints</th>
       <td><p>integer or NULL, the number of points to display on the
-extremity, as used by <code>plotSmoothScatter</code>.</p></td>
+extremity, as used by <code><a href='https://www.rdocumentation.org/packages/jamba/topics/plotSmoothScatter'>jamba::plotSmoothScatter</a></code>.</p></td>
     </tr>
     <tr>
       <th>smoothScatterFunc</th>
       <td><p>function used to plot smooth scatter plot, by
-default <code>plotSmoothScatter</code>.</p></td>
+default <code><a href='https://www.rdocumentation.org/packages/jamba/topics/plotSmoothScatter'>jamba::plotSmoothScatter</a></code>.</p></td>
     </tr>
     <tr>
       <th>applyRangeCeiling</th>
-      <td><p>see <code>plotSmoothScatter</code> for details,
+      <td><p>see <code><a href='https://www.rdocumentation.org/packages/jamba/topics/plotSmoothScatter'>jamba::plotSmoothScatter</a></code> for details,
 logical whether to apply a noise floor and ceiling to display points
 outside the plot region at the boundaries of the plot. This parameter
 is useful to set FALSE when cropping a plot, in order to remove outlier
@@ -452,7 +452,7 @@ similar MAD factors, near 1.</p></td>
     </tr>
     <tr>
       <th>fillBackground</th>
-      <td><p>logical sent to <code>plotSmoothScatter</code>
+      <td><p>logical sent to <code><a href='https://www.rdocumentation.org/packages/jamba/topics/plotSmoothScatter'>jamba::plotSmoothScatter</a></code>
 indicating whether to fill the plot panel with the background color,
 which is typically the first value in the <code>colramp</code>. Set to TRUE
 when axis ranges may be defined which are outside the range of values
@@ -465,7 +465,7 @@ for any particular column in <code>object</code>.</p></td>
     <tr>
       <th>...</th>
       <td><p>additional parameters sent to downstream functions,
-<code>plotSmoothScatter</code>, <code><a href='centerGeneData.html'>centerGeneData</a></code>.</p></td>
+<code><a href='https://www.rdocumentation.org/packages/jamba/topics/plotSmoothScatter'>jamba::plotSmoothScatter</a></code>, <code><a href='centerGeneData.html'>centerGeneData</a></code>.</p></td>
     </tr>
     <tr>
       <th>centerGoups</th>
@@ -551,7 +551,9 @@ used. For example indicate 'sampleID vs groupA' instead of
     <div class='dont-index'><p><code><a href='https://www.rdocumentation.org/packages/jamba/topics/plotSmoothScatter'>jamba::plotSmoothScatter()</a></code> for enhanced
 <code><a href='https://www.rdocumentation.org/packages/graphics/topics/smoothScatter'>graphics::smoothScatter()</a></code>, <code><a href='centerGeneData.html'>centerGeneData()</a></code>,
 <code><a href='https://www.rdocumentation.org/packages/jamba/topics/imageDefault'>jamba::imageDefault()</a></code>, <code><a href='https://www.rdocumentation.org/packages/jamba/topics/nullPlot'>jamba::nullPlot()</a></code></p>
-<p>Other jam plot functions: <code><a href='drawLabels.html'>drawLabels</a></code></p></div>
+<p>Other jam plot functions: <code><a href='coordPresets.html'>coordPresets</a></code>,
+  <code><a href='drawLabels.html'>drawLabels</a></code>,
+  <code><a href='points2polygonHull.html'>points2polygonHull</a></code></p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>

@@ -93,3 +93,8 @@ points(cp2$x, cp2$y, pch=20, cex=2, col="red");
 drawLabels(x=cp2$x, y=cp2$y, adjX=cp2$adjX, adjY=cp2$adjY, txt=presetV2, boxCexAdjust=c(1.15,1.6), labelCex=1.3, lx=rep(1.5, 4), ly=rep(1.5, 4))
 
 }
+\seealso{
+Other jam plot functions: \code{\link{drawLabels}},
+  \code{\link{jammaplot}}, \code{\link{points2polygonHull}}
+}
+\concept{jam plot functions}
