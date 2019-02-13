@@ -41,7 +41,6 @@ polygon(xyhull, border="purple2", col="transparent");
 
 }
 \seealso{
-Other jam plot functions: \code{\link{coordPresets}},
-  \code{\link{drawLabels}}, \code{\link{jammaplot}}
+Other jam plot functions: \code{\link{jammaplot}}
 }
 \concept{jam plot functions}

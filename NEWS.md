@@ -1,3 +1,11 @@
+# jamma version 0.0.8.900
+
+## changes
+
+* `drawLabels()` and `coordPresets()` were moved to the `jamba` package,
+consistent with the need for wider re-use among Jam packages.
+* Added dependency on the version of jamba that includes `drawLabels()`.
+
 # jamma version 0.0.7.900
 
 ## changes

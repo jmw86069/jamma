@@ -72,7 +72,7 @@ title box when doTitleBox=TRUE, or atop each panel when doTitleBox=FALSE.}
 of each plot panel.}
 
 \item{subtitlePreset}{character value describing where to position the
-subtitle, using terms valid in \code{coordPresets()}. The default "bottom"
+subtitle, using terms valid in \code{jamba::coordPresets()}. The default "bottom"
 centers the subtitle at the bottom of each panel.}
 
 \item{maintitleSep}{character separator used to combine multiple values
@@ -93,7 +93,7 @@ one or no value is supplied, it defines colors using
 are recycled across panels.}
 
 \item{titlePreset}{character value describing where to position the
-subtitle, using terms valid in \code{coordPresets()}. The default is
+subtitle, using terms valid in \code{jamba::coordPresets()}. The default is
 "top" which centers the label at the top of each panel.}
 
 \item{xlab, ylab}{character x- and y-axis labels.}
@@ -374,8 +374,6 @@ if (suppressPackageStartupMessages(require(affydata))) {
 \code{graphics::smoothScatter()}, \code{centerGeneData()},
 \code{jamba::imageDefault()}, \code{jamba::nullPlot()}
 
-Other jam plot functions: \code{\link{coordPresets}},
-  \code{\link{drawLabels}},
-  \code{\link{points2polygonHull}}
+Other jam plot functions: \code{\link{points2polygonHull}}
 }
 \concept{jam plot functions}
