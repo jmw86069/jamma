@@ -13,21 +13,20 @@
 \alias{mva.plot}
 \title{Produce MA-plot of omics data.}
 \usage{
-jammaplot(object, colramp = c("white", "lightblue", "blue", "navy",
-  "orange", "orangered2"), colrampOutlier = NULL,
-  outlierColor = "palegoldenrod", whichSamples = NULL,
-  maintitle = NULL, subtitle = NULL, subtitlePreset = "bottom",
-  maintitleSep = "\\n", titleCexFactor = 1, titleCex = NULL,
-  doTitleBox = TRUE, titleBoxColor = "#DDBB9977",
-  titleColor = "black", titleFont = 2, titlePreset = "top",
-  xlab = "", xlabline = 2, ylab = "", ylabline = 1.5,
-  groupSuffix = " vs. Median", highlightPoints = NULL,
-  highlightPch = 21, highlightCex = 1, highlightColor = "#00AAAA66",
-  doHighlightPolygon = FALSE, highlightPolygonAlpha = 0.3,
-  smoothPtCol = "#00000055", margins = c(3.5, 3, 0.7, 0.5),
-  useRaster = TRUE, ncol = NULL, nrow = NULL, doPar = TRUE,
-  las = 2, ylim = c(-4, 4), xlim = NULL,
-  controlSamples = colnames(object), centerGroups = NULL,
+jammaplot(x, colramp = c("white", "lightblue", "blue", "navy", "orange",
+  "orangered2"), colrampOutlier = NULL, outlierColor = "palegoldenrod",
+  whichSamples = NULL, maintitle = NULL, maintitleCex = 1.8,
+  subtitle = NULL, subtitlePreset = "bottomleft", titleCexFactor = 1,
+  titleCex = NULL, doTitleBox = TRUE, titleBoxColor = "#DDBB9977",
+  subtitleBoxColor = titleBoxColor, titleColor = "black",
+  titleFont = 2, titlePreset = "top", xlab = "", xlabline = 2,
+  ylab = "", ylabline = 1.5, groupSuffix = NULL,
+  highlightPoints = NULL, highlightPch = 21, highlightCex = 1,
+  highlightColor = "#00AAAA66", doHighlightPolygon = FALSE,
+  highlightPolygonAlpha = 0.3, smoothPtCol = "#00000055",
+  margins = c(3.5, 3, 0.7, 0.5), useRaster = TRUE, ncol = NULL,
+  nrow = NULL, doPar = TRUE, las = 2, ylim = c(-4, 4),
+  xlim = NULL, controlSamples = colnames(x), centerGroups = NULL,
   groupedX = TRUE, useMean = FALSE, customFunc = NULL,
   filterNA = TRUE, filterNAreplacement = NA, filterNeg = TRUE,
   filterFloor = 0, filterFloorReplacement = filterFloor,
@@ -39,9 +38,6 @@ jammaplot(object, colramp = c("white", "lightblue", "blue", "navy",
   fillBackground = TRUE, doPlot = TRUE, verbose = FALSE, ...)
 }
 \arguments{
-\item{object}{numeric matrix typically containing log-normal measurements,
-with measurement rows, and sample columns.}
-
 \item{colramp}{one of several inputs recognized by
 \code{\link{getColorRamp}}. It typically recognizes either the name of
 a color ramp from RColorBrewer, the name of functions from the
@@ -65,25 +61,26 @@ the MA-plot data, but only these samples will be plotted, which is useful
 when wanting to view only a subset of samples in detail, but where the
 MA-plot data is identical to the full dataset.}
 
-\item{maintitle}{the main title for each panel, either printed inside each
-title box when doTitleBox=TRUE, or atop each panel when doTitleBox=FALSE.}
+\item{maintitle}{the main title for the overall plot, printed at the
+top of each page in the top outer margin.}
+
+\item{maintitleCex}{numeric cex character expansion used to resize the
+\code{maintitle} when supplied.}
 
 \item{subtitle}{NULL or character text to be drawn at the bottom center
 of each plot panel.}
 
 \item{subtitlePreset}{character value describing where to position the
-subtitle, using terms valid in \code{jamba::coordPresets()}. The default "bottom"
-centers the subtitle at the bottom of each panel.}
-
-\item{maintitleSep}{character separator used to combine multiple values
-for the maintitle, used to keep all information either on one line or
-split on multiple lines.}
+subtitle, using terms valid in \code{jamba::coordPresets()}. The default
+"bottomleft" places the subtitle at the bottom-left corner of each
+panel.}
 
 \item{doTitleBox}{logical whether to draw plot titles using a colored box.}
 
-\item{titleBoxColor}{vector of colors applied to title text. When doTitleBox=TRUE
+\item{titleBoxColor, subtitleBoxColor}{vector of colors applied to title
+text, or subtitle text, respectively. When \code{doTitleBox=TRUE}
 one or no value is supplied, it defines colors using
-\code{\link{jamba::setTextContrastColor}} to use a contrasting color.}
+\code{jamba::setTextContrastColor} to use a contrasting color.}
 
 \item{titleColor}{vector of colors applied to title text. When doTitleBox=TRUE
 one or no value is supplied, it defines colors using
@@ -103,9 +100,9 @@ subtitle, using terms valid in \code{jamba::coordPresets()}. The default is
 
 \item{groupSuffix}{character text appended to each plot panel title,
 useful for indicating how a sample was processed, beyond just using
-colnames. For example, \code{groupSuffix=" vs. group median"} could
-indicate that a sample is centered relative to its group median, rather
-than the global median.}
+colnames. By default, \code{groupSuffix} is blank, except when
+supplying \code{centerGroups}, in which case the \code{centerGroups} value is
+used as a suffix.}
 
 \item{highlightPoints}{NULL, character vector, or list of character vectors,
 containing points to highlight based upon \code{rownames(object)}. If
@@ -272,6 +269,9 @@ for any particular column in \code{object}.}
 \item{...}{additional parameters sent to downstream functions,
 \code{\link{jamba::plotSmoothScatter}}, \code{\link{centerGeneData}}.}
 
+\item{object}{numeric matrix typically containing log-normal measurements,
+with measurement rows, and sample columns.}
+
 \item{centerGoups}{vector of groups, of \code{length(colnames(object))}
 indicating optional subgroups to use when performing data centering.
 For example it may be appropriate to center samples of one cell type
@@ -287,66 +287,96 @@ Produce MA-plot of omics data.
 }
 \details{
 \code{jammaplot} takes a numeric matrix, typically of gene expression data,
-and produces an MA-plot (Bland-Altman plot).
+and produces an MA-plot (Bland-Altman plot), also known as a
+median-difference plot. One panel is created for each column of
+data. Within each panel, the x-axis represents the mean or median
+expression of each row; the y-axis represents the difference from
+mean or median for that column.
 
-Purpose is to provide an MA plot, based upon the MVAplotMED function from
-the now-defunct Agi4x44PreProcess package,  except in this case using
-smoothScatter since 20k to 40k datapoints is too many to show without
-them being occluded.
+By default, the plot uses \code{jamba::plotSmoothScatter()}, with optional
+highlighted points draw using \code{points()}.
 
-You must manually specify the number columns and rows, and set doPar=TRUE
-for this function to define multi-panel plotting, e.g.
-\code{"nrow=5, ncol=4, doPar=TRUE"}
-Otherwise, you can manually set these parameters with
-\code{"par('mfrow'=c(5,4));"}
+The function will determine an appropriate layout of plot panels,
+which can be overridden using \code{ncol} and \code{nrow} to specify the
+number of columns and rows of plot panels, respectively. For now,
+this function uses base R graphics instead of ggplot2, in order
+to accomodate some custom features.
 
-This function also uses "useRaster=TRUE" by default which causes the
-\code{\link{imageDefault}} function used by \code{\link{smoothScatter}}
-to produce a temporary raster image which is then resized with
-interpolation to produce a properly-blended representation of the full
-image. This process also substantially reduces the image size when saving
-as a vector output format like PDF or SVG.
+This function uses "useRaster=TRUE" by default, which causes
+\code{jamba::plotSmoothScatter()} to render a rasterized image as opposed
+to a composite of colored rectangles. This process substantially
+reduces the render time in all cases, and reduces the image size
+when saving as PDF or SVG.Notable featuresHighlighting points
 
-To highlight certain points, e.g. marked outliers, or statistical hits,
-supply rownames into highlightPoints as a vector, or a list of vectors.
-If using a list of vectors, also supply a list of colors in
-highlightColor, so each subset is colored uniquely.
+Specific points can be highlighted with argument \code{highlightPoints}
+which can be a vector or named list of vectors, containing \code{rownames(x)}.
+When using a list, point colors are assigned to each element in the
+list in order, using the argument \code{highlightColor}.Centering by control samples
 
-ctrlSamples is deprecated in favor of controlSamples.
+Typical MA-plots are "global-centered", which calculates the
+mean/median across all columns in \code{x}, and this value is subtracted
+from each individual value per row.
 
-controlSamples indicates which samples should be used for centering
-data, by default all samples. However, centering by control samples
-visually indicates changes from those control samples.
+By specifying \code{controlSamples}
+the mean/median is calculated using only the \code{colnames(x)} which match
+\code{controlSamples}, thus representing "difference from control."
 
-centerGroups is used to apply the centering to subsets of columns
-of data, for example if two very different cell types should be separately
-centered for closer scrutiny of the within-cell variability.
-One can take this further, and center each sample group, which has
-the helpful effect of displaying variability of replicates per
-sample group. This method is quite useful for reviewing whether any
-replicates are notably different than counterparts in the same
-sample group.
+It may also be useful to center data by known high-quality samples,
+so the effect of potential outlier samples is avoided.Centering within subgroups
+
+By specifying \code{centerGroups} as a vector of group names,
+the centering is calculated within each group of \code{colnames(x)}.
+In this way, subsets of samples can be treated independently in
+the MA-plots. A good example might be producing MA-plots for
+"kidney" samples, and "muscle" samples, which may have
+fundamentally different signal distributions.
+
+Another very useful technique is to center by sample group,
+for example \code{centerGroups=sample_group}.
+This technique produces MA-plots that depict the
+"difference from group", and is very useful for visualizing
+the variance of replicates in sample groups. Outlier samples
+are sometimes very apparent at this step. See \code{displayMAD} and
+\code{outlierMAD} below for detection of potential outlier samples.
 
 Note: filterNeg=TRUE will floor log2 values at 0, which has the
-effect of adding the "45 degree lines" originating from c(0,0).
+effect of adding the "45 degree lines" originating from c(0,0).Customizing the panel layout
 
-blankPlotPos is intended for specific plot layouts, to keep the plots
-organized by some fixed criteria, e.g. certain sample groups per
-row or column, but where there may not be consistent replicates per
-group.
-For ncol and nrow, blankPlotPos indicates which panels should be
-left empty, where each panel is numbered by row.  For example,
-if ncol=4, then the panels are numbered 1-4, 5-8, 9-12, etc.
+Panels are drawn using the order of \code{colnames(x)} by row,
+from left-to-right, then top-to-bottom.
+The argument \code{blankPlotPos} is intended to insert an empty panel
+at a particular panel position, to help customize the alignment
+of sample panels.
+This option is typically used with \code{ncol} and \code{nrow} to define
+a fixed layout of panel columns and rows. \code{blankPlotPos} refers
+to panels numbered as drawn per row of panels,Identifying potential sample outliers
 
-outlierMAD is only viable when centerEachGroup=TRUE; in which case
-outlierMAD is a threshold for the MAD factor of outliers.  Each MA
-plot panel is given a MAD score, using probes whose x-values are
-greater than outlierRowMin;, the median of the absolute value is
-used as the MAD.
-These MAD values are used to calculate the global MAD, and individual
-MADs are divided by global MAD to determine a MAD factor.
-The outlierMAD is the threshold above which a MAD factor is considered
-an outlier.
+The argument \code{displayMAD} will display the per-sample MAD factor
+relative to its \code{centerGroups} value, if provided. The MAD threshold
+is calculated using values whose mean/median is at least
+\code{outlierRowMin}, based upon the median absolute difference (MAD)
+from the mean/median. The median MAD is defined as the reference MAD,
+and all other MAD factors are multiples of that reference. For example,
+1xMAD is equal to the median MAD value, and 2xMAD is two times higher
+than the median MAD value.
+
+Potential outlier samples should not be evaluated when supplying
+\code{controlSamples} unless those samples represent more than
+experimantal control samples.
+
+Potential sample outliers may be identified by setting a threshold
+with \code{outlierMAD}, by default 5xMAD. For a sample to be considered
+an outlier, its median difference from mean/median needs to be
+five times higher than the median across samples.
+
+We typically recommend an \code{outlierMAD=2} when centering
+by sample groups, or when centering within experiment subsets.
+For one sample to have 2xMAD factor, its variance needs
+to be uniquely twice as high as the majority of other samples, which
+is typically symptomatic of possible technical failure.
+
+There are exceptions to this suggested guideline, which includes
+scenarios where a batch effect may be involved.
 
 To do:
 \itemize{

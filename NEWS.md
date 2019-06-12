@@ -1,3 +1,45 @@
+# jamma version 0.0.9.900
+
+## changes to jammaplot()
+
+* now creates a default `groupSuffix` based upon the
+`centerGroups` if any, the goal is to ensure the center groups are
+by default included in each panel label.
+* Columns with missing data (e.g. all NA values) are now handled
+by plotting a blank plot panel with background color
+`outlierColor`. The MAD value is assigned `Inf`.
+* now uses `maintitle` as the title for the overall
+set of plots, displayed in the top outer margin of each page. New
+argument `maintitleCex` controls title text size.
+* the default input argument is changed from `"object"`
+to `"x"`, to be consistent with other tidyverse-friendly workflows.
+* attribute names are changed from "mvaMADs", "mvaMADoutliers",
+"mvaMADfactors" to "MADs", "MADoutliers", "MADfactors". The names
+using "mva" are deprecated and will be retired in a future version
+of jamma.
+* outlier MAD label cex is now `0.9*titleCex`, making the MAD
+label slightly smaller than the panel label.
+* Outlier plot panels are now highlighted using `>= outlierMAD`,
+consistent with the formal outlier detection. Previously it was
+erroneously using `> outlierMAD`.
+* new argument `subtitleBoxColor` which defines the background color
+for optional subtitles printed at the bottom of each plot panel.
+Used to color-code `centerGroups`, if `groupSuffix=""` and subtitle
+contains `centerGroups` as labels.
+
+## Notes
+
+* Very likely, the base R plotting may be replaced or augmented by
+using ggplot2. Past reason for using base R were due to panel layout,
+and wanting detailed control over smoothScatter per-panel density
+plotting.
+
+* In future, the `centerGroups` value may be displayed inside
+the `subtitle` label box at the bottom-left corner of each panel,
+color-coded to help indicate the centering group.
+* In future, `controlSamples` may be indicated by appending an
+asterisk "*" at the end of the main label for each panel.
+
 # jamma version 0.0.8.900
 
 ## changes

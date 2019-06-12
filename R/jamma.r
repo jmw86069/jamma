@@ -34,67 +34,110 @@ NULL
 #'
 #' Produce MA-plot of omics data.
 #'
-#' \code{jammaplot} takes a numeric matrix, typically of gene expression data,
-#' and produces an MA-plot (Bland-Altman plot).
+#' `jammaplot` takes a numeric matrix, typically of gene expression data,
+#' and produces an MA-plot (Bland-Altman plot), also known as a
+#' median-difference plot. One panel is created for each column of
+#' data. Within each panel, the x-axis represents the mean or median
+#' expression of each row; the y-axis represents the difference from
+#' mean or median for that column.
 #'
-#' Purpose is to provide an MA plot, based upon the MVAplotMED function from
-#' the now-defunct Agi4x44PreProcess package,  except in this case using
-#' smoothScatter since 20k to 40k datapoints is too many to show without
-#' them being occluded.
+#' By default, the plot uses `jamba::plotSmoothScatter()`, with optional
+#' highlighted points draw using `points()`.
 #'
-#' You must manually specify the number columns and rows, and set doPar=TRUE
-#' for this function to define multi-panel plotting, e.g.
-#' \code{"nrow=5, ncol=4, doPar=TRUE"}
-#' Otherwise, you can manually set these parameters with
-#' \code{"par('mfrow'=c(5,4));"}
+#' The function will determine an appropriate layout of plot panels,
+#' which can be overridden using `ncol` and `nrow` to specify the
+#' number of columns and rows of plot panels, respectively. For now,
+#' this function uses base R graphics instead of ggplot2, in order
+#' to accomodate some custom features.
 #'
-#' This function also uses "useRaster=TRUE" by default which causes the
-#' \code{\link{imageDefault}} function used by \code{\link{smoothScatter}}
-#' to produce a temporary raster image which is then resized with
-#' interpolation to produce a properly-blended representation of the full
-#' image. This process also substantially reduces the image size when saving
-#' as a vector output format like PDF or SVG.
+#' This function uses "useRaster=TRUE" by default, which causes
+#' `jamba::plotSmoothScatter()` to render a rasterized image as opposed
+#' to a composite of colored rectangles. This process substantially
+#' reduces the render time in all cases, and reduces the image size
+#' when saving as PDF or SVG.
 #'
-#' To highlight certain points, e.g. marked outliers, or statistical hits,
-#' supply rownames into highlightPoints as a vector, or a list of vectors.
-#' If using a list of vectors, also supply a list of colors in
-#' highlightColor, so each subset is colored uniquely.
+#' ## Notable features
 #'
-#' ctrlSamples is deprecated in favor of controlSamples.
+#' ### Highlighting points
 #'
-#' controlSamples indicates which samples should be used for centering
-#' data, by default all samples. However, centering by control samples
-#' visually indicates changes from those control samples.
+#' Specific points can be highlighted with argument `highlightPoints`
+#' which can be a vector or named list of vectors, containing `rownames(x)`.
+#' When using a list, point colors are assigned to each element in the
+#' list in order, using the argument `highlightColor`.
 #'
-#' centerGroups is used to apply the centering to subsets of columns
-#' of data, for example if two very different cell types should be separately
-#' centered for closer scrutiny of the within-cell variability.
-#' One can take this further, and center each sample group, which has
-#' the helpful effect of displaying variability of replicates per
-#' sample group. This method is quite useful for reviewing whether any
-#' replicates are notably different than counterparts in the same
-#' sample group.
+#' ### Centering by control samples
+#'
+#' Typical MA-plots are "global-centered", which calculates the
+#' mean/median across all columns in `x`, and this value is subtracted
+#' from each individual value per row.
+#'
+#' By specifying `controlSamples`
+#' the mean/median is calculated using only the `colnames(x)` which match
+#' `controlSamples`, thus representing "difference from control."
+#'
+#' It may also be useful to center data by known high-quality samples,
+#' so the effect of potential outlier samples is avoided.
+#'
+#' ### Centering within subgroups
+#'
+#' By specifying `centerGroups` as a vector of group names,
+#' the centering is calculated within each group of `colnames(x)`.
+#' In this way, subsets of samples can be treated independently in
+#' the MA-plots. A good example might be producing MA-plots for
+#' "kidney" samples, and "muscle" samples, which may have
+#' fundamentally different signal distributions.
+#'
+#' Another very useful technique is to center by sample group,
+#' for example `centerGroups=sample_group`.
+#' This technique produces MA-plots that depict the
+#' "difference from group", and is very useful for visualizing
+#' the variance of replicates in sample groups. Outlier samples
+#' are sometimes very apparent at this step. See `displayMAD` and
+#' `outlierMAD` below for detection of potential outlier samples.
 #'
 #' Note: filterNeg=TRUE will floor log2 values at 0, which has the
 #' effect of adding the "45 degree lines" originating from c(0,0).
 #'
-#' blankPlotPos is intended for specific plot layouts, to keep the plots
-#' organized by some fixed criteria, e.g. certain sample groups per
-#' row or column, but where there may not be consistent replicates per
-#' group.
-#' For ncol and nrow, blankPlotPos indicates which panels should be
-#' left empty, where each panel is numbered by row.  For example,
-#' if ncol=4, then the panels are numbered 1-4, 5-8, 9-12, etc.
+#' ### Customizing the panel layout
 #'
-#' outlierMAD is only viable when centerEachGroup=TRUE; in which case
-#' outlierMAD is a threshold for the MAD factor of outliers.  Each MA
-#' plot panel is given a MAD score, using probes whose x-values are
-#' greater than outlierRowMin;, the median of the absolute value is
-#' used as the MAD.
-#' These MAD values are used to calculate the global MAD, and individual
-#' MADs are divided by global MAD to determine a MAD factor.
-#' The outlierMAD is the threshold above which a MAD factor is considered
-#'  an outlier.
+#' Panels are drawn using the order of `colnames(x)` by row,
+#' from left-to-right, then top-to-bottom.
+#' The argument `blankPlotPos` is intended to insert an empty panel
+#' at a particular panel position, to help customize the alignment
+#' of sample panels.
+#' This option is typically used with `ncol` and `nrow` to define
+#' a fixed layout of panel columns and rows. `blankPlotPos` refers
+#' to panels numbered as drawn per row of panels,
+#'
+#' ### Identifying potential sample outliers
+#'
+#' The argument `displayMAD` will display the per-sample MAD factor
+#' relative to its `centerGroups` value, if provided. The MAD threshold
+#' is calculated using values whose mean/median is at least
+#' `outlierRowMin`, based upon the median absolute difference (MAD)
+#' from the mean/median. The median MAD is defined as the reference MAD,
+#' and all other MAD factors are multiples of that reference. For example,
+#' 1xMAD is equal to the median MAD value, and 2xMAD is two times higher
+#' than the median MAD value.
+#'
+#' Potential outlier samples should not be evaluated when supplying
+#' `controlSamples` unless those samples represent more than
+#' experimantal control samples.
+#'
+#' Potential sample outliers may be identified by setting a threshold
+#' with `outlierMAD`, by default 5xMAD. For a sample to be considered
+#' an outlier, its median difference from mean/median needs to be
+#' five times higher than the median across samples.
+#'
+#' We typically recommend an `outlierMAD=2` when centering
+#' by sample groups, or when centering within experiment subsets.
+#' For one sample to have 2xMAD factor, its variance needs
+#' to be uniquely twice as high as the majority of other samples, which
+#' is typically symptomatic of possible technical failure.
+#'
+#' There are exceptions to this suggested guideline, which includes
+#' scenarios where a batch effect may be involved.
+#'
 #'
 #' To do:
 #' \itemize{
@@ -136,19 +179,20 @@ NULL
 #'    the MA-plot data, but only these samples will be plotted, which is useful
 #'    when wanting to view only a subset of samples in detail, but where the
 #'    MA-plot data is identical to the full dataset.
-#' @param maintitle the main title for each panel, either printed inside each
-#'    title box when doTitleBox=TRUE, or atop each panel when doTitleBox=FALSE.
-#' @param maintitleSep character separator used to combine multiple values
-#'    for the maintitle, used to keep all information either on one line or
-#'    split on multiple lines.
+#' @param maintitle the main title for the overall plot, printed at the
+#'    top of each page in the top outer margin.
+#' @param maintitleCex numeric cex character expansion used to resize the
+#'    `maintitle` when supplied.
 #' @param subtitle NULL or character text to be drawn at the bottom center
 #'    of each plot panel.
 #' @param subtitlePreset character value describing where to position the
-#'    subtitle, using terms valid in `jamba::coordPresets()`. The default "bottom"
-#'    centers the subtitle at the bottom of each panel.
-#' @param titleBoxColor vector of colors applied to title text. When doTitleBox=TRUE
+#'    subtitle, using terms valid in `jamba::coordPresets()`. The default
+#'    "bottomleft" places the subtitle at the bottom-left corner of each
+#'    panel.
+#' @param titleBoxColor,subtitleBoxColor vector of colors applied to title
+#'    text, or subtitle text, respectively. When `doTitleBox=TRUE`
 #'    one or no value is supplied, it defines colors using
-#'    \code{\link{jamba::setTextContrastColor}} to use a contrasting color.
+#'    `jamba::setTextContrastColor` to use a contrasting color.
 #' @param titleColor vector of colors applied to title text. When doTitleBox=TRUE
 #'    one or no value is supplied, it defines colors using
 #'    \code{\link{jamba::setTextContrastColor}} to use a contrasting color.
@@ -163,9 +207,9 @@ NULL
 #'    \code{title} to position labels relative to the plot area.
 #' @param groupSuffix character text appended to each plot panel title,
 #'    useful for indicating how a sample was processed, beyond just using
-#'    colnames. For example, \code{groupSuffix=" vs. group median"} could
-#'    indicate that a sample is centered relative to its group median, rather
-#'    than the global median.
+#'    colnames. By default, `groupSuffix` is blank, except when
+#'    supplying `centerGroups`, in which case the `centerGroups` value is
+#'    used as a suffix.
 #' @param highlightPoints NULL, character vector, or list of character vectors,
 #'    containing points to highlight based upon \code{rownames(object)}. If
 #'    a list is supplied, then colors from \code{highlightColors} are recycled
@@ -322,19 +366,20 @@ NULL
 #'
 #' @export
 jammaplot <- function
-(object,
+(x,
  colramp=c("white", "lightblue", "blue", "navy", "orange", "orangered2"),
  colrampOutlier=NULL,
  outlierColor="palegoldenrod",
  whichSamples=NULL,
  maintitle=NULL,
+ maintitleCex=1.8,
  subtitle=NULL,
- subtitlePreset="bottom",
- maintitleSep="\n",
+ subtitlePreset="bottomleft",
  titleCexFactor=1,
  titleCex=NULL,
  doTitleBox=TRUE,
  titleBoxColor="#DDBB9977",
+ subtitleBoxColor=titleBoxColor,
  titleColor="black",
  titleFont=2,
  titlePreset="top",
@@ -342,7 +387,7 @@ jammaplot <- function
  xlabline=2,
  ylab="",
  ylabline=1.5,
- groupSuffix=" vs. Median",
+ groupSuffix=NULL,
  highlightPoints=NULL,
  highlightPch=21,
  highlightCex=1,
@@ -352,11 +397,13 @@ jammaplot <- function
  smoothPtCol="#00000055",
  margins=c(3.5, 3, 0.7, 0.5),
  useRaster=TRUE,
- ncol=NULL, nrow=NULL, doPar=TRUE,
+ ncol=NULL,
+ nrow=NULL,
+ doPar=TRUE,
  las=2,
  ylim=c(-4,4),
  xlim=NULL,
- controlSamples=colnames(object),
+ controlSamples=colnames(x),
  centerGroups=NULL,
  groupedX=TRUE,
  useMean=FALSE,
@@ -461,8 +508,20 @@ jammaplot <- function
    transformation <- function(x){
       x^transFactor;
    }
-   if (is.null(colnames(object))) {
-      colnames(object) <- makeNames(rep("V", ncol(object)));
+   if ("list" %in% class(x)) {
+      nsamples <- length(x);
+      x_names <- names(x);
+   } else {
+      nsamples <- ncol(x);
+      x_names <- colnames(x);
+   }
+   if (length(x_names) == 0) {
+      x_names <- jamba::makeNames(rep("V", ncol(x)));
+      if ("list" %in% class(x)) {
+         names(x) <- x_names;
+      } else {
+         colnames(x) <- x_names;
+      }
    }
 
    ## If colramp is "character" we use getColorRamp() to work it out
@@ -472,14 +531,14 @@ jammaplot <- function
    firstColor <- head(colramp(10), 1);
    if (length(colrampOutlier) > 0) {
       if (jamba::igrepHas("character", class(colrampOutlier))) {
-         colrampOutlier <- colorRampPalette(getColorRamp(colrampOutlier));
+         colrampOutlier <- colorRampPalette(jamba::getColorRamp(colrampOutlier));
       }
    }
    if (length(colrampOutlier) == 0 ||
          !is.function(colrampOutlier)) {
-      firstColorL <- col2hcl(firstColor)["L",];
+      firstColorL <- jamba::col2hcl(firstColor)["L",];
       if (length(outlierColor) < 1) {
-         if (col2hcl(firstColor)["L",] < 70) {
+         if (jamba::col2hcl(firstColor)["L",] < 70) {
             outlierColor <- "#551100";
          } else {
             outlierColor <- "palegoldenrod";
@@ -491,11 +550,18 @@ jammaplot <- function
       ));
    }
 
-   groupSuffix <- rep(groupSuffix, length.out=ncol(object));
+   ## Define groupSuffix using centerGroups, unless otherwise specified
+   if (length(groupSuffix) > 0) {
+      groupSuffix <- rep(groupSuffix,
+         length.out=ncol(x));
+   } else if (length(centerGroups) > 0) {
+      groupSuffix <- paste0(" vs ", centerGroups);
+   }
 
-   nsamples <- ifelse(is.null(ncol(object)), length(object), ncol(object));
+   ## Define a new par for panel layout
    if (doPar) {
       oPar <- par(no.readonly=TRUE);
+      on.exit(par(oPar));
       if (is.null(ncol)) {
          if (is.null(nrow)) {
             parMfrow <- jamba::decideMfrow(nsamples);
@@ -509,19 +575,23 @@ jammaplot <- function
       }
       par(mfrow=c(nrow, ncol));
    }
+   if (length(maintitle) > 0) {
+      maintitle_nlines <- length(unlist(strsplit(maintitle, "\n")));
+      par("oma"=pmax(par("oma"),
+         c(0, 0, 1.5+1.5*maintitle_nlines, 0)));
+   }
    if (length(titleCex) == 0) {
-      if (length(maintitle) == 0) {
-         titleCex <- titleCexFactor;
-      } else {
-         titleCex <- titleCexFactor + 1/(log2(10 + nchar(maintitle)));
-      }
+      titleCex <- 1;
+      #if (length(maintitle) == 0) {
+      #   titleCex <- titleCexFactor;
+      #} else {
+      #   titleCex <- titleCexFactor + 1/(log2(10 + nchar(maintitle)));
+      #}
    }
    titleCex <- rep(titleCex, length.out=nsamples);
-   if (verbose) {
-      jamba::printDebug("jammaplot(): ",
-         "titleCex:", head(titleCex, 10), ", length=", length(titleCex));
-   }
+   titleFont <- rep(titleFont, length.out=nsamples);
    titleBoxColor <- rep(titleBoxColor, length.out=nsamples);
+
    ## Adjust titleColor to have contrast from the titleBoxColor
    if (length(titleColor) <= 1) {
       if (doTitleBox) {
@@ -534,64 +604,64 @@ jammaplot <- function
       }
    }
 
-   titleFont <- rep(titleFont, length.out=nsamples);
    par("mar"=margins);
    nARR <- nsamples;
    if (is.null(whichSamples)) {
       whichSamples <- 1:nARR;
    } else {
       if (is.numeric(whichSamples)) {
-         whichSamples <- colnames(object)[whichSamples]
+         whichSamples <- x_names[whichSamples]
       }
-      whichSamples <- match(whichSamples, colnames(object));
+      whichSamples <- match(whichSamples, x_names);
    }
-   names(whichSamples) <- colnames(object)[whichSamples];
+   names(whichSamples) <- x_names[whichSamples];
    gaveMVA <- FALSE;
-   if (class(object) %in% "data.frame") {
-      object <- as.matrix(object);
+   if ("data.frame" %in% class(x)) {
+      x <- as.matrix(x);
    }
-   if (class(object) %in% "list" &&
-      all(c("x", "y") %in% colnames(object[[1]]))) {
-      ## We are given MVA data from previous run, or from another source.
+   if (class(x) %in% "list" &&
+      all(c("x", "y") %in% colnames(x[[1]]))) {
+      ## We are given MA data from previous run, or from another source.
       gaveMVA <- TRUE;
       if (is.null(xlim)) {
-         xlim <- range(sapply(object, function(iObj){
+         xlim <- range(sapply(x, function(iObj){
             range(c(range(iObj[,"x"])));
          }));
          #xlim <- c(0, xlim1);
       }
-      mvaDatas <- object;
+      mvaDatas <- x;
    } else {
       if (verbose) {
          jamba::printDebug("jammaplot(): ",
-            "Processing matrix input type, dim(object)", dim(object));
+            "Processing matrix input type, dim(x)", dim(x));
       }
       if (filterNA) {
-         object[is.na(object)] <- filterNAreplacement;
+         x[is.na(x)] <- filterNAreplacement;
       }
       if (filterNeg) {
-         object[object < 0] <- 0;
+         x[x < 0] <- 0;
       }
       if (!is.null(filterFloor)) {
-         object[!is.na(object) & object < filterFloor] <- filterFloorReplacement;
+         x[!is.na(x) & x < filterFloor] <- filterFloorReplacement;
       }
-      if (is.null(controlSamples)) {
-         controlSamples <- colnames(object);
+      if (length(controlSamples) == 0) {
+         controlSamples <- x_names;
       } else {
-         controlSamples <- intersect(controlSamples, colnames(object));
+         controlSamples <- intersect(controlSamples, x_names);
          if (length(controlSamples) == 0) {
-            controlSamples <- colnames(object);
+            controlSamples <- x_names;
          }
       }
-      ## Calculate the summary value per row of input data object,
+      ## Calculate the summary value per row of input data x,
       ## used as the x-axis value for each panel
       if (groupedX && length(unique(centerGroups)) > 1) {
-         yM <- centerGeneData(object,
+         yM <- centerGeneData(x,
             controlSamples=controlSamples,
             centerGroups=centerGroups,
             returnValues=FALSE,
             returnGroupedValues=TRUE);
-         centerGroups <- nameVector(centerGroups, colnames(object));
+         centerGroups <- nameVector(centerGroups, x_names);
+         ## TODO: Apply rowGroupsMeans() for custom y-values per group
          if (useMean) {
             y <- rowMeans(yM, na.rm=TRUE);
          } else {
@@ -604,15 +674,15 @@ jammaplot <- function
             }
          }
       } else {
-         if (!is.null(customFunc)) {
-            y <- customFunc(object[,controlSamples,drop=FALSE], na.rm=TRUE);
+         if (length(customFunc) > 0) {
+            y <- customFunc(x[,controlSamples,drop=FALSE], na.rm=TRUE);
          } else if (useMean) {
-            y <- rowMeans(object[,controlSamples,drop=FALSE], na.rm=TRUE);
+            y <- rowMeans(x[,controlSamples,drop=FALSE], na.rm=TRUE);
          } else {
             if (doMS) {
-               y <- rowMedians(object[,controlSamples,drop=FALSE], na.rm=TRUE);
+               y <- rowMedians(x[,controlSamples,drop=FALSE], na.rm=TRUE);
             } else {
-               y <- apply(object[,controlSamples,drop=FALSE], 1, function(i){
+               y <- apply(x[,controlSamples,drop=FALSE], 1, function(i){
                   median(i, na.rm=TRUE);
                });
             }
@@ -620,21 +690,21 @@ jammaplot <- function
       }
       if (verbose) {
          jamba::printDebug("jammaplot(): ",
-            "Processing matrix input type, dim(object)", dim(object));
+            "Processing matrix input type, dim(x)", dim(x));
          jamba::printDebug("jammaplot(): ",
             "Processing matrix input type, dim(y):", dim(y));
       }
       if (is.null(xlim)) {
          ## Calculate x range using the range of data overall
-         xlim <- range(c(range(object, na.rm=TRUE), range(y, na.rm=TRUE)));
+         xlim <- range(c(range(x, na.rm=TRUE), range(y, na.rm=TRUE)));
          #xlimMax <- mean(c(max(object, na.rm=TRUE), max(y, na.rm=TRUE)));
          #xlim <- c(filterFloor, xlimMax);
       }
       mvaDatas <- lapply(nameVector(whichSamples), function(i){NA});
    }
 
-   if (!is.null(centerGroups)) {
-      objectCtr <- centerGeneData(indata=object,
+   if (length(centerGroups) > 0) {
+      objectCtr <- centerGeneData(indata=x,
          centerGroups=centerGroups,
          mean=useMean,
          needsLog=FALSE,
@@ -646,8 +716,8 @@ jammaplot <- function
          jamba::printDebug("jammaplot(): ",
             "objectCtr:");
          print(head(objectCtr));
-         jamba::printDebug("head(y): ", round(head(y), digits=2),
-            fgText=c("orange", "lightblue"));
+         jamba::printDebug("head(y): ",
+            round(head(y), digits=2));
       }
    }
 
@@ -663,11 +733,11 @@ jammaplot <- function
             ## Optionally, if centerGroups are supplied,
             ## we center within each controlGroup,
             ## and plot the difference within each controlGroup
-            iCol <- colnames(object)[i];
+            iCol <- x_names[i];
             iGroup <- centerGroups[iCol];
             yUse <- yM[,iGroup];
             #x <- objectCtr[,i] + y;
-            x <- objectCtr[,i] + yUse;
+            xi <- objectCtr[,i] + yUse;
             if (verbose) {
                jamba::printDebug("jammaplot(): ",
                   "Applying unique x per centerGroups");
@@ -679,35 +749,39 @@ jammaplot <- function
             ## New Jam values will retain the y-axis,
             ## but use the median on the x-axis
             #mvaValues <- c((x + y)/2, (x - y));
-            x <- object[,i];
+            xi <- x[,i];
             yUse <- y;
          }
-         mvaValues <- c(yUse, (x - yUse));
+         mvaValues <- c(yUse, (xi - yUse));
          mvaData <- matrix(data=mvaValues,
-            nrow=length(x),
+            nrow=length(xi),
             byrow=FALSE,
-            dimnames=list(genes=rownames(object),
+            dimnames=list(genes=rownames(x),
                MAcoords=c("x", "y")));
          mvaDatas[[i]] <- mvaData;
-         names(mvaDatas)[i] <- colnames(object)[i];
+         names(mvaDatas)[i] <- colnames(x)[i];
       }
    }
 
    ## Optionally calculate the MAD per panel
    ## assumptions: that zero should be the median, all deviations are absolute values since
    ## we are comparing with zero, and we are not subtracting an actual median value
-   if (length(outlierMAD) > 0) {
+   if (1 == 1 || length(outlierMAD) > 0) {
       if (verbose) {
-         jamba::printDebug("Calculating MVA data MAD factors.");
+         jamba::printDebug("jammaplot():",
+            "Calculating MA data MAD factors.");
       }
-      mvaMADs <- sapply(nameVector(whichSamples, colnames(object)[whichSamples]),
-         function(i){
+      mvaMADs <- sapply(nameVector(whichSamples, x_names[whichSamples]), function(i){
          if (verbose) {
-            jamba::printDebug("   i:", i, c("orange", "lightblue"));
+            jamba::printDebug("   i:",
+               i);
          }
          mvaData <- mvaDatas[[i]];
-         median(abs(mvaData[abs(mvaData[,"x"]) >= outlierRowMin,"y",drop=FALSE]),
-            na.rm=TRUE);
+         iWhich <- (!is.na(mvaData[,"x"]) & abs(mvaData[,"x"]) >= outlierRowMin);
+         rmNA(
+            median(abs(mvaData[iWhich,"y"]),
+               na.rm=TRUE),
+            naValue=Inf);
       });
 
       ## Calculate MAD factor, a ratio to the median
@@ -715,18 +789,18 @@ jammaplot <- function
          ## if grouped, use the median of each center group
          mvaMADfactors <- unlist(unname(
             tapply(mvaMADs, centerGroups, function(i){
-               i / median(i);
+               i / median(i, na.rm=TRUE);
             })))[names(mvaMADs)];
       } else {
          ## if not grouped, use the overall median across all samples
-         mvaMAD <- median(mvaMADs);
+         mvaMAD <- median(mvaMADs, na.rm=TRUE);
          mvaMADfactors <- mvaMADs/mvaMAD;
       }
 
       #mvaMADthreshold <- outlierMAD * mvaMAD;
-      names(mvaMADfactors) <- whichSamples;
-      names(mvaMADs) <- whichSamples;
-      mvaMADoutliers <- colnames(object)[whichSamples][which(mvaMADfactors >= outlierMAD)];
+      names(mvaMADfactors) <- names(whichSamples);
+      names(mvaMADs) <- names(whichSamples);
+      mvaMADoutliers <- x_names[whichSamples][which(mvaMADfactors >= outlierMAD)];
       if (verbose) {
          jamba::printDebug("mvaMADs:");
          print(format(digits=2, mvaMADs));
@@ -737,10 +811,33 @@ jammaplot <- function
       attr(mvaDatas, "mvaMADs") <- mvaMADs;
       attr(mvaDatas, "mvaMADoutliers") <- mvaMADoutliers;
       attr(mvaDatas, "mvaMADfactors") <- mvaMADfactors;
+      attr(mvaDatas, "MADs") <- mvaMADs;
+      attr(mvaDatas, "MADoutliers") <- mvaMADoutliers;
+      attr(mvaDatas, "MADfactors") <- mvaMADfactors;
       attr(mvaDatas, "outlierMAD") <- outlierMAD;
       attr(mvaDatas, "outlierRowMin") <- outlierRowMin;
    } else {
       mvaMADoutliers <- NULL;
+   }
+
+   ## check_panel_page() checks if the panel number will cause a new
+   ## page to be created, if maintitle is supplied then it will be
+   ## printed atop each page
+   check_panel_page <- function(iPanelNumber, maintitle) {
+      if (length(maintitle) == 0) {
+         return();
+      }
+      max_panels <- prod(par("mfrow"));
+      if (iPanelNumber > 1 && ((iPanelNumber-1) %% max_panels) == 0) {
+         # print maintitle
+         if (length(maintitle) > 0) {
+            maintitle_txt <- paste(unlist(strsplit(maintitle, "\n")),
+               collapse="\n");
+            title(outer=TRUE,
+               main=maintitle_txt,
+               cex.main=maintitleCex);
+         }
+      }
    }
 
    ## iPanelNumber keeps track of the numbered panels as they are plotted,
@@ -750,64 +847,63 @@ jammaplot <- function
       for(i in whichSamples) {
          mvaData <- mvaDatas[[i]];
          iPanelNumber <- iPanelNumber + 1;
+         check_panel_page(iPanelNumber, maintitle);
          if (verbose) {
             jamba::printDebug("iPanelNumber: ", iPanelNumber,
                fgText=c("orange", "lightgreen"));
          }
          if (length(blankPlotPos) > 0) {
             while(iPanelNumber %in% blankPlotPos) {
-               nullPlot(doBoxes=FALSE);
+               jamba::nullPlot(doBoxes=FALSE);
                if (verbose) {
                   jamba::printDebug("   Inserted a blank panel at position: ",
-                     iPanelNumber, fgText=c("orange", "lightblue"));
+                     iPanelNumber);
                }
                iPanelNumber <- iPanelNumber + 1;
+               check_panel_page(iPanelNumber, maintitle);
                if (verbose) {
-                  jamba::printDebug("new iPanelNumber: ", iPanelNumber,
-                     fgText=c("orange", "lightgreen"));
+                  jamba::printDebug("new iPanelNumber: ",
+                     iPanelNumber);
                }
             }
          }
          par("mar"=margins);
-         if (length(maintitle) > 0) {
-            what <- paste(c(maintitle,
-               colnames(object)[i],
-               groupSuffix[i]),
-               collapse=maintitleSep);
-            groupName <- paste(c(colnames(object)[i],
-               groupSuffix[i]),
-               collapse="");
-         } else {
-            what <- paste(c(colnames(object)[i],
-               groupSuffix[i]),
-               collapse=maintitleSep);
-            groupName <- paste(c(colnames(object)[i],
-               groupSuffix[i]),
-               collapse="");
-         }
+         groupName <- paste(c(x_names[i],
+            groupSuffix[i]),
+            collapse="");
          titleText <- names(mvaDatas)[i];
 
          ## Calculate the MAD, i.e. the median absolute deviation from zero
-         mvaMAD <- median(abs(mvaData[,"y"]), na.rm=TRUE);
+         mvaMAD <- mvaMADs[whichSamples[i]];
+         #mvaMAD <- median(abs(mvaData[,"y"]), na.rm=TRUE);
 
          colrampUse <- colramp;
-         if (!is.null(outlierMAD) && colnames(object)[i] %in% mvaMADoutliers) {
+         if (length(outlierMAD) > 0 && x_names[i] %in% mvaMADoutliers) {
             colrampUse <- colrampOutlier;
          }
-         mva <- smoothScatterFunc(mvaData[,c("x","y")],
-            colramp=colrampUse,
-            xlab="",
-            ylab="",
-            las=las,
-            xlim=xlim,
-            ylim=ylim,
-            transformation=transformation,
-            col=smoothPtCol,
-            useRaster=useRaster,
-            nrpoints=nrpoints,
-            fillBackground=fillBackground,
-            applyRangeCeiling=applyRangeCeiling,
-            ...);
+         if (all(is.na(mvaData[,"y"]))) {
+            jamba::nullPlot(doBoxes=FALSE,
+               xlim=xlim,
+               ylim=ylim
+            );
+            jamba::usrBox(fill=outlierColor)
+            box();
+         } else {
+            mva <- smoothScatterFunc(mvaData[,c("x","y")],
+               colramp=colrampUse,
+               xlab="",
+               ylab="",
+               las=las,
+               xlim=xlim,
+               ylim=ylim,
+               transformation=transformation,
+               col=smoothPtCol,
+               useRaster=useRaster,
+               nrpoints=nrpoints,
+               fillBackground=fillBackground,
+               applyRangeCeiling=applyRangeCeiling,
+               ...);
+         }
          ## Add axis labels
          title(xlab=xlab, line=xlabline);
          title(ylab=ylab, line=ylabline);
@@ -903,40 +999,28 @@ jammaplot <- function
             }
             parXpd <- par("xpd");
             par("xpd"=NA);
-            if (1 == 2) {
-               legend("topright",
-                  inset=0.02,
-                  cex=titleCex[i],
-                  text.font=titleFont[i],
-                  legend=paste(titleText, groupSuffix[i]),
-                  adj=c(0,0.5),
-                  bg=titleBoxColor[i],
-                  title.col=titleBoxTextColor,
-                  text.col=titleBoxTextColor,
-                  title=maintitle);
-            } else {
-               ## Use drawLabels() for more control over the text box
-               jamba::drawLabels(preset=titlePreset,
-                  txt=paste0(titleText, groupSuffix[i]),
-                  boxColor=titleBoxColor[i],
-                  boxBorderColor=jamba::makeColorDarker(titleBoxColor[i]),
-                  labelCol=titleColor[i],
-                  labelCex=titleCex[i],
-                  drawBox=doTitleBox,
-                  #boxCexAdjust=c(1.1,1.3),
-                  font=titleFont[i],
-                  ...);
-            }
-            ## Subtitle using tricks to center the label
+            ## Use drawLabels() for more control over the text box
+            jamba::drawLabels(preset=titlePreset,
+               txt=paste0(titleText, groupSuffix[i]),
+               boxColor=titleBoxColor[i],
+               boxBorderColor=jamba::makeColorDarker(titleBoxColor[i]),
+               labelCol=titleColor[i],
+               labelCex=titleCex[i],
+               drawBox=doTitleBox,
+               #boxCexAdjust=c(1.1,1.3),
+               font=titleFont[i],
+               ...);
+
+            ## Subtitle with centered label
             if (length(subtitle) > 0) {
                ## Use drawLabels() for more control over the text box
                jamba::drawLabels(preset=subtitlePreset,
                   txt=subtitle[i],
-                  boxColor=titleBoxColor[i],
-                  boxBorderColor=jamba::makeColorDarker(titleBoxColor[i]),
-                  labelCol=titleColor[i],
-                  labelCex=titleCex[i],
-                  drawBox=doTitleBox,
+                  boxColor=subtitleBoxColor[i],
+                  boxBorderColor=jamba::makeColorDarker(subtitleBoxColor[i]),
+                  labelCol=jamba::setTextContrastColor(subtitleBoxColor[i]),
+                  labelCex=titleCex[i]*0.9,
+                  drawBox=TRUE,
                   #boxCexAdjust=c(1.1,1.3),
                   font=titleFont[i],
                   ...);
@@ -944,7 +1028,7 @@ jammaplot <- function
             par("xpd"=parXpd);
          } else {
             titleLine <- margins[3] - 1.5;
-            title(main=maintitle,
+            title(main="",#maintitle,
                sub=subtitle,
                cex.sub=titleCex[i],
                cex.main=titleCex[i],
@@ -955,34 +1039,36 @@ jammaplot <- function
                cex.main=titleCex[i],
                line=titleLine-1,
                col.main=titleBoxTextColor,
-               font.main=titleFont[i], ...);
+               font.main=titleFont[i],
+               ...);
          }
 
          ## Optionally print the MAD factor in the bottom right corner
          if (length(outlierMAD) > 0 && displayMAD == 1) {
             jamba::drawLabels(preset="bottomright",
-               labelCex=titleCex[i],
+               labelCex=titleCex[i]*0.9,
                font=titleFont[i],
                txt=paste0("MAD x",
                   format(digits=2,
-                     mvaMADfactors[as.character(i)])),
+                     mvaMADfactors[whichSamples[i]])
+               ),
                drawBox=FALSE,
-               labelCol=ifelse(mvaMADfactors[as.character(i)] > outlierMAD,
+               labelCol=ifelse(mvaMADfactors[whichSamples[i]] >= outlierMAD,
                   "red3", "grey40")
                );
          } else if (length(outlierMAD) > 0 && displayMAD == 2) {
             jamba::drawLabels(preset="bottomright",
-               labelCex=titleCex[i],
+               labelCex=titleCex[i]*0.9,
                font=titleFont[i],
                txt=paste0("MAD:",
                   format(digits=2,
-                     mvaMADs[as.character(i)])),
+                     mvaMADs[whichSamples[i]])),
                drawBox=FALSE,
-               labelCol=ifelse(mvaMADfactors[as.character(i)] > outlierMAD,
+               labelCol=ifelse(mvaMADfactors[whichSamples[i]] >= outlierMAD,
                   "red3", "grey40")
             );
          }
-         mvaData;
+         #mvaData;
       }
 
       ## End of the per-panel MVA plot loop
@@ -990,18 +1076,25 @@ jammaplot <- function
       if (length(blankPlotPos) > 0) {
          iPanelNumber <- iPanelNumber + 1;
          if (verbose) {
-            jamba::printDebug("iPanelNumber: ", iPanelNumber,
-               fgText=c("orange", "lightgreen"));
+            jamba::printDebug("iPanelNumber: ",
+               iPanelNumber);
          }
          while(iPanelNumber %in% blankPlotPos) {
-            nullPlot(doBoxes=FALSE);
+            jamba::nullPlot(doBoxes=FALSE);
             if (verbose) {
-               jamba::printDebug("Inserted a blank panel at position: ", iPanelNumber,
-                  fgText=c("orange", "lightblue"));
+               jamba::printDebug("Inserted a blank panel at position: ",
+                  iPanelNumber);
             }
             iPanelNumber <- iPanelNumber + 1;
          }
       }
+   }
+   if (length(maintitle) > 0) {
+      maintitle_txt <- paste(unlist(strsplit(maintitle, "\n")),
+         collapse="\n");
+      title(outer=TRUE,
+         main=maintitle_txt,
+         cex.main=maintitleCex);
    }
 
    invisible(mvaDatas);
