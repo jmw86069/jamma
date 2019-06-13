@@ -35,9 +35,13 @@ jammaplot(x, colramp = c("white", "lightblue", "blue", "navy", "orange",
   applyRangeCeiling = TRUE, doTxtplot = FALSE, ablineV = 0,
   ablineH = c(-2, 0, 2), blankPlotPos = NULL, outlierMAD = 5,
   outlierRowMin = 5, groupedMAD = TRUE, displayMAD = FALSE,
-  fillBackground = TRUE, doPlot = TRUE, verbose = FALSE, ...)
+  fillBackground = TRUE, ma_method = c("old", "jammacalc"),
+  doPlot = TRUE, verbose = FALSE, ...)
 }
 \arguments{
+\item{x}{numeric matrix typically containing log-normal measurements,
+with measurement rows, and sample columns.}
+
 \item{colramp}{one of several inputs recognized by
 \code{\link{getColorRamp}}. It typically recognizes either the name of
 a color ramp from RColorBrewer, the name of functions from the
@@ -264,13 +268,14 @@ which is typically the first value in the \code{colramp}. Set to TRUE
 when axis ranges may be defined which are outside the range of values
 for any particular column in \code{object}.}
 
+\item{ma_method}{character string indicating whether to perform
+MA-plot calculations using the old method \code{"old"}; or \code{"jammacalc"}
+which uses the newer function \code{jammacalc()}.}
+
 \item{verbose}{logical indicating whether to print verbose output.}
 
 \item{...}{additional parameters sent to downstream functions,
 \code{\link{jamba::plotSmoothScatter}}, \code{\link{centerGeneData}}.}
-
-\item{object}{numeric matrix typically containing log-normal measurements,
-with measurement rows, and sample columns.}
 
 \item{centerGoups}{vector of groups, of \code{length(colnames(object))}
 indicating optional subgroups to use when performing data centering.

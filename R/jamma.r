@@ -151,7 +151,7 @@ NULL
 #'       'sampleID vs median'.}
 #' }
 #'
-#' @param object numeric matrix typically containing log-normal measurements,
+#' @param x numeric matrix typically containing log-normal measurements,
 #'    with measurement rows, and sample columns.
 #' @param colramp one of several inputs recognized by
 #'    \code{\link{getColorRamp}}. It typically recognizes either the name of
@@ -340,6 +340,9 @@ NULL
 #'    which is typically the first value in the \code{colramp}. Set to TRUE
 #'    when axis ranges may be defined which are outside the range of values
 #'    for any particular column in \code{object}.
+#' @param ma_method character string indicating whether to perform
+#'    MA-plot calculations using the old method `"old"`; or `"jammacalc"`
+#'    which uses the newer function `jammacalc()`.
 #' @param verbose logical indicating whether to print verbose output.
 #' @param ... additional parameters sent to downstream functions,
 #'    \code{\link{jamba::plotSmoothScatter}}, \code{\link{centerGeneData}}.
@@ -425,6 +428,7 @@ jammaplot <- function
  groupedMAD=TRUE,
  displayMAD=FALSE,
  fillBackground=TRUE,
+ ma_method=c("old", "jammacalc"),
  doPlot=TRUE,
  verbose=FALSE,
  ...)
@@ -496,6 +500,7 @@ jammaplot <- function
    } else {
       doMS <- FALSE;
    }
+   ma_method <- match.arg(ma_method);
    if (doTxtplot) {
       blankPlotPos <- NULL;
       smoothScatterFunc <- function(...){
@@ -621,7 +626,7 @@ jammaplot <- function
    }
    if (class(x) %in% "list" &&
       all(c("x", "y") %in% colnames(x[[1]]))) {
-      ## We are given MA data from previous run, or from another source.
+      ## Re-use MA-plot data as provided
       gaveMVA <- TRUE;
       if (is.null(xlim)) {
          xlim <- range(sapply(x, function(iObj){
@@ -631,142 +636,175 @@ jammaplot <- function
       }
       mvaDatas <- x;
    } else {
-      if (verbose) {
-         jamba::printDebug("jammaplot(): ",
-            "Processing matrix input type, dim(x)", dim(x));
-      }
-      if (filterNA) {
-         x[is.na(x)] <- filterNAreplacement;
-      }
-      if (filterNeg) {
-         x[x < 0] <- 0;
-      }
-      if (!is.null(filterFloor)) {
-         x[!is.na(x) & x < filterFloor] <- filterFloorReplacement;
-      }
-      if (length(controlSamples) == 0) {
-         controlSamples <- x_names;
+      ## Prepare MA-plot data
+      if (ma_method %in% "jammacalc") {
+         ## Newer method using jammacalc()
       } else {
-         controlSamples <- intersect(controlSamples, x_names);
+         if (verbose) {
+            jamba::printDebug("jammaplot(): ",
+               "Processing matrix input type, dim(x)", dim(x));
+         }
+         if (filterNA) {
+            x[is.na(x)] <- filterNAreplacement;
+         }
+         if (filterNeg) {
+            x[x <= 0] <- 0;
+         }
+         if (!is.null(filterFloor)) {
+            x[!is.na(x) & x <= filterFloor] <- filterFloorReplacement;
+         }
          if (length(controlSamples) == 0) {
             controlSamples <- x_names;
-         }
-      }
-      ## Calculate the summary value per row of input data x,
-      ## used as the x-axis value for each panel
-      if (groupedX && length(unique(centerGroups)) > 1) {
-         yM <- centerGeneData(x,
-            controlSamples=controlSamples,
-            centerGroups=centerGroups,
-            returnValues=FALSE,
-            returnGroupedValues=TRUE);
-         centerGroups <- nameVector(centerGroups, x_names);
-         ## TODO: Apply rowGroupsMeans() for custom y-values per group
-         if (useMean) {
-            y <- rowMeans(yM, na.rm=TRUE);
          } else {
-            if (doMS) {
-               y <- rowMedians(yM, na.rm=TRUE);
-            } else {
-               y <- apply(yM, 1, function(i){
-                  median(i, na.rm=TRUE);
-               });
+            controlSamples <- intersect(controlSamples, x_names);
+            if (length(controlSamples) == 0) {
+               controlSamples <- x_names;
             }
          }
-      } else {
-         if (length(customFunc) > 0) {
-            y <- customFunc(x[,controlSamples,drop=FALSE], na.rm=TRUE);
-         } else if (useMean) {
-            y <- rowMeans(x[,controlSamples,drop=FALSE], na.rm=TRUE);
-         } else {
-            if (doMS) {
-               y <- rowMedians(x[,controlSamples,drop=FALSE], na.rm=TRUE);
-            } else {
-               y <- apply(x[,controlSamples,drop=FALSE], 1, function(i){
-                  median(i, na.rm=TRUE);
-               });
-            }
-         }
-      }
-      if (verbose) {
-         jamba::printDebug("jammaplot(): ",
-            "Processing matrix input type, dim(x)", dim(x));
-         jamba::printDebug("jammaplot(): ",
-            "Processing matrix input type, dim(y):", dim(y));
-      }
-      if (is.null(xlim)) {
-         ## Calculate x range using the range of data overall
-         xlim <- range(c(range(x, na.rm=TRUE), range(y, na.rm=TRUE)));
-         #xlimMax <- mean(c(max(object, na.rm=TRUE), max(y, na.rm=TRUE)));
-         #xlim <- c(filterFloor, xlimMax);
-      }
-      mvaDatas <- lapply(nameVector(whichSamples), function(i){NA});
-   }
-
-   if (length(centerGroups) > 0) {
-      objectCtr <- centerGeneData(indata=x,
-         centerGroups=centerGroups,
-         mean=useMean,
-         needsLog=FALSE,
-         returnGroupedValues=FALSE,
-         returnValues=TRUE,
-         controlSamples=controlSamples,
-         verbose=verbose);
-      if (verbose) {
-         jamba::printDebug("jammaplot(): ",
-            "objectCtr:");
-         print(head(objectCtr));
-         jamba::printDebug("head(y): ",
-            round(head(y), digits=2));
-      }
-   }
-
-   ## If not given MVA data, then calculate the MVA data upfront
-   ## so we can test for outliers beforehand
-   if (!gaveMVA) {
-      if (verbose) {
-         jamba::printDebug("jammaplot(): ",
-            "Calculating MVA data.");
-      }
-      for (i in whichSamples) {
+         ## Calculate the summary value per row of input data x,
+         ## used as the x-axis value for each panel
          if (groupedX && length(unique(centerGroups)) > 1) {
-            ## Optionally, if centerGroups are supplied,
-            ## we center within each controlGroup,
-            ## and plot the difference within each controlGroup
-            iCol <- x_names[i];
-            iGroup <- centerGroups[iCol];
-            yUse <- yM[,iGroup];
-            #x <- objectCtr[,i] + y;
-            xi <- objectCtr[,i] + yUse;
-            if (verbose) {
-               jamba::printDebug("jammaplot(): ",
-                  "Applying unique x per centerGroups");
+            yM <- centerGeneData(x,
+               controlSamples=controlSamples,
+               centerGroups=centerGroups,
+               returnValues=FALSE,
+               returnGroupedValues=TRUE);
+            centerGroups <- nameVector(centerGroups, x_names);
+            ## TODO: Apply rowGroupsMeans() for custom y-values per group
+            if (useMean) {
+               y <- rowMeans(yM, na.rm=TRUE);
+            } else {
+               if (doMS) {
+                  y <- rowMedians(yM, na.rm=TRUE);
+               } else {
+                  y <- apply(yM, 1, function(i){
+                     median(i, na.rm=TRUE);
+                  });
+               }
             }
          } else {
-            ## Typical values use difference from median on y-axis and
-            ## average of current with median on x-axis
-            ##
-            ## New Jam values will retain the y-axis,
-            ## but use the median on the x-axis
-            #mvaValues <- c((x + y)/2, (x - y));
-            xi <- x[,i];
-            yUse <- y;
+            if (length(customFunc) > 0) {
+               y <- customFunc(x[,controlSamples,drop=FALSE], na.rm=TRUE);
+            } else if (useMean) {
+               y <- rowMeans(x[,controlSamples,drop=FALSE], na.rm=TRUE);
+            } else {
+               if (doMS) {
+                  y <- rowMedians(x[,controlSamples,drop=FALSE], na.rm=TRUE);
+               } else {
+                  y <- apply(x[,controlSamples,drop=FALSE], 1, function(i){
+                     median(i, na.rm=TRUE);
+                  });
+               }
+            }
          }
-         mvaValues <- c(yUse, (xi - yUse));
-         mvaData <- matrix(data=mvaValues,
-            nrow=length(xi),
-            byrow=FALSE,
-            dimnames=list(genes=rownames(x),
-               MAcoords=c("x", "y")));
-         mvaDatas[[i]] <- mvaData;
-         names(mvaDatas)[i] <- colnames(x)[i];
+         if (verbose) {
+            jamba::printDebug("jammaplot(): ",
+               "Processing matrix input type, dim(x)", dim(x));
+            jamba::printDebug("jammaplot(): ",
+               "Processing matrix input type, dim(y):", dim(y));
+         }
+         if (is.null(xlim)) {
+            ## Calculate x range using the range of data overall
+            xlim <- range(c(range(x, na.rm=TRUE), range(y, na.rm=TRUE)));
+            #xlimMax <- mean(c(max(object, na.rm=TRUE), max(y, na.rm=TRUE)));
+            #xlim <- c(filterFloor, xlimMax);
+         }
+         mvaDatas <- lapply(nameVector(whichSamples), function(i){NA});
+      }
+   }
+
+   if (ma_method %in% "jammacalc") {
+      ## Newer method using jammacalc()
+      if (verbose) {
+         printDebug("jammaplot(): ",
+            "Calling jammacalc().",
+            "useMedian:", !useMean);
+      }
+      mvaDatas <- jammacalc(x=x,
+         na.rm=TRUE,
+         useMedian=!useMean,
+         controlSamples=controlSamples,
+         centerGroups=centerGroups,
+         groupedX=groupedX,
+         grouped_mad=groupedMAD,
+         whichSamples=whichSamples,
+         noise_floor=filterFloor,
+         noise_floor_value=filterFloorReplacement,
+         naValue=filterNAreplacement,
+         centerFunc=centerGeneData_new,
+         returnType="ma_list",
+         mad_row_min=outlierRowMin,
+         verbose=verbose,
+         ...);
+   } else {
+      if (length(centerGroups) > 0) {
+         objectCtr <- centerGeneData(x,
+            centerGroups=centerGroups,
+            mean=useMean,
+            needsLog=FALSE,
+            returnGroupedValues=FALSE,
+            returnValues=TRUE,
+            controlSamples=controlSamples,
+            verbose=verbose);
+         if (verbose) {
+            jamba::printDebug("jammaplot(): ",
+               "objectCtr:");
+            print(head(objectCtr));
+            jamba::printDebug("head(y): ",
+               round(head(y), digits=2));
+         }
+      }
+
+      ## If not given MVA data, then calculate the MVA data upfront
+      ## so we can test for outliers beforehand
+      if (!gaveMVA) {
+         if (verbose) {
+            jamba::printDebug("jammaplot(): ",
+               "Calculating MVA data.");
+         }
+         for (i in whichSamples) {
+            if (groupedX && length(unique(centerGroups)) > 1) {
+               ## Optionally, if centerGroups are supplied,
+               ## we center within each controlGroup,
+               ## and plot the difference within each controlGroup
+               iCol <- x_names[i];
+               iGroup <- centerGroups[iCol];
+               yUse <- yM[,iGroup];
+               #x <- objectCtr[,i] + y;
+               xi <- objectCtr[,i] + yUse;
+               if (verbose) {
+                  jamba::printDebug("jammaplot(): ",
+                     "Applying unique x per centerGroups");
+               }
+            } else {
+               ## Typical values use difference from median on y-axis and
+               ## average of current with median on x-axis
+               ##
+               ## New Jam values will retain the y-axis,
+               ## but use the median on the x-axis
+               #mvaValues <- c((x + y)/2, (x - y));
+               xi <- x[,i];
+               yUse <- y;
+            }
+            mvaValues <- c(yUse, (xi - yUse));
+            mvaData <- matrix(data=mvaValues,
+               nrow=length(xi),
+               byrow=FALSE,
+               dimnames=list(genes=rownames(x),
+                  MAcoords=c("x", "y")));
+            mvaDatas[[i]] <- mvaData;
+            names(mvaDatas)[i] <- x_names[i];
+         }
       }
    }
 
    ## Optionally calculate the MAD per panel
    ## assumptions: that zero should be the median, all deviations are absolute values since
    ## we are comparing with zero, and we are not subtracting an actual median value
-   if (1 == 1 || length(outlierMAD) > 0) {
+   if (ma_method %in% "jammacalc") {
+      mvaMADs <- attr(mvaDatas, "MADs");
+      mvaMADfactors <- attr(mvaDatas, "MADfactors");
+   } else {
       if (verbose) {
          jamba::printDebug("jammaplot():",
             "Calculating MA data MAD factors.");
@@ -776,7 +814,8 @@ jammaplot <- function
             jamba::printDebug("   i:",
                i);
          }
-         mvaData <- mvaDatas[[i]];
+         #mvaData <- mvaDatas[[i]];
+         mvaData <- mvaDatas[[x_names[i]]];
          iWhich <- (!is.na(mvaData[,"x"]) & abs(mvaData[,"x"]) >= outlierRowMin);
          rmNA(
             median(abs(mvaData[iWhich,"y"]),
@@ -800,25 +839,23 @@ jammaplot <- function
       #mvaMADthreshold <- outlierMAD * mvaMAD;
       names(mvaMADfactors) <- names(whichSamples);
       names(mvaMADs) <- names(whichSamples);
-      mvaMADoutliers <- x_names[whichSamples][which(mvaMADfactors >= outlierMAD)];
-      if (verbose) {
-         jamba::printDebug("mvaMADs:");
-         print(format(digits=2, mvaMADs));
-         jamba::printDebug("mvaMADfactors:");
-         print(format(digits=2, mvaMADfactors));
-         jamba::printDebug("mvaMADoutliers:", mvaMADoutliers);
-      }
-      attr(mvaDatas, "mvaMADs") <- mvaMADs;
-      attr(mvaDatas, "mvaMADoutliers") <- mvaMADoutliers;
-      attr(mvaDatas, "mvaMADfactors") <- mvaMADfactors;
-      attr(mvaDatas, "MADs") <- mvaMADs;
-      attr(mvaDatas, "MADoutliers") <- mvaMADoutliers;
-      attr(mvaDatas, "MADfactors") <- mvaMADfactors;
-      attr(mvaDatas, "outlierMAD") <- outlierMAD;
-      attr(mvaDatas, "outlierRowMin") <- outlierRowMin;
-   } else {
-      mvaMADoutliers <- NULL;
    }
+   mvaMADoutliers <- x_names[whichSamples][which(mvaMADfactors >= outlierMAD)];
+   if (verbose) {
+      jamba::printDebug("mvaMADs:");
+      print(format(digits=2, mvaMADs));
+      jamba::printDebug("mvaMADfactors:");
+      print(format(digits=2, mvaMADfactors));
+      jamba::printDebug("mvaMADoutliers:", mvaMADoutliers);
+   }
+   attr(mvaDatas, "mvaMADs") <- mvaMADs;
+   attr(mvaDatas, "mvaMADoutliers") <- mvaMADoutliers;
+   attr(mvaDatas, "mvaMADfactors") <- mvaMADfactors;
+   attr(mvaDatas, "MADs") <- mvaMADs;
+   attr(mvaDatas, "MADoutliers") <- mvaMADoutliers;
+   attr(mvaDatas, "MADfactors") <- mvaMADfactors;
+   attr(mvaDatas, "outlierMAD") <- outlierMAD;
+   attr(mvaDatas, "outlierRowMin") <- outlierRowMin;
 
    ## check_panel_page() checks if the panel number will cause a new
    ## page to be created, if maintitle is supplied then it will be
@@ -845,7 +882,8 @@ jammaplot <- function
    if (doPlot) {
       iPanelNumber <- 0;
       for(i in whichSamples) {
-         mvaData <- mvaDatas[[i]];
+         #mvaData <- mvaDatas[[i]];
+         mvaData <- mvaDatas[[x_names[i]]];
          iPanelNumber <- iPanelNumber + 1;
          check_panel_page(iPanelNumber, maintitle);
          if (verbose) {
@@ -871,7 +909,7 @@ jammaplot <- function
          groupName <- paste(c(x_names[i],
             groupSuffix[i]),
             collapse="");
-         titleText <- names(mvaDatas)[i];
+         titleText <- x_names[i];
 
          ## Calculate the MAD, i.e. the median absolute deviation from zero
          mvaMAD <- mvaMADs[whichSamples[i]];
@@ -1112,13 +1150,13 @@ jammaplot <- function
 #' where columns are centered versus their relevant control samples within
 #' each group of columns.
 #'
-#' @param indata numeric matrix typically containing measurements (genes)
+#' @param x numeric matrix typically containing measurements (genes)
 #'    as rows, and samples as columns.
 #' @param floor optional numeric floor, below which values are set to the
 #'    floor value, useful when one wants to avoid centering to values which
 #'    may be below a noise threshold which might otherwise result in
 #'    artificially inflated log fold changes.
-#' @param controlSamples optional character vector of colnames(indata) to be
+#' @param controlSamples optional character vector of colnames(x) to be
 #'    used as controls when centering data. In the event that centerGroups
 #'    is also defined, the controlSamples are only used within each
 #'    group of colnames. When this value is NULL or NA, or when any group
@@ -1130,11 +1168,11 @@ jammaplot <- function
 #'    where each list element contains colnames in explicit groups.
 #' @param needsLod logical, indicating whether to perform log2 transformation
 #'    of data prior to centering. If NULL, then if any value is above 40,
-#'    it sets needsLog=TRUE and uses log2(indata) for centering.
+#'    it sets needsLog=TRUE and uses log2(x) for centering.
 #' @param mean logical indicating whether to use row means, or row medians.
 #'    If the matrixStats package is available, it uses
 #'    \code{\link[matrixStats]{rowMedians}} for calculations, otherwise
-#'    falling back to apply(indata, 1, median) which is notably slower for
+#'    falling back to apply(x, 1, median) which is notably slower for
 #'    large data matrices.
 #' @param returnGroupedValues logical indicating whether to append columns
 #'    which contain the control mean or median values used during centering.
@@ -1160,9 +1198,35 @@ jammaplot <- function
 #'
 #' @family jam matrix functions
 #'
+#' @examples
+#' x <- matrix(1:100, ncol=10);
+#' colnames(x) <- letters[1:10];
+#' # basic centering
+#' centerGeneData(x);
+#'
+#' # grouped centering
+#' centerGeneData(x,
+#'    centerGroups=rep(c("A","B"), c(5,5)));
+#'
+#' # centering versus specific control columns
+#' centerGeneData(x,
+#'    controlSamples=letters[c(1:3)]);
+#'
+#' # grouped centering versus specific control columns
+#' centerGeneData(x,
+#'    centerGroups=rep(c("A","B"), c(5,5)),
+#'    controlSamples=letters[c(1:3, 6:8)]);
+#'
+#' # confirm the centerGroups and controlSamples
+#' x_ctr <- centerGeneData(x,
+#'    centerGroups=rep(c("A","B"), c(5,5)),
+#'    controlSamples=letters[c(1:3, 6:8)],
+#'    showGroups=TRUE);
+#' attr(x_ctr, "centerDF");
+#'
 #' @export
 centerGeneData <- function
-(indata,
+(x,
  floor=NA,
  controlSamples=NA,
  centerGroups=NULL,
@@ -1189,12 +1253,12 @@ centerGeneData <- function
    ## are only used within each group, if the samples exist in each group, otherwise
    ## the group mean will be used for centering.
    ##
-   ## centerGroups can be a list of vectors, containing colnames(indata),
-   ## or it can be a vector of group names, in order of colnames(indata).
+   ## centerGroups can be a list of vectors, containing colnames(x),
+   ## or it can be a vector of group names, in order of colnames(x).
    ##
-   ## If centerGroups is a named vector, and all colnames(indata) are contained in named(centerGroups)
-   ## then centerGroups[colnames(indata)] will be used, to ensure they are both
-   ## in consistent order, and to allow using a subset of indata accordingly.
+   ## If centerGroups is a named vector, and all colnames(x) are contained in named(centerGroups)
+   ## then centerGroups[colnames(x)] will be used, to ensure they are both
+   ## in consistent order, and to allow using a subset of x accordingly.
    ##
    ## showGroups=TRUE will by default print a quick data.frame summary showing
    ## samples, centerGroups, and controlSamples.
@@ -1206,38 +1270,49 @@ centerGeneData <- function
    ## mean divided by standard deviation
 
    scale <- match.arg(scale);
+   indata <- x;
    if (!returnValues && !returnGroupedValues) {
       stop("One must be TRUE: returnValues or returnGroupedValues.");
    }
-   useMS <- FALSE;
-   if (suppressPackageStartupMessages(require(matrixStats, quietly=TRUE))) {
-      useMS <- TRUE;
-   }
+   ## Determine whether the "matrixStats" R package is available
+   useMS <- suppressPackageStartupMessages(require(matrixStats));
+
+   ## Separate character columns from numeric columns
    hasCharColumns <- FALSE;
-   if (!class(indata) %in% c("matrix", "numeric")) {
+   if (!any(class(indata) %in% c("matrix", "numeric"))) {
       colClass <- sapply(1:ncol(indata), function(i){class(indata[,i])});
       colClassChar <- which(!colClass %in% c("numeric", "integer"));
       if (length(colClassChar) > 0) {
          hasCharColumns <- TRUE;
-         indataChar <- indata[,colClassChar,drop=FALSE];
-         indata <- as.matrix(indata[,-colClassChar]);
+         indataChar <- indata[,colClassChar, drop=FALSE];
+         indata <- as.matrix(indata[,-colClassChar, drop=FALSE]);
       }
    }
-   #printDebug("controlSamples:", controlSamples, c("orange", "lightgreen"));
-   if (missing(controlSamples) || length(controlSamples) == 0
-       || is.na(controlSamples) || is.null(controlSamples)) {
+
+   if (length(controlSamples) == 0 ||
+       all(is.na(controlSamples))) {
       controls <- rep(TRUE, ncol(indata));
    } else {
-      if (class(controlSamples) %in% c("integer", "numeric") && any(controlSamples <= ncol(indata))) {
-         controls <- rep(FALSE, ncol(indata));
-         controls[controlSamples[controlSamples <= ncol(indata)]] <- TRUE;
-      } else if (any(controlSamples %in% colnames(indata))) {
+      if (any(class(controlSamples) %in% c("integer", "numeric")) &&
+            any(controlSamples <= ncol(indata))) {
+         controls <- (seq_len(ncol(indata)) %in% controlSamples);
+      } else if (length(colnames(indata)) > 0 &&
+            any(controlSamples %in% colnames(indata))) {
          controls <- (colnames(indata) %in% controlSamples);
       } else {
          controls <- rep(TRUE, ncol(indata));
       }
+      if (!any(controls)) {
+         controls <- rep(TRUE, ncol(indata));
+      }
    }
-   controlCols <- colnames(indata)[controls];
+   if (length(colnames(indata)) > 0) {
+      c_names <- colnames(indata);
+      controlCols <- c_names[controls];
+   } else {
+      controlCols <- controls;
+      c_names <- seq_len(ncol(indata));
+   }
 
    ## We will try to auto-detect whether to log2 transform the data
    if (length(needsLog) == 0) {
@@ -1247,66 +1322,66 @@ centerGeneData <- function
       if (verbose) {
          jamba::printDebug("centerGeneData(): ",
             "applying log2 transform:",
-            "log(1 + x)");
+            "log2(1 + x)");
       }
-      indata <- log2(1+indata);
+      indata <- log2(1 + indata);
    }
 
    ## Create summary data.frame
-   centerDF <- as.data.frame(rmNULL(list(sample=colnames(indata),
-      centerGroups=centerGroups,
-      centerControl=colnames(indata) %in% controlCols)));
-   #centerDF <- mmixedOrderDF(centerDF, byCols=c(2,-3));
+   centerDF <- as.data.frame(
+      rmNULL(
+         list(sample=c_names,
+            centerGroups=centerGroups,
+            centerControl=controls)));
+
    if (verbose) {
       jamba::printDebug("centerGeneData(): ",
-         "dim(indata)", dim(indata));
+         "dim(indata):",
+         dim(indata));
       jamba::printDebug("centerGeneData(): ",
-         "dim(centerDF)", dim(centerDF));
-      print(head(centerDF));
+         "dim(centerDF):",
+         dim(centerDF));
    }
    rownames(centerDF) <- centerDF[,"sample"];
 
    ## optionally show summary for visual confirmation
-   if (showGroups && length(centerGroups) > 0) {
+   if (showGroups) {
       print(centerDF);
-      ## We avoid including ch() and colsHead() for now.
-      #ch(centerDF, maxRows=nrow(centerDF), orderBy=c(-2,3));
    }
 
    ## Optionally center groups separately
    if (length(centerGroups) > 0) {
       if (!jamba::igrepHas("list", class(centerGroups))) {
          if (length(names(centerGroups)) > 0) {
-            if (all(colnames(indata) %in% names(centerGroups))) {
-               centerGroups <- centerGroups[colnames(indata)];
+            if (all(c_names %in% names(centerGroups))) {
+               centerGroups <- centerGroups[c_names];
             } else {
                stop("colnames(indata) must be contained in names(centerGroups) when centerGroups has names.");
             }
          }
-         centerGroups <- split(colnames(indata), centerGroups);
+         centerGroups <- split(c_names, centerGroups);
       }
       ## Now iterate through the list
-      #centeredSubsets <- lapply(centerGroups, function(iGroup){
       centeredSubsets <- lapply(nameVectorN(centerGroups), function(iGroupN){
          iGroup <- centerGroups[[iGroupN]];
          iGroupCols <- colnames(indata[,iGroup,drop=FALSE]);
          iControls <- intersect(iGroupCols, controlCols);
          iM <- centerGeneData(indata[,iGroup,drop=FALSE],
             controlSamples=iControls,
-            needsLog=needsLog,
             floor=floor,
             mean=mean,
             returnGroupedValues=returnGroupedValues,
             returnValues=returnValues,
             groupPrefix=iGroupN,
+            needsLog=FALSE,
+            showGroups=FALSE,
             centerGroups=NULL,
-            scale=scale);
-         #if (!returnValues) {
-         #   iM <- iM[,!colnames(iM) %in% iGroup,drop=FALSE];
-         #}
+            scale=scale,
+            ...);
          iM;
       });
       centeredData <- do.call(cbind, centeredSubsets);
+      ## Correct rare cases when colnames are duplicated
       if (length(tcount(colnames(centeredData), minCount=2)) > 0) {
          colnames(centeredData) <- gsub("_v0$", "",
             makeNames(colnames(centeredData), startN=0));
@@ -1317,7 +1392,8 @@ centerGeneData <- function
       #return(centeredData);
    } else if (mean) {
       ## Note: Switched to using sweep() because it is much faster than apply()
-      indataMeans <- rowMeans(indata[,controls,drop=FALSE]);
+      indataMeans <- rowMeans(indata[,controls, drop=FALSE],
+         na.rm=TRUE);
       if (returnGroupedValues && !returnValues) {
          centeredData <- matrix(indataMeans,
             ncol=1,
@@ -1405,7 +1481,10 @@ centerGeneData <- function
       }
    }
    if (hasCharColumns) {
-      jamba::printDebug("Keeping non-numeric columns as-is.");
+      if (verbose) {
+         jamba::printDebug("centerGeneData(): ",
+            "Keeping non-numeric columns as-is.");
+      }
       centeredData <- cbind(indataChar, centeredData)
    }
    attr(centeredData, "centerDF") <- centerDF;
@@ -1415,24 +1494,29 @@ centerGeneData <- function
 
 #' define a polygon hull around points
 #'
-#' Defines a polygon hull to encompass a set of data points
+#' Define a polygon hull to encompass a set of data points
 #'
 #' A polygon hull can be useful as a visual indicator of the location
 #' of a set of points. This function creates a polygon around all points,
 #' and not just the most dense region of points, using
-#' `rgeos::gConvexHull()`. Since that function returns
-#' an object of class SpatialPolygons, this function is mainly a wrapper
-#' which returns the set of coordinates, either as a matrix or as the
-#' SpatialPolygons object type.
+#' `grDevices::chull()`.
+#'
+#' The output is slightly modified to duplicate the first coordinate,
+#' in order to "close" the resulting polygon, which is consistent
+#' with the output of `rgeos::gConvexHull()`.
 #'
 #' @param x two-column numeric matrix of data points, or an object of
-#'    class SpatialPoints.
-#' @param returnClass character class name to return, either matrix or
-#'    SpatialPolygons.
-#' @param verbose logical whether to print verbose output'
+#'    class `sp::SpatialPoints`.
+#' @param returnClass character string indicating the class to return,
+#'    either `"matrix"` to return a two-column numeric matrix, or
+#'    `"SpatialPolygons"` to return `sp::SpatialPolygons`.
+#' @param verbose logical whether to print verbose output.
 #'
 #' @return
-#' A numeric matrix of polygon coordinates.
+#' A two-column numeric matrix of polygon coordinates when
+#' `returnClass="matrix"` by default, or when
+#' `returnClass="SpatialPolygons"` it returns an object
+#' of class `sp::SpatialPolygons`.
 #'
 #' @family jam plot functions
 #'
@@ -1441,14 +1525,14 @@ centerGeneData <- function
 #' xy <- cbind(x=1:10,
 #'    y=sample(1:10, 10));
 #' xyhull <- points2polygonHull(xy);
-#' plot(xy, pch=20, cex=3, col="purple4",
+#' plot(xy, pch=20, cex=1, col="purple4",
 #'    main="Polygon hull around points");
 #' polygon(xyhull, border="purple2", col="transparent");
 #'
 #' @export
 points2polygonHull <- function
 (x,
- returnClass=c("matrix"),
+ returnClass=c("matrix", "SpatialPolygons"),
  ...)
 {
    ## Purpose is to take coordinates of a set of points, and return
@@ -1462,36 +1546,548 @@ points2polygonHull <- function
    ## containing one polygon (suitable for plotting directly) as output.
    ##
    returnClass <- match.arg(returnClass);
-   if (!suppressPackageStartupMessages(require(sp))) {
-      stop("points2polygonHull() requires the sp package SpatialPoints class.");
-   }
-   if (!suppressPackageStartupMessages(require(rgeos))) {
-      stop("points2polygonHull() requires the rgeos package gConvexHull().");
-   }
-   if (jamba::igrepHas("matrix|data.*frame|tbl", class(x))) {
+   x_class <- class(x);
+   if (jamba::igrepHas("matrix|data.*frame|tbl", x_class)) {
       if (ncol(x) != 2) {
-         stop(paste0("points2polygonHull() requires x as a",
-            " matrix,data.frame,tbl",
+         stop(paste0("points2polygonHull() requires x with class",
+            " matrix, data.frame, tibble, tbl",
             " to contain 2 columns."));
       }
-      x <- SpatialPoints(x);
-   } else if (jamba::igrepHas("SpatialPoints", class(x))) {
-      #SpatialPoints(x)
+   } else if (jamba::igrepHas("SpatialPoints", x_class)) {
+      x <- SpatialPoints(x)@coords;
    }
 
    ## Determine convex hull coordinates
-   gH <- rgeos::gConvexHull(x);
-   if (returnClass %in% "matrix") {
-      if (jamba::igrepHas("polygons", class(gH))) {
-         gHcoords <- gH@polygons[[1]]@Polygons[[1]]@coords;
-      } else if (jamba::igrepHas("lines", class(gH))) {
-         gHcoords <- gH@lines[[1]]@Lines[[1]]@coords;
-      } else if (jamba::igrepHas("points", class(gH))) {
-         gHcoords <- gH@coords;
-      }
-   } else {
-      gHcoords <- gH;
+   x_hull <- x[grDevices::chull(x[,1:2]),,drop=FALSE];
+   if (nrow(x_hull) > 2) {
+      ## Add final row to "close" the polygon
+      x_hull <- rbind(x_hull, x_hull[1,,drop=FALSE]);
    }
-   gHcoords;
+   if ("SpatialPolygons" %in% returnClass) {
+      spp <- SpatialPolygons(list(
+         Polygons(list(
+            Polygon(x_hull)),
+            "hull"
+         )
+      ));
+      return(spp);
+   }
+   return(x_hull);
 }
 
+#' Center gene data (modified)
+#'
+#' Performs per-row centering on a numeric matrix
+#'
+#' This function centers data by subtracting the median or
+#' mean for each row.
+#'
+#' Optionally columns can be grouped using the
+#' argument `centerGroups`, which will center
+#' data within each group independently.
+#'
+#' Data can be centered relative to specific control columns
+#' using the argument `controlSamples`. When used with
+#' `centerGroups`, each group of columns defined by
+#' `centerGroups` that does not contain a corresponding
+#' value in `controlSamples` will be centered using the
+#' entire group.
+#'
+#' Confirm the `centerGroups` and `controlSamples` are
+#' correct using the attribute `"center_df"` of the results,
+#' see examples below.
+#'
+#' Note: This function assumes input data is log2-transformed,
+#' or appropriately transformed to fit the assumption of
+#' normality. This assumption is necessary for two reasons:
+#'
+#' 1. The group value (mean or median) is correct only when
+#' data is transformed so the mean or median is not affected
+#' by skewed data. Alternatively, `rowStatsFunc` can be
+#' used to specify a custom group summary function.
+#' 2. The centering subtracts the group value from each column
+#' value.
+#'
+#' @param x numeric matrix of input data. See assumptions,
+#'    that data is assumed to be log2-transformed, or otherwise
+#'    appropriately transformed.
+#' @param centerGroups character vector of group names, or
+#'    `NULL` if there are no groups.
+#' @param na.rm logical indicating whether NA values should be
+#'    ignored for summary statistics. This argument is passed
+#'    to the corresponding row stats function.
+#' @param controlSamples character vector of values in `colnames(x)`
+#'    which defines the columns to use when calculating group
+#'    summary values.
+#' @param useMedian logical indicating whether to use group median
+#'    values when calculating summary statistics (`TRUE`), or
+#'    group means (`FALSE`). In either case, when `rowStatsFunc`
+#'    is provided, it is used instead.
+#' @param rmOutliers logical indicating whether to perform outlier
+#'    detection and removal prior to row group stats. This
+#'    argument is passed to `jamba::rowGroupMeans()`. Note that
+#'    outliers are only removed during the row group summary step,
+#'    and not in the centered data.
+#' @param madFactor numeric value passed to `jamba::rowGroupMeans()`,
+#'    indicating the MAD factor threshold to use when `rmOutliers=TRUE`.
+#'    The MAD of each row group is computed, the overall group median
+#'    MAD is used to define 1x MAD factor, and any MAD more than
+#'    `madFactor` times the group median MAD is considered an outlier
+#'    and is removed. The remaining data is used to compute row
+#'    group values.
+#' @param rowStatsFunc optional function used to calculate row group
+#'    summary values. This function should take a numeric matrix as
+#'    input, and return a one-column numeric matrix as output, or
+#'    a numeric vector with length `nrow(x)`. The function should
+#'    also accept `na.rm` as an argument.
+#' @param returnGroupedValues logical indicating whether to include
+#'    the numeric matrix of row group values used during centering,
+#'    returned in the attributes with name `"x_group"`.
+#' @param returnGroups logical indicating whether to return the
+#'    centering summary data.frame in attributes with name "center_df".
+#' @param verbose logical indicating whether to print verbose output.
+#' @param ... additional arguments are passed to `jamba::rowGroupMeans()`.
+#'
+#' @family jam matrix functions
+#'
+#' @examples
+#' x <- matrix(1:100, ncol=10);
+#' colnames(x) <- letters[1:10];
+#' # basic centering
+#' centerGeneData_new(x);
+#'
+#' # grouped centering
+#' centerGeneData_new(x,
+#'    centerGroups=rep(c("A","B"), c(5,5)));
+#'
+#' # centering versus specific control columns
+#' centerGeneData_new(x,
+#'    controlSamples=letters[c(1:3)]);
+#'
+#' # grouped centering versus specific control columns
+#' centerGeneData_new(x,
+#'    centerGroups=rep(c("A","B"), c(5,5)),
+#'    controlSamples=letters[c(1:3, 6:8)]);
+#'
+#' # confirm the centerGroups and controlSamples
+#' x_ctr <- centerGeneData_new(x,
+#'    centerGroups=rep(c("A","B"), c(5,5)),
+#'    controlSamples=letters[c(1:3, 6:8)],
+#'    returnGroups=TRUE);
+#' attr(x_ctr, "center_df");
+#'
+#' @export
+centerGeneData_new <- function
+(x,
+ centerGroups=NULL,
+ na.rm=TRUE,
+ controlSamples=NULL,
+ useMedian=TRUE,
+ rmOutliers=FALSE,
+ madFactor=5,
+ rowStatsFunc=NULL,
+ returnGroupedValues=FALSE,
+ returnGroups=FALSE,
+ verbose=FALSE,
+ ...)
+{
+   ## This function is a refactor of centerGeneData() to consolidate
+   ## some logic into rowGroupMeans()
+   if (length(x) == 0 || ncol(x) == 0 || nrow(x) == 0) {
+      return(x);
+   }
+
+   ## Ensure that x has colnames
+   if (length(colnames(x)) == 0) {
+      colnames(x) <- seq_len(ncol(x));
+   }
+
+   ## Process controlSamples
+   if (any(class(controlSamples) %in% c("numeric", "integer"))) {
+      ## Numeric controlSamples are used to subset colnames(x)
+      if (!"integer" %in% class(controlSamples) &&
+            !all(controlSamples == as.integer(controlSamples))) {
+         stop("controlSamples must be integer or numeric integer values, decimal values were detected.");
+      }
+      controlSamples <- colnames(x)[seq_len(ncol(x)) %in% controlSamples];
+   } else {
+      controlSamples <- intersect(controlSamples, colnames(x));
+   }
+   if (length(controlSamples) == 0) {
+      if (verbose) {
+         printDebug("centerGeneData_new(): ",
+            "controlSamples using all colnames(x)");
+      }
+      controlSamples <- colnames(x);
+   }
+
+   ## Process centerGroups
+   if (length(centerGroups) == 0) {
+      centerGroups <- rep("Group", ncol(x));
+   } else if (length(centerGroups) == 1) {
+      ## Note that NA is converted to "NA"
+      centerGroups <- rep(
+         rmNA(centerGroups,
+            naValue="NA"),
+         length.out=ncol(x));
+   }
+   if (length(centerGroups) < ncol(x)) {
+      stop("length(centerGroups) must equal ncol(x), or be length 0 or 1 to indicate no groups.");
+   }
+   names(centerGroups) <- colnames(x);
+
+   ## Confirm all centerGroups contains controlSamples,
+   ## use all samples when any centerGroup has no controlSamples
+   samples_l <- split(colnames(x),
+      centerGroups);
+   controls_l <- lapply(samples_l, function(i){
+      if (!any(i %in% controlSamples)) {
+         i;
+      } else {
+         intersect(i, controlSamples);
+      }
+   })
+   controls_v <- unname(unlist(controls_l));
+   center_df <- data.frame(sample=colnames(x),
+      centerGroups=centerGroups,
+      controlSamples=colnames(x) %in% controls_v);
+
+   ## Calculate row summary values
+   x_group <- rowGroupMeans(x[,controls_v, drop=FALSE],
+      na.rm=na.rm,
+      groups=centerGroups[controls_v],
+      useMedian=useMedian,
+      rmOutliers=rmOutliers,
+      madFactor=madFactor,
+      rowStatsFunc=rowStatsFunc,
+      verbose=verbose,
+      ...);
+
+   ## Now produce centered values by subtracting the group summary values
+   x_centered <- (x - x_group[,centerGroups[colnames(x)], drop=FALSE]);
+
+   if (returnGroupedValues) {
+      attr(x_centered, "x_group") <- x_group;
+   }
+   if (returnGroups) {
+      attr(x_centered, "center_df") <- center_df;
+   }
+
+   return(x_centered);
+}
+
+#' Calculate MA-plot data
+#'
+#' Calculate MA-plot data
+#'
+#' This function takes a numeric matrix as input, and calculates
+#' data sufficient to produce MA-plots. The default output is a
+#' list of two-column numeric matrices with `"x"` and `"y"` coordinates,
+#' representing the group median and difference from median,
+#' respectively.
+#'
+#' The mean value can be used by setting `useMedian=FALSE`.
+#'
+#' Samples can be grouped using the argument `centerGroups`.
+#' In this case the y-axis value will be "difference from
+#' group median."
+#'
+#' Control samples can be specified for centering using the
+#' argument `controlSamples`. In this case, the y-axis value will
+#' be "difference from control median".
+#'
+#' The sample grouping, and control samples can be combined,
+#' in which case the y-axis values will be "difference from
+#' the control median within the centering group."
+#'
+#' @family jam matrix functions
+#'
+#' @param x numeric matrix typically containing log-normal measurements,
+#'    with measurement rows, and sample columns.
+#' @param na.rm logical indicating whether to ignore NA values
+#'    during numeric summary functions.
+#' @param controlSamples character vector containing values in
+#'    `colnames(x)` to define control samples used during centering.
+#'    These values are passed to `centerGeneData()`.
+#' @param centerGroups character vector with length equal to `ncol(x)`
+#'    which defines the group for each column in `x`. Data will
+#'    be centered within each group.
+#' @param groupedX logical indicating how to calculate the x-axis
+#'    value when `centerGroups` contains multiple groups. When
+#'    groupedX=TRUE, the mean of each group median is used, which
+#'    has the effect of representing each group equally. When
+#'    groupedX=FALSE, the median across all columns is used, which
+#'    can have the effect of preferring sample groups with a larger
+#'    number of columns.
+#' @param useMedian logical indicating whether to use the median
+#'    values when calculating the x-axis and during data centering.
+#'    The median naturally reduces the effect of outlier points on
+#'    the resulting MA-plots., when compared to using the mean.
+#'    When useMedian=FALSE, the mean value is used.
+#' @param useMean (deprecated) logical indicating whether to use the
+#'    mean instead of the median value. This argument is being removed
+#'    in order to improve consistency with other Jam package functions.
+#' @param whichSamples character vector containing `colnames(x)`, or
+#'    integer vector referencing column numbers in `x`. This argument
+#'    specifies which columns to return, but does not change the columns
+#'    used to define the group centering values. For example, the
+#'    group medians are calculated using all the data, but only the
+#'    samples in `whichSamples` are centered to produce MA-plot data.
+#' @param noise_floor numeric value indicating the minimum numeric value
+#'    allowed in the input matrix `x`. When `NULL` or `-Inf` no noise
+#'    floor is applied. It is common to set `noise_floor=0` to limit
+#'    MA-plot data to use values zero and above.
+#' @param noise_floor_value single value used to replace numeric values
+#'    at or below `noise_floor` when `noise_floor` is not NULL. By default,
+#'    `noise_floor_value=noise_floor` which means values at or below
+#'    the noise floor are set to the floor. Another useful option is
+#'    `noise_floor_value=NA` which has the effect of removing the point
+#'    from the MA-plot altogether. This option is recommended for sparse
+#'    data matrices where the presence of values at or below zero are
+#'    indicative of missing data (zero-inflated data) and does not
+#'    automatically reflect an actual value of zero.
+#' @param naValue single value used to replace any `NA` values in
+#'    the input matrix `x`. This argument can be useful to replace
+#'    `NA` values with something like zero.
+#' @param mad_row_min numeric value defining the minimum group
+#'    value, corresponding to the x-axis position on the MA-plot,
+#'    required for a row to be included in the MAD calculation.
+#'    This threshold is useful to filter outlier data below a noise
+#'    threshold, so that the MAD calculation will include only the
+#'    data above that value. For example, with count data, it is
+#'    useful to filter out counts below roughly 8, where Poisson
+#'    noise is a more dominant component than real count data.
+#'    Remember that count data should already be log2-transformed,
+#'    so the threshold should also be identically transformed,
+#'    for example using `log2(1 + 8)` to set a minimum count
+#'    threshold of at least 8.
+#' @param grouped_mad logical indicating whether the MAD value
+#'    should be calculated per group when `centerGroups` is
+#'    supplied, from which the MAD factor values are derived.
+#'    When `TRUE` it has the effect of highlighting outliers
+#'    within each group using the variability in that group.
+#'    When `FALSE` the overall MAD is calculated, and a
+#'    particularly high variability group may have all its
+#'    group members labeled with a high MAD factor.
+#' @param centerFunc function used for centering data, by default
+#'    one of the functions `centerGeneData()` or `centerGeneData_new()`.
+#'    This argument will be removed in the near future and is mainly
+#'    intended to allow testing the two centering functions.
+#' @param returnType character string indicating the format of data
+#'    to return: `"ma_list"` is a list of MA-plot two-column
+#'    numeric matrices with colnames `c("x","y")`; "tidy"
+#'    returns a tall `data.frame` suitable for use in ggplot2.
+#' @param verbose logical indicating whether to print verbose output.
+#' @param ... additional arguments are ignored.
+#'
+#'
+#' @export
+jammacalc <- function
+(x,
+ na.rm=TRUE,
+ controlSamples=NULL,
+ centerGroups=NULL,
+ groupedX=TRUE,
+ useMedian=TRUE,
+ useMean=NULL,
+ whichSamples=NULL,
+ noise_floor=-Inf,
+ noise_floor_value=noise_floor,
+ naValue=NA,
+ mad_row_min=0,
+ grouped_mad=TRUE,
+ centerFunc=centerGeneData_new,
+ returnType=c("ma_list", "tidy"),
+ verbose=FALSE,
+ ...)
+{
+   ## Purpose is to separate jammaplot() from the underlying
+   ## math that produces the data for MA-plots.
+   if (length(x) == 0 || ncol(x) == 0) {
+      return(NULL);
+   }
+   returnType <- match.arg(returnType);
+   if (length(useMean) > 0) {
+      useMedian <- !useMean;
+   }
+
+   ## Validate whichSamples
+   if (length(whichSamples) == 0) {
+      whichSamples <- seq_len(ncol(x));
+   } else if (any(c("numeric","integer") %in% class(whichSamples))) {
+      whichSamples <- whichSamples[whichSamples %in% seq_len(ncol(x))];
+      if (length(whichSamples) == 0) {
+         whichSamples <- seq_len(ncol(x));
+      }
+   } else {
+      whichSamples <- whichSamples[whichSamples %in% colnames(x)];
+   }
+   if (verbose) {
+      printDebug("jammacalc(): ",
+         "whichSamples:",
+         whichSamples);
+   }
+
+   if (!suppressPackageStartupMessages(require(matrixStats))) {
+      rowMedians <- function(x, na.rm=TRUE) {
+         apply(x, 1, median, na.rm=na.rm);
+      }
+      colMedians <- function(x, na.rm=TRUE) {
+         apply(x, 2, median, na.rm=na.rm);
+      }
+   }
+
+   ## Apply noise_floor if needed
+   noise_floor <- head(noise_floor, 1);
+   if (length(noise_floor) == 1 && !is.infinite(noise_floor)) {
+      if (all(noise_floor == noise_floor_value)) {
+         if (rmNA(naValue=0, any(x < noise_floor))) {
+            if (verbose) {
+               printDebug("jammacalc(): ",
+                  "flooring values below ",
+                  noise_floor,
+                  " to ",
+                  noise_floor_value);
+            }
+            x[x < noise_floor] <- noise_floor_value;
+         }
+      } else if (rmNA(naValue=0, any(x <= noise_floor))) {
+         if (verbose) {
+            printDebug("jammacalc(): ",
+               "flooring values at or below ",
+               noise_floor,
+               " to ",
+               head(noise_floor_value, 10));
+         }
+         x[x <= noise_floor] <- noise_floor_value;
+      }
+   }
+   ## Replace NA if needed
+   if (!all(naValue %in% c(NA))) {
+      if (any(is.na(x))) {
+         if (verbose) {
+            printDebug("jammacalc(): ",
+               "replacing NA with ",
+               naValue);
+         }
+      }
+   }
+
+   ## Center the data in one step
+   x_ctr <- centerFunc(x,
+      na.rm=na.rm,
+      controlSamples=controlSamples,
+      centerGroups=centerGroups,
+      useMedian=useMedian,
+      returnGroups=TRUE,
+      returnGroupedValues=TRUE,
+      ...);
+   rownames(x_ctr) <- rownames(x);
+
+   ## Pull out grouped data
+   if ("x_group" %in% names(attributes(x_ctr))) {
+      x_grp <- attr(x_ctr, "x_group");
+   } else {
+      if (length(centerGroups) == 0) {
+         grp_col <- vigrep("^group_me", colnames(x_ctr));
+         x_grp <- x_ctr[,grp_col,drop=FALSE];
+      } else if (all(centerGroups %in% colnames(x_ctr))) {
+         grp_col <- provigrep(paste0("^", unique(centerGroups), "_me"), colnames(x_ctr));
+         x_grp <- x_ctr[,grp_col,drop=FALSE];
+      } else {
+         stop("The group values could not be detected from centerFunc().");
+      }
+   }
+   rownames(x_grp) <- rownames(x);
+
+   ## Determine the appropriate x-axis value to use
+   if (groupedX && ncol(x_grp) > 1 && length(unique(centerGroups)) > 1) {
+      if (verbose) {
+         printDebug("jammacalc(): ",
+            "Using group values for MA-plot x-axis values");
+      }
+   } else {
+      groupedX <- FALSE;
+      if (useMedian) {
+         if (verbose) {
+            printDebug("jammacalc(): ",
+               "using rowMedian() of all values for x.");
+         }
+         x_use <- rowMedians(x,
+            na.rm=na.rm);
+      } else {
+         if (verbose) {
+            printDebug("jammacalc(): ",
+               "using rowMean() of all values for x.");
+         }
+         x_use <- rowMeans(x,
+            na.rm=na.rm);
+      }
+      names(x_use) <- rownames(x);
+   }
+
+   ## Calculate per-column MAD values, the grouped MAD values
+   ## First create a matrix of centered values
+   x_mad_m <- as.matrix(x_ctr);
+   ## blank entries where the x-axis value is not above mad_row_min
+   if (groupedX) {
+      x_mad_m[x_grp[,centerGroups] < mad_row_min] <- NA;
+   } else {
+      x_mad_m[x_use < mad_row_min] <- NA;
+   }
+   ## Compute MAD values for all columns
+   x_mads <- nameVector(colMedians(abs(x_mad_m), na.rm=TRUE),
+      colnames(x_ctr));
+   if (grouped_mad && length(unique(centerGroups)) > 1) {
+      if (verbose) {
+         printDebug("jammacalc(): ",
+            "Calculating grouped MAD values.");
+      }
+      x_grp_mads <- tapply(x_mads, centerGroups, median, na.rm=TRUE);
+      x_mad_factors <- x_mads / x_grp_mads[as.character(centerGroups)];
+      names(x_mad_factors) <- names(x_mads);
+   } else {
+      if (verbose) {
+         printDebug("jammacalc(): ",
+            "Calculating global MAD values.");
+      }
+      x_grp_mads <- median(x_mads, na.rm=TRUE);
+      names(x_grp_mads) <- "global";
+      x_mad_factors <- x_mads / x_grp_mads;
+      names(x_mad_factors) <- names(x_mads);
+   }
+
+   ## Calculate the list of two-column matrices
+   jammadata <- lapply(whichSamples, function(i){
+      if (groupedX) {
+         cbind(x=x_grp[,as.character(centerGroups[i])],
+            y=x_ctr[,i]);
+      } else {
+         cbind(x=x_use,
+            y=x_ctr[,i]);
+      }
+   });
+   names(jammadata) <- colnames(x)[whichSamples];
+
+   if ("tidy" %in% returnType) {
+      jammadata <- rbindList(lapply(names(jammadata), function(i){
+         j <- jammadata[[i]];
+         data.frame(row=rownames(j),
+            sample=i,
+            colnum=match(i, colnames(x)),
+            x=j[,"x"],
+            y=j[,"y"]
+         )
+      }));
+      ## Suitable for
+      ## ggplot2::ggplot(jammmadata_df, ggplot2::aes(x=x, y=y)) +
+      ## ggplot2::geom_point() + ggplot2::facet_wrap(~sample) + colorjam::theme_jam()
+   }
+
+   ## Add MAD data to jammadata
+   attr(jammadata, "MADs") <- x_mads;
+   attr(jammadata, "groupMADs") <- x_grp_mads;
+   attr(jammadata, "MADfactors") <- x_mad_factors;
+
+   return(jammadata);
+}

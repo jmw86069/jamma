@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.8.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.10.900</span>
       </span>
     </div>
 
@@ -125,7 +125,7 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>centerGeneData</span>(<span class='no'>indata</span>, <span class='kw'>floor</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>controlSamples</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
+    <pre class="usage"><span class='fu'>centerGeneData</span>(<span class='no'>x</span>, <span class='kw'>floor</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>controlSamples</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
   <span class='kw'>centerGroups</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>needsLog</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>returnGroupedValues</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>returnValues</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>groupPrefix</span> <span class='kw'>=</span> <span class='st'>"group"</span>, <span class='kw'>showGroups</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>scale</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"none"</span>,
@@ -135,7 +135,7 @@
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>indata</th>
+      <th>x</th>
       <td><p>numeric matrix typically containing measurements (genes)
 as rows, and samples as columns.</p></td>
     </tr>
@@ -148,7 +148,7 @@ artificially inflated log fold changes.</p></td>
     </tr>
     <tr>
       <th>controlSamples</th>
-      <td><p>optional character vector of colnames(indata) to be
+      <td><p>optional character vector of colnames(x) to be
 used as controls when centering data. In the event that centerGroups
 is also defined, the controlSamples are only used within each
 group of colnames. When this value is NULL or NA, or when any group
@@ -167,7 +167,7 @@ where each list element contains colnames in explicit groups.</p></td>
       <td><p>logical indicating whether to use row means, or row medians.
 If the matrixStats package is available, it uses
 <code><a href='https://www.rdocumentation.org/packages/matrixStats/topics/rowMedians'>rowMedians</a></code> for calculations, otherwise
-falling back to apply(indata, 1, median) which is notably slower for
+falling back to apply(x, 1, median) which is notably slower for
 large data matrices.</p></td>
     </tr>
     <tr>
@@ -194,7 +194,7 @@ using the median instead of the mean.</p></td>
       <th>needsLod</th>
       <td><p>logical, indicating whether to perform log2 transformation
 of data prior to centering. If NULL, then if any value is above 40,
-it sets needsLog=TRUE and uses log2(indata) for centering.</p></td>
+it sets needsLog=TRUE and uses log2(x) for centering.</p></td>
     </tr>
     </table>
     
@@ -219,7 +219,33 @@ row control value via controlSamples, Similarly, columns can be grouped,
 where columns are centered versus their relevant control samples within
 each group of columns.</p>
     
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
+    <div class='dont-index'><p>Other jam matrix functions: <code><a href='centerGeneData_new.html'>centerGeneData_new</a></code>,
+  <code><a href='jammacalc.html'>jammacalc</a></code></p></div>
+    
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fl'>1</span>:<span class='fl'>100</span>, <span class='kw'>ncol</span><span class='kw'>=</span><span class='fl'>10</span>);
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/colnames'>colnames</a></span>(<span class='no'>x</span>) <span class='kw'>&lt;-</span> <span class='no'>letters</span>[<span class='fl'>1</span>:<span class='fl'>10</span>];
+<span class='co'># basic centering</span>
+<span class='fu'>centerGeneData</span>(<span class='no'>x</span>);</div><div class='output co'>#&gt; <span class='error'>Error in rmNULL(list(sample = c_names, centerGroups = centerGroups, centerControl = controls)): could not find function "rmNULL"</span></div><div class='input'>
+<span class='co'># grouped centering</span>
+<span class='fu'>centerGeneData</span>(<span class='no'>x</span>,
+   <span class='kw'>centerGroups</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"A"</span>,<span class='st'>"B"</span>), <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>5</span>,<span class='fl'>5</span>)));</div><div class='output co'>#&gt; <span class='error'>Error in rmNULL(list(sample = c_names, centerGroups = centerGroups, centerControl = controls)): could not find function "rmNULL"</span></div><div class='input'>
+<span class='co'># centering versus specific control columns</span>
+<span class='fu'>centerGeneData</span>(<span class='no'>x</span>,
+   <span class='kw'>controlSamples</span><span class='kw'>=</span><span class='no'>letters</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>:<span class='fl'>3</span>)]);</div><div class='output co'>#&gt; <span class='error'>Error in rmNULL(list(sample = c_names, centerGroups = centerGroups, centerControl = controls)): could not find function "rmNULL"</span></div><div class='input'>
+<span class='co'># grouped centering versus specific control columns</span>
+<span class='fu'>centerGeneData</span>(<span class='no'>x</span>,
+   <span class='kw'>centerGroups</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"A"</span>,<span class='st'>"B"</span>), <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>5</span>,<span class='fl'>5</span>)),
+   <span class='kw'>controlSamples</span><span class='kw'>=</span><span class='no'>letters</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>:<span class='fl'>3</span>, <span class='fl'>6</span>:<span class='fl'>8</span>)]);</div><div class='output co'>#&gt; <span class='error'>Error in rmNULL(list(sample = c_names, centerGroups = centerGroups, centerControl = controls)): could not find function "rmNULL"</span></div><div class='input'>
+<span class='co'># confirm the centerGroups and controlSamples</span>
+<span class='no'>x_ctr</span> <span class='kw'>&lt;-</span> <span class='fu'>centerGeneData</span>(<span class='no'>x</span>,
+   <span class='kw'>centerGroups</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"A"</span>,<span class='st'>"B"</span>), <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>5</span>,<span class='fl'>5</span>)),
+   <span class='kw'>controlSamples</span><span class='kw'>=</span><span class='no'>letters</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>:<span class='fl'>3</span>, <span class='fl'>6</span>:<span class='fl'>8</span>)],
+   <span class='kw'>showGroups</span><span class='kw'>=</span><span class='fl'>TRUE</span>);</div><div class='output co'>#&gt; <span class='error'>Error in rmNULL(list(sample = c_names, centerGroups = centerGroups, centerControl = controls)): could not find function "rmNULL"</span></div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/attr'>attr</a></span>(<span class='no'>x_ctr</span>, <span class='st'>"centerDF"</span>);</div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): object 'x_ctr' not found</span></div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -229,7 +255,11 @@ each group of columns.</p>
       <li><a href="#value">Value</a></li>
 
       <li><a href="#details">Details</a></li>
-          </ul>
+
+      <li><a href="#see-also">See also</a></li>
+      
+      <li><a href="#examples">Examples</a></li>
+    </ul>
 
   </div>
 </div>

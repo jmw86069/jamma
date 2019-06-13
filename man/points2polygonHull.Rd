@@ -4,38 +4,43 @@
 \alias{points2polygonHull}
 \title{define a polygon hull around points}
 \usage{
-points2polygonHull(x, returnClass = c("matrix"), ...)
+points2polygonHull(x, returnClass = c("matrix", "SpatialPolygons"), ...)
 }
 \arguments{
 \item{x}{two-column numeric matrix of data points, or an object of
-class SpatialPoints.}
+class \code{sp::SpatialPoints}.}
 
-\item{returnClass}{character class name to return, either matrix or
-SpatialPolygons.}
+\item{returnClass}{character string indicating the class to return,
+either \code{"matrix"} to return a two-column numeric matrix, or
+\code{"SpatialPolygons"} to return \code{sp::SpatialPolygons}.}
 
-\item{verbose}{logical whether to print verbose output'}
+\item{verbose}{logical whether to print verbose output.}
 }
 \value{
-A numeric matrix of polygon coordinates.
+A two-column numeric matrix of polygon coordinates when
+\code{returnClass="matrix"} by default, or when
+\code{returnClass="SpatialPolygons"} it returns an object
+of class \code{sp::SpatialPolygons}.
 }
 \description{
-Defines a polygon hull to encompass a set of data points
+Define a polygon hull to encompass a set of data points
 }
 \details{
 A polygon hull can be useful as a visual indicator of the location
 of a set of points. This function creates a polygon around all points,
 and not just the most dense region of points, using
-\code{rgeos::gConvexHull()}. Since that function returns
-an object of class SpatialPolygons, this function is mainly a wrapper
-which returns the set of coordinates, either as a matrix or as the
-SpatialPolygons object type.
+\code{grDevices::chull()}.
+
+The output is slightly modified to duplicate the first coordinate,
+in order to "close" the resulting polygon, which is consistent
+with the output of \code{rgeos::gConvexHull()}.
 }
 \examples{
 set.seed(123);
 xy <- cbind(x=1:10,
    y=sample(1:10, 10));
 xyhull <- points2polygonHull(xy);
-plot(xy, pch=20, cex=3, col="purple4",
+plot(xy, pch=20, cex=1, col="purple4",
    main="Polygon hull around points");
 polygon(xyhull, border="purple2", col="transparent");
 

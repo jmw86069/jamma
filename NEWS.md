@@ -1,3 +1,68 @@
+# jamma version 0.0.10.900
+
+## new functions
+
+* `jammacalc()` is used to calculate data ready for
+MA-plots, to separate this logic from the `jammaplot()`
+function used for visualization.
+* The `jammacalc()` function slightly
+improves upon the `jammaplot()` calculations by
+simplifying the centering by calling `centerGeneData_new()`
+(or `centerGeneData()`) instead of performing similar
+calculations itself. The results should be notably
+faster especially for larger data matrices.
+* The `jammacalc()` function also changes the result
+of `groupedX=TRUE`, which now correctly uses each group
+median value instead of a median across the group medians.
+It allows each group of MA-plot panels defined by
+`centerGroups` to be completely independent of other groups,
+which has benefits and discrepancies that depend upon how
+the `centerGroups` values are defined relative to the intended
+downstream statistical comparisons. For example, we recommend
+centerGroups broadly include the sample groups that will
+eventually be compared, specifically so the distributions are
+directly compared in the MA-plot visualization. However,
+certain per-group QC checks are ideally performed by using
+`centerGroups` for each sample group. Overall, be aware of
+the effects of each scenario, and adjust the expectations
+and assumptions accordingly.
+* `jammaplot()` new argument `ma_method` where
+`ma_method="old"` calls the previous code for MA-plot calculations,
+and `ma_method="jammacalc"` calls `jammacalc()` with the
+newer equivalent calculations.
+
+## changes
+
+* Added `"colorjam"` to R package dependencies.
+* Removed R package dependencies on `"rgeos"` and `"sp"`.
+* `points2polygonHull()` now uses `grDevices::chull()`
+instead of `rgeos::gConvexHull()`. The function accepts
+numeric `matrix`, `data.frame`, `tibble`, `tbl`, and `SpatialPoints`
+input, and can output either a two-column numeric `matrix`,
+or `SpatialPolygons` as output.
+* the default argument to `centerGeneData()` was changed from
+`"indata"` to `"x"` to be consistent with Tidyverse syntax.
+
+## future changes to centerGeneData()
+
+* `centerGeneData()` will soon be replaced by `centerGeneData_new()`
+after a period of testing. The functions should be equivalent.
+The new function uses `jamba::rowGroupMeans()` to produce the
+summary values used for centering. The change will consolidate the
+logic of calculating row group values into `jamba::rowGroupMeans()`,
+as opposed to duplicating only certain parts of that functionality
+inside `centerGeneData()`. The new function also surfaces outlier
+detection and removal during centering in one step.
+The potential downside, and need for a period of testing, is that
+the full input matrix is centered versus the expanded row group
+matrix in one step. Briefly there will be two matrices with identical
+dimensions, which will produce a higher memory profile.
+For extremely large matrices, this change may become problematic,
+and may require an alternative strategy during the centering step.
+
+* `jammaplot()` will be refactored to streamline certain calculations
+using the newer `centerGeneData_new()`.
+
 # jamma version 0.0.9.900
 
 ## changes to jammaplot()

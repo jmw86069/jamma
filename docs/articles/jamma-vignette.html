@@ -30,7 +30,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.8.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.10.900</span>
       </span>
     </div>
 
@@ -83,7 +83,7 @@
       <h1>Introduction to jamma</h1>
                         <h4 class="author">James M. Ward</h4>
             
-            <h4 class="date">2019-02-13</h4>
+            <h4 class="date">2019-06-13</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jmw86069/jamma/blob/master/vignettes/jamma-vignette.Rmd"><code>vignettes/jamma-vignette.Rmd</code></a></small>
       <div class="hidden name"><code>jamma-vignette.Rmd</code></div>
@@ -92,11 +92,6 @@
 
     
     
-<pre><code>## 
-## Attaching package: 'jamba'</code></pre>
-<pre><code>## The following objects are masked from 'package:jamma':
-## 
-##     coordPresets, drawLabels</code></pre>
 <div id="introduction-to-jamma" class="section level1">
 <h1 class="hasAnchor">
 <a href="#introduction-to-jamma" class="anchor"></a>Introduction to jamma</h1>
@@ -115,6 +110,9 @@
 <p>A reasonable example MA-plot can be created using data from the affydata package.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="cf">if</span> (<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/message">suppressPackageStartupMessages</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">require</a></span>(affydata))) {
    <span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(Dilution);
+   <span class="cf">if</span> (<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Extremes">max</a></span>(<span class="kw">exprs</span>(Dilution), <span class="dt">na.rm=</span><span class="ot">TRUE</span>) <span class="op">&gt;</span><span class="st"> </span><span class="dv">100</span>) {
+      <span class="kw">exprs</span>(Dilution) &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">log2</a></span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw">exprs</span>(Dilution));
+   }
    <span class="kw"><a href="../reference/jammaplot.html">jammaplot</a></span>(<span class="kw">exprs</span>(Dilution));
 }</code></pre></div>
 <p><img src="jammaVignette-Dilution-1.png" width="768"></p>

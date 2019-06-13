@@ -32,7 +32,7 @@
 
 <meta property="og:title" content="define a polygon hull around points — points2polygonHull" />
 
-<meta property="og:description" content="Defines a polygon hull to encompass a set of data points" />
+<meta property="og:description" content="Define a polygon hull to encompass a set of data points" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.8.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.10.900</span>
       </span>
     </div>
 
@@ -121,11 +121,11 @@
 
     <div class="ref-description">
     
-    <p>Defines a polygon hull to encompass a set of data points</p>
+    <p>Define a polygon hull to encompass a set of data points</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>points2polygonHull</span>(<span class='no'>x</span>, <span class='kw'>returnClass</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"matrix"</span>), <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>points2polygonHull</span>(<span class='no'>x</span>, <span class='kw'>returnClass</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"matrix"</span>, <span class='st'>"SpatialPolygons"</span>), <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -133,32 +133,36 @@
     <tr>
       <th>x</th>
       <td><p>two-column numeric matrix of data points, or an object of
-class SpatialPoints.</p></td>
+class <code><a href='https://www.rdocumentation.org/packages/sp/topics/SpatialPoints'>sp::SpatialPoints</a></code>.</p></td>
     </tr>
     <tr>
       <th>returnClass</th>
-      <td><p>character class name to return, either matrix or
-SpatialPolygons.</p></td>
+      <td><p>character string indicating the class to return,
+either <code>"matrix"</code> to return a two-column numeric matrix, or
+<code>"SpatialPolygons"</code> to return <code><a href='https://www.rdocumentation.org/packages/sp/topics/SpatialPolygons'>sp::SpatialPolygons</a></code>.</p></td>
     </tr>
     <tr>
       <th>verbose</th>
-      <td><p>logical whether to print verbose output'</p></td>
+      <td><p>logical whether to print verbose output.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A numeric matrix of polygon coordinates.</p>
+    <p>A two-column numeric matrix of polygon coordinates when
+<code>returnClass="matrix"</code> by default, or when
+<code>returnClass="SpatialPolygons"</code> it returns an object
+of class <code><a href='https://www.rdocumentation.org/packages/sp/topics/SpatialPolygons'>sp::SpatialPolygons</a></code>.</p>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>A polygon hull can be useful as a visual indicator of the location
 of a set of points. This function creates a polygon around all points,
 and not just the most dense region of points, using
-<code><a href='https://www.rdocumentation.org/packages/rgeos/topics/topo-unary-gConvexHull'>rgeos::gConvexHull()</a></code>. Since that function returns
-an object of class SpatialPolygons, this function is mainly a wrapper
-which returns the set of coordinates, either as a matrix or as the
-SpatialPolygons object type.</p>
+<code><a href='https://www.rdocumentation.org/packages/grDevices/topics/chull'>grDevices::chull()</a></code>.</p>
+<p>The output is slightly modified to duplicate the first coordinate,
+in order to "close" the resulting polygon, which is consistent
+with the output of <code><a href='https://www.rdocumentation.org/packages/rgeos/topics/topo-unary-gConvexHull'>rgeos::gConvexHull()</a></code>.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
@@ -170,7 +174,7 @@ SpatialPolygons object type.</p>
 <span class='no'>xy</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cbind'>cbind</a></span>(<span class='kw'>x</span><span class='kw'>=</span><span class='fl'>1</span>:<span class='fl'>10</span>,
    <span class='kw'>y</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sample'>sample</a></span>(<span class='fl'>1</span>:<span class='fl'>10</span>, <span class='fl'>10</span>));
 <span class='no'>xyhull</span> <span class='kw'>&lt;-</span> <span class='fu'>points2polygonHull</span>(<span class='no'>xy</span>);
-<span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/plot'>plot</a></span>(<span class='no'>xy</span>, <span class='kw'>pch</span><span class='kw'>=</span><span class='fl'>20</span>, <span class='kw'>cex</span><span class='kw'>=</span><span class='fl'>3</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>"purple4"</span>,
+<span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/plot'>plot</a></span>(<span class='no'>xy</span>, <span class='kw'>pch</span><span class='kw'>=</span><span class='fl'>20</span>, <span class='kw'>cex</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>"purple4"</span>,
    <span class='kw'>main</span><span class='kw'>=</span><span class='st'>"Polygon hull around points"</span>);</div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/polygon'>polygon</a></span>(<span class='no'>xyhull</span>, <span class='kw'>border</span><span class='kw'>=</span><span class='st'>"purple2"</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>"transparent"</span>);</div><div class='img'><img src='points2polygonHull-1.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>

@@ -42,11 +42,6 @@ showing gene hits only in the panels relevant to that comparison.
 However, there is a workaround, using `whichSamples` which will
 create the MA-plot data, but only display the samples of interest.
 
-### Base plotting enhancements
-
-* Add argument for title and subtitle, then use outer margin to
-display one title across the top of all plot panels.
-
 
 ### Color legend for highlighted points
 

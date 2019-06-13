@@ -4,14 +4,14 @@
 \alias{centerGeneData}
 \title{Center gene data}
 \usage{
-centerGeneData(indata, floor = NA, controlSamples = NA,
+centerGeneData(x, floor = NA, controlSamples = NA,
   centerGroups = NULL, needsLog = NULL, mean = FALSE,
   returnGroupedValues = FALSE, returnValues = TRUE,
   groupPrefix = "group", showGroups = FALSE, scale = c("none",
   "row"), verbose = FALSE, ...)
 }
 \arguments{
-\item{indata}{numeric matrix typically containing measurements (genes)
+\item{x}{numeric matrix typically containing measurements (genes)
 as rows, and samples as columns.}
 
 \item{floor}{optional numeric floor, below which values are set to the
@@ -19,7 +19,7 @@ floor value, useful when one wants to avoid centering to values which
 may be below a noise threshold which might otherwise result in
 artificially inflated log fold changes.}
 
-\item{controlSamples}{optional character vector of colnames(indata) to be
+\item{controlSamples}{optional character vector of colnames(x) to be
 used as controls when centering data. In the event that centerGroups
 is also defined, the controlSamples are only used within each
 group of colnames. When this value is NULL or NA, or when any group
@@ -34,7 +34,7 @@ where each list element contains colnames in explicit groups.}
 \item{mean}{logical indicating whether to use row means, or row medians.
 If the matrixStats package is available, it uses
 \code{\link[matrixStats]{rowMedians}} for calculations, otherwise
-falling back to apply(indata, 1, median) which is notably slower for
+falling back to apply(x, 1, median) which is notably slower for
 large data matrices.}
 
 \item{returnGroupedValues}{logical indicating whether to append columns
@@ -53,7 +53,7 @@ using the median instead of the mean.}
 
 \item{needsLod}{logical, indicating whether to perform log2 transformation
 of data prior to centering. If NULL, then if any value is above 40,
-it sets needsLog=TRUE and uses log2(indata) for centering.}
+it sets needsLog=TRUE and uses log2(x) for centering.}
 }
 \value{
 numeric matrix output, with the same row and column dimensions
@@ -76,5 +76,36 @@ allows defining a subset of columns to be used in determining the
 row control value via controlSamples, Similarly, columns can be grouped,
 where columns are centered versus their relevant control samples within
 each group of columns.
+}
+\examples{
+x <- matrix(1:100, ncol=10);
+colnames(x) <- letters[1:10];
+# basic centering
+centerGeneData(x);
+
+# grouped centering
+centerGeneData(x,
+   centerGroups=rep(c("A","B"), c(5,5)));
+
+# centering versus specific control columns
+centerGeneData(x,
+   controlSamples=letters[c(1:3)]);
+
+# grouped centering versus specific control columns
+centerGeneData(x,
+   centerGroups=rep(c("A","B"), c(5,5)),
+   controlSamples=letters[c(1:3, 6:8)]);
+
+# confirm the centerGroups and controlSamples
+x_ctr <- centerGeneData(x,
+   centerGroups=rep(c("A","B"), c(5,5)),
+   controlSamples=letters[c(1:3, 6:8)],
+   showGroups=TRUE);
+attr(x_ctr, "centerDF");
+
+}
+\seealso{
+Other jam matrix functions: \code{\link{centerGeneData_new}},
+  \code{\link{jammacalc}}
 }
 \concept{jam matrix functions}

@@ -70,6 +70,9 @@ package.
 ```{r Dilution, results="hide", fig.height=8, fig.width=8}
 if (suppressPackageStartupMessages(require(affydata))) {
    data(Dilution);
+   if (max(exprs(Dilution), na.rm=TRUE) > 100) {
+      exprs(Dilution) <- log2(1 + exprs(Dilution));
+   }
    jammaplot(exprs(Dilution));
 }
 ```

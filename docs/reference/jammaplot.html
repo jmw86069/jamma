@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.8.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.10.900</span>
       </span>
     </div>
 
@@ -125,21 +125,20 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>jammaplot</span>(<span class='no'>object</span>, <span class='kw'>colramp</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"white"</span>, <span class='st'>"lightblue"</span>, <span class='st'>"blue"</span>, <span class='st'>"navy"</span>,
-  <span class='st'>"orange"</span>, <span class='st'>"orangered2"</span>), <span class='kw'>colrampOutlier</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>outlierColor</span> <span class='kw'>=</span> <span class='st'>"palegoldenrod"</span>, <span class='kw'>whichSamples</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>maintitle</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>subtitle</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>subtitlePreset</span> <span class='kw'>=</span> <span class='st'>"bottom"</span>,
-  <span class='kw'>maintitleSep</span> <span class='kw'>=</span> <span class='st'>"\n"</span>, <span class='kw'>titleCexFactor</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>titleCex</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>doTitleBox</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>titleBoxColor</span> <span class='kw'>=</span> <span class='st'>"#DDBB9977"</span>,
-  <span class='kw'>titleColor</span> <span class='kw'>=</span> <span class='st'>"black"</span>, <span class='kw'>titleFont</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>titlePreset</span> <span class='kw'>=</span> <span class='st'>"top"</span>,
-  <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>""</span>, <span class='kw'>xlabline</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>""</span>, <span class='kw'>ylabline</span> <span class='kw'>=</span> <span class='fl'>1.5</span>,
-  <span class='kw'>groupSuffix</span> <span class='kw'>=</span> <span class='st'>" vs. Median"</span>, <span class='kw'>highlightPoints</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>highlightPch</span> <span class='kw'>=</span> <span class='fl'>21</span>, <span class='kw'>highlightCex</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>highlightColor</span> <span class='kw'>=</span> <span class='st'>"#00AAAA66"</span>,
-  <span class='kw'>doHighlightPolygon</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>highlightPolygonAlpha</span> <span class='kw'>=</span> <span class='fl'>0.3</span>,
-  <span class='kw'>smoothPtCol</span> <span class='kw'>=</span> <span class='st'>"#00000055"</span>, <span class='kw'>margins</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>3.5</span>, <span class='fl'>3</span>, <span class='fl'>0.7</span>, <span class='fl'>0.5</span>),
-  <span class='kw'>useRaster</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>ncol</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>doPar</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>las</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(-<span class='fl'>4</span>, <span class='fl'>4</span>), <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>controlSamples</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/colnames'>colnames</a></span>(<span class='no'>object</span>), <span class='kw'>centerGroups</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+    <pre class="usage"><span class='fu'>jammaplot</span>(<span class='no'>x</span>, <span class='kw'>colramp</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"white"</span>, <span class='st'>"lightblue"</span>, <span class='st'>"blue"</span>, <span class='st'>"navy"</span>, <span class='st'>"orange"</span>,
+  <span class='st'>"orangered2"</span>), <span class='kw'>colrampOutlier</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>outlierColor</span> <span class='kw'>=</span> <span class='st'>"palegoldenrod"</span>,
+  <span class='kw'>whichSamples</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>maintitle</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>maintitleCex</span> <span class='kw'>=</span> <span class='fl'>1.8</span>,
+  <span class='kw'>subtitle</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>subtitlePreset</span> <span class='kw'>=</span> <span class='st'>"bottomleft"</span>, <span class='kw'>titleCexFactor</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>titleCex</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>doTitleBox</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>titleBoxColor</span> <span class='kw'>=</span> <span class='st'>"#DDBB9977"</span>,
+  <span class='kw'>subtitleBoxColor</span> <span class='kw'>=</span> <span class='no'>titleBoxColor</span>, <span class='kw'>titleColor</span> <span class='kw'>=</span> <span class='st'>"black"</span>,
+  <span class='kw'>titleFont</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>titlePreset</span> <span class='kw'>=</span> <span class='st'>"top"</span>, <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>""</span>, <span class='kw'>xlabline</span> <span class='kw'>=</span> <span class='fl'>2</span>,
+  <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>""</span>, <span class='kw'>ylabline</span> <span class='kw'>=</span> <span class='fl'>1.5</span>, <span class='kw'>groupSuffix</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>highlightPoints</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>highlightPch</span> <span class='kw'>=</span> <span class='fl'>21</span>, <span class='kw'>highlightCex</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>highlightColor</span> <span class='kw'>=</span> <span class='st'>"#00AAAA66"</span>, <span class='kw'>doHighlightPolygon</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>highlightPolygonAlpha</span> <span class='kw'>=</span> <span class='fl'>0.3</span>, <span class='kw'>smoothPtCol</span> <span class='kw'>=</span> <span class='st'>"#00000055"</span>,
+  <span class='kw'>margins</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>3.5</span>, <span class='fl'>3</span>, <span class='fl'>0.7</span>, <span class='fl'>0.5</span>), <span class='kw'>useRaster</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>ncol</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>doPar</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>las</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(-<span class='fl'>4</span>, <span class='fl'>4</span>),
+  <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>controlSamples</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/colnames'>colnames</a></span>(<span class='no'>x</span>), <span class='kw'>centerGroups</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>groupedX</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>useMean</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>customFunc</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>filterNA</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>filterNAreplacement</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>filterNeg</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>filterFloor</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>filterFloorReplacement</span> <span class='kw'>=</span> <span class='no'>filterFloor</span>,
@@ -148,13 +147,14 @@
   <span class='kw'>applyRangeCeiling</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>doTxtplot</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>ablineV</span> <span class='kw'>=</span> <span class='fl'>0</span>,
   <span class='kw'>ablineH</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(-<span class='fl'>2</span>, <span class='fl'>0</span>, <span class='fl'>2</span>), <span class='kw'>blankPlotPos</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>outlierMAD</span> <span class='kw'>=</span> <span class='fl'>5</span>,
   <span class='kw'>outlierRowMin</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>groupedMAD</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>displayMAD</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>fillBackground</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>doPlot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)</pre>
+  <span class='kw'>fillBackground</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>ma_method</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"old"</span>, <span class='st'>"jammacalc"</span>),
+  <span class='kw'>doPlot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>object</th>
+      <th>x</th>
       <td><p>numeric matrix typically containing log-normal measurements,
 with measurement rows, and sample columns.</p></td>
     </tr>
@@ -191,8 +191,13 @@ MA-plot data is identical to the full dataset.</p></td>
     </tr>
     <tr>
       <th>maintitle</th>
-      <td><p>the main title for each panel, either printed inside each
-title box when doTitleBox=TRUE, or atop each panel when doTitleBox=FALSE.</p></td>
+      <td><p>the main title for the overall plot, printed at the
+top of each page in the top outer margin.</p></td>
+    </tr>
+    <tr>
+      <th>maintitleCex</th>
+      <td><p>numeric cex character expansion used to resize the
+<code>maintitle</code> when supplied.</p></td>
     </tr>
     <tr>
       <th>subtitle</th>
@@ -202,22 +207,18 @@ of each plot panel.</p></td>
     <tr>
       <th>subtitlePreset</th>
       <td><p>character value describing where to position the
-subtitle, using terms valid in <code><a href='https://www.rdocumentation.org/packages/jamba/topics/coordPresets'>jamba::coordPresets()</a></code>. The default "bottom"
-centers the subtitle at the bottom of each panel.</p></td>
-    </tr>
-    <tr>
-      <th>maintitleSep</th>
-      <td><p>character separator used to combine multiple values
-for the maintitle, used to keep all information either on one line or
-split on multiple lines.</p></td>
+subtitle, using terms valid in <code><a href='https://www.rdocumentation.org/packages/jamba/topics/coordPresets'>jamba::coordPresets()</a></code>. The default
+"bottomleft" places the subtitle at the bottom-left corner of each
+panel.</p></td>
     </tr>
     <tr>
       <th>doTitleBox</th>
       <td><p>logical whether to draw plot titles using a colored box.</p></td>
     </tr>
     <tr>
-      <th>titleBoxColor</th>
-      <td><p>vector of colors applied to title text. When doTitleBox=TRUE
+      <th>titleBoxColor, subtitleBoxColor</th>
+      <td><p>vector of colors applied to title
+text, or subtitle text, respectively. When <code>doTitleBox=TRUE</code>
 one or no value is supplied, it defines colors using
 <code><a href='https://www.rdocumentation.org/packages/jamba/topics/setTextContrastColor'>jamba::setTextContrastColor</a></code> to use a contrasting color.</p></td>
     </tr>
@@ -251,9 +252,9 @@ subtitle, using terms valid in <code><a href='https://www.rdocumentation.org/pac
       <th>groupSuffix</th>
       <td><p>character text appended to each plot panel title,
 useful for indicating how a sample was processed, beyond just using
-colnames. For example, <code>groupSuffix=" vs. group median"</code> could
-indicate that a sample is centered relative to its group median, rather
-than the global median.</p></td>
+colnames. By default, <code>groupSuffix</code> is blank, except when
+supplying <code>centerGroups</code>, in which case the <code>centerGroups</code> value is
+used as a suffix.</p></td>
     </tr>
     <tr>
       <th>highlightPoints</th>
@@ -472,6 +473,12 @@ when axis ranges may be defined which are outside the range of values
 for any particular column in <code>object</code>.</p></td>
     </tr>
     <tr>
+      <th>ma_method</th>
+      <td><p>character string indicating whether to perform
+MA-plot calculations using the old method <code>"old"</code>; or <code>"jammacalc"</code>
+which uses the newer function <code><a href='jammacalc.html'>jammacalc()</a></code>.</p></td>
+    </tr>
+    <tr>
       <th>verbose</th>
       <td><p>logical indicating whether to print verbose output.</p></td>
     </tr>
@@ -498,56 +505,80 @@ to use as input to produce another MA-plot.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p><code>jammaplot</code> takes a numeric matrix, typically of gene expression data,
-and produces an MA-plot (Bland-Altman plot).</p>
-<p>Purpose is to provide an MA plot, based upon the MVAplotMED function from
-the now-defunct Agi4x44PreProcess package,  except in this case using
-smoothScatter since 20k to 40k datapoints is too many to show without
-them being occluded.</p>
-<p>You must manually specify the number columns and rows, and set doPar=TRUE
-for this function to define multi-panel plotting, e.g.
-<code>"nrow=5, ncol=4, doPar=TRUE"</code>
-Otherwise, you can manually set these parameters with
-<code>"par('mfrow'=c(5,4));"</code></p>
-<p>This function also uses "useRaster=TRUE" by default which causes the
-<code>imageDefault</code> function used by <code><a href='https://www.rdocumentation.org/packages/graphics/topics/smoothScatter'>smoothScatter</a></code>
-to produce a temporary raster image which is then resized with
-interpolation to produce a properly-blended representation of the full
-image. This process also substantially reduces the image size when saving
-as a vector output format like PDF or SVG.</p>
-<p>To highlight certain points, e.g. marked outliers, or statistical hits,
-supply rownames into highlightPoints as a vector, or a list of vectors.
-If using a list of vectors, also supply a list of colors in
-highlightColor, so each subset is colored uniquely.</p>
-<p>ctrlSamples is deprecated in favor of controlSamples.</p>
-<p>controlSamples indicates which samples should be used for centering
-data, by default all samples. However, centering by control samples
-visually indicates changes from those control samples.</p>
-<p>centerGroups is used to apply the centering to subsets of columns
-of data, for example if two very different cell types should be separately
-centered for closer scrutiny of the within-cell variability.
-One can take this further, and center each sample group, which has
-the helpful effect of displaying variability of replicates per
-sample group. This method is quite useful for reviewing whether any
-replicates are notably different than counterparts in the same
-sample group.</p>
+and produces an MA-plot (Bland-Altman plot), also known as a
+median-difference plot. One panel is created for each column of
+data. Within each panel, the x-axis represents the mean or median
+expression of each row; the y-axis represents the difference from
+mean or median for that column.</p>
+<p>By default, the plot uses <code><a href='https://www.rdocumentation.org/packages/jamba/topics/plotSmoothScatter'>jamba::plotSmoothScatter()</a></code>, with optional
+highlighted points draw using <code><a href='https://www.rdocumentation.org/packages/graphics/topics/points'>points()</a></code>.</p>
+<p>The function will determine an appropriate layout of plot panels,
+which can be overridden using <code>ncol</code> and <code>nrow</code> to specify the
+number of columns and rows of plot panels, respectively. For now,
+this function uses base R graphics instead of ggplot2, in order
+to accomodate some custom features.</p>
+<p>This function uses "useRaster=TRUE" by default, which causes
+<code><a href='https://www.rdocumentation.org/packages/jamba/topics/plotSmoothScatter'>jamba::plotSmoothScatter()</a></code> to render a rasterized image as opposed
+to a composite of colored rectangles. This process substantially
+reduces the render time in all cases, and reduces the image size
+when saving as PDF or SVG.Notable featuresHighlighting points</p>
+<p>Specific points can be highlighted with argument <code>highlightPoints</code>
+which can be a vector or named list of vectors, containing <code><a href='https://www.rdocumentation.org/packages/base/topics/colnames'>rownames(x)</a></code>.
+When using a list, point colors are assigned to each element in the
+list in order, using the argument <code>highlightColor</code>.Centering by control samples</p>
+<p>Typical MA-plots are "global-centered", which calculates the
+mean/median across all columns in <code>x</code>, and this value is subtracted
+from each individual value per row.</p>
+<p>By specifying <code>controlSamples</code>
+the mean/median is calculated using only the <code><a href='https://www.rdocumentation.org/packages/base/topics/colnames'>colnames(x)</a></code> which match
+<code>controlSamples</code>, thus representing "difference from control."</p>
+<p>It may also be useful to center data by known high-quality samples,
+so the effect of potential outlier samples is avoided.Centering within subgroups</p>
+<p>By specifying <code>centerGroups</code> as a vector of group names,
+the centering is calculated within each group of <code><a href='https://www.rdocumentation.org/packages/base/topics/colnames'>colnames(x)</a></code>.
+In this way, subsets of samples can be treated independently in
+the MA-plots. A good example might be producing MA-plots for
+"kidney" samples, and "muscle" samples, which may have
+fundamentally different signal distributions.</p>
+<p>Another very useful technique is to center by sample group,
+for example <code>centerGroups=sample_group</code>.
+This technique produces MA-plots that depict the
+"difference from group", and is very useful for visualizing
+the variance of replicates in sample groups. Outlier samples
+are sometimes very apparent at this step. See <code>displayMAD</code> and
+<code>outlierMAD</code> below for detection of potential outlier samples.</p>
 <p>Note: filterNeg=TRUE will floor log2 values at 0, which has the
-effect of adding the "45 degree lines" originating from c(0,0).</p>
-<p>blankPlotPos is intended for specific plot layouts, to keep the plots
-organized by some fixed criteria, e.g. certain sample groups per
-row or column, but where there may not be consistent replicates per
-group.
-For ncol and nrow, blankPlotPos indicates which panels should be
-left empty, where each panel is numbered by row.  For example,
-if ncol=4, then the panels are numbered 1-4, 5-8, 9-12, etc.</p>
-<p>outlierMAD is only viable when centerEachGroup=TRUE; in which case
-outlierMAD is a threshold for the MAD factor of outliers.  Each MA
-plot panel is given a MAD score, using probes whose x-values are
-greater than outlierRowMin;, the median of the absolute value is
-used as the MAD.
-These MAD values are used to calculate the global MAD, and individual
-MADs are divided by global MAD to determine a MAD factor.
-The outlierMAD is the threshold above which a MAD factor is considered
-an outlier.</p>
+effect of adding the "45 degree lines" originating from c(0,0).Customizing the panel layout</p>
+<p>Panels are drawn using the order of <code><a href='https://www.rdocumentation.org/packages/base/topics/colnames'>colnames(x)</a></code> by row,
+from left-to-right, then top-to-bottom.
+The argument <code>blankPlotPos</code> is intended to insert an empty panel
+at a particular panel position, to help customize the alignment
+of sample panels.
+This option is typically used with <code>ncol</code> and <code>nrow</code> to define
+a fixed layout of panel columns and rows. <code>blankPlotPos</code> refers
+to panels numbered as drawn per row of panels,Identifying potential sample outliers</p>
+<p>The argument <code>displayMAD</code> will display the per-sample MAD factor
+relative to its <code>centerGroups</code> value, if provided. The MAD threshold
+is calculated using values whose mean/median is at least
+<code>outlierRowMin</code>, based upon the median absolute difference (MAD)
+from the mean/median. The median MAD is defined as the reference MAD,
+and all other MAD factors are multiples of that reference. For example,
+1xMAD is equal to the median MAD value, and 2xMAD is two times higher
+than the median MAD value.</p>
+<p>Potential outlier samples should not be evaluated when supplying
+<code>controlSamples</code> unless those samples represent more than
+experimantal control samples.</p>
+<p>Potential sample outliers may be identified by setting a threshold
+with <code>outlierMAD</code>, by default 5xMAD. For a sample to be considered
+an outlier, its median difference from mean/median needs to be
+five times higher than the median across samples.</p>
+<p>We typically recommend an <code>outlierMAD=2</code> when centering
+by sample groups, or when centering within experiment subsets.
+For one sample to have 2xMAD factor, its variance needs
+to be uniquely twice as high as the majority of other samples, which
+is typically symptomatic of possible technical failure.</p>
+<p>There are exceptions to this suggested guideline, which includes
+scenarios where a batch effect may be involved.</p>
 <p>To do:</p><ul>
 <li><p>Accept other object types as input, including Bioconductor
 classes: ExpressionSet, SummarizedExperiment, MultiExperimentSet.</p></li>
@@ -576,7 +607,7 @@ used. For example indicate 'sampleID vs groupA' instead of
 }</div><div class='output co'>#&gt;      Package    LibPath                               Item      
 #&gt; [1,] "affydata" "/Users/wardjm/Library/R/3.5/library" "Dilution"
 #&gt;      Title                        
-#&gt; [1,] "AffyBatch instance Dilution"</div><div class='output co'>#&gt; <span class='warning'>Warning: package 'colorspace' was built under R version 3.5.2</span></div><div class='img'><img src='jammaplot-1.png' alt='' width='700' height='433' /></div><div class='input'>
+#&gt; [1,] "AffyBatch instance Dilution"</div><div class='output co'>#&gt; <span class='warning'>Warning: package ‘colorspace’ was built under R version 3.5.2</span></div><div class='img'><img src='jammaplot-1.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
