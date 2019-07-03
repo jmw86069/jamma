@@ -1,4 +1,23 @@
-## TODO for jamma
+# TODO for jamma
+
+## Bug fixes
+
+* Version 0.0.10.900 fixed a bug where rowGroupMeans() was used to
+center values, but used default `na.rm=FALSE`, which caused groups
+with missing values not to display a centered value for other non-NA
+samples. The new version should provide two options:
+
+    1. Hide or display values where groups with n>1 members have
+    only one non-NA value. The reasoning is that the MA-plot is
+    intended to show "difference from mean" and has far less utility
+    when a fraction of rows has only one non-NA value in the group, 
+    thus emphasizing the display of "zero difference" in those
+    samples. Hiding these values therefore helps display the
+    variability where data is available to judge the difference
+    from mean.
+    2. Hide groups with any NA values.
+
+
 
 ## Refactor to separate calculations from visualizations
 
