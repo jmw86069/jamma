@@ -421,7 +421,8 @@ jammaplot <- function
  smoothScatterFunc=jamba::plotSmoothScatter,
  applyRangeCeiling=TRUE,
  doTxtplot=FALSE,
- ablineV=0, ablineH=c(-2,0,2),
+ ablineV=0,
+ ablineH=c(-2,0,2),
  blankPlotPos=NULL,
  outlierMAD=5,
  outlierRowMin=5,
@@ -948,25 +949,74 @@ jammaplot <- function
 
          ## Add some axis lines across the plot for easy visual reference
          if (!is.null(ablineH)) {
-            abline(h=ablineH, col="#44444488", lty="dashed", lwd=1, ...);
+            if ("list" %in% class(ablineH)) {
+               if (all(names(ablineH) %in% x_names)) {
+                  h <- ablineH[[x_names[i]]];
+               } else {
+                  h <- ablineH[[i]];
+               }
+            } else {
+               h <- unique(unlist(ablineH));
+            }
+            h <- h[h >= ylim[1] & h <= ylim[2]];
+            if (length(h) > 0) {
+               abline(h=h,
+                  col="#44444488",
+                  lty="dashed",
+                  lwd=1,
+                  ...);
+            }
          }
-         if (!is.null(ablineV) && any(xlim[1] < ablineV & xlim[2] > ablineV)) {
-            ablineVuse <- ablineV[(xlim[1] < ablineV & xlim[2] > ablineV)];
-            abline(col="grey30", v=ablineVuse, lty="dashed", ...);
+         ## Add some axis lines across the plot for easy visual reference
+         if (!is.null(ablineV)) {
+            if ("list" %in% class(ablineV)) {
+               if (all(names(ablineV) %in% x_names)) {
+                  v <- ablineV[[x_names[i]]];
+               } else {
+                  v <- ablineV[[i]];
+               }
+            } else {
+               v <- unique(unlist(ablineV));
+            }
+            v <- v[v >= xlim[1] & v <= xlim[2]];
+            if (length(v) > 0) {
+               abline(v=v,
+                  col="#44444488",
+                  lty="dashed",
+                  lwd=1,
+                  ...);
+            }
          }
 
-         ## Optionally highlight some subset of points
+         ## Optionally highlight a subset of points
          if (!is.null(highlightPoints)) {
             if (!class(highlightPoints) %in% c("list")) {
-               highlightPoints <- list(highlightPoints=highlightPoints);
+               if (length(highlightPoints) == length(highlightColor)) {
+                  highlightPoints <- as.list(highlightPoints);
+                  if (length(names(highlightPoints)) == 0) {
+                     names(highlightPoints) <- makeNames(
+                        rep("highlight",
+                           length.out=length(highlightPoints)));
+                  }
+               } else {
+                  highlightPoints <- list(highlightPoints=highlightPoints);
+               }
             }
             if (!class(highlightColor) %in% c("list")) {
                highlightColor <- as.list(highlightColor);
+               highlightColor <- rep(highlightColor,
+                  length.out=length(highlightPoints));
+               names(highlightColor) <- names(highlightPoints);
             }
-            highlightColor <- rep(highlightColor,
-               length.out=length(highlightPoints));
+            if (length(highlightColor) != length(highlightPoints)) {
+               highlightColor <- rep(highlightColor,
+                  length.out=length(highlightPoints));
+               names(highlightColor) <- names(highlightPoints);
+            }
             if (!class(highlightPch) %in% c("list")) {
-               highlightPch <- as.list(highlightPch);
+               highlightColor <- rep(highlightColor,
+                  length.out=length(highlightPoints));
+               names(highlightColor) <- names(highlightPoints);
             }
             highlightPch <- rep(highlightPch,
                length.out=length(highlightPoints));
