@@ -41,7 +41,7 @@ the ggplotly wrapper function.
 * The goal is to allow panels to be colored by group or some other
 variable. An easy method would supply single colors per panel,
 then call `jamba::getColorRamp("red")` which creates a red color gradient
-in that example.
+in that example. (COMPLETE in version 0.0.11.900)
 
 
 ### Update to handle SummarizedExperiment objects

@@ -21,17 +21,17 @@ jammaplot(x, colramp = c("white", "lightblue", "blue", "navy", "orange",
   subtitleBoxColor = titleBoxColor, titleColor = "black",
   titleFont = 2, titlePreset = "top", xlab = "", xlabline = 2,
   ylab = "", ylabline = 1.5, groupSuffix = NULL,
-  highlightPoints = NULL, highlightPch = 21, highlightCex = 1,
+  highlightPoints = NULL, highlightPch = 21, highlightCex = 1.5,
   highlightColor = "#00AAAA66", doHighlightPolygon = FALSE,
-  highlightPolygonAlpha = 0.3, smoothPtCol = "#00000055",
-  margins = c(3.5, 3, 0.7, 0.5), useRaster = TRUE, ncol = NULL,
-  nrow = NULL, doPar = TRUE, las = 2, ylim = c(-4, 4),
-  xlim = NULL, controlSamples = colnames(x), centerGroups = NULL,
-  groupedX = TRUE, useMean = FALSE, customFunc = NULL,
-  filterNA = TRUE, filterNAreplacement = NA, filterNeg = TRUE,
-  filterFloor = 0, filterFloorReplacement = filterFloor,
-  transFactor = 0.18, nrpoints = 50,
-  smoothScatterFunc = jamba::plotSmoothScatter,
+  highlightPolygonAlpha = 0.3, doHighlightLegend = TRUE,
+  smoothPtCol = "#00000055", margins = c(3.5, 2, 0.3, 0.2),
+  useRaster = TRUE, ncol = NULL, nrow = NULL, doPar = TRUE,
+  las = 2, ylim = c(-4, 4), xlim = NULL,
+  controlSamples = colnames(x), centerGroups = NULL, groupedX = TRUE,
+  useMean = FALSE, customFunc = NULL, filterNA = TRUE,
+  filterNAreplacement = NA, filterNeg = TRUE, filterFloor = 0,
+  filterFloorReplacement = filterFloor, transFactor = 0.18,
+  nrpoints = 50, smoothScatterFunc = jamba::plotSmoothScatter,
   applyRangeCeiling = TRUE, doTxtplot = FALSE, ablineV = 0,
   ablineH = c(-2, 0, 2), blankPlotPos = NULL, outlierMAD = 5,
   outlierRowMin = 5, groupedMAD = TRUE, displayMAD = FALSE,
@@ -76,41 +76,44 @@ of each plot panel.}
 
 \item{subtitlePreset}{character value describing where to position the
 subtitle, using terms valid in \code{jamba::coordPresets()}. The default
-"bottomleft" places the subtitle at the bottom-left corner of each
-panel.}
+\code{subtitlePreset="bottomleft"} places the subtitle at the
+bottom left corner of each plot panel.}
 
-\item{doTitleBox}{logical whether to draw plot titles using a colored box.}
+\item{doTitleBox}{logical whether to draw plot titles using
+a colored box. When \code{doTitleBox=TRUE} the \code{jamba::drawLabels()}
+is called to display a label box at the top of each plot panel.}
 
 \item{titleBoxColor, subtitleBoxColor}{vector of colors applied to title
 text, or subtitle text, respectively. When \code{doTitleBox=TRUE}
 one or no value is supplied, it defines colors using
 \code{jamba::setTextContrastColor} to use a contrasting color.}
 
-\item{titleColor}{vector of colors applied to title text. When doTitleBox=TRUE
-one or no value is supplied, it defines colors using
-\code{\link{jamba::setTextContrastColor}} to use a contrasting color.}
+\item{titleColor}{vector of colors applied to title text. When
+\code{doTitleBox=TRUE} one or no value is supplied, it defines
+colors using \code{jamba::setTextContrastColor()} to use color
+that contrasts with \code{titleBoxColor}.}
 
-\item{titleFont}{integer font compatible with \code{par("font")}. Values
-are recycled across panels.}
+\item{titleFont}{integer font compatible with \code{par("font")}.
+Values are recycled across panels.}
 
 \item{titlePreset}{character value describing where to position the
-subtitle, using terms valid in \code{jamba::coordPresets()}. The default is
-"top" which centers the label at the top of each panel.}
+subtitle, using terms valid in \code{jamba::coordPresets()}.
+The default \code{titlePreset="top"} centers the label at the
+top of each panel.}
 
 \item{xlab, ylab}{character x- and y-axis labels.}
 
 \item{xlabline, ylabline}{numeric number of text lines as used by
 \code{title} to position labels relative to the plot area.}
 
-\item{groupSuffix}{character text appended to each plot panel title,
-useful for indicating how a sample was processed, beyond just using
-colnames. By default, \code{groupSuffix} is blank, except when
-supplying \code{centerGroups}, in which case the \code{centerGroups} value is
-used as a suffix.}
+\item{groupSuffix}{character text appended to each plot panel title.
+This argument is being deprecated in favor of using \code{subtitle}
+which places additional text at the bottom corner of each
+plot panel.}
 
 \item{highlightPoints}{NULL, character vector, or list of character vectors,
 containing points to highlight based upon \code{rownames(object)}. If
-a list is supplied, then colors from \code{highlightColors} are recycled
+a list is supplied, then colors from \code{highlightColor} are recycled
 to \code{length(highlightPoints)} so that each list element can receive
 its own color. This coloring may be useful for coloring several subsets
 of rows, for example housekeeper genes, ribosomal genes, or platform
@@ -123,12 +126,16 @@ can be supplied.}
 \item{doHighlightPolygon}{logical whether to draw a polygon encompassing
 highlighted points. If highlightPoints is a list, a polygon is drawn
 around each list element subset of points, using the appropriate
-highlightColors for each list element. The polygon is defined by
+\code{highlightColor} for each list element. The polygon is defined by
 \code{grDevices::chull()}.}
 
 \item{highlightPolygonAlpha}{numeric value between 0 and 1 indicating the
 alpha transparency to use for the polygon color, based upon
-highlightColor.}
+\code{highlightColor}.}
+
+\item{doHighlightLegend}{logical indicating whether to print a
+color legend at the bottom of each page, when \code{highlightPoints}
+is not \code{NULL}.}
 
 \item{smoothPtCol}{color used when nrpoints>0, and
 \code{\link{jamba::plotSmoothScatter}} draws this many points in the extremities.}
@@ -172,6 +179,12 @@ detail displayed in the plot range.}
 as control samples in the data centering step. Typical MA-plots are
 calculated relative to the overall mean, however it can be insightful
 to calculate values relative to a known control group.}
+
+\item{centerGroups}{vector of groups, of \code{length(colnames(object))}
+indicating optional subgroups to use when performing data centering.
+For example it may be appropriate to center samples of one cell type
+only relative to other samples of the same cell type. See
+\code{\link{centerGeneData}} for more specifics.}
 
 \item{useMean}{logical whether to perform centering using mean or
 median. The default median is intended to represent the data without
@@ -276,12 +289,6 @@ which uses the newer function \code{jammacalc()}.}
 
 \item{...}{additional parameters sent to downstream functions,
 \code{\link{jamba::plotSmoothScatter}}, \code{\link{centerGeneData}}.}
-
-\item{centerGoups}{vector of groups, of \code{length(colnames(object))}
-indicating optional subgroups to use when performing data centering.
-For example it may be appropriate to center samples of one cell type
-only relative to other samples of the same cell type. See
-\code{\link{centerGeneData}} for more specifics.}
 }
 \value{
 List of data used by jamma() to produce an MA-plot, sufficient

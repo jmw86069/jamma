@@ -187,33 +187,36 @@ NULL
 #'    of each plot panel.
 #' @param subtitlePreset character value describing where to position the
 #'    subtitle, using terms valid in `jamba::coordPresets()`. The default
-#'    "bottomleft" places the subtitle at the bottom-left corner of each
-#'    panel.
+#'    `subtitlePreset="bottomleft"` places the subtitle at the
+#'    bottom left corner of each plot panel.
 #' @param titleBoxColor,subtitleBoxColor vector of colors applied to title
 #'    text, or subtitle text, respectively. When `doTitleBox=TRUE`
 #'    one or no value is supplied, it defines colors using
 #'    `jamba::setTextContrastColor` to use a contrasting color.
-#' @param titleColor vector of colors applied to title text. When doTitleBox=TRUE
-#'    one or no value is supplied, it defines colors using
-#'    \code{\link{jamba::setTextContrastColor}} to use a contrasting color.
-#' @param doTitleBox logical whether to draw plot titles using a colored box.
-#' @param titleFont integer font compatible with \code{par("font")}. Values
-#'    are recycled across panels.
+#' @param titleColor vector of colors applied to title text. When
+#'    `doTitleBox=TRUE` one or no value is supplied, it defines
+#'    colors using `jamba::setTextContrastColor()` to use color
+#'    that contrasts with `titleBoxColor`.
+#' @param doTitleBox logical whether to draw plot titles using
+#'    a colored box. When `doTitleBox=TRUE` the `jamba::drawLabels()`
+#'    is called to display a label box at the top of each plot panel.
+#' @param titleFont integer font compatible with \code{par("font")}.
+#'    Values are recycled across panels.
 #' @param titlePreset character value describing where to position the
-#'    subtitle, using terms valid in `jamba::coordPresets()`. The default is
-#'    "top" which centers the label at the top of each panel.
+#'    subtitle, using terms valid in `jamba::coordPresets()`.
+#'    The default `titlePreset="top"` centers the label at the
+#'    top of each panel.
 #' @param xlab,ylab character x- and y-axis labels.
 #' @param xlabline,ylabline numeric number of text lines as used by
 #'    \code{title} to position labels relative to the plot area.
-#' @param groupSuffix character text appended to each plot panel title,
-#'    useful for indicating how a sample was processed, beyond just using
-#'    colnames. By default, `groupSuffix` is blank, except when
-#'    supplying `centerGroups`, in which case the `centerGroups` value is
-#'    used as a suffix.
+#' @param groupSuffix character text appended to each plot panel title.
+#'    This argument is being deprecated in favor of using `subtitle`
+#'    which places additional text at the bottom corner of each
+#'    plot panel.
 #' @param highlightPoints NULL, character vector, or list of character vectors,
-#'    containing points to highlight based upon \code{rownames(object)}. If
-#'    a list is supplied, then colors from \code{highlightColors} are recycled
-#'    to \code{length(highlightPoints)} so that each list element can receive
+#'    containing points to highlight based upon `rownames(object)`. If
+#'    a list is supplied, then colors from `highlightColor` are recycled
+#'    to `length(highlightPoints)` so that each list element can receive
 #'    its own color. This coloring may be useful for coloring several subsets
 #'    of rows, for example housekeeper genes, ribosomal genes, or platform
 #'    positive- and negative-control genes.
@@ -223,11 +226,14 @@ NULL
 #' @param doHighlightPolygon logical whether to draw a polygon encompassing
 #'    highlighted points. If highlightPoints is a list, a polygon is drawn
 #'    around each list element subset of points, using the appropriate
-#'    highlightColors for each list element. The polygon is defined by
+#'    `highlightColor` for each list element. The polygon is defined by
 #'    `grDevices::chull()`.
 #' @param highlightPolygonAlpha numeric value between 0 and 1 indicating the
 #'    alpha transparency to use for the polygon color, based upon
-#'    highlightColor.
+#'    `highlightColor`.
+#' @param doHighlightLegend logical indicating whether to print a
+#'    color legend at the bottom of each page, when `highlightPoints`
+#'    is not `NULL`.
 #' @param smoothPtCol color used when nrpoints>0, and
 #'    \code{\link{jamba::plotSmoothScatter}} draws this many points in the extremities.
 #' @param margins vector of margins compatible with \code{par("mar")}. Defaults
@@ -263,7 +269,7 @@ NULL
 #'    as control samples in the data centering step. Typical MA-plots are
 #'    calculated relative to the overall mean, however it can be insightful
 #'    to calculate values relative to a known control group.
-#' @param centerGoups vector of groups, of \code{length(colnames(object))}
+#' @param centerGroups vector of groups, of \code{length(colnames(object))}
 #'    indicating optional subgroups to use when performing data centering.
 #'    For example it may be appropriate to center samples of one cell type
 #'    only relative to other samples of the same cell type. See
@@ -393,12 +399,13 @@ jammaplot <- function
  groupSuffix=NULL,
  highlightPoints=NULL,
  highlightPch=21,
- highlightCex=1,
+ highlightCex=1.5,
  highlightColor="#00AAAA66",
  doHighlightPolygon=FALSE,
  highlightPolygonAlpha=0.3,
+ doHighlightLegend=TRUE,
  smoothPtCol="#00000055",
- margins=c(3.5, 3, 0.7, 0.5),
+ margins=c(3.5, 2, 0.3, 0.2),
  useRaster=TRUE,
  ncol=NULL,
  nrow=NULL,
@@ -530,38 +537,139 @@ jammaplot <- function
       }
    }
 
-   ## If colramp is "character" we use getColorRamp() to work it out
-   if ("character" %in% class(colramp)) {
-      colramp <- colorRampPalette(getColorRamp(colramp));
+   ## if colrampOutlier is a single color, use it to replace
+   ## the first color of colramp
+   if (length(outlierColor) == 0) {
+      outlierColor <- "palegoldenrod";
    }
-   firstColor <- head(colramp(10), 1);
-   if (length(colrampOutlier) > 0) {
-      if (jamba::igrepHas("character", class(colrampOutlier))) {
-         colrampOutlier <- colorRampPalette(jamba::getColorRamp(colrampOutlier));
+   if (length(colrampOutlier) == 0) {
+      colrampOutlier <- outlierColor;
+   }
+   if (is.list(colramp) || is.list(colrampOutlier)) {
+      ## If either is a list, make sure both are a list
+      ## with length(x_names)
+      if (!is.list(colramp)) {
+         colramp <- list(colramp);
       }
-   }
-   if (length(colrampOutlier) == 0 ||
-         !is.function(colrampOutlier)) {
-      firstColorL <- jamba::col2hcl(firstColor)["L",];
-      if (length(outlierColor) < 1) {
-         if (jamba::col2hcl(firstColor)["L",] < 70) {
-            outlierColor <- "#551100";
-         } else {
-            outlierColor <- "palegoldenrod";
+      if (!is.list(colrampOutlier)) {
+         colrampOutlier <- list(colrampOutlier);
+      }
+      colramp <- rep(colramp,
+         length.out=length(x_names));
+      names(colramp) <- x_names;
+      colrampOutlier <- rep(colrampOutlier,
+         length.out=length(x_names));
+      names(colrampOutlier) <- x_names;
+      for (i in seq_along(x_names)) {
+         icolrampOutlier <- colrampOutlier[[i]];
+         icolramp <- colramp[[i]];
+         if (!is.function(icolramp)) {
+            ## Make sure icolramp is a color function
+            icolramp <- jamba::getColorRamp(icolramp,
+               n=NULL,
+               ...);
+            colramp[[i]] <- icolramp;
+         }
+         if (!is.function(icolrampOutlier)) {
+            if (length(icolrampOutlier) == 1 && isColor(icolrampOutlier)) {
+               ## substitute single color with the first color in colramp
+               icolrampOutlier <- jamba::getColorRamp(
+                  c(icolrampOutlier,
+                     tail(icolramp(101), -1)),
+                  n=NULL,
+                  ...);
+            } else {
+               ## For multi-color colrampOutlier, use it to define
+               ## the complete outlier color gradient
+               icolrampOutlier <- jamba::getColorRamp(icolrampOutlier,
+                  n=NULL,
+                  ...);
+            }
+            colrampOutlier[[i]] <- icolrampOutlier;
          }
       }
-      colrampOutlier <- colorRampPalette(
-         c(outlierColor,
-            tail(colramp(101), 100)
-      ));
+   } else if (!is.function(colramp)) {
+      colramp <- jamba::getColorRamp(colramp,
+         n=NULL,
+         ...);
+   }
+   if (!is.function(colrampOutlier) && !is.list(colrampOutlier)) {
+      colrampOutlier <- jamba::getColorRamp(colrampOutlier,
+         n=NULL,
+         ...);
    }
 
-   ## Define groupSuffix using centerGroups, unless otherwise specified
+   ## If groupSuffix is supplied, make sure its length
+   ## is length(x_names)
    if (length(groupSuffix) > 0) {
       groupSuffix <- rep(groupSuffix,
-         length.out=ncol(x));
-   } else if (length(centerGroups) > 0) {
-      groupSuffix <- paste0(" vs ", centerGroups);
+         length.out=length(x_names));
+   }
+
+   ## highlightPoints
+   ## Todo: check values in highlightPoints versus rownames(x)
+   if (length(highlightPoints) == 0) {
+      highlightColor <- NULL;
+   } else {
+      if (!is.list(highlightPoints)) {
+         if (length(highlightPoints) == length(highlightColor)) {
+            if (length(names(highlightPoints)) == 0) {
+               names(highlightPoints) <- makeNames(highlightPoints);
+            }
+            highlightPoints <- as.list(highlightPoints);
+         } else {
+            highlightPoints <- list(highlighted=highlightPoints);
+         }
+      } else {
+         if (length(names(highlightPoints)) == 0) {
+            names(highlightPoints) <- makeNames(
+               rep("highlight",
+                  length.out=length(highlightPoints)));
+         }
+      }
+      if (!is.list(highlightColor)) {
+         highlightColor <- as.list(highlightColor);
+      }
+      highlightColor <- rep(highlightColor,
+         length.out=length(highlightPoints));
+      if (length(names(highlightColor)) > 0 &&
+            all(names(highlightColor) %in% names(highlightPoints))) {
+         highlightColor <- highlightColor[names(highlightPoints)];
+      } else {
+         names(highlightColor) <- names(highlightPoints);
+      }
+
+      if (!is.list(highlightPch)) {
+         highlightPch <- as.list(highlightPch);
+      }
+      highlightPch <- rep(highlightPch,
+         length.out=length(highlightPoints));
+      if (length(names(highlightPch)) > 0 &&
+            all(names(highlightPch) %in% names(highlightPoints))) {
+         highlightPch <- highlightPch[names(highlightPoints)];
+      } else {
+         names(highlightPch) <- names(highlightPoints);
+      }
+      if (!class(highlightCex) %in% c("list")) {
+         highlightCex <- as.list(highlightCex);
+      }
+      highlightCex <- rep(highlightCex,
+         length.out=length(highlightPoints));
+      if (length(names(highlightCex)) > 0 &&
+            all(names(highlightCex) %in% names(highlightPoints))) {
+         highlightCex <- highlightCex[names(highlightPoints)];
+      } else {
+         names(highlightCex) <- names(highlightPoints);
+      }
+   }
+   ## By default, when subtitle is not supplied, and
+   ## centerGroups contains multiple unique values,
+   ## use centerGroups in subtitle
+   if (length(subtitle) == 0 &&
+         length(unique(centerGroups)) > 1) {
+      subtitle <- rep(centerGroups,
+         length.out=length(x_names));
+      names(subtitle) <- x_names;
    }
 
    ## Define a new par for panel layout
@@ -580,19 +688,18 @@ jammaplot <- function
          nrow <- ceiling(nsamples / ncol);
       }
       par(mfrow=c(nrow, ncol));
-   }
-   if (length(maintitle) > 0) {
-      maintitle_nlines <- length(unlist(strsplit(maintitle, "\n")));
-      par("oma"=pmax(par("oma"),
-         c(0, 0, 1.5+1.5*maintitle_nlines, 0)));
+      if (length(maintitle) > 0) {
+         maintitle_nlines <- length(unlist(strsplit(maintitle, "\n")));
+         par("oma"=pmax(par("oma"),
+            c(0, 0, 1.5+1.5*maintitle_nlines, 0)));
+      }
+      if (length(highlightPoints) > 0 && doHighlightLegend) {
+         par("oma"=pmax(par("oma"),
+            c(3, 0, 0, 0)));
+      }
    }
    if (length(titleCex) == 0) {
       titleCex <- 1;
-      #if (length(maintitle) == 0) {
-      #   titleCex <- titleCexFactor;
-      #} else {
-      #   titleCex <- titleCexFactor + 1/(log2(10 + nchar(maintitle)));
-      #}
    }
    titleCex <- rep(titleCex, length.out=nsamples);
    titleFont <- rep(titleFont, length.out=nsamples);
@@ -861,19 +968,54 @@ jammaplot <- function
    ## check_panel_page() checks if the panel number will cause a new
    ## page to be created, if maintitle is supplied then it will be
    ## printed atop each page
-   check_panel_page <- function(iPanelNumber, maintitle) {
-      if (length(maintitle) == 0) {
+   check_panel_page <- function
+   (iPanelNumber,
+    maintitle,
+    doHighlightLegend=FALSE,
+    highlightColor=NULL,
+    verbose=FALSE,
+    ...) {
+      if (length(maintitle) == 0 &&
+            !(doHighlightLegend && length(highlightColor) > 0)) {
+         if (verbose) {
+            printDebug("check_panel_page(): ",
+               "No extra title nor color legend is required.");
+         }
          return();
       }
       max_panels <- prod(par("mfrow"));
       if (iPanelNumber > 1 && ((iPanelNumber-1) %% max_panels) == 0) {
-         # print maintitle
          if (length(maintitle) > 0) {
+            ## Print maintitle
             maintitle_txt <- paste(unlist(strsplit(maintitle, "\n")),
                collapse="\n");
             title(outer=TRUE,
                main=maintitle_txt,
                cex.main=maintitleCex);
+         } else {
+            if (verbose) {
+               printDebug("check_panel_page(): ",
+                  "No title was supplied.");
+            }
+         }
+         if (doHighlightLegend && length(highlightColor) > 0) {
+            ## print color legend
+            printDebug("highlightColor:");
+            print(highlightColor);
+            outer_legend(x="bottom",
+               legend=names(highlightColor),
+               col=makeColorDarker(unlist(highlightColor)),
+               pt.bg=unlist(highlightColor));
+         } else {
+            if (verbose) {
+               printDebug("check_panel_page(): ",
+                  "No highlightColor was supplied.");
+            }
+         }
+      } else {
+         if (verbose) {
+            printDebug("check_panel_page(): ",
+               "Panel did not force a page break.");
          }
       }
    }
@@ -886,7 +1028,12 @@ jammaplot <- function
          #mvaData <- mvaDatas[[i]];
          mvaData <- mvaDatas[[x_names[i]]];
          iPanelNumber <- iPanelNumber + 1;
-         check_panel_page(iPanelNumber, maintitle);
+         check_panel_page(iPanelNumber,
+            maintitle,
+            doHighlightLegend=doHighlightLegend,
+            highlightColor=highlightColor,
+            verbose=verbose,
+            ...);
          if (verbose) {
             jamba::printDebug("iPanelNumber: ", iPanelNumber,
                fgText=c("orange", "lightgreen"));
@@ -899,7 +1046,12 @@ jammaplot <- function
                      iPanelNumber);
                }
                iPanelNumber <- iPanelNumber + 1;
-               check_panel_page(iPanelNumber, maintitle);
+               check_panel_page(iPanelNumber,
+                  maintitle,
+                  doHighlightLegend=doHighlightLegend,
+                  highlightColor=highlightColor,
+                  verbose=verbose,
+                  ...);
                if (verbose) {
                   jamba::printDebug("new iPanelNumber: ",
                      iPanelNumber);
@@ -916,10 +1068,21 @@ jammaplot <- function
          mvaMAD <- mvaMADs[whichSamples[i]];
          #mvaMAD <- median(abs(mvaData[,"y"]), na.rm=TRUE);
 
-         colrampUse <- colramp;
+         ## Determine color ramp per panel
          if (length(outlierMAD) > 0 && x_names[i] %in% mvaMADoutliers) {
-            colrampUse <- colrampOutlier;
+            if ("list" %in% class(colrampOutlier)) {
+               colrampUse <- colrampOutlier[[i]];
+            } else {
+               colrampUse <- colrampOutlier;
+            }
+         } else {
+            if ("list" %in% class(colramp)) {
+               colrampUse <- colramp[[i]];
+            } else {
+               colrampUse <- colramp;
+            }
          }
+
          if (all(is.na(mvaData[,"y"]))) {
             jamba::nullPlot(doBoxes=FALSE,
                xlim=xlim,
@@ -944,8 +1107,10 @@ jammaplot <- function
                ...);
          }
          ## Add axis labels
-         title(xlab=xlab, line=xlabline);
-         title(ylab=ylab, line=ylabline);
+         title(xlab=xlab,
+            line=xlabline);
+         title(ylab=ylab,
+            line=ylabline);
 
          ## Add some axis lines across the plot for easy visual reference
          if (!is.null(ablineH)) {
@@ -989,43 +1154,7 @@ jammaplot <- function
          }
 
          ## Optionally highlight a subset of points
-         if (!is.null(highlightPoints)) {
-            if (!class(highlightPoints) %in% c("list")) {
-               if (length(highlightPoints) == length(highlightColor)) {
-                  highlightPoints <- as.list(highlightPoints);
-                  if (length(names(highlightPoints)) == 0) {
-                     names(highlightPoints) <- makeNames(
-                        rep("highlight",
-                           length.out=length(highlightPoints)));
-                  }
-               } else {
-                  highlightPoints <- list(highlightPoints=highlightPoints);
-               }
-            }
-            if (!class(highlightColor) %in% c("list")) {
-               highlightColor <- as.list(highlightColor);
-               highlightColor <- rep(highlightColor,
-                  length.out=length(highlightPoints));
-               names(highlightColor) <- names(highlightPoints);
-            }
-            if (length(highlightColor) != length(highlightPoints)) {
-               highlightColor <- rep(highlightColor,
-                  length.out=length(highlightPoints));
-               names(highlightColor) <- names(highlightPoints);
-            }
-            if (!class(highlightPch) %in% c("list")) {
-               highlightColor <- rep(highlightColor,
-                  length.out=length(highlightPoints));
-               names(highlightColor) <- names(highlightPoints);
-            }
-            highlightPch <- rep(highlightPch,
-               length.out=length(highlightPoints));
-            if (!class(highlightCex) %in% c("list")) {
-               highlightCex <- as.list(highlightCex);
-            }
-            highlightCex <- rep(highlightCex,
-               length.out=length(highlightPoints));
-
+         if (length(highlightPoints) > 0) {
             hp1 <- lapply(seq_along(highlightPoints), function(highI){
                highP <- highlightPoints[[highI]];
                hiData <- mvaData[which(rownames(mvaData) %in% highP),,drop=FALSE];
@@ -1043,7 +1172,7 @@ jammaplot <- function
                   #hiHull <- points2polygonHull(data.frame(x=hiData[,"x"],
                   #   y=yValues),
                   #   returnClass="matrix");
-                  if (is.null(highlightPolygonAlpha)) {
+                  if (length(highlightPolygonAlpha) == 0) {
                      highlightPolyAlpha <- jamba::col2alpha(
                         highlightColor[[highI]]) / 2;
                   }
@@ -1099,20 +1228,6 @@ jammaplot <- function
                font=titleFont[i],
                ...);
 
-            ## Subtitle with centered label
-            if (length(subtitle) > 0) {
-               ## Use drawLabels() for more control over the text box
-               jamba::drawLabels(preset=subtitlePreset,
-                  txt=subtitle[i],
-                  boxColor=subtitleBoxColor[i],
-                  boxBorderColor=jamba::makeColorDarker(subtitleBoxColor[i]),
-                  labelCol=jamba::setTextContrastColor(subtitleBoxColor[i]),
-                  labelCex=titleCex[i]*0.9,
-                  drawBox=TRUE,
-                  #boxCexAdjust=c(1.1,1.3),
-                  font=titleFont[i],
-                  ...);
-            }
             par("xpd"=parXpd);
          } else {
             titleLine <- margins[3] - 1.5;
@@ -1128,6 +1243,20 @@ jammaplot <- function
                line=titleLine-1,
                col.main=titleBoxTextColor,
                font.main=titleFont[i],
+               ...);
+         }
+         ## Subtitle with centered label
+         if (length(subtitle) > 0) {
+            ## Use drawLabels() for more control over the text box
+            jamba::drawLabels(preset=subtitlePreset,
+               txt=subtitle[i],
+               boxColor=subtitleBoxColor[i],
+               boxBorderColor=jamba::makeColorDarker(subtitleBoxColor[i]),
+               labelCol=jamba::setTextContrastColor(subtitleBoxColor[i]),
+               labelCex=titleCex[i]*0.9,
+               drawBox=TRUE,
+               #boxCexAdjust=c(1.1,1.3),
+               font=titleFont[i],
                ...);
          }
 
@@ -1158,31 +1287,43 @@ jammaplot <- function
          }
          #mvaData;
       }
-
       ## End of the per-panel MVA plot loop
+      check_panel_page(iPanelNumber=prod(par("mfrow")) + 1,
+         maintitle,
+         doHighlightLegend=doHighlightLegend,
+         highlightColor=highlightColor,
+         verbose=verbose,
+         ...);
+
       ## Now check to see if we should pad blank panels at the end of the sequence
-      if (length(blankPlotPos) > 0) {
-         iPanelNumber <- iPanelNumber + 1;
-         if (verbose) {
-            jamba::printDebug("iPanelNumber: ",
-               iPanelNumber);
-         }
-         while(iPanelNumber %in% blankPlotPos) {
-            jamba::nullPlot(doBoxes=FALSE);
+      ## Disabled in version 0.0.11.900
+      if (1 == 2) {
+         if (length(blankPlotPos) > 0) {
+            iPanelNumber <- iPanelNumber + 1;
             if (verbose) {
-               jamba::printDebug("Inserted a blank panel at position: ",
+               jamba::printDebug("iPanelNumber: ",
                   iPanelNumber);
             }
-            iPanelNumber <- iPanelNumber + 1;
+            while(iPanelNumber %in% blankPlotPos) {
+               jamba::nullPlot(doBoxes=FALSE);
+               if (verbose) {
+                  jamba::printDebug("Inserted a blank panel at position: ",
+                     iPanelNumber);
+               }
+               iPanelNumber <- iPanelNumber + 1;
+            }
          }
       }
-   }
-   if (length(maintitle) > 0) {
-      maintitle_txt <- paste(unlist(strsplit(maintitle, "\n")),
-         collapse="\n");
-      title(outer=TRUE,
-         main=maintitle_txt,
-         cex.main=maintitleCex);
+      ## Disabled in version 0.0.11.900 in favor of check_panel_page()
+      if (1 == 2) {
+         if (length(maintitle) > 0) {
+            maintitle_txt <- paste(unlist(strsplit(maintitle, "\n")),
+               collapse="\n");
+            title(outer=TRUE,
+               main=maintitle_txt,
+               cex.main=maintitleCex);
+         }
+      }
    }
 
    invisible(mvaDatas);

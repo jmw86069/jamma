@@ -118,4 +118,4 @@ if (exists("edata")) {
 }
 ```
 
-![](man/figures/README-SmoothViridis-1.png)
+![](man/figures/README-SmoothViridis-1.png)![](man/figures/README-SmoothViridis-2.png)

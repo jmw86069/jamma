@@ -1,3 +1,29 @@
+# jamma version 0.0.11.900
+
+## new functions
+
+* `outer_legend()` is used to place a color legend outside
+multi-panel base R graphics, for example when using
+`par("mfrow"=c(2,2))`. By default it places the legend
+at the bottom, centered in the plot device. It
+of course may move to `jamba` but that package
+is already getting overloaded.
+
+## changes
+
+* `jammaplot()` has transitioned from using `groupSuffix`
+to add a text suffix to each panel title, to using
+`subtitle` to display text in the bottom-left corner
+of each panel. In most cases, this change results in
+better use of whitespace on each plot, and helps
+keep the title label smaller.
+* `jammaplot()` allows a list color ramps in the
+argument `colramp`, which applies a different color ramp
+in each panel.
+* `jammaplot()` changed how highlightPoints are handled,
+making it more robust to different types of input, vector
+or list. Fix error when highlightPoints had no list name.
+
 # jamma version 0.0.10.900
 
 ## new functions
