@@ -1,3 +1,13 @@
+# jamma version 0.0.12.900
+
+## changes
+
+* `jammaplot()` argument `useRank=TRUE` will produce the
+rough equivalent of a non-parametric MA-plot, where
+the y-axis unit is either the actual change in rank,
+or the fractional change in rank adjusted by the
+number of rows.
+
 # jamma version 0.0.11.900
 
 ## new functions

@@ -1,5 +1,32 @@
 # TODO for jamma
 
+## Vignettes
+
+1. Guides for MA-plots.
+
+* Basic guide to MA-plots for gene expression data.
+
+  * check data normality, apply appropriate transform, normalize data
+  * check within-group variability
+  * highlight points
+  * common patterns and what they mean:
+  
+    * shifted up/down
+    * skewed up/down
+    * low signal-to-noise, no signal
+    * the 45-degree lines
+    * batch effects
+    * technical versus biological controls
+    
+  * non-parametric (rank-based) MA-plot
+
+* When to do use `centerGroups`, `controlSamples`.
+* How to interpret global-, group-, and technical replicate-centered data.
+* How to detect sample outliers using a MAD factor threshold.
+* How to guide data normalization by MA-plot review.
+
+
+
 ## Bug fixes
 
 * Version 0.0.10.900 fixed a bug where rowGroupMeans() was used to
@@ -19,12 +46,8 @@ samples. The new version should provide two options:
 
 
 
-## Refactor to separate calculations from visualizations
+## Refactoring ideas
 
-* `jammaplot()` could be refactored to separate the calculations from
-the visualization. That change would make ggplot2 output more modular.
-* MA-plot calculations require: centerGroups, controlSamples,
-mean/median definitions
 * Consider using `jamba::rowGroupMeans()` within `centerGeneData()`
 which would allow optional outlier detection, which could substantially
 improve the quality of MA-plot panels.
@@ -35,13 +58,6 @@ sufficient for the desired properties, e.g. useful hover text over
 the smooth scatter density, then a custom interactive plot function
 may be needed, for example direct calls to plotly instead of using
 the ggplotly wrapper function.
-
-### Allow list of color ramps
-
-* The goal is to allow panels to be colored by group or some other
-variable. An easy method would supply single colors per panel,
-then call `jamba::getColorRamp("red")` which creates a red color gradient
-in that example. (COMPLETE in version 0.0.11.900)
 
 
 ### Update to handle SummarizedExperiment objects

@@ -436,6 +436,7 @@ jammaplot <- function
  groupedMAD=TRUE,
  displayMAD=FALSE,
  fillBackground=TRUE,
+ useRank=FALSE,
  ma_method=c("old", "jammacalc"),
  doPlot=TRUE,
  verbose=FALSE,
@@ -516,6 +517,20 @@ jammaplot <- function
             width=80,
             doLegend=FALSE,
             ...);
+      }
+   }
+   if (useRank) {
+      if (is.list(x)) {
+         stop("Cannot combine useRank=TRUE with list input, it requires numeric matrix input.");
+      }
+      ## Convert x to rank per column
+      if (verbose) {
+         printDebug("jammaplot(): ",
+            "Converting input matrix to per-column rank values.");
+      }
+      x <- apply(x, 2, rank);
+      if (all(abs(ylim) == 4)) {
+         ylim <- c(-1,1) * round(nrow(x) * .40);
       }
    }
    transformation <- function(x){

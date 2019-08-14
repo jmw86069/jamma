@@ -35,8 +35,8 @@ jammaplot(x, colramp = c("white", "lightblue", "blue", "navy", "orange",
   applyRangeCeiling = TRUE, doTxtplot = FALSE, ablineV = 0,
   ablineH = c(-2, 0, 2), blankPlotPos = NULL, outlierMAD = 5,
   outlierRowMin = 5, groupedMAD = TRUE, displayMAD = FALSE,
-  fillBackground = TRUE, ma_method = c("old", "jammacalc"),
-  doPlot = TRUE, verbose = FALSE, ...)
+  fillBackground = TRUE, useRank = FALSE, ma_method = c("old",
+  "jammacalc"), doPlot = TRUE, verbose = FALSE, ...)
 }
 \arguments{
 \item{x}{numeric matrix typically containing log-normal measurements,
