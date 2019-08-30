@@ -1,3 +1,11 @@
+# jamma version 0.0.13.900
+
+## changes
+
+* `jammaplot()` argument default changed to `useMean=TRUE`
+to plot the mean centered value, instead of the median.
+
+
 # jamma version 0.0.12.900
 
 ## changes

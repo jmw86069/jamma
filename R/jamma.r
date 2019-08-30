@@ -376,19 +376,29 @@ NULL
 #' @export
 jammaplot <- function
 (x,
+ maintitle=NULL,
+ titleBoxColor="#DDBB9977",
+ subtitleBoxColor=titleBoxColor,
+ centerGroups=NULL,
+ controlSamples=colnames(x),
+ useMean=TRUE,
+ ylim=c(-4,4),
+ xlim=NULL,
+ highlightPoints=NULL,
+ outlierMAD=5,
+ outlierRowMin=5,
+ displayMAD=FALSE,
+ groupedMAD=TRUE,
  colramp=c("white", "lightblue", "blue", "navy", "orange", "orangered2"),
  colrampOutlier=NULL,
  outlierColor="palegoldenrod",
  whichSamples=NULL,
- maintitle=NULL,
  maintitleCex=1.8,
  subtitle=NULL,
  subtitlePreset="bottomleft",
  titleCexFactor=1,
  titleCex=NULL,
  doTitleBox=TRUE,
- titleBoxColor="#DDBB9977",
- subtitleBoxColor=titleBoxColor,
  titleColor="black",
  titleFont=2,
  titlePreset="top",
@@ -397,7 +407,6 @@ jammaplot <- function
  ylab="",
  ylabline=1.5,
  groupSuffix=NULL,
- highlightPoints=NULL,
  highlightPch=21,
  highlightCex=1.5,
  highlightColor="#00AAAA66",
@@ -411,12 +420,7 @@ jammaplot <- function
  nrow=NULL,
  doPar=TRUE,
  las=2,
- ylim=c(-4,4),
- xlim=NULL,
- controlSamples=colnames(x),
- centerGroups=NULL,
  groupedX=TRUE,
- useMean=FALSE,
  customFunc=NULL,
  filterNA=TRUE,
  filterNAreplacement=NA,
@@ -431,10 +435,6 @@ jammaplot <- function
  ablineV=0,
  ablineH=c(-2,0,2),
  blankPlotPos=NULL,
- outlierMAD=5,
- outlierRowMin=5,
- groupedMAD=TRUE,
- displayMAD=FALSE,
  fillBackground=TRUE,
  useRank=FALSE,
  ma_method=c("old", "jammacalc"),
@@ -609,9 +609,17 @@ jammaplot <- function
          ...);
    }
    if (!is.function(colrampOutlier) && !is.list(colrampOutlier)) {
-      colrampOutlier <- jamba::getColorRamp(colrampOutlier,
-         n=NULL,
-         ...);
+      if (length(colrampOutlier) == 1 && isColor(colrampOutlier)) {
+         colrampOutlier <- jamba::getColorRamp(
+            c(colrampOutlier,
+               tail(colramp(101), -1)),
+            n=NULL,
+            ...);
+      } else {
+         colrampOutlier <- jamba::getColorRamp(colrampOutlier,
+            n=NULL,
+            ...);
+      }
    }
 
    ## If groupSuffix is supplied, make sure its length

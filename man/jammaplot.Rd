@@ -13,34 +13,109 @@
 \alias{mva.plot}
 \title{Produce MA-plot of omics data.}
 \usage{
-jammaplot(x, colramp = c("white", "lightblue", "blue", "navy", "orange",
+jammaplot(x, maintitle = NULL, titleBoxColor = "#DDBB9977",
+  subtitleBoxColor = titleBoxColor, centerGroups = NULL,
+  controlSamples = colnames(x), useMean = TRUE, ylim = c(-4, 4),
+  xlim = NULL, highlightPoints = NULL, outlierMAD = 5,
+  outlierRowMin = 5, displayMAD = FALSE, groupedMAD = TRUE,
+  colramp = c("white", "lightblue", "blue", "navy", "orange",
   "orangered2"), colrampOutlier = NULL, outlierColor = "palegoldenrod",
-  whichSamples = NULL, maintitle = NULL, maintitleCex = 1.8,
-  subtitle = NULL, subtitlePreset = "bottomleft", titleCexFactor = 1,
-  titleCex = NULL, doTitleBox = TRUE, titleBoxColor = "#DDBB9977",
-  subtitleBoxColor = titleBoxColor, titleColor = "black",
-  titleFont = 2, titlePreset = "top", xlab = "", xlabline = 2,
-  ylab = "", ylabline = 1.5, groupSuffix = NULL,
-  highlightPoints = NULL, highlightPch = 21, highlightCex = 1.5,
-  highlightColor = "#00AAAA66", doHighlightPolygon = FALSE,
-  highlightPolygonAlpha = 0.3, doHighlightLegend = TRUE,
-  smoothPtCol = "#00000055", margins = c(3.5, 2, 0.3, 0.2),
-  useRaster = TRUE, ncol = NULL, nrow = NULL, doPar = TRUE,
-  las = 2, ylim = c(-4, 4), xlim = NULL,
-  controlSamples = colnames(x), centerGroups = NULL, groupedX = TRUE,
-  useMean = FALSE, customFunc = NULL, filterNA = TRUE,
-  filterNAreplacement = NA, filterNeg = TRUE, filterFloor = 0,
+  whichSamples = NULL, maintitleCex = 1.8, subtitle = NULL,
+  subtitlePreset = "bottomleft", titleCexFactor = 1, titleCex = NULL,
+  doTitleBox = TRUE, titleColor = "black", titleFont = 2,
+  titlePreset = "top", xlab = "", xlabline = 2, ylab = "",
+  ylabline = 1.5, groupSuffix = NULL, highlightPch = 21,
+  highlightCex = 1.5, highlightColor = "#00AAAA66",
+  doHighlightPolygon = FALSE, highlightPolygonAlpha = 0.3,
+  doHighlightLegend = TRUE, smoothPtCol = "#00000055",
+  margins = c(3.5, 2, 0.3, 0.2), useRaster = TRUE, ncol = NULL,
+  nrow = NULL, doPar = TRUE, las = 2, groupedX = TRUE,
+  customFunc = NULL, filterNA = TRUE, filterNAreplacement = NA,
+  filterNeg = TRUE, filterFloor = 0,
   filterFloorReplacement = filterFloor, transFactor = 0.18,
   nrpoints = 50, smoothScatterFunc = jamba::plotSmoothScatter,
   applyRangeCeiling = TRUE, doTxtplot = FALSE, ablineV = 0,
-  ablineH = c(-2, 0, 2), blankPlotPos = NULL, outlierMAD = 5,
-  outlierRowMin = 5, groupedMAD = TRUE, displayMAD = FALSE,
-  fillBackground = TRUE, useRank = FALSE, ma_method = c("old",
-  "jammacalc"), doPlot = TRUE, verbose = FALSE, ...)
+  ablineH = c(-2, 0, 2), blankPlotPos = NULL, fillBackground = TRUE,
+  useRank = FALSE, ma_method = c("old", "jammacalc"), doPlot = TRUE,
+  verbose = FALSE, ...)
 }
 \arguments{
 \item{x}{numeric matrix typically containing log-normal measurements,
 with measurement rows, and sample columns.}
+
+\item{maintitle}{the main title for the overall plot, printed at the
+top of each page in the top outer margin.}
+
+\item{titleBoxColor, subtitleBoxColor}{vector of colors applied to title
+text, or subtitle text, respectively. When \code{doTitleBox=TRUE}
+one or no value is supplied, it defines colors using
+\code{jamba::setTextContrastColor} to use a contrasting color.}
+
+\item{centerGroups}{vector of groups, of \code{length(colnames(object))}
+indicating optional subgroups to use when performing data centering.
+For example it may be appropriate to center samples of one cell type
+only relative to other samples of the same cell type. See
+\code{\link{centerGeneData}} for more specifics.}
+
+\item{controlSamples}{vector of colnames(object) which should be used
+as control samples in the data centering step. Typical MA-plots are
+calculated relative to the overall mean, however it can be insightful
+to calculate values relative to a known control group.}
+
+\item{useMean}{logical whether to perform centering using mean or
+median. The default median is intended to represent the data without
+being skewed by outliers, however it can be informative to use the mean
+values when there are few replicates, or when there are no particular
+sample outliers.}
+
+\item{ylim, xlim}{NULL or vector length 2 indicating the y- and x-axis
+ranges, respectively. These values are useful to define upfront when
+it is best to focus on fixed, consistent ranges across all samples. The
+default \code{ylim=c(-4,4)} represents 16-fold range in normal space, and
+is typically a reasonable starting point for most purposes. If values are
+all between -1.5 and 1.5, then it is still good to keep that range in
+context of -4 and 4, to indicate that the observed noise is lower than
+typically observed. It is also helpful to use xlim to trim off zeros
+for some data where there might be many undetected entries, combined
+with \code{applyRangeCeiling=FALSE} which also removed outlier points
+from the plot density calculation. The result can notably boost the
+detail displayed in the plot range.}
+
+\item{highlightPoints}{NULL, character vector, or list of character vectors,
+containing points to highlight based upon \code{rownames(object)}. If
+a list is supplied, then colors from \code{highlightColor} are recycled
+to \code{length(highlightPoints)} so that each list element can receive
+its own color. This coloring may be useful for coloring several subsets
+of rows, for example housekeeper genes, ribosomal genes, or platform
+positive- and negative-control genes.}
+
+\item{outlierMAD}{the MAD factor threshold to define a sample an outlier.}
+
+\item{outlierRowMin}{the minimum value as displayed on the x-axis, for
+a row in \code{object} to be used in the MAD outlier calculations. This
+threshold is intended to define a noise threshold, so that outlier
+samples are determined by using rows above the noise threshold. Thus
+a sample outlier would need to have greater than five times median
+absolute deviation compared to its center group, based only upon
+measurements above noise.}
+
+\item{displayMAD}{logical whether to display MAD (median absolute deviation)
+values for each panel. MAD values are defined for each centerGroup if
+supplied, or globally if not. The MAD value is CALCULATED by taking the
+median deviation from zero as displayed on the y-axis of each MA-plot
+panel, then taking the median of those values. Then a MAD factor is
+calculated for each MA-plot panel by taking its median devation divided
+by the MAD value for its centerGroup. Most samples should therefore be
+close to 1. A value of 2 is interpreted as "two times the MAD factor for
+its center group." An outlierMAD of 5x is a reasonable cutoff, which
+roughly says that sample has 5 times higher median deviation than other
+samples in its center group. If all samples are noisy, it would define
+a high MAD value, and therefore all samples would be expected to have
+similar MAD factors, near 1.}
+
+\item{groupedMAD}{logical indicating whether the MAD calculation should
+operate only within \code{centerGroups} (\code{groupedMAD=TRUE}) or whether the
+MAD calculation is shared across all samples (\code{groupedMAD=FALSE}).}
 
 \item{colramp}{one of several inputs recognized by
 \code{\link{getColorRamp}}. It typically recognizes either the name of
@@ -65,9 +140,6 @@ the MA-plot data, but only these samples will be plotted, which is useful
 when wanting to view only a subset of samples in detail, but where the
 MA-plot data is identical to the full dataset.}
 
-\item{maintitle}{the main title for the overall plot, printed at the
-top of each page in the top outer margin.}
-
 \item{maintitleCex}{numeric cex character expansion used to resize the
 \code{maintitle} when supplied.}
 
@@ -82,11 +154,6 @@ bottom left corner of each plot panel.}
 \item{doTitleBox}{logical whether to draw plot titles using
 a colored box. When \code{doTitleBox=TRUE} the \code{jamba::drawLabels()}
 is called to display a label box at the top of each plot panel.}
-
-\item{titleBoxColor, subtitleBoxColor}{vector of colors applied to title
-text, or subtitle text, respectively. When \code{doTitleBox=TRUE}
-one or no value is supplied, it defines colors using
-\code{jamba::setTextContrastColor} to use a contrasting color.}
 
 \item{titleColor}{vector of colors applied to title text. When
 \code{doTitleBox=TRUE} one or no value is supplied, it defines
@@ -110,14 +177,6 @@ top of each panel.}
 This argument is being deprecated in favor of using \code{subtitle}
 which places additional text at the bottom corner of each
 plot panel.}
-
-\item{highlightPoints}{NULL, character vector, or list of character vectors,
-containing points to highlight based upon \code{rownames(object)}. If
-a list is supplied, then colors from \code{highlightColor} are recycled
-to \code{length(highlightPoints)} so that each list element can receive
-its own color. This coloring may be useful for coloring several subsets
-of rows, for example housekeeper genes, ribosomal genes, or platform
-positive- and negative-control genes.}
 
 \item{highlightColor, highlightCex}{values recycled to the length of
 highlightPoints. If highlightPoints is a list, then a list or vector
@@ -161,36 +220,6 @@ example.}
 \item{las}{integer value 1 or 2, indicating whether axis labels should be
 parallel or perpendicular to the axes, respectively. This default value
 is defined and provided here for convenience to override it.}
-
-\item{ylim, xlim}{NULL or vector length 2 indicating the y- and x-axis
-ranges, respectively. These values are useful to define upfront when
-it is best to focus on fixed, consistent ranges across all samples. The
-default \code{ylim=c(-4,4)} represents 16-fold range in normal space, and
-is typically a reasonable starting point for most purposes. If values are
-all between -1.5 and 1.5, then it is still good to keep that range in
-context of -4 and 4, to indicate that the observed noise is lower than
-typically observed. It is also helpful to use xlim to trim off zeros
-for some data where there might be many undetected entries, combined
-with \code{applyRangeCeiling=FALSE} which also removed outlier points
-from the plot density calculation. The result can notably boost the
-detail displayed in the plot range.}
-
-\item{controlSamples}{vector of colnames(object) which should be used
-as control samples in the data centering step. Typical MA-plots are
-calculated relative to the overall mean, however it can be insightful
-to calculate values relative to a known control group.}
-
-\item{centerGroups}{vector of groups, of \code{length(colnames(object))}
-indicating optional subgroups to use when performing data centering.
-For example it may be appropriate to center samples of one cell type
-only relative to other samples of the same cell type. See
-\code{\link{centerGeneData}} for more specifics.}
-
-\item{useMean}{logical whether to perform centering using mean or
-median. The default median is intended to represent the data without
-being skewed by outliers, however it can be informative to use the mean
-values when there are few replicates, or when there are no particular
-sample outliers.}
 
 \item{customFunc}{an optional function that is used instead of mean or
 median. It should take a matrix input, and return a numeric vector
@@ -246,34 +275,6 @@ A mechanism similar to ggplot2 facets, except with the ability to
 insert known blank positions for organization. The facet_grid mechanic
 may be used in future, however is not always ideal depending upon the
 experiment design, and so for now a simple manual method is provided.}
-
-\item{outlierMAD}{the MAD factor threshold to define a sample an outlier.}
-
-\item{outlierRowMin}{the minimum value as displayed on the x-axis, for
-a row in \code{object} to be used in the MAD outlier calculations. This
-threshold is intended to define a noise threshold, so that outlier
-samples are determined by using rows above the noise threshold. Thus
-a sample outlier would need to have greater than five times median
-absolute deviation compared to its center group, based only upon
-measurements above noise.}
-
-\item{groupedMAD}{logical indicating whether the MAD calculation should
-operate only within \code{centerGroups} (\code{groupedMAD=TRUE}) or whether the
-MAD calculation is shared across all samples (\code{groupedMAD=FALSE}).}
-
-\item{displayMAD}{logical whether to display MAD (median absolute deviation)
-values for each panel. MAD values are defined for each centerGroup if
-supplied, or globally if not. The MAD value is CALCULATED by taking the
-median deviation from zero as displayed on the y-axis of each MA-plot
-panel, then taking the median of those values. Then a MAD factor is
-calculated for each MA-plot panel by taking its median devation divided
-by the MAD value for its centerGroup. Most samples should therefore be
-close to 1. A value of 2 is interpreted as "two times the MAD factor for
-its center group." An outlierMAD of 5x is a reasonable cutoff, which
-roughly says that sample has 5 times higher median deviation than other
-samples in its center group. If all samples are noisy, it would define
-a high MAD value, and therefore all samples would be expected to have
-similar MAD factors, near 1.}
 
 \item{fillBackground}{logical sent to \code{\link{jamba::plotSmoothScatter}}
 indicating whether to fill the plot panel with the background color,
