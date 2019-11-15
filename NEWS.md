@@ -1,3 +1,16 @@
+# jamma version 0.0.14.900
+
+## new function
+
+* `jammanorm()` a basic normalization method that uses the output
+of `jammaplot()` or `jammacalc()`, and normalizes data such that
+the controlGenes are centered at y=0. In words, it makes the
+controlGenes have mean zero change from average across samples.
+It optionally takes pre-defined controlGenes (housekeeper genes),
+and optionally applies an expression minimum threshold, to ensure
+genes are expressed above noise.
+
+
 # jamma version 0.0.13.900
 
 ## changes

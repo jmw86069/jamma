@@ -3,6 +3,7 @@
 export(centerGeneData)
 export(centerGeneData_new)
 export(jammacalc)
+export(jammanorm)
 export(jammaplot)
 export(outer_legend)
 export(points2polygonHull)
