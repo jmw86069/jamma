@@ -3,7 +3,6 @@
 \docType{package}
 \name{jamma}
 \alias{jamma}
-\alias{jamma-package}
 \title{jamma: MA-plots for omics data}
 \description{
 The jamma package creates MA-plots for omics data, with

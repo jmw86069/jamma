@@ -4,11 +4,21 @@
 \alias{centerGeneData}
 \title{Center gene data}
 \usage{
-centerGeneData(x, floor = NA, controlSamples = NA,
-  centerGroups = NULL, needsLog = NULL, mean = FALSE,
-  returnGroupedValues = FALSE, returnValues = TRUE,
-  groupPrefix = "group", showGroups = FALSE, scale = c("none",
-  "row"), verbose = FALSE, ...)
+centerGeneData(
+  x,
+  floor = NA,
+  controlSamples = NA,
+  centerGroups = NULL,
+  needsLog = NULL,
+  mean = FALSE,
+  returnGroupedValues = FALSE,
+  returnValues = TRUE,
+  groupPrefix = "group",
+  showGroups = FALSE,
+  scale = c("none", "row"),
+  verbose = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{numeric matrix typically containing measurements (genes)
@@ -33,7 +43,7 @@ where each list element contains colnames in explicit groups.}
 
 \item{mean}{logical indicating whether to use row means, or row medians.
 If the matrixStats package is available, it uses
-\code{\link[matrixStats]{rowMedians}} for calculations, otherwise
+\code{matrixStats::rowMedians()} for calculations, otherwise
 falling back to apply(x, 1, median) which is notably slower for
 large data matrices.}
 
@@ -105,7 +115,8 @@ attr(x_ctr, "centerDF");
 
 }
 \seealso{
-Other jam matrix functions: \code{\link{centerGeneData_new}},
-  \code{\link{jammacalc}}
+Other jam matrix functions: 
+\code{\link{centerGeneData_new}()},
+\code{\link{jammacalc}()}
 }
 \concept{jam matrix functions}

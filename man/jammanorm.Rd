@@ -4,10 +4,18 @@
 \alias{jammanorm}
 \title{Normalize data using MA-plot logic}
 \usage{
-jammanorm(x, controlGenes = NULL, minimum_mean = 0,
-  controlSamples = NULL, centerGroups = NULL, useMean = TRUE,
-  noise_floor = -Inf, noise_floor_value = noise_floor,
-  verbose = FALSE, ...)
+jammanorm(
+  x,
+  controlGenes = NULL,
+  minimum_mean = 0,
+  controlSamples = NULL,
+  centerGroups = NULL,
+  useMean = TRUE,
+  noise_floor = -Inf,
+  noise_floor_value = noise_floor,
+  verbose = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{numeric matrix with expression data suitable for use

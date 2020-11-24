@@ -4,9 +4,21 @@
 \alias{outer_legend}
 \title{Add legend in the outer margin}
 \usage{
-outer_legend(x = "bottom", y, doPar = TRUE, legend, bg = "white",
-  box.col = "grey70", col, pt.bg = col, pch = 21, ncol = min(c(5,
-  length(legend))), cex = 1.2, pt.cex = 1.4, ...)
+outer_legend(
+  x = "bottom",
+  y,
+  doPar = TRUE,
+  legend,
+  bg = "white",
+  box.col = "grey70",
+  col,
+  pt.bg = col,
+  pch = 21,
+  ncol = min(c(5, length(legend))),
+  cex = 1.2,
+  pt.cex = 1.4,
+  ...
+)
 }
 \arguments{
 \item{x, y}{position of the legend, using any method

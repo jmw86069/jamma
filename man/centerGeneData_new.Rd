@@ -4,10 +4,20 @@
 \alias{centerGeneData_new}
 \title{Center gene data (modified)}
 \usage{
-centerGeneData_new(x, centerGroups = NULL, na.rm = TRUE,
-  controlSamples = NULL, useMedian = TRUE, rmOutliers = FALSE,
-  madFactor = 5, rowStatsFunc = NULL, returnGroupedValues = FALSE,
-  returnGroups = FALSE, verbose = FALSE, ...)
+centerGeneData_new(
+  x,
+  centerGroups = NULL,
+  na.rm = TRUE,
+  controlSamples = NULL,
+  useMedian = TRUE,
+  rmOutliers = FALSE,
+  madFactor = 5,
+  rowStatsFunc = NULL,
+  returnGroupedValues = FALSE,
+  returnGroups = FALSE,
+  verbose = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{numeric matrix of input data. See assumptions,
@@ -123,7 +133,8 @@ attr(x_ctr, "center_df");
 
 }
 \seealso{
-Other jam matrix functions: \code{\link{centerGeneData}},
-  \code{\link{jammacalc}}
+Other jam matrix functions: 
+\code{\link{centerGeneData}()},
+\code{\link{jammacalc}()}
 }
 \concept{jam matrix functions}

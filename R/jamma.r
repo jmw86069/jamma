@@ -85,18 +85,42 @@ NULL
 #' In this way, subsets of samples can be treated independently in
 #' the MA-plots. A good example might be producing MA-plots for
 #' "kidney" samples, and "muscle" samples, which may have
-#' fundamentally different signal distributions.
+#' fundamentally different signal distributions. A good rule
+#' of thumb is to apply `centerGroups` to represent separate
+#' groups of samples where you do not intend to apply direct
+#' statistical comparisons across those samples, without at
+#' least applying a two-way contrast, a fold change of fold
+#' changes.
 #'
-#' Another very useful technique is to center by sample group,
+#' Another informative technique is to center by sample group,
 #' for example `centerGroups=sample_group`.
 #' This technique produces MA-plots that depict the
-#' "difference from group", and is very useful for visualizing
-#' the variance of replicates in sample groups. Outlier samples
-#' are sometimes very apparent at this step. See `displayMAD` and
-#' `outlierMAD` below for detection of potential outlier samples.
+#' "difference from group" for each sample replicate of a sample
+#' group, and is very useful for identifying sample replicates
+#' with markedly higher variability to its sample group than
+#' others. In general, the variability within sample group
+#' should be substantially lower than variability across
+#' sample groups. Use `displayMAD=TRUE` and `outlierMAD=2`
+#' as a recommended starting point for this technique.
 #'
-#' Note: filterNeg=TRUE will floor log2 values at 0, which has the
-#' effect of adding the "45 degree lines" originating from c(0,0).
+#' ### Applying a noise floor
+#'
+#' The argument `filterFloor` provides a numeric lower threshold,
+#' where individual values **at or below** this threshold are
+#' set to a defined value. The default defined value is the
+#' floor itself, which has the effect of removing information from
+#' points that are already below the noise threshold and therefore
+#' are unreliable for this purpose.
+#'
+#' Another useful alternative
+#' is to define `filterFloor=0` and `filterFloorReplacement=NA`
+#' so that values of zero `0` are set to `NA` and are not included
+#' in the MA-plot calculations, and are not represented as points
+#' in each MA-plot panel. For data with many sparse missing values
+#' represented as zero, these options can be very helpful because
+#' each MA-plot panel will only represent actual measurements,
+#' compared to only those sample which also have actual
+#' measurements for those rows.
 #'
 #' ### Customizing the panel layout
 #'
@@ -111,18 +135,30 @@ NULL
 #'
 #' ### Identifying potential sample outliers
 #'
-#' The argument `displayMAD` will display the per-sample MAD factor
-#' relative to its `centerGroups` value, if provided. The MAD threshold
-#' is calculated using values whose mean/median is at least
-#' `outlierRowMin`, based upon the median absolute difference (MAD)
-#' from the mean/median. The median MAD is defined as the reference MAD,
-#' and all other MAD factors are multiples of that reference. For example,
-#' 1xMAD is equal to the median MAD value, and 2xMAD is two times higher
-#' than the median MAD value.
+#' Use argument `displayMAD=TRUE` to display the per-sample MAD factor
+#' relative to its `centerGroups` value, if provided. The MAD value
+#' for each MA-plot panel is calculated using rows whose mean
+#' is at or above `outlierRowMin`. The median MAD value is calculated
+#' for each `centerGroups` grouping when `groupedMAD=TRUE`, by default.
+#' Finally, each MA-plot panel MAD factor is the ratio of its MAD value
+#' to the relevant median MAD value. MA-plot panels with MAD factor
+#' above `outlierMAD` are considered outliers, and the color ramp
+#' uses `outlierColramp` or `outlierColor` as a visual cue.
 #'
-#' Potential outlier samples should not be evaluated when supplying
-#' `controlSamples` unless those samples represent more than
-#' experimantal control samples.
+#' Putative outlier samples should usually not be determined
+#' when:
+#'
+#'  * `controlSamples` are defined to include only a subset
+#' of sample groups,
+#' * `centerGroups` is not defined, or represents more than one
+#' set of sample groups that are not intended to be statistically
+#' compared directly to one another.
+#'
+#' Putative outlier samples may be defined when:
+#'
+#' * `centerGroups` represents a set of sample groups that are
+#' intended to be involved in direct comparisons
+#' * `centerGroups` represents each sample group
 #'
 #' Potential sample outliers may be identified by setting a threshold
 #' with `outlierMAD`, by default 5xMAD. For a sample to be considered
@@ -151,204 +187,303 @@ NULL
 #'       'sampleID vs median'.}
 #' }
 #'
-#' @param x numeric matrix typically containing log-normal measurements,
-#'    with measurement rows, and sample columns.
+#' @param x `numeric` `matrix` typically containing log-normal
+#'    values, with measurement rows, and sample columns. For example,
+#'    with gene or protein expression data, the genes or proteins are
+#'    represented in rows, and biological samples are represented
+#'    in columns.
 #' @param colramp one of several inputs recognized by
-#'    \code{\link{getColorRamp}}. It typically recognizes either the name of
+#'    `jamba::getColorRamp()`. It typically recognizes either the name of
 #'    a color ramp from RColorBrewer, the name of functions from the
-#'    \code{\link[viridis]{viridis}} package, or single R colors, or
-#'    a vector of R colors.
+#'    `viridis` package such as `viridis::viridis()`, or single R colors, or
+#'    a vector of R colors. When a single color is supplied, a gradient
+#'    is created from white to that color, where the default base color
+#'    can be customized with `defaultBaseColor="black"` for example.
 #' @param colrampOutlier one of several inputs recognized by
-#'    \code{\link{getColorRamp}}, to be used only in panels determined to be
-#'    outliers based upon MAD outlier logic. Typically the color ramp is
-#'    identical to \code{colramp} except the background color indicates
-#'    an error, for example yellow background instead of white.
-#' @param outlierColor character R color, used when `colrampOutlier is NULL`
-#'    to substitute as the first color from `colramp`. This method keeps the
-#'    color ramp consistent, but changes the background color to highlight
-#'    the plot panel as an outlier.
-#' @param applyRangeCeiling see \code{\link{jamba::plotSmoothScatter}} for details,
-#'    logical whether to apply a noise floor and ceiling to display points
-#'    outside the plot region at the boundaries of the plot. This parameter
-#'    is useful to set FALSE when cropping a plot, in order to remove outlier
-#'    points from the density calculation. For example when there is a
-#'    very large number of zero values, it can be helpful to define
-#'    \code{xlim=c(0.1,20), applyRangeCeiling=FALSE}.
-#' @param whichSamples NULL or integer vector, representing an index of samples
-#'    to include in the MA-plots. Note that all samples are used to create
-#'    the MA-plot data, but only these samples will be plotted, which is useful
-#'    when wanting to view only a subset of samples in detail, but where the
-#'    MA-plot data is identical to the full dataset.
-#' @param maintitle the main title for the overall plot, printed at the
-#'    top of each page in the top outer margin.
-#' @param maintitleCex numeric cex character expansion used to resize the
-#'    `maintitle` when supplied.
-#' @param subtitle NULL or character text to be drawn at the bottom center
-#'    of each plot panel.
+#'    `jamba::getColorRamp()` to define a specific color ramp for
+#'    MA-plot outlier panels, used when `outlierMAD` is defined.
+#'    When `colrampOutlier` is `NULL` the `outlierColor` is used.
+#' @param outlierColor `character` string representing one R color,
+#'    used when `colrampOutlier` is `NULL` and when `outlierMAD` is
+#'    defined. This color is used for MA-plot outlier panels by
+#'    substituting the first color from the `colramp` color ramp,
+#'    to act as a visual cue that the panel represents an outlier.
+#' @param applyRangeCeiling `logical` passed to
+#'    `jamba::plotSmoothScatter()` which determines how to handle points
+#'    outside the plot x-axis and y-axis range: `applyRangeCeiling=TRUE`
+#'    will place points at the border of the plot, which is helpful
+#'    to indicate that there are more points outside the viewing range;
+#'    `applyRangeCeiling=FALSE` will crop and remove points outside
+#'    the viewing range, which is helpful for example when a large
+#'    number of points are at zero and overwhelm the point density.
+#'    When there are a large proportion of values at zero, it
+#'    can be helpful to apply `xlim=c(0.01, 20)` and
+#'    `applyRangeCeiling=FALSE`.
+#' @param whichSamples `NULL` or `integer` vector, representing
+#'    an index subset of samples to include in the MA-plots. When
+#'    `whichSamples` represents a subset of samples in `x`, the
+#'    MA-plot calculations are performed on all samples, then only
+#'    samples in `whichSamples` are displayed. This argument keeps
+#'    the MA-plot calculations consistent even when viewing only
+#'    one or a subset of samples in more detail.
+#' @param maintitle `character` string with the main title for
+#'    the overall plot, printed at the top of each page in the
+#'    top outer margin.
+#' @param maintitleCex `numeric` cex character expansion used to
+#'    resize the `maintitle`.
+#' @param subtitle `NULL` or `character` vector to be drawn at
+#'    the bottom left corner of each plot panel, the location
+#'    is defined by `subtitlePreset`.
 #' @param subtitlePreset character value describing where to position the
 #'    subtitle, using terms valid in `jamba::coordPresets()`. The default
 #'    `subtitlePreset="bottomleft"` places the subtitle at the
 #'    bottom left corner of each plot panel.
-#' @param titleBoxColor,subtitleBoxColor vector of colors applied to title
-#'    text, or subtitle text, respectively. When `doTitleBox=TRUE`
+#' @param titleBoxColor,subtitleBoxColor `character` vector of
+#'    R colors applied to title text, or subtitle text, respectively.
+#'    When `doTitleBox=TRUE`
 #'    one or no value is supplied, it defines colors using
-#'    `jamba::setTextContrastColor` to use a contrasting color.
-#' @param titleColor vector of colors applied to title text. When
-#'    `doTitleBox=TRUE` one or no value is supplied, it defines
-#'    colors using `jamba::setTextContrastColor()` to use color
-#'    that contrasts with `titleBoxColor`.
-#' @param doTitleBox logical whether to draw plot titles using
-#'    a colored box. When `doTitleBox=TRUE` the `jamba::drawLabels()`
-#'    is called to display a label box at the top of each plot panel.
-#' @param titleFont integer font compatible with \code{par("font")}.
-#'    Values are recycled across panels.
-#' @param titlePreset character value describing where to position the
+#'    `jamba::setTextContrastColor()` to use a contrasting color.
+#' @param titleColor `character` vector of colors applied to title text
+#'    in each MA-plot panel. When `doTitleBox=TRUE` and `titleColor`
+#'    contains only one or no value, the title color is defined by
+#'    `jamba::setTextContrastColor()` along with `titleBoxColor`.
+#' @param doTitleBox `logical` indicating whether to draw plot
+#'    titles using a colored box. When `doTitleBox=TRUE` the
+#'    `jamba::drawLabels()` is called to display a label box at
+#'    the top of each plot panel, with `drawBox=TRUE`. When
+#'    `doTitleBox=FALSE`, `jamba::drawLabels()` is called with
+#'    `drawBox=FALSE`.
+#' @param titleFont `integer` font compatible with `par("font")`.
+#'    Values are recycled across panels, so each panel can use a custom
+#'    value if needed.
+#' @param titlePreset `character` value describing where to position the
 #'    subtitle, using terms valid in `jamba::coordPresets()`.
 #'    The default `titlePreset="top"` centers the label at the
 #'    top of each panel.
-#' @param xlab,ylab character x- and y-axis labels.
-#' @param xlabline,ylabline numeric number of text lines as used by
-#'    \code{title} to position labels relative to the plot area.
-#' @param groupSuffix character text appended to each plot panel title.
-#'    This argument is being deprecated in favor of using `subtitle`
-#'    which places additional text at the bottom corner of each
-#'    plot panel.
-#' @param highlightPoints NULL, character vector, or list of character vectors,
-#'    containing points to highlight based upon `rownames(object)`. If
-#'    a list is supplied, then colors from `highlightColor` are recycled
-#'    to `length(highlightPoints)` so that each list element can receive
-#'    its own color. This coloring may be useful for coloring several subsets
-#'    of rows, for example housekeeper genes, ribosomal genes, or platform
-#'    positive- and negative-control genes.
-#' @param highlightColor,highlightCex values recycled to the length of
-#'    highlightPoints. If highlightPoints is a list, then a list or vector
-#'    can be supplied.
-#' @param doHighlightPolygon logical whether to draw a polygon encompassing
-#'    highlighted points. If highlightPoints is a list, a polygon is drawn
-#'    around each list element subset of points, using the appropriate
-#'    `highlightColor` for each list element. The polygon is defined by
-#'    `grDevices::chull()`.
-#' @param highlightPolygonAlpha numeric value between 0 and 1 indicating the
-#'    alpha transparency to use for the polygon color, based upon
-#'    `highlightColor`.
-#' @param doHighlightLegend logical indicating whether to print a
-#'    color legend at the bottom of each page, when `highlightPoints`
-#'    is not `NULL`.
-#' @param smoothPtCol color used when nrpoints>0, and
-#'    \code{\link{jamba::plotSmoothScatter}} draws this many points in the extremities.
-#' @param margins vector of margins compatible with \code{par("mar")}. Defaults
-#'    are applied, but provided here for convenient override.
-#' @param useRaster logical whether to define \code{useRaster=TRUE} in
-#'    \code{\link{jamba::plotSmoothScatter}}, which ultimately calls
-#'    \code{\link{imageDefault}}. When TRUE, it creates a much smaller
-#'    plot object, because it returns a raster image instead of a set of
-#'    rectangles when rendering the image.
-#' @param ncol,nrow integer number of columns and rows used by
-#'    \code{par("mfrow")} when \code{doPar=TRUE} is defined. These values
-#'    are helpful in defining a fixed layout for multiple MA-plot panels.
-#' @param doPar logical whether \code{par("mfrow")} should be defined, in
-#'    order to fit multiple panels in one plot window. Set to FALSE if the plot
-#'    layout is already defined, or if plotting one panel per page, for
-#'    example.
-#' @param las integer value 1 or 2, indicating whether axis labels should be
-#'    parallel or perpendicular to the axes, respectively. This default value
-#'    is defined and provided here for convenience to override it.
-#' @param ylim,xlim NULL or vector length 2 indicating the y- and x-axis
-#'    ranges, respectively. These values are useful to define upfront when
-#'    it is best to focus on fixed, consistent ranges across all samples. The
-#'    default \code{ylim=c(-4,4)} represents 16-fold range in normal space, and
-#'    is typically a reasonable starting point for most purposes. If values are
-#'    all between -1.5 and 1.5, then it is still good to keep that range in
-#'    context of -4 and 4, to indicate that the observed noise is lower than
-#'    typically observed. It is also helpful to use xlim to trim off zeros
-#'    for some data where there might be many undetected entries, combined
-#'    with \code{applyRangeCeiling=FALSE} which also removed outlier points
-#'    from the plot density calculation. The result can notably boost the
-#'    detail displayed in the plot range.
-#' @param controlSamples vector of colnames(object) which should be used
-#'    as control samples in the data centering step. Typical MA-plots are
-#'    calculated relative to the overall mean, however it can be insightful
-#'    to calculate values relative to a known control group.
-#' @param centerGroups vector of groups, of \code{length(colnames(object))}
-#'    indicating optional subgroups to use when performing data centering.
-#'    For example it may be appropriate to center samples of one cell type
-#'    only relative to other samples of the same cell type. See
-#'    \code{\link{centerGeneData}} for more specifics.
-#' @param useMean logical whether to perform centering using mean or
-#'    median. The default median is intended to represent the data without
-#'    being skewed by outliers, however it can be informative to use the mean
-#'    values when there are few replicates, or when there are no particular
-#'    sample outliers.
-#' @param customFunc an optional function that is used instead of mean or
-#'    median. It should take a matrix input, and return a numeric vector
-#'    output summarizing each row in \code{object}. It is intended to
+#' @param xlab,ylab `character` x- and y-axis labels, respectively.
+#'    The default values are blank `""` because there are a wide variety
+#'    of possible labels, and the labels take up more space
+#'    than is often useful for most MA-plots.
+#' @param xlabline,ylabline `numeric` number indicating the text line
+#'    distance from the edge of plot border to place `xlab` and `ylab`
+#'    text, as used by `graphics::title()`.
+#' @param groupSuffix `character` text appended to each MA-plot
+#'    panel title. This argument is deprecated in favor of
+#'    using `subtitle` to place additional text at the bottom left
+#'    corner of each MA-plot panel.
+#' @param highlightPoints `NULL`, or `character` vector, or a
+#'    `list` of `character` vectors indicating `rownames(x)` to
+#'    highlight in each MA-plot panel. When `NULL`, no points are
+#'    highlighted; when `character` vector, points are highlighted in
+#'    all MA-plot panels; when `list` of `character` vectors, each
+#'    `character` vector in the list is highlighted using a unique
+#'    color in `highlightColor`. Points are drawn using
+#'    `graphics::points()` and colored using `highlightColor`,
+#'    which can be time-consuming for a large number of highlight
+#'    points.
+#' @param highlightColor `character` vector used when `highlightPoints`
+#'    is defined. It is recycled to `length(highlightPoints)` and
+#'    is applied either to
+#' @param highlightCex `numeric` value recycled to `length(highlightPoints)`
+#'    indicating the highlight point size.
+#' @param doHighlightPolygon `logical` indicating whether to draw
+#'    a shaded polygon encompassing `highlightPoints`, using
+#'    `highlightColor`.The polygon is defined by `grDevices::chull()`
+#'    via the function `points2polygonHull()`.
+#' @param highlightPolygonAlpha `numeric` value indicating alpha
+#'    transparency, where `0` is fully transparent, and `1` is completely
+#'    not transparent.
+#' @param doHighlightLegend `logical` indicating whether to print a
+#'    color legend when `highlightPoints` is defined. The legend is
+#'    displayed in the bottom outer margin of the page using
+#'    `outer_legend()`, and the page is adjusted to add bottom
+#'    outer margin.
+#' @param smoothPtCol `color` used to draw points when `nrpoints` is
+#'    non-zero, which draws points in the extremities of the
+#'    smooth scatter plot. See `jamba::plotSmoothScatter()`.
+#'    The effect can also be achieved by adjusting `transFactor` to
+#'    a lower value, which increases the visual contrast of individual
+#'    points in the point density.
+#' @param margins `numeric` vector of margins compatible with
+#'    `graphics::par("mar")`. Default values
+#'    are applied, but provided here for convenience.
+#' @param useRaster `logical` indicating whether to draw the
+#'    smooth scatter plot using raster logic, `useRaster=TRUE` is
+#'    passed to `jamba::plotSmoothScatter()`. The default `TRUE`
+#'    creates a much smaller plot object by rendering each plot
+#'    panel as a single raster image instead of rendering individual
+#'    colored rectangles.
+#' @param ncol,nrow `integer` number of MA-plot panel columns and rows
+#'    passed to `graphics::par("mfrow")` when `doPar=TRUE`. When only one
+#'    value is supplied, `nrow` or `ncol`, the other value is defined
+#'    by `ncol(x)` and `blankPlotPos` so all panels can be contained on
+#'    one page. When `nrow` and `ncol` are defined such that multiple
+#'    pages are produced, each page will be annotated with `maintitle`
+#'    and `doHighlightLegend` as relevant.
+#' @param doPar `logical` indicating whether to apply
+#'    `graphics::par("mfrow")` to define MA-plot panel rows and columns.
+#'    When `doPar=FALSE` each plot panel is
+#'    rendered without adjusting the `graphics::par("mfrow")` setting.
+#' @param las `integer` value `1` or `2` indicating whether axis labels
+#'    should be parallel or perpendicular to the axes, respectively.
+#' @param ylim,xlim `NULL` or `numeric` vector `length=2` indicating
+#'    the y-axis and x-axis ranges, respectively. The values are useful
+#'    to define consistent dimensions across all panels. The
+#'    default `ylim=c(-4,4)` represents 16-fold up and down range in
+#'    normal space, and is typically a reasonable starting point for
+#'    most purposes. Even if numeric values are all between
+#'    `-1.5` and `1.5`, it is still recommended to keep a range in
+#'    context of `c(-4, 4)`, to indicate that the observed values
+#'    are lower than typically observed. The `c(-4, 4)` may be adjusted
+#'    relative to the typical ranges expected for the data.
+#'    It is sometimes helpful to define `xlim` slightly above zero for
+#'    datasets that have an extremely large proportion of zeros, in order
+#'    to reduce the visual effect of having that much point density at
+#'    zero, for example with `xlim=c(0.001, 20)` and
+#'    `applyRangeCeiling=FALSE`.
+#' @param controlSamples `character` vector of `colnames(x)` to define
+#'    control samples during the data centering step. Default MA-plots are
+#'    calculated relative to the overall mean, which uses all `colnames(x)`
+#'    as `controlSamples`. However it can be helpful and informative
+#'    to view MA-plots relative to a set of known control samples.
+#' @param centerGroups vector of groups, with length `ncol(x)`
+#'    indicating optional groupings to use during data centering.
+#'    When `centerGroups` is defined, each subset of data is centered
+#'    independently. It is useful to center within batches, or within
+#'    subsets of samples that are not intended to be compared across
+#'    one another. It is also informative to center by each sample
+#'    group in order to view the variability among sample group
+#'    replicates, which should be much lower than variability across
+#'    sample groups. See `centerGeneData()` for more specific examples.
+#' @param useMean `logical` indicating whether to center data using
+#'    `mean` or `median` values. The default `useMean=TRUE` is chosen
+#'    because it visually represents data as seen by typical parametric
+#'    analysis methods downstream. When outlier sample are observed,
+#'    it may be more useful to apply `useMean=FALSE` to use the `median`
+#'    which is less prone to outlier effects. That said, if a particular
+#'    sample is an outlier, another alternative is to define
+#'    `controlSamples` which excludes the outlier sample(s), and
+#'    therefore data centering is applied using only the non-outlier
+#'    samples as the reference.
+#' @param customFunc `NULL` or `function` used instead of `mean` or
+#'    `median` during the data centering step to generate a row summary
+#'    statistic. It should take `matrix` input, and return a `numeric` vector
+#'    output summarizing each row in `x`, to be subtracted from each
+#'    `numeric` value by row in `x`. It is intended to
 #'    provide custom row statistics, for example geometric mean, or other
 #'    row summary function.
-#' @param filterNA,filterNeg logical indicating whether to remove NA or
-#'    negative values before creating the MA-plot. It can be useful to
-#'    filter negative values, which are often defined as noise in upstream
-#'    normalization steps, so they do not impart visible features into the
-#'    MA-plot since they are based upon noise. Negative values are set to
-#'    zero when filtered, which gives a characteristic 45 degree angle
-#'    symmetry above and below zero.
-#' @param filterFloor,filterFloorReplacement numeric or NULL, when numeric
-#'    values in \code{object} are below \code{filterFloor}, they are replaced
-#'    with \code{filterFloorReplacement}. This mechanism is an alternative to
-#'    \code{filterNeg}, in that it allows defining a filter above or below
-#'    zero. For some platform data , it might be useful to define a
-#'    \code{filterFloor} roughly equivalent to its noise threshold.
-#' @param transFactor numeric adjustment used by
-#'    \code{\link{jamba::plotSmoothScatter}}. The default is defined, but available
-#'    here as a convenient override. The value is used in a power function in
-#'    the form \code{transformation=function(x)x^transFactor}. Lower values
-#'    make the scatterplot point density more intense.
-#' @param nrpoints integer or NULL, the number of points to display on the
-#'    extremity, as used by \code{\link{jamba::plotSmoothScatter}}.
-#' @param smoothScatterFunc function used to plot smooth scatter plot, by
-#'    default \code{\link{jamba::plotSmoothScatter}}.
-#' @param ablineH,ablineV numeric vector indicating where to draw indicator
-#'    lines, at these horizontal or vertical positions, respectively.
-#' @param doTxtplot logical whether to plot results in colored text output,
-#'    currently under development and is still experimental.
-#' @param blankPlotPos NULL or integer vector indicating which plot panels
-#'    should be used as blank filler positions. These blank panels can be
-#'    used to help organize multiple plot panels to indicate sample groups.
-#'    A mechanism similar to ggplot2 facets, except with the ability to
-#'    insert known blank positions for organization. The facet_grid mechanic
-#'    may be used in future, however is not always ideal depending upon the
-#'    experiment design, and so for now a simple manual method is provided.
-#' @param displayMAD logical whether to display MAD (median absolute deviation)
-#'    values for each panel. MAD values are defined for each centerGroup if
-#'    supplied, or globally if not. The MAD value is CALCULATED by taking the
-#'    median deviation from zero as displayed on the y-axis of each MA-plot
-#'    panel, then taking the median of those values. Then a MAD factor is
-#'    calculated for each MA-plot panel by taking its median devation divided
-#'    by the MAD value for its centerGroup. Most samples should therefore be
-#'    close to 1. A value of 2 is interpreted as "two times the MAD factor for
-#'    its center group." An outlierMAD of 5x is a reasonable cutoff, which
-#'    roughly says that sample has 5 times higher median deviation than other
-#'    samples in its center group. If all samples are noisy, it would define
-#'    a high MAD value, and therefore all samples would be expected to have
-#'    similar MAD factors, near 1.
-#' @param groupedMAD logical indicating whether the MAD calculation should
-#'    operate only within `centerGroups` (`groupedMAD=TRUE`) or whether the
-#'    MAD calculation is shared across all samples (`groupedMAD=FALSE`).
-#' @param outlierMAD the MAD factor threshold to define a sample an outlier.
-#' @param outlierRowMin the minimum value as displayed on the x-axis, for
-#'    a row in \code{object} to be used in the MAD outlier calculations. This
-#'    threshold is intended to define a noise threshold, so that outlier
-#'    samples are determined by using rows above the noise threshold. Thus
-#'    a sample outlier would need to have greater than five times median
-#'    absolute deviation compared to its center group, based only upon
-#'    measurements above noise.
-#' @param fillBackground logical sent to \code{\link{jamba::plotSmoothScatter}}
+#' @param filterNeg `logical` deprecated argument, use `filterFloor`
+#'    instead. The `filterNeg` indicates whether to change all negative
+#'    values to zero `0` before proceeding with data centering.
+#'    Negative values are often the result of measurements
+#'    being below a noise threshold in upstream data processing,
+#'    and therefore the magnitude of negative value is usually
+#'    either not informative, or not on similar scale as positive
+#'    values.
+#'    When `filterNeg=TRUE`, negative values are set to zero, and
+#'    can result in a characteristic 45 degree angle line originating at
+#'    `x=0` extending to the right.
+#' @param filterNA,filterNAreplacement `logical` and `vector` respectively.
+#'    When `filterNA=TRUE`, all `NA` values are replaced with
+#'    `filterNAreplacement`, which can be helpful to handle `NA` values
+#'    as zero `0` for example. In reality, `NA` values should probably
+#'    be left as-is, so subsequent data centering does not use these values,
+#'    and so the MA-plot panel does not draw a point when no measurement
+#'    exists.
+#' @param filterFloor,filterFloorReplacement `numeric` or `NULL` indicating
+#'    a numeric floor, where values in `x` **at or below** `filterFloor` are
+#'    replaced with `filterFloorReplacement`. Note that this argument
+#'    can be used to replace zero `0` with `NA` in the event that
+#'    zeros do not represent measurements. One can typically tell whether
+#'    input data includes zero `0` values by the presence of characteristic
+#'    45-degree angle lines originating from `x=0` angled to the right.
+#'    The default values replace any values **at or below zero** with zero,
+#'    which also applies a numeric floor to negative values.
+#'    For some platform data technologies, it can be useful to define a
+#'    `filterFloor` roughly equivalent to its noise threshold. For example
+#'    quantitative PCR sometimes uses `log_expression = (40 - Ct)`, where
+#'    `Ct` values above `35` are considered to be noise. That noise threshold
+#'    implies that any `expression` values `5` or lower are roughly
+#'    equivalent noise, so applying `filterFloor=5` is appropriate.
+#' @param transFactor `numeric` adjustment to the visual density of
+#'    points by `jamba::plotSmoothScatter()`. The value is based upon
+#'    `graphics::smoothScatter()` argument `transformation` which uses
+#'    `function(x)x^0.24`. The `transFactor` is equivalent to the
+#'    exponential in the form: `function(x)x^transFactor`. Lower values
+#'    increase the visual density more intense, higher values make the
+#'    visual density less intense.
+#' @param nrpoints `integer` or `NULL` indicating the number of points
+#'    to display on the extremity of the smooth scatter density,
+#'    passed to `jamba::plotSmoothScatter()`.
+#' @param smoothScatterFunc `function` used for the smooth scatter plot,
+#'    default `jamba::plotSmoothScatter()`. Note that a custom function
+#'    may not recognize `nrpoints` or `transformation`.
+#' @param ablineH,ablineV `numeric` vector indicating horizontal and
+#'    vertical lines to draw in each MA-plot panel, respectively.
+#'    These values are passed to `graphics::abline()`.
+#' @param doTxtplot `logical` not yet implemented, indicating whether
+#'    to plot results using colored text output.
+#' @param blankPlotPos `NULL` or `integer` vector indicating
+#'    plot panel positions to be drawn blank, skipped. Blank panel
+#'    positions are intended to help customize the visual alignment
+#'    of MA-plot panels. The mechanism is similar to `ggplot2::facet_wrap()`
+#'    except that blank positions can be manually defined by what makes
+#'    sense to the experiment design.
+#' @param displayMAD `logical` indicating whether to display each
+#'    MA-plot panel MAD factor (median absolute deviation). A MAD
+#'    value for each panel is calculated by taking the median absolute
+#'    deviation from zero across all points, using points whose mean
+#'    value is equal or greater than `outlierRowMin`. The overall MAD
+#'    is defined by the median MAD from the MA-plot panels. The MAD
+#'    factor is defined as the ratio of each MA-plot panel MAD value
+#'    to the overall MAD value, and therefore most MAD factor values
+#'    should be roughly `1`. The overall MAD value is defined by the
+#'    median across all samples when `groupedMAD=FALSE`, or defined
+#'    within each `centerGroup` when `groupedMAD=TRUE`. A value
+#'    with MAD factor 2 is interpreted as a sample whose median
+#'    deviation from zero is twice as high as the typical sample,
+#'    which is a reasonably indication that this sample has twice
+#'    the inherent level of noise compared to other samples. Note
+#'    that MAD values should be interpreted within sample processing
+#'    batches if relevant, or within logical experimental units --
+#'    roughly interpreted to mean sets of samples within which direct
+#'    statistical comparisons are intended to be applied. For example,
+#'    gene expression data that include brain and liver samples would
+#'    probably use `centerGroups` for brain and liver to be centered
+#'    separately, therefore the MAD factors should be separately
+#'    calculated for brain and for liver.
+#' @param groupedMAD logical indicating how the MAD calculation
+#'    should be performed: `groupedMAD=TRUE` will calculate the
+#'    median MAD and corresponsing MAD factor within each
+#'    `centerGroups` grouping; `groupedMAD=FALSE` will calculate
+#'    one overall median MAD, and corresponding MAD factor values
+#'    will be performed across all samples.
+#' @param outlierMAD `numeric` threshold above which a MA-plot panel
+#'    MAD factor is considered an outlier. When a MA-plot panel is
+#'    considered an outlier, the `outlierColramp` or `outlierColor`
+#'    is applied to the panel color ramp to display a visual
+#'    indication.
+#' @param outlierRowMin `numeric` value indicating the minimum mean
+#'    value as displayed on the MA-plot panel x-axis, in order for
+#'    the row to be included in MAD calculations. This argument is
+#'    intended to prevent measurements whose mean value is below
+#'    a noise threshold from being included, therefore only including
+#'    points whose mean measurement is above noise and represents
+#'    "typical" variability.
+#' @param fillBackground `logical` passed to `jamba::plotSmoothScatter()`
 #'    indicating whether to fill the plot panel with the background color,
-#'    which is typically the first value in the \code{colramp}. Set to TRUE
-#'    when axis ranges may be defined which are outside the range of values
-#'    for any particular column in \code{object}.
+#'    using the first value in the color ramp for each MA-plot panel.
 #' @param ma_method character string indicating whether to perform
 #'    MA-plot calculations using the old method `"old"`; or `"jammacalc"`
-#'    which uses the newer function `jammacalc()`.
+#'    which uses the function `jammacalc()`.
+#' @param doPlot `logical` indicating whether to create plots. When
+#'    `doPlot=FALSE` only the MA-plot panel data is returned.
+#' @param useRank `logical` indicating whether to create column-wide
+#'    ranks, then create MA-plots using the rank data. When `useRank=TRUE`
+#'    the y-axis represents the rank difference from mean, and the
+#'    x-axis represents the mean rank. Using `useRank=TRUE` is a good
+#'    method to evaluate whether data can be normalized, or whether
+#'    data across samples is inherently noisy.
 #' @param verbose logical indicating whether to print verbose output.
 #' @param ... additional parameters sent to downstream functions,
 #'    \code{\link{jamba::plotSmoothScatter}}, \code{\link{centerGeneData}}.
@@ -428,7 +563,7 @@ jammaplot <- function
  filterFloor=0,
  filterFloorReplacement=filterFloor,
  transFactor=0.18,
- nrpoints=50,
+ nrpoints=0,
  smoothScatterFunc=jamba::plotSmoothScatter,
  applyRangeCeiling=TRUE,
  doTxtplot=FALSE,
@@ -437,7 +572,7 @@ jammaplot <- function
  blankPlotPos=NULL,
  fillBackground=TRUE,
  useRank=FALSE,
- ma_method=c("old", "jammacalc"),
+ ma_method=c("jammacalc", "old"),
  doPlot=TRUE,
  verbose=FALSE,
  ...)
@@ -501,13 +636,23 @@ jammaplot <- function
    ## The outlierMAD is the threshold above which a MAD factor is considered
    ## an outlier.
    ##
-   if (!suppressPackageStartupMessages(require(jamba))) {
-      stop("jammaplot() requires the jamba package.");
-   }
-   if (suppressPackageStartupMessages(require(matrixStats))) {
+   #if (!suppressPackageStartupMessages(require(jamba))) {
+   #   stop("jammaplot() requires the jamba package.");
+   #}
+   #if (suppressPackageStartupMessages(require(matrixStats))) {
+   #   doMS <- TRUE;
+   if ("matrixStats" %in% rownames(installed.packages())) {
       doMS <- TRUE;
+      rowMedians <- matrixStats::rowMedians;
+      colMedians <- matrixStats::colMedians;
    } else {
       doMS <- FALSE;
+      rowMedians <- function(x, na.rm=TRUE) {
+         apply(x, 1, median, na.rm=na.rm);
+      }
+      colMedians <- function(x, na.rm=TRUE) {
+         apply(x, 2, median, na.rm=na.rm);
+      }
    }
    ma_method <- match.arg(ma_method);
    if (doTxtplot) {
@@ -519,20 +664,7 @@ jammaplot <- function
             ...);
       }
    }
-   if (useRank) {
-      if (is.list(x)) {
-         stop("Cannot combine useRank=TRUE with list input, it requires numeric matrix input.");
-      }
-      ## Convert x to rank per column
-      if (verbose) {
-         printDebug("jammaplot(): ",
-            "Converting input matrix to per-column rank values.");
-      }
-      x <- apply(x, 2, rank);
-      if (all(abs(ylim) == 4)) {
-         ylim <- c(-1,1) * round(nrow(x) * .40);
-      }
-   }
+
    transformation <- function(x){
       x^transFactor;
    }
@@ -560,65 +692,40 @@ jammaplot <- function
    if (length(colrampOutlier) == 0) {
       colrampOutlier <- outlierColor;
    }
-   if (is.list(colramp) || is.list(colrampOutlier)) {
-      ## If either is a list, make sure both are a list
-      ## with length(x_names)
-      if (!is.list(colramp)) {
-         colramp <- list(colramp);
-      }
-      if (!is.list(colrampOutlier)) {
-         colrampOutlier <- list(colrampOutlier);
-      }
-      colramp <- rep(colramp,
-         length.out=length(x_names));
-      names(colramp) <- x_names;
-      colrampOutlier <- rep(colrampOutlier,
-         length.out=length(x_names));
-      names(colrampOutlier) <- x_names;
-      for (i in seq_along(x_names)) {
-         icolrampOutlier <- colrampOutlier[[i]];
-         icolramp <- colramp[[i]];
-         if (!is.function(icolramp)) {
-            ## Make sure icolramp is a color function
-            icolramp <- jamba::getColorRamp(icolramp,
+   if (!is.list(colramp)) {
+      colramp <- list(colramp);
+   }
+   if (!is.list(colrampOutlier)) {
+      colrampOutlier <- list(colrampOutlier);
+   }
+   colramp <- rep(colramp,
+      length.out=length(x_names));
+   names(colramp) <- x_names;
+   colramp <- lapply(colramp, jamba::getColorRamp, n=NULL);
+
+   colrampOutlier <- rep(colrampOutlier,
+      length.out=length(x_names));
+   names(colrampOutlier) <- x_names;
+   # apply outlier colors to each color ramp
+   for (i in seq_along(x_names)) {
+      icolramp <- colramp[[i]];
+      icolrampOutlier <- colrampOutlier[[i]];
+      if (!is.function(icolrampOutlier)) {
+         if (length(icolrampOutlier) == 1 && jamba::isColor(icolrampOutlier)) {
+            ## substitute single color with the first color in colramp
+            icolrampOutlier <- jamba::getColorRamp(
+               c(icolrampOutlier,
+                  tail(icolramp(101), -1)),
                n=NULL,
                ...);
-            colramp[[i]] <- icolramp;
+         } else {
+            ## For multi-color colrampOutlier, use it to define
+            ## the complete outlier color gradient
+            icolrampOutlier <- jamba::getColorRamp(icolrampOutlier,
+               n=NULL,
+               ...);
          }
-         if (!is.function(icolrampOutlier)) {
-            if (length(icolrampOutlier) == 1 && isColor(icolrampOutlier)) {
-               ## substitute single color with the first color in colramp
-               icolrampOutlier <- jamba::getColorRamp(
-                  c(icolrampOutlier,
-                     tail(icolramp(101), -1)),
-                  n=NULL,
-                  ...);
-            } else {
-               ## For multi-color colrampOutlier, use it to define
-               ## the complete outlier color gradient
-               icolrampOutlier <- jamba::getColorRamp(icolrampOutlier,
-                  n=NULL,
-                  ...);
-            }
-            colrampOutlier[[i]] <- icolrampOutlier;
-         }
-      }
-   } else if (!is.function(colramp)) {
-      colramp <- jamba::getColorRamp(colramp,
-         n=NULL,
-         ...);
-   }
-   if (!is.function(colrampOutlier) && !is.list(colrampOutlier)) {
-      if (length(colrampOutlier) == 1 && isColor(colrampOutlier)) {
-         colrampOutlier <- jamba::getColorRamp(
-            c(colrampOutlier,
-               tail(colramp(101), -1)),
-            n=NULL,
-            ...);
-      } else {
-         colrampOutlier <- jamba::getColorRamp(colrampOutlier,
-            n=NULL,
-            ...);
+         colrampOutlier[[i]] <- icolrampOutlier;
       }
    }
 
@@ -784,6 +891,27 @@ jammaplot <- function
          if (!is.null(filterFloor)) {
             x[!is.na(x) & x <= filterFloor] <- filterFloorReplacement;
          }
+
+         # apply rank here
+         if (useRank) {
+            if (is.list(x)) {
+               stop("Cannot combine useRank=TRUE with list input, it requires numeric matrix input.");
+            }
+            ## Convert x to rank per column
+            if (verbose) {
+               jamba::printDebug("jammaplot(): ",
+                  "Converting input matrix to per-column rank values.");
+            }
+            x1 <- apply(x, 2, rank, na.last=FALSE);
+            if (any(is.na(x))) {
+               x1[is.na(x)] <- NA;
+            }
+            x <- x1;
+            if (all(abs(ylim) == 4)) {
+               ylim <- c(-1,1) * round(nrow(x) * .40);
+            }
+         }
+
          if (length(controlSamples) == 0) {
             controlSamples <- x_names;
          } else {
@@ -800,18 +928,12 @@ jammaplot <- function
                centerGroups=centerGroups,
                returnValues=FALSE,
                returnGroupedValues=TRUE);
-            centerGroups <- nameVector(centerGroups, x_names);
+            centerGroups <- jamba::nameVector(centerGroups, x_names);
             ## TODO: Apply rowGroupsMeans() for custom y-values per group
             if (useMean) {
                y <- rowMeans(yM, na.rm=TRUE);
             } else {
-               if (doMS) {
-                  y <- rowMedians(yM, na.rm=TRUE);
-               } else {
-                  y <- apply(yM, 1, function(i){
-                     median(i, na.rm=TRUE);
-                  });
-               }
+               y <- rowMedians(yM, na.rm=TRUE);
             }
          } else {
             if (length(customFunc) > 0) {
@@ -819,13 +941,7 @@ jammaplot <- function
             } else if (useMean) {
                y <- rowMeans(x[,controlSamples,drop=FALSE], na.rm=TRUE);
             } else {
-               if (doMS) {
-                  y <- rowMedians(x[,controlSamples,drop=FALSE], na.rm=TRUE);
-               } else {
-                  y <- apply(x[,controlSamples,drop=FALSE], 1, function(i){
-                     median(i, na.rm=TRUE);
-                  });
-               }
+               y <- rowMedians(x[,controlSamples,drop=FALSE], na.rm=TRUE);
             }
          }
          if (verbose) {
@@ -840,14 +956,14 @@ jammaplot <- function
             #xlimMax <- mean(c(max(object, na.rm=TRUE), max(y, na.rm=TRUE)));
             #xlim <- c(filterFloor, xlimMax);
          }
-         mvaDatas <- lapply(nameVector(whichSamples), function(i){NA});
+         mvaDatas <- lapply(jamba::nameVector(whichSamples), function(i){NA});
       }
    }
 
    if (ma_method %in% "jammacalc") {
       ## Newer method using jammacalc()
       if (verbose) {
-         printDebug("jammaplot(): ",
+         jamba::printDebug("jammaplot(): ",
             "Calling jammacalc().",
             "useMedian:", !useMean);
       }
@@ -865,8 +981,13 @@ jammaplot <- function
          centerFunc=centerGeneData_new,
          returnType="ma_list",
          mad_row_min=outlierRowMin,
+         useRank=useRank,
          verbose=verbose,
          ...);
+      # for useRank=TRUE adjust default ylim
+      if (useRank && all(abs(ylim) == 4)) {
+         ylim <- c(-1,1) * round(nrow(x) * .40);
+      }
    } else {
       if (length(centerGroups) > 0) {
          objectCtr <- centerGeneData(x,
@@ -940,15 +1061,14 @@ jammaplot <- function
          jamba::printDebug("jammaplot():",
             "Calculating MA data MAD factors.");
       }
-      mvaMADs <- sapply(nameVector(whichSamples, x_names[whichSamples]), function(i){
+      mvaMADs <- sapply(jamba::nameVector(whichSamples, x_names[whichSamples]), function(i){
          if (verbose) {
             jamba::printDebug("   i:",
                i);
          }
-         #mvaData <- mvaDatas[[i]];
          mvaData <- mvaDatas[[x_names[i]]];
          iWhich <- (!is.na(mvaData[,"x"]) & abs(mvaData[,"x"]) >= outlierRowMin);
-         rmNA(
+         jamba::rmNA(
             median(abs(mvaData[iWhich,"y"]),
                na.rm=TRUE),
             naValue=Inf);
@@ -1001,7 +1121,7 @@ jammaplot <- function
       if (length(maintitle) == 0 &&
             !(doHighlightLegend && length(highlightColor) > 0)) {
          if (verbose) {
-            printDebug("check_panel_page(): ",
+            jamba::printDebug("check_panel_page(): ",
                "No extra title nor color legend is required.");
          }
          return();
@@ -1017,27 +1137,29 @@ jammaplot <- function
                cex.main=maintitleCex);
          } else {
             if (verbose) {
-               printDebug("check_panel_page(): ",
+               jamba::printDebug("check_panel_page(): ",
                   "No title was supplied.");
             }
          }
          if (doHighlightLegend && length(highlightColor) > 0) {
             ## print color legend
-            printDebug("highlightColor:");
-            print(highlightColor);
+            if (verbose) {
+               jamba::printDebug("highlightColor:");
+               print(highlightColor);
+            }
             outer_legend(x="bottom",
                legend=names(highlightColor),
-               col=makeColorDarker(unlist(highlightColor)),
+               col=jamba::makeColorDarker(unlist(highlightColor)),
                pt.bg=unlist(highlightColor));
          } else {
             if (verbose) {
-               printDebug("check_panel_page(): ",
+               jamba::printDebug("check_panel_page(): ",
                   "No highlightColor was supplied.");
             }
          }
       } else {
          if (verbose) {
-            printDebug("check_panel_page(): ",
+            jamba::printDebug("check_panel_page(): ",
                "Panel did not force a page break.");
          }
       }
@@ -1093,17 +1215,9 @@ jammaplot <- function
 
          ## Determine color ramp per panel
          if (length(outlierMAD) > 0 && x_names[i] %in% mvaMADoutliers) {
-            if ("list" %in% class(colrampOutlier)) {
-               colrampUse <- colrampOutlier[[i]];
-            } else {
-               colrampUse <- colrampOutlier;
-            }
+            colrampUse <- colrampOutlier[[i]];
          } else {
-            if ("list" %in% class(colramp)) {
-               colrampUse <- colramp[[i]];
-            } else {
-               colrampUse <- colramp;
-            }
+            colrampUse <- colramp[[i]];
          }
 
          if (all(is.na(mvaData[,"y"]))) {
@@ -1115,14 +1229,14 @@ jammaplot <- function
             box();
          } else {
             mva <- smoothScatterFunc(mvaData[,c("x","y")],
-               colramp=colrampUse,
+               colramp=colrampUse(21),
                xlab="",
                ylab="",
                las=las,
                xlim=xlim,
                ylim=ylim,
                transformation=transformation,
-               col=smoothPtCol,
+               #col=smoothPtCol,
                useRaster=useRaster,
                nrpoints=nrpoints,
                fillBackground=fillBackground,
@@ -1184,8 +1298,10 @@ jammaplot <- function
 
                ## Make sure to restrict the y-values to fit within the axis limits,
                ## consistent with smoothScatterFunc().
-               yValues <- noiseFloor(hiData[,"y"], minimum=min(ylim),
-                  ceiling=max(ylim), ...);
+               yValues <- jamba::noiseFloor(hiData[,"y"],
+                  minimum=min(ylim),
+                  ceiling=max(ylim),
+                  ...);
 
                ## Optionally draw a polygon hull around highlighted points.
                if (doHighlightPolygon && length(yValues) > 2) {
@@ -1247,20 +1363,19 @@ jammaplot <- function
                labelCol=titleColor[i],
                labelCex=titleCex[i],
                drawBox=doTitleBox,
-               #boxCexAdjust=c(1.1,1.3),
                font=titleFont[i],
                ...);
-
             par("xpd"=parXpd);
          } else {
             titleLine <- margins[3] - 1.5;
-            title(main="",#maintitle,
+            title(main="",
                sub=subtitle,
                cex.sub=titleCex[i],
                cex.main=titleCex[i],
                line=titleLine,
                col.main=titleBoxTextColor,
-               font.main=titleFont[i], ...);
+               font.main=titleFont[i],
+               ...);
             title(main=paste(titleText, groupSuffix[i]),
                cex.main=titleCex[i],
                line=titleLine-1,
@@ -1278,7 +1393,6 @@ jammaplot <- function
                labelCol=jamba::setTextContrastColor(subtitleBoxColor[i]),
                labelCex=titleCex[i]*0.9,
                drawBox=TRUE,
-               #boxCexAdjust=c(1.1,1.3),
                font=titleFont[i],
                ...);
          }
@@ -1317,36 +1431,6 @@ jammaplot <- function
          highlightColor=highlightColor,
          verbose=verbose,
          ...);
-
-      ## Now check to see if we should pad blank panels at the end of the sequence
-      ## Disabled in version 0.0.11.900
-      if (1 == 2) {
-         if (length(blankPlotPos) > 0) {
-            iPanelNumber <- iPanelNumber + 1;
-            if (verbose) {
-               jamba::printDebug("iPanelNumber: ",
-                  iPanelNumber);
-            }
-            while(iPanelNumber %in% blankPlotPos) {
-               jamba::nullPlot(doBoxes=FALSE);
-               if (verbose) {
-                  jamba::printDebug("Inserted a blank panel at position: ",
-                     iPanelNumber);
-               }
-               iPanelNumber <- iPanelNumber + 1;
-            }
-         }
-      }
-      ## Disabled in version 0.0.11.900 in favor of check_panel_page()
-      if (1 == 2) {
-         if (length(maintitle) > 0) {
-            maintitle_txt <- paste(unlist(strsplit(maintitle, "\n")),
-               collapse="\n");
-            title(outer=TRUE,
-               main=maintitle_txt,
-               cex.main=maintitleCex);
-         }
-      }
    }
 
    invisible(mvaDatas);
@@ -1385,7 +1469,7 @@ jammaplot <- function
 #'    it sets needsLog=TRUE and uses log2(x) for centering.
 #' @param mean logical indicating whether to use row means, or row medians.
 #'    If the matrixStats package is available, it uses
-#'    \code{\link[matrixStats]{rowMedians}} for calculations, otherwise
+#'    `matrixStats::rowMedians()` for calculations, otherwise
 #'    falling back to apply(x, 1, median) which is notably slower for
 #'    large data matrices.
 #' @param returnGroupedValues logical indicating whether to append columns
@@ -1488,8 +1572,27 @@ centerGeneData <- function
    if (!returnValues && !returnGroupedValues) {
       stop("One must be TRUE: returnValues or returnGroupedValues.");
    }
+
    ## Determine whether the "matrixStats" R package is available
-   useMS <- suppressPackageStartupMessages(require(matrixStats));
+   if ("matrixStats" %in% rownames(installed.packages())) {
+      rowMedians <- matrixStats::rowMedians;
+      colMedians <- matrixStats::colMedians;
+      rowSds <- matrixStats::rowSds;
+      rowMads <- matrixStats::rowMads;
+   } else {
+      rowMedians <- function(x, na.rm=TRUE) {
+         apply(x, 1, median, na.rm=na.rm);
+      }
+      colMedians <- function(x, na.rm=TRUE) {
+         apply(x, 2, median, na.rm=na.rm);
+      }
+      rowSds <- function(x, na.rm=TRUE) {
+         apply(x, 2, sd, na.rm=na.rm);
+      }
+      rowMads <- function(x, na.rm=TRUE) {
+         apply(x, 2, mad, na.rm=na.rm);
+      }
+   }
 
    ## Separate character columns from numeric columns
    hasCharColumns <- FALSE;
@@ -1543,7 +1646,7 @@ centerGeneData <- function
 
    ## Create summary data.frame
    centerDF <- as.data.frame(
-      rmNULL(
+      jamba::rmNULL(
          list(sample=c_names,
             centerGroups=centerGroups,
             centerControl=controls)));
@@ -1615,13 +1718,7 @@ centerGeneData <- function
       } else {
          centeredData <- sweep(indata, 1, indataMeans);
          if (scale %in% "row") {
-            if (useMS) {
-               indataSds <- rowSds(centeredData[,controls,drop=FALSE], na.rm=TRUE);
-            } else {
-               indataSds <- apply(indata[,controls, drop=FALSE], 1, function(x){
-                  sd(x, na.rm=TRUE);
-               });
-            }
+            indataSds <- rowSds(centeredData[,controls,drop=FALSE], na.rm=TRUE);
             ## Make sure no sd values are zero
             indataSds[indataSds == 0] <- mean(indataSds[indataSds != 0]);
             indataSds[indataSds == 0] <- 1;
@@ -1648,13 +1745,8 @@ centerGeneData <- function
       }
    } else {
       ## Center by median
-      if (useMS) {
-         indataMedians <- rowMedians(indata[,controls,drop=FALSE], na.rm=TRUE);
-      } else {
-         indataMedians <- apply(indata[,controls,drop=FALSE], 1, function(x){
-            median(x, na.rm=TRUE);
-         });
-      }
+      indataMedians <- rowMedians(indata[,controls,drop=FALSE],
+         na.rm=TRUE);
       if (returnGroupedValues && !returnValues) {
          centeredData <- matrix(indataMedians,
             ncol=1,
@@ -1662,13 +1754,8 @@ centerGeneData <- function
       } else {
          centeredData <- sweep(indata, 1, indataMedians);
          if (scale %in% "row") {
-            if (useMS) {
-               indataMads <- rowMads(centeredData[,controls, drop=FALSE], na.rm=TRUE);
-            } else {
-               indataMads <- apply(indata[,controls, drop=FALSE], 1, function(x){
-                  mad(x, na.rm=TRUE);
-               });
-            }
+            indataMads <- rowMads(centeredData[,controls, drop=FALSE],
+               na.rm=TRUE);
             ## Make sure no sd values are zero
             indataMads[indataMads == 0] <- mean(indataMads[indataMads != 0]);
             indataMads[indataMads == 0] <- 1;
@@ -1929,7 +2016,7 @@ centerGeneData_new <- function
    }
    if (length(controlSamples) == 0) {
       if (verbose) {
-         printDebug("centerGeneData_new(): ",
+         jamba::printDebug("centerGeneData_new(): ",
             "controlSamples using all colnames(x)");
       }
       controlSamples <- colnames(x);
@@ -1941,7 +2028,7 @@ centerGeneData_new <- function
    } else if (length(centerGroups) == 1) {
       ## Note that NA is converted to "NA"
       centerGroups <- rep(
-         rmNA(centerGroups,
+         jamba::rmNA(centerGroups,
             naValue="NA"),
          length.out=ncol(x));
    }
@@ -1967,7 +2054,7 @@ centerGeneData_new <- function
       controlSamples=colnames(x) %in% controls_v);
 
    ## Calculate row summary values
-   x_group <- rowGroupMeans(x[,controls_v, drop=FALSE],
+   x_group <- jamba::rowGroupMeans(x[,controls_v, drop=FALSE],
       na.rm=na.rm,
       groups=centerGroups[controls_v],
       useMedian=useMedian,
@@ -2111,6 +2198,7 @@ jammacalc <- function
  mad_row_min=0,
  grouped_mad=TRUE,
  centerFunc=centerGeneData_new,
+ useRank=FALSE,
  returnType=c("ma_list", "tidy"),
  verbose=FALSE,
  ...)
@@ -2137,7 +2225,7 @@ jammacalc <- function
       whichSamples <- whichSamples[whichSamples %in% colnames(x)];
    }
    if (verbose) {
-      printDebug("jammacalc(): ",
+      jamba::printDebug("jammacalc(): ",
          "whichSamples:",
          whichSamples);
    }
@@ -2153,11 +2241,12 @@ jammacalc <- function
 
    ## Apply noise_floor if needed
    noise_floor <- head(noise_floor, 1);
+   noise_floor_value <- head(noise_floor_value, 1);
    if (length(noise_floor) == 1 && !is.infinite(noise_floor)) {
-      if (all(noise_floor == noise_floor_value)) {
-         if (rmNA(naValue=0, any(x < noise_floor))) {
+      if (all(noise_floor %in% noise_floor_value)) {
+         if (jamba::rmNA(naValue=0, any(x < noise_floor))) {
             if (verbose) {
-               printDebug("jammacalc(): ",
+               jamba::printDebug("jammacalc(): ",
                   "flooring values below ",
                   noise_floor,
                   " to ",
@@ -2165,9 +2254,9 @@ jammacalc <- function
             }
             x[x < noise_floor] <- noise_floor_value;
          }
-      } else if (rmNA(naValue=0, any(x <= noise_floor))) {
+      } else if (jamba::rmNA(naValue=0, any(x <= noise_floor))) {
          if (verbose) {
-            printDebug("jammacalc(): ",
+            jamba::printDebug("jammacalc(): ",
                "flooring values at or below ",
                noise_floor,
                " to ",
@@ -2180,11 +2269,22 @@ jammacalc <- function
    if (!all(naValue %in% c(NA))) {
       if (any(is.na(x))) {
          if (verbose) {
-            printDebug("jammacalc(): ",
+            jamba::printDebug("jammacalc(): ",
                "replacing NA with ",
                naValue);
          }
+         x[is.na(x)] <- naValue;
       }
+   }
+
+   ## apply useRank
+   if (useRank) {
+      x1 <- apply(x, 2, rank, na.last=FALSE);
+      if (any(is.na(x))) {
+         x1[is.na(x)] <- NA;
+      }
+      x <- x1;
+      rm(x1);
    }
 
    ## Center the data in one step
@@ -2217,21 +2317,21 @@ jammacalc <- function
    ## Determine the appropriate x-axis value to use
    if (groupedX && ncol(x_grp) > 1 && length(unique(centerGroups)) > 1) {
       if (verbose) {
-         printDebug("jammacalc(): ",
+         jamba::printDebug("jammacalc(): ",
             "Using group values for MA-plot x-axis values");
       }
    } else {
       groupedX <- FALSE;
       if (useMedian) {
          if (verbose) {
-            printDebug("jammacalc(): ",
+            jamba::printDebug("jammacalc(): ",
                "using rowMedian() of all values for x.");
          }
          x_use <- rowMedians(x,
             na.rm=na.rm);
       } else {
          if (verbose) {
-            printDebug("jammacalc(): ",
+            jamba::printDebug("jammacalc(): ",
                "using rowMean() of all values for x.");
          }
          x_use <- rowMeans(x,
@@ -2250,11 +2350,13 @@ jammacalc <- function
       x_mad_m[x_use < mad_row_min] <- NA;
    }
    ## Compute MAD values for all columns
-   x_mads <- nameVector(colMedians(abs(x_mad_m), na.rm=TRUE),
+   x_mads <- jamba::nameVector(
+      colMedians(abs(x_mad_m),
+         na.rm=TRUE),
       colnames(x_ctr));
    if (grouped_mad && length(unique(centerGroups)) > 1) {
       if (verbose) {
-         printDebug("jammacalc(): ",
+         jamba::printDebug("jammacalc(): ",
             "Calculating grouped MAD values.");
       }
       x_grp_mads <- tapply(x_mads, centerGroups, median, na.rm=TRUE);
@@ -2262,7 +2364,7 @@ jammacalc <- function
       names(x_mad_factors) <- names(x_mads);
    } else {
       if (verbose) {
-         printDebug("jammacalc(): ",
+         jamba::printDebug("jammacalc(): ",
             "Calculating global MAD values.");
       }
       x_grp_mads <- median(x_mads, na.rm=TRUE);

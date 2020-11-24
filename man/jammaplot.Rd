@@ -13,278 +13,424 @@
 \alias{mva.plot}
 \title{Produce MA-plot of omics data.}
 \usage{
-jammaplot(x, maintitle = NULL, titleBoxColor = "#DDBB9977",
-  subtitleBoxColor = titleBoxColor, centerGroups = NULL,
-  controlSamples = colnames(x), useMean = TRUE, ylim = c(-4, 4),
-  xlim = NULL, highlightPoints = NULL, outlierMAD = 5,
-  outlierRowMin = 5, displayMAD = FALSE, groupedMAD = TRUE,
-  colramp = c("white", "lightblue", "blue", "navy", "orange",
-  "orangered2"), colrampOutlier = NULL, outlierColor = "palegoldenrod",
-  whichSamples = NULL, maintitleCex = 1.8, subtitle = NULL,
-  subtitlePreset = "bottomleft", titleCexFactor = 1, titleCex = NULL,
-  doTitleBox = TRUE, titleColor = "black", titleFont = 2,
-  titlePreset = "top", xlab = "", xlabline = 2, ylab = "",
-  ylabline = 1.5, groupSuffix = NULL, highlightPch = 21,
-  highlightCex = 1.5, highlightColor = "#00AAAA66",
-  doHighlightPolygon = FALSE, highlightPolygonAlpha = 0.3,
-  doHighlightLegend = TRUE, smoothPtCol = "#00000055",
-  margins = c(3.5, 2, 0.3, 0.2), useRaster = TRUE, ncol = NULL,
-  nrow = NULL, doPar = TRUE, las = 2, groupedX = TRUE,
-  customFunc = NULL, filterNA = TRUE, filterNAreplacement = NA,
-  filterNeg = TRUE, filterFloor = 0,
-  filterFloorReplacement = filterFloor, transFactor = 0.18,
-  nrpoints = 50, smoothScatterFunc = jamba::plotSmoothScatter,
-  applyRangeCeiling = TRUE, doTxtplot = FALSE, ablineV = 0,
-  ablineH = c(-2, 0, 2), blankPlotPos = NULL, fillBackground = TRUE,
-  useRank = FALSE, ma_method = c("old", "jammacalc"), doPlot = TRUE,
-  verbose = FALSE, ...)
+jammaplot(
+  x,
+  maintitle = NULL,
+  titleBoxColor = "#DDBB9977",
+  subtitleBoxColor = titleBoxColor,
+  centerGroups = NULL,
+  controlSamples = colnames(x),
+  useMean = TRUE,
+  ylim = c(-4, 4),
+  xlim = NULL,
+  highlightPoints = NULL,
+  outlierMAD = 5,
+  outlierRowMin = 5,
+  displayMAD = FALSE,
+  groupedMAD = TRUE,
+  colramp = c("white", "lightblue", "blue", "navy", "orange", "orangered2"),
+  colrampOutlier = NULL,
+  outlierColor = "palegoldenrod",
+  whichSamples = NULL,
+  maintitleCex = 1.8,
+  subtitle = NULL,
+  subtitlePreset = "bottomleft",
+  titleCexFactor = 1,
+  titleCex = NULL,
+  doTitleBox = TRUE,
+  titleColor = "black",
+  titleFont = 2,
+  titlePreset = "top",
+  xlab = "",
+  xlabline = 2,
+  ylab = "",
+  ylabline = 1.5,
+  groupSuffix = NULL,
+  highlightPch = 21,
+  highlightCex = 1.5,
+  highlightColor = "#00AAAA66",
+  doHighlightPolygon = FALSE,
+  highlightPolygonAlpha = 0.3,
+  doHighlightLegend = TRUE,
+  smoothPtCol = "#00000055",
+  margins = c(3.5, 2, 0.3, 0.2),
+  useRaster = TRUE,
+  ncol = NULL,
+  nrow = NULL,
+  doPar = TRUE,
+  las = 2,
+  groupedX = TRUE,
+  customFunc = NULL,
+  filterNA = TRUE,
+  filterNAreplacement = NA,
+  filterNeg = TRUE,
+  filterFloor = 0,
+  filterFloorReplacement = filterFloor,
+  transFactor = 0.18,
+  nrpoints = 0,
+  smoothScatterFunc = jamba::plotSmoothScatter,
+  applyRangeCeiling = TRUE,
+  doTxtplot = FALSE,
+  ablineV = 0,
+  ablineH = c(-2, 0, 2),
+  blankPlotPos = NULL,
+  fillBackground = TRUE,
+  useRank = FALSE,
+  ma_method = c("jammacalc", "old"),
+  doPlot = TRUE,
+  verbose = FALSE,
+  ...
+)
 }
 \arguments{
-\item{x}{numeric matrix typically containing log-normal measurements,
-with measurement rows, and sample columns.}
+\item{x}{\code{numeric} \code{matrix} typically containing log-normal
+values, with measurement rows, and sample columns. For example,
+with gene or protein expression data, the genes or proteins are
+represented in rows, and biological samples are represented
+in columns.}
 
-\item{maintitle}{the main title for the overall plot, printed at the
-top of each page in the top outer margin.}
+\item{maintitle}{\code{character} string with the main title for
+the overall plot, printed at the top of each page in the
+top outer margin.}
 
-\item{titleBoxColor, subtitleBoxColor}{vector of colors applied to title
-text, or subtitle text, respectively. When \code{doTitleBox=TRUE}
+\item{titleBoxColor, subtitleBoxColor}{\code{character} vector of
+R colors applied to title text, or subtitle text, respectively.
+When \code{doTitleBox=TRUE}
 one or no value is supplied, it defines colors using
-\code{jamba::setTextContrastColor} to use a contrasting color.}
+\code{jamba::setTextContrastColor()} to use a contrasting color.}
 
-\item{centerGroups}{vector of groups, of \code{length(colnames(object))}
-indicating optional subgroups to use when performing data centering.
-For example it may be appropriate to center samples of one cell type
-only relative to other samples of the same cell type. See
-\code{\link{centerGeneData}} for more specifics.}
+\item{centerGroups}{vector of groups, with length \code{ncol(x)}
+indicating optional groupings to use during data centering.
+When \code{centerGroups} is defined, each subset of data is centered
+independently. It is useful to center within batches, or within
+subsets of samples that are not intended to be compared across
+one another. It is also informative to center by each sample
+group in order to view the variability among sample group
+replicates, which should be much lower than variability across
+sample groups. See \code{centerGeneData()} for more specific examples.}
 
-\item{controlSamples}{vector of colnames(object) which should be used
-as control samples in the data centering step. Typical MA-plots are
-calculated relative to the overall mean, however it can be insightful
-to calculate values relative to a known control group.}
+\item{controlSamples}{\code{character} vector of \code{colnames(x)} to define
+control samples during the data centering step. Default MA-plots are
+calculated relative to the overall mean, which uses all \code{colnames(x)}
+as \code{controlSamples}. However it can be helpful and informative
+to view MA-plots relative to a set of known control samples.}
 
-\item{useMean}{logical whether to perform centering using mean or
-median. The default median is intended to represent the data without
-being skewed by outliers, however it can be informative to use the mean
-values when there are few replicates, or when there are no particular
-sample outliers.}
+\item{useMean}{\code{logical} indicating whether to center data using
+\code{mean} or \code{median} values. The default \code{useMean=TRUE} is chosen
+because it visually represents data as seen by typical parametric
+analysis methods downstream. When outlier sample are observed,
+it may be more useful to apply \code{useMean=FALSE} to use the \code{median}
+which is less prone to outlier effects. That said, if a particular
+sample is an outlier, another alternative is to define
+\code{controlSamples} which excludes the outlier sample(s), and
+therefore data centering is applied using only the non-outlier
+samples as the reference.}
 
-\item{ylim, xlim}{NULL or vector length 2 indicating the y- and x-axis
-ranges, respectively. These values are useful to define upfront when
-it is best to focus on fixed, consistent ranges across all samples. The
-default \code{ylim=c(-4,4)} represents 16-fold range in normal space, and
-is typically a reasonable starting point for most purposes. If values are
-all between -1.5 and 1.5, then it is still good to keep that range in
-context of -4 and 4, to indicate that the observed noise is lower than
-typically observed. It is also helpful to use xlim to trim off zeros
-for some data where there might be many undetected entries, combined
-with \code{applyRangeCeiling=FALSE} which also removed outlier points
-from the plot density calculation. The result can notably boost the
-detail displayed in the plot range.}
+\item{ylim, xlim}{\code{NULL} or \code{numeric} vector \code{length=2} indicating
+the y-axis and x-axis ranges, respectively. The values are useful
+to define consistent dimensions across all panels. The
+default \code{ylim=c(-4,4)} represents 16-fold up and down range in
+normal space, and is typically a reasonable starting point for
+most purposes. Even if numeric values are all between
+\code{-1.5} and \code{1.5}, it is still recommended to keep a range in
+context of \code{c(-4, 4)}, to indicate that the observed values
+are lower than typically observed. The \code{c(-4, 4)} may be adjusted
+relative to the typical ranges expected for the data.
+It is sometimes helpful to define \code{xlim} slightly above zero for
+datasets that have an extremely large proportion of zeros, in order
+to reduce the visual effect of having that much point density at
+zero, for example with \code{xlim=c(0.001, 20)} and
+\code{applyRangeCeiling=FALSE}.}
 
-\item{highlightPoints}{NULL, character vector, or list of character vectors,
-containing points to highlight based upon \code{rownames(object)}. If
-a list is supplied, then colors from \code{highlightColor} are recycled
-to \code{length(highlightPoints)} so that each list element can receive
-its own color. This coloring may be useful for coloring several subsets
-of rows, for example housekeeper genes, ribosomal genes, or platform
-positive- and negative-control genes.}
+\item{highlightPoints}{\code{NULL}, or \code{character} vector, or a
+\code{list} of \code{character} vectors indicating \code{rownames(x)} to
+highlight in each MA-plot panel. When \code{NULL}, no points are
+highlighted; when \code{character} vector, points are highlighted in
+all MA-plot panels; when \code{list} of \code{character} vectors, each
+\code{character} vector in the list is highlighted using a unique
+color in \code{highlightColor}. Points are drawn using
+\code{graphics::points()} and colored using \code{highlightColor},
+which can be time-consuming for a large number of highlight
+points.}
 
-\item{outlierMAD}{the MAD factor threshold to define a sample an outlier.}
+\item{outlierMAD}{\code{numeric} threshold above which a MA-plot panel
+MAD factor is considered an outlier. When a MA-plot panel is
+considered an outlier, the \code{outlierColramp} or \code{outlierColor}
+is applied to the panel color ramp to display a visual
+indication.}
 
-\item{outlierRowMin}{the minimum value as displayed on the x-axis, for
-a row in \code{object} to be used in the MAD outlier calculations. This
-threshold is intended to define a noise threshold, so that outlier
-samples are determined by using rows above the noise threshold. Thus
-a sample outlier would need to have greater than five times median
-absolute deviation compared to its center group, based only upon
-measurements above noise.}
+\item{outlierRowMin}{\code{numeric} value indicating the minimum mean
+value as displayed on the MA-plot panel x-axis, in order for
+the row to be included in MAD calculations. This argument is
+intended to prevent measurements whose mean value is below
+a noise threshold from being included, therefore only including
+points whose mean measurement is above noise and represents
+"typical" variability.}
 
-\item{displayMAD}{logical whether to display MAD (median absolute deviation)
-values for each panel. MAD values are defined for each centerGroup if
-supplied, or globally if not. The MAD value is CALCULATED by taking the
-median deviation from zero as displayed on the y-axis of each MA-plot
-panel, then taking the median of those values. Then a MAD factor is
-calculated for each MA-plot panel by taking its median devation divided
-by the MAD value for its centerGroup. Most samples should therefore be
-close to 1. A value of 2 is interpreted as "two times the MAD factor for
-its center group." An outlierMAD of 5x is a reasonable cutoff, which
-roughly says that sample has 5 times higher median deviation than other
-samples in its center group. If all samples are noisy, it would define
-a high MAD value, and therefore all samples would be expected to have
-similar MAD factors, near 1.}
+\item{displayMAD}{\code{logical} indicating whether to display each
+MA-plot panel MAD factor (median absolute deviation). A MAD
+value for each panel is calculated by taking the median absolute
+deviation from zero across all points, using points whose mean
+value is equal or greater than \code{outlierRowMin}. The overall MAD
+is defined by the median MAD from the MA-plot panels. The MAD
+factor is defined as the ratio of each MA-plot panel MAD value
+to the overall MAD value, and therefore most MAD factor values
+should be roughly \code{1}. The overall MAD value is defined by the
+median across all samples when \code{groupedMAD=FALSE}, or defined
+within each \code{centerGroup} when \code{groupedMAD=TRUE}. A value
+with MAD factor 2 is interpreted as a sample whose median
+deviation from zero is twice as high as the typical sample,
+which is a reasonably indication that this sample has twice
+the inherent level of noise compared to other samples. Note
+that MAD values should be interpreted within sample processing
+batches if relevant, or within logical experimental units --
+roughly interpreted to mean sets of samples within which direct
+statistical comparisons are intended to be applied. For example,
+gene expression data that include brain and liver samples would
+probably use \code{centerGroups} for brain and liver to be centered
+separately, therefore the MAD factors should be separately
+calculated for brain and for liver.}
 
-\item{groupedMAD}{logical indicating whether the MAD calculation should
-operate only within \code{centerGroups} (\code{groupedMAD=TRUE}) or whether the
-MAD calculation is shared across all samples (\code{groupedMAD=FALSE}).}
+\item{groupedMAD}{logical indicating how the MAD calculation
+should be performed: \code{groupedMAD=TRUE} will calculate the
+median MAD and corresponsing MAD factor within each
+\code{centerGroups} grouping; \code{groupedMAD=FALSE} will calculate
+one overall median MAD, and corresponding MAD factor values
+will be performed across all samples.}
 
 \item{colramp}{one of several inputs recognized by
-\code{\link{getColorRamp}}. It typically recognizes either the name of
+\code{jamba::getColorRamp()}. It typically recognizes either the name of
 a color ramp from RColorBrewer, the name of functions from the
-\code{\link[viridis]{viridis}} package, or single R colors, or
-a vector of R colors.}
+\code{viridis} package such as \code{viridis::viridis()}, or single R colors, or
+a vector of R colors. When a single color is supplied, a gradient
+is created from white to that color, where the default base color
+can be customized with \code{defaultBaseColor="black"} for example.}
 
 \item{colrampOutlier}{one of several inputs recognized by
-\code{\link{getColorRamp}}, to be used only in panels determined to be
-outliers based upon MAD outlier logic. Typically the color ramp is
-identical to \code{colramp} except the background color indicates
-an error, for example yellow background instead of white.}
+\code{jamba::getColorRamp()} to define a specific color ramp for
+MA-plot outlier panels, used when \code{outlierMAD} is defined.
+When \code{colrampOutlier} is \code{NULL} the \code{outlierColor} is used.}
 
-\item{outlierColor}{character R color, used when \code{colrampOutlier is NULL}
-to substitute as the first color from \code{colramp}. This method keeps the
-color ramp consistent, but changes the background color to highlight
-the plot panel as an outlier.}
+\item{outlierColor}{\code{character} string representing one R color,
+used when \code{colrampOutlier} is \code{NULL} and when \code{outlierMAD} is
+defined. This color is used for MA-plot outlier panels by
+substituting the first color from the \code{colramp} color ramp,
+to act as a visual cue that the panel represents an outlier.}
 
-\item{whichSamples}{NULL or integer vector, representing an index of samples
-to include in the MA-plots. Note that all samples are used to create
-the MA-plot data, but only these samples will be plotted, which is useful
-when wanting to view only a subset of samples in detail, but where the
-MA-plot data is identical to the full dataset.}
+\item{whichSamples}{\code{NULL} or \code{integer} vector, representing
+an index subset of samples to include in the MA-plots. When
+\code{whichSamples} represents a subset of samples in \code{x}, the
+MA-plot calculations are performed on all samples, then only
+samples in \code{whichSamples} are displayed. This argument keeps
+the MA-plot calculations consistent even when viewing only
+one or a subset of samples in more detail.}
 
-\item{maintitleCex}{numeric cex character expansion used to resize the
-\code{maintitle} when supplied.}
+\item{maintitleCex}{\code{numeric} cex character expansion used to
+resize the \code{maintitle}.}
 
-\item{subtitle}{NULL or character text to be drawn at the bottom center
-of each plot panel.}
+\item{subtitle}{\code{NULL} or \code{character} vector to be drawn at
+the bottom left corner of each plot panel, the location
+is defined by \code{subtitlePreset}.}
 
 \item{subtitlePreset}{character value describing where to position the
 subtitle, using terms valid in \code{jamba::coordPresets()}. The default
 \code{subtitlePreset="bottomleft"} places the subtitle at the
 bottom left corner of each plot panel.}
 
-\item{doTitleBox}{logical whether to draw plot titles using
-a colored box. When \code{doTitleBox=TRUE} the \code{jamba::drawLabels()}
-is called to display a label box at the top of each plot panel.}
+\item{doTitleBox}{\code{logical} indicating whether to draw plot
+titles using a colored box. When \code{doTitleBox=TRUE} the
+\code{jamba::drawLabels()} is called to display a label box at
+the top of each plot panel, with \code{drawBox=TRUE}. When
+\code{doTitleBox=FALSE}, \code{jamba::drawLabels()} is called with
+\code{drawBox=FALSE}.}
 
-\item{titleColor}{vector of colors applied to title text. When
-\code{doTitleBox=TRUE} one or no value is supplied, it defines
-colors using \code{jamba::setTextContrastColor()} to use color
-that contrasts with \code{titleBoxColor}.}
+\item{titleColor}{\code{character} vector of colors applied to title text
+in each MA-plot panel. When \code{doTitleBox=TRUE} and \code{titleColor}
+contains only one or no value, the title color is defined by
+\code{jamba::setTextContrastColor()} along with \code{titleBoxColor}.}
 
-\item{titleFont}{integer font compatible with \code{par("font")}.
-Values are recycled across panels.}
+\item{titleFont}{\code{integer} font compatible with \code{par("font")}.
+Values are recycled across panels, so each panel can use a custom
+value if needed.}
 
-\item{titlePreset}{character value describing where to position the
+\item{titlePreset}{\code{character} value describing where to position the
 subtitle, using terms valid in \code{jamba::coordPresets()}.
 The default \code{titlePreset="top"} centers the label at the
 top of each panel.}
 
-\item{xlab, ylab}{character x- and y-axis labels.}
+\item{xlab, ylab}{\code{character} x- and y-axis labels, respectively.
+The default values are blank \code{""} because there are a wide variety
+of possible labels, and the labels take up more space
+than is often useful for most MA-plots.}
 
-\item{xlabline, ylabline}{numeric number of text lines as used by
-\code{title} to position labels relative to the plot area.}
+\item{xlabline, ylabline}{\code{numeric} number indicating the text line
+distance from the edge of plot border to place \code{xlab} and \code{ylab}
+text, as used by \code{graphics::title()}.}
 
-\item{groupSuffix}{character text appended to each plot panel title.
-This argument is being deprecated in favor of using \code{subtitle}
-which places additional text at the bottom corner of each
-plot panel.}
+\item{groupSuffix}{\code{character} text appended to each MA-plot
+panel title. This argument is deprecated in favor of
+using \code{subtitle} to place additional text at the bottom left
+corner of each MA-plot panel.}
 
-\item{highlightColor, highlightCex}{values recycled to the length of
-highlightPoints. If highlightPoints is a list, then a list or vector
-can be supplied.}
+\item{highlightCex}{\code{numeric} value recycled to \code{length(highlightPoints)}
+indicating the highlight point size.}
 
-\item{doHighlightPolygon}{logical whether to draw a polygon encompassing
-highlighted points. If highlightPoints is a list, a polygon is drawn
-around each list element subset of points, using the appropriate
-\code{highlightColor} for each list element. The polygon is defined by
-\code{grDevices::chull()}.}
+\item{highlightColor}{\code{character} vector used when \code{highlightPoints}
+is defined. It is recycled to \code{length(highlightPoints)} and
+is applied either to}
 
-\item{highlightPolygonAlpha}{numeric value between 0 and 1 indicating the
-alpha transparency to use for the polygon color, based upon
-\code{highlightColor}.}
+\item{doHighlightPolygon}{\code{logical} indicating whether to draw
+a shaded polygon encompassing \code{highlightPoints}, using
+\code{highlightColor}.The polygon is defined by \code{grDevices::chull()}
+via the function \code{points2polygonHull()}.}
 
-\item{doHighlightLegend}{logical indicating whether to print a
-color legend at the bottom of each page, when \code{highlightPoints}
-is not \code{NULL}.}
+\item{highlightPolygonAlpha}{\code{numeric} value indicating alpha
+transparency, where \code{0} is fully transparent, and \code{1} is completely
+not transparent.}
 
-\item{smoothPtCol}{color used when nrpoints>0, and
-\code{\link{jamba::plotSmoothScatter}} draws this many points in the extremities.}
+\item{doHighlightLegend}{\code{logical} indicating whether to print a
+color legend when \code{highlightPoints} is defined. The legend is
+displayed in the bottom outer margin of the page using
+\code{outer_legend()}, and the page is adjusted to add bottom
+outer margin.}
 
-\item{margins}{vector of margins compatible with \code{par("mar")}. Defaults
-are applied, but provided here for convenient override.}
+\item{smoothPtCol}{\code{color} used to draw points when \code{nrpoints} is
+non-zero, which draws points in the extremities of the
+smooth scatter plot. See \code{jamba::plotSmoothScatter()}.
+The effect can also be achieved by adjusting \code{transFactor} to
+a lower value, which increases the visual contrast of individual
+points in the point density.}
 
-\item{useRaster}{logical whether to define \code{useRaster=TRUE} in
-\code{\link{jamba::plotSmoothScatter}}, which ultimately calls
-\code{\link{imageDefault}}. When TRUE, it creates a much smaller
-plot object, because it returns a raster image instead of a set of
-rectangles when rendering the image.}
+\item{margins}{\code{numeric} vector of margins compatible with
+\code{graphics::par("mar")}. Default values
+are applied, but provided here for convenience.}
 
-\item{ncol, nrow}{integer number of columns and rows used by
-\code{par("mfrow")} when \code{doPar=TRUE} is defined. These values
-are helpful in defining a fixed layout for multiple MA-plot panels.}
+\item{useRaster}{\code{logical} indicating whether to draw the
+smooth scatter plot using raster logic, \code{useRaster=TRUE} is
+passed to \code{jamba::plotSmoothScatter()}. The default \code{TRUE}
+creates a much smaller plot object by rendering each plot
+panel as a single raster image instead of rendering individual
+colored rectangles.}
 
-\item{doPar}{logical whether \code{par("mfrow")} should be defined, in
-order to fit multiple panels in one plot window. Set to FALSE if the plot
-layout is already defined, or if plotting one panel per page, for
-example.}
+\item{ncol, nrow}{\code{integer} number of MA-plot panel columns and rows
+passed to \code{graphics::par("mfrow")} when \code{doPar=TRUE}. When only one
+value is supplied, \code{nrow} or \code{ncol}, the other value is defined
+by \code{ncol(x)} and \code{blankPlotPos} so all panels can be contained on
+one page. When \code{nrow} and \code{ncol} are defined such that multiple
+pages are produced, each page will be annotated with \code{maintitle}
+and \code{doHighlightLegend} as relevant.}
 
-\item{las}{integer value 1 or 2, indicating whether axis labels should be
-parallel or perpendicular to the axes, respectively. This default value
-is defined and provided here for convenience to override it.}
+\item{doPar}{\code{logical} indicating whether to apply
+\code{graphics::par("mfrow")} to define MA-plot panel rows and columns.
+When \code{doPar=FALSE} each plot panel is
+rendered without adjusting the \code{graphics::par("mfrow")} setting.}
 
-\item{customFunc}{an optional function that is used instead of mean or
-median. It should take a matrix input, and return a numeric vector
-output summarizing each row in \code{object}. It is intended to
+\item{las}{\code{integer} value \code{1} or \code{2} indicating whether axis labels
+should be parallel or perpendicular to the axes, respectively.}
+
+\item{customFunc}{\code{NULL} or \code{function} used instead of \code{mean} or
+\code{median} during the data centering step to generate a row summary
+statistic. It should take \code{matrix} input, and return a \code{numeric} vector
+output summarizing each row in \code{x}, to be subtracted from each
+\code{numeric} value by row in \code{x}. It is intended to
 provide custom row statistics, for example geometric mean, or other
 row summary function.}
 
-\item{filterNA, filterNeg}{logical indicating whether to remove NA or
-negative values before creating the MA-plot. It can be useful to
-filter negative values, which are often defined as noise in upstream
-normalization steps, so they do not impart visible features into the
-MA-plot since they are based upon noise. Negative values are set to
-zero when filtered, which gives a characteristic 45 degree angle
-symmetry above and below zero.}
+\item{filterNA, filterNAreplacement}{\code{logical} and \code{vector} respectively.
+When \code{filterNA=TRUE}, all \code{NA} values are replaced with
+\code{filterNAreplacement}, which can be helpful to handle \code{NA} values
+as zero \code{0} for example. In reality, \code{NA} values should probably
+be left as-is, so subsequent data centering does not use these values,
+and so the MA-plot panel does not draw a point when no measurement
+exists.}
 
-\item{filterFloor, filterFloorReplacement}{numeric or NULL, when numeric
-values in \code{object} are below \code{filterFloor}, they are replaced
-with \code{filterFloorReplacement}. This mechanism is an alternative to
-\code{filterNeg}, in that it allows defining a filter above or below
-zero. For some platform data , it might be useful to define a
-\code{filterFloor} roughly equivalent to its noise threshold.}
+\item{filterNeg}{\code{logical} deprecated argument, use \code{filterFloor}
+instead. The \code{filterNeg} indicates whether to change all negative
+values to zero \code{0} before proceeding with data centering.
+Negative values are often the result of measurements
+being below a noise threshold in upstream data processing,
+and therefore the magnitude of negative value is usually
+either not informative, or not on similar scale as positive
+values.
+When \code{filterNeg=TRUE}, negative values are set to zero, and
+can result in a characteristic 45 degree angle line originating at
+\code{x=0} extending to the right.}
 
-\item{transFactor}{numeric adjustment used by
-\code{\link{jamba::plotSmoothScatter}}. The default is defined, but available
-here as a convenient override. The value is used in a power function in
-the form \code{transformation=function(x)x^transFactor}. Lower values
-make the scatterplot point density more intense.}
+\item{filterFloor, filterFloorReplacement}{\code{numeric} or \code{NULL} indicating
+a numeric floor, where values in \code{x} \strong{at or below} \code{filterFloor} are
+replaced with \code{filterFloorReplacement}. Note that this argument
+can be used to replace zero \code{0} with \code{NA} in the event that
+zeros do not represent measurements. One can typically tell whether
+input data includes zero \code{0} values by the presence of characteristic
+45-degree angle lines originating from \code{x=0} angled to the right.
+The default values replace any values \strong{at or below zero} with zero,
+which also applies a numeric floor to negative values.
+For some platform data technologies, it can be useful to define a
+\code{filterFloor} roughly equivalent to its noise threshold. For example
+quantitative PCR sometimes uses \code{log_expression = (40 - Ct)}, where
+\code{Ct} values above \code{35} are considered to be noise. That noise threshold
+implies that any \code{expression} values \code{5} or lower are roughly
+equivalent noise, so applying \code{filterFloor=5} is appropriate.}
 
-\item{nrpoints}{integer or NULL, the number of points to display on the
-extremity, as used by \code{\link{jamba::plotSmoothScatter}}.}
+\item{transFactor}{\code{numeric} adjustment to the visual density of
+points by \code{jamba::plotSmoothScatter()}. The value is based upon
+\code{graphics::smoothScatter()} argument \code{transformation} which uses
+\code{function(x)x^0.24}. The \code{transFactor} is equivalent to the
+exponential in the form: \code{function(x)x^transFactor}. Lower values
+increase the visual density more intense, higher values make the
+visual density less intense.}
 
-\item{smoothScatterFunc}{function used to plot smooth scatter plot, by
-default \code{\link{jamba::plotSmoothScatter}}.}
+\item{nrpoints}{\code{integer} or \code{NULL} indicating the number of points
+to display on the extremity of the smooth scatter density,
+passed to \code{jamba::plotSmoothScatter()}.}
 
-\item{applyRangeCeiling}{see \code{\link{jamba::plotSmoothScatter}} for details,
-logical whether to apply a noise floor and ceiling to display points
-outside the plot region at the boundaries of the plot. This parameter
-is useful to set FALSE when cropping a plot, in order to remove outlier
-points from the density calculation. For example when there is a
-very large number of zero values, it can be helpful to define
-\code{xlim=c(0.1,20), applyRangeCeiling=FALSE}.}
+\item{smoothScatterFunc}{\code{function} used for the smooth scatter plot,
+default \code{jamba::plotSmoothScatter()}. Note that a custom function
+may not recognize \code{nrpoints} or \code{transformation}.}
 
-\item{doTxtplot}{logical whether to plot results in colored text output,
-currently under development and is still experimental.}
+\item{applyRangeCeiling}{\code{logical} passed to
+\code{jamba::plotSmoothScatter()} which determines how to handle points
+outside the plot x-axis and y-axis range: \code{applyRangeCeiling=TRUE}
+will place points at the border of the plot, which is helpful
+to indicate that there are more points outside the viewing range;
+\code{applyRangeCeiling=FALSE} will crop and remove points outside
+the viewing range, which is helpful for example when a large
+number of points are at zero and overwhelm the point density.
+When there are a large proportion of values at zero, it
+can be helpful to apply \code{xlim=c(0.01, 20)} and
+\code{applyRangeCeiling=FALSE}.}
 
-\item{ablineH, ablineV}{numeric vector indicating where to draw indicator
-lines, at these horizontal or vertical positions, respectively.}
+\item{doTxtplot}{\code{logical} not yet implemented, indicating whether
+to plot results using colored text output.}
 
-\item{blankPlotPos}{NULL or integer vector indicating which plot panels
-should be used as blank filler positions. These blank panels can be
-used to help organize multiple plot panels to indicate sample groups.
-A mechanism similar to ggplot2 facets, except with the ability to
-insert known blank positions for organization. The facet_grid mechanic
-may be used in future, however is not always ideal depending upon the
-experiment design, and so for now a simple manual method is provided.}
+\item{ablineH, ablineV}{\code{numeric} vector indicating horizontal and
+vertical lines to draw in each MA-plot panel, respectively.
+These values are passed to \code{graphics::abline()}.}
 
-\item{fillBackground}{logical sent to \code{\link{jamba::plotSmoothScatter}}
+\item{blankPlotPos}{\code{NULL} or \code{integer} vector indicating
+plot panel positions to be drawn blank, skipped. Blank panel
+positions are intended to help customize the visual alignment
+of MA-plot panels. The mechanism is similar to \code{ggplot2::facet_wrap()}
+except that blank positions can be manually defined by what makes
+sense to the experiment design.}
+
+\item{fillBackground}{\code{logical} passed to \code{jamba::plotSmoothScatter()}
 indicating whether to fill the plot panel with the background color,
-which is typically the first value in the \code{colramp}. Set to TRUE
-when axis ranges may be defined which are outside the range of values
-for any particular column in \code{object}.}
+using the first value in the color ramp for each MA-plot panel.}
+
+\item{useRank}{\code{logical} indicating whether to create column-wide
+ranks, then create MA-plots using the rank data. When \code{useRank=TRUE}
+the y-axis represents the rank difference from mean, and the
+x-axis represents the mean rank. Using \code{useRank=TRUE} is a good
+method to evaluate whether data can be normalized, or whether
+data across samples is inherently noisy.}
 
 \item{ma_method}{character string indicating whether to perform
 MA-plot calculations using the old method \code{"old"}; or \code{"jammacalc"}
-which uses the newer function \code{jammacalc()}.}
+which uses the function \code{jammacalc()}.}
+
+\item{doPlot}{\code{logical} indicating whether to create plots. When
+\code{doPlot=FALSE} only the MA-plot panel data is returned.}
 
 \item{verbose}{logical indicating whether to print verbose output.}
 
@@ -319,12 +465,17 @@ This function uses "useRaster=TRUE" by default, which causes
 \code{jamba::plotSmoothScatter()} to render a rasterized image as opposed
 to a composite of colored rectangles. This process substantially
 reduces the render time in all cases, and reduces the image size
-when saving as PDF or SVG.Notable featuresHighlighting points
+when saving as PDF or SVG.
+\subsection{Notable features}{
+\subsection{Highlighting points}{
 
 Specific points can be highlighted with argument \code{highlightPoints}
 which can be a vector or named list of vectors, containing \code{rownames(x)}.
 When using a list, point colors are assigned to each element in the
-list in order, using the argument \code{highlightColor}.Centering by control samples
+list in order, using the argument \code{highlightColor}.
+}
+
+\subsection{Centering by control samples}{
 
 Typical MA-plots are "global-centered", which calculates the
 mean/median across all columns in \code{x}, and this value is subtracted
@@ -335,25 +486,56 @@ the mean/median is calculated using only the \code{colnames(x)} which match
 \code{controlSamples}, thus representing "difference from control."
 
 It may also be useful to center data by known high-quality samples,
-so the effect of potential outlier samples is avoided.Centering within subgroups
+so the effect of potential outlier samples is avoided.
+}
+
+\subsection{Centering within subgroups}{
 
 By specifying \code{centerGroups} as a vector of group names,
 the centering is calculated within each group of \code{colnames(x)}.
 In this way, subsets of samples can be treated independently in
 the MA-plots. A good example might be producing MA-plots for
 "kidney" samples, and "muscle" samples, which may have
-fundamentally different signal distributions.
+fundamentally different signal distributions. A good rule
+of thumb is to apply \code{centerGroups} to represent separate
+groups of samples where you do not intend to apply direct
+statistical comparisons across those samples, without at
+least applying a two-way contrast, a fold change of fold
+changes.
 
-Another very useful technique is to center by sample group,
+Another informative technique is to center by sample group,
 for example \code{centerGroups=sample_group}.
 This technique produces MA-plots that depict the
-"difference from group", and is very useful for visualizing
-the variance of replicates in sample groups. Outlier samples
-are sometimes very apparent at this step. See \code{displayMAD} and
-\code{outlierMAD} below for detection of potential outlier samples.
+"difference from group" for each sample replicate of a sample
+group, and is very useful for identifying sample replicates
+with markedly higher variability to its sample group than
+others. In general, the variability within sample group
+should be substantially lower than variability across
+sample groups. Use \code{displayMAD=TRUE} and \code{outlierMAD=2}
+as a recommended starting point for this technique.
+}
 
-Note: filterNeg=TRUE will floor log2 values at 0, which has the
-effect of adding the "45 degree lines" originating from c(0,0).Customizing the panel layout
+\subsection{Applying a noise floor}{
+
+The argument \code{filterFloor} provides a numeric lower threshold,
+where individual values \strong{at or below} this threshold are
+set to a defined value. The default defined value is the
+floor itself, which has the effect of removing information from
+points that are already below the noise threshold and therefore
+are unreliable for this purpose.
+
+Another useful alternative
+is to define \code{filterFloor=0} and \code{filterFloorReplacement=NA}
+so that values of zero \code{0} are set to \code{NA} and are not included
+in the MA-plot calculations, and are not represented as points
+in each MA-plot panel. For data with many sparse missing values
+represented as zero, these options can be very helpful because
+each MA-plot panel will only represent actual measurements,
+compared to only those sample which also have actual
+measurements for those rows.
+}
+
+\subsection{Customizing the panel layout}{
 
 Panels are drawn using the order of \code{colnames(x)} by row,
 from left-to-right, then top-to-bottom.
@@ -362,20 +544,37 @@ at a particular panel position, to help customize the alignment
 of sample panels.
 This option is typically used with \code{ncol} and \code{nrow} to define
 a fixed layout of panel columns and rows. \code{blankPlotPos} refers
-to panels numbered as drawn per row of panels,Identifying potential sample outliers
+to panels numbered as drawn per row of panels,
+}
 
-The argument \code{displayMAD} will display the per-sample MAD factor
-relative to its \code{centerGroups} value, if provided. The MAD threshold
-is calculated using values whose mean/median is at least
-\code{outlierRowMin}, based upon the median absolute difference (MAD)
-from the mean/median. The median MAD is defined as the reference MAD,
-and all other MAD factors are multiples of that reference. For example,
-1xMAD is equal to the median MAD value, and 2xMAD is two times higher
-than the median MAD value.
+\subsection{Identifying potential sample outliers}{
 
-Potential outlier samples should not be evaluated when supplying
-\code{controlSamples} unless those samples represent more than
-experimantal control samples.
+Use argument \code{displayMAD=TRUE} to display the per-sample MAD factor
+relative to its \code{centerGroups} value, if provided. The MAD value
+for each MA-plot panel is calculated using rows whose mean
+is at or above \code{outlierRowMin}. The median MAD value is calculated
+for each \code{centerGroups} grouping when \code{groupedMAD=TRUE}, by default.
+Finally, each MA-plot panel MAD factor is the ratio of its MAD value
+to the relevant median MAD value. MA-plot panels with MAD factor
+above \code{outlierMAD} are considered outliers, and the color ramp
+uses \code{outlierColramp} or \code{outlierColor} as a visual cue.
+
+Putative outlier samples should usually not be determined
+when:
+\itemize{
+\item \code{controlSamples} are defined to include only a subset
+of sample groups,
+\item \code{centerGroups} is not defined, or represents more than one
+set of sample groups that are not intended to be statistically
+compared directly to one another.
+}
+
+Putative outlier samples may be defined when:
+\itemize{
+\item \code{centerGroups} represents a set of sample groups that are
+intended to be involved in direct comparisons
+\item \code{centerGroups} represents each sample group
+}
 
 Potential sample outliers may be identified by setting a threshold
 with \code{outlierMAD}, by default 5xMAD. For a sample to be considered
@@ -403,6 +602,9 @@ used. For example indicate 'sampleID vs groupA' instead of
 'sampleID vs median'.}
 }
 }
+
+}
+}
 \examples{
 # Note the example data requires the affydata Bioconductor package
 if (suppressPackageStartupMessages(require(affydata))) {
@@ -417,6 +619,7 @@ if (suppressPackageStartupMessages(require(affydata))) {
 \code{graphics::smoothScatter()}, \code{centerGeneData()},
 \code{jamba::imageDefault()}, \code{jamba::nullPlot()}
 
-Other jam plot functions: \code{\link{points2polygonHull}}
+Other jam plot functions: 
+\code{\link{points2polygonHull}()}
 }
 \concept{jam plot functions}

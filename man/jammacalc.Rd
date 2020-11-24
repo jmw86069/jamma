@@ -4,12 +4,26 @@
 \alias{jammacalc}
 \title{Calculate MA-plot data}
 \usage{
-jammacalc(x, na.rm = TRUE, controlSamples = NULL,
-  centerGroups = NULL, groupedX = TRUE, useMedian = TRUE,
-  useMean = NULL, whichSamples = NULL, noise_floor = -Inf,
-  noise_floor_value = noise_floor, naValue = NA, mad_row_min = 0,
-  grouped_mad = TRUE, centerFunc = centerGeneData_new,
-  returnType = c("ma_list", "tidy"), verbose = FALSE, ...)
+jammacalc(
+  x,
+  na.rm = TRUE,
+  controlSamples = NULL,
+  centerGroups = NULL,
+  groupedX = TRUE,
+  useMedian = TRUE,
+  useMean = NULL,
+  whichSamples = NULL,
+  noise_floor = -Inf,
+  noise_floor_value = noise_floor,
+  naValue = NA,
+  mad_row_min = 0,
+  grouped_mad = TRUE,
+  centerFunc = centerGeneData_new,
+  useRank = FALSE,
+  returnType = c("ma_list", "tidy"),
+  verbose = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{numeric matrix typically containing log-normal measurements,
@@ -131,7 +145,8 @@ in which case the y-axis values will be "difference from
 the control median within the centering group."
 }
 \seealso{
-Other jam matrix functions: \code{\link{centerGeneData_new}},
-  \code{\link{centerGeneData}}
+Other jam matrix functions: 
+\code{\link{centerGeneData_new}()},
+\code{\link{centerGeneData}()}
 }
 \concept{jam matrix functions}

@@ -1,4 +1,38 @@
-# jamma version 0.0.14.900
+# jamma 0.0.15.900
+
+
+## bug fixes
+
+* `jammaplot()` fixed issue when applying `filterFloor`
+and `useRank=TRUE`, it was converting to rank before
+applying filter floor. An edge case but important for
+count data, where using `filterFloor=0` and
+`filterFloorReplacement=NA` is useful, and using
+`useRank=TRUE` is informative especially when using
+methods like DESeq2/edgeR downstream with count data.
+
+## minor updates
+
+* `jammacalc()` new argument `useRank` so the conversion
+to rank happens inside this function, as it should.
+* Added some package prefix to functions such as
+`jamba::nameVector()`, `jamba::rmNA().
+* Removed `require(jamba)` and `require(matrixStats)` in
+favor of using proper package prefixing, and check for
+`matrixStats` using `rownames(installed.packages())`.
+* Cleaned up some R code, removing sections that were deprecated.
+* Edited the wording for `jammaplot()` function parameters.
+
+
+## changes to existing functions
+
+* `jammaplot()` cleaned up logic on handling `colramp` and
+`colrampOutlier` arguments.
+* `jammaplot()` default `ma_method="jammacalc"` which is equivalent
+but slightly streamlines the internal calculations.
+
+
+# jamma 0.0.14.900
 
 ## new function
 
@@ -11,7 +45,7 @@ and optionally applies an expression minimum threshold, to ensure
 genes are expressed above noise.
 
 
-# jamma version 0.0.13.900
+# jamma 0.0.13.900
 
 ## changes
 
@@ -19,7 +53,7 @@ genes are expressed above noise.
 to plot the mean centered value, instead of the median.
 
 
-# jamma version 0.0.12.900
+# jamma 0.0.12.900
 
 ## changes
 
@@ -29,7 +63,7 @@ the y-axis unit is either the actual change in rank,
 or the fractional change in rank adjusted by the
 number of rows.
 
-# jamma version 0.0.11.900
+# jamma 0.0.11.900
 
 ## new functions
 
@@ -55,7 +89,7 @@ in each panel.
 making it more robust to different types of input, vector
 or list. Fix error when highlightPoints had no list name.
 
-# jamma version 0.0.10.900
+# jamma 0.0.10.900
 
 ## new functions
 
@@ -120,7 +154,7 @@ and may require an alternative strategy during the centering step.
 * `jammaplot()` will be refactored to streamline certain calculations
 using the newer `centerGeneData_new()`.
 
-# jamma version 0.0.9.900
+# jamma 0.0.9.900
 
 ## changes to jammaplot()
 
@@ -162,7 +196,7 @@ color-coded to help indicate the centering group.
 * In future, `controlSamples` may be indicated by appending an
 asterisk "*" at the end of the main label for each panel.
 
-# jamma version 0.0.8.900
+# jamma 0.0.8.900
 
 ## changes
 
@@ -170,7 +204,7 @@ asterisk "*" at the end of the main label for each panel.
 consistent with the need for wider re-use among Jam packages.
 * Added dependency on the version of jamba that includes `drawLabels()`.
 
-# jamma version 0.0.7.900
+# jamma 0.0.7.900
 
 ## changes
 
@@ -186,7 +220,7 @@ x and y values for `boxCexAdjust`.
 * made adjustments based upon the single-line height and not the total
 string height, affecting multi-line labels.
 
-# jamma version 0.0.6.900
+# jamma 0.0.6.900
 
 ## new functions
 
@@ -205,7 +239,7 @@ word-wrap in order to keep labels from overlapping adjacent panels.
 
 * pkgdown was added to the site documentation.
 
-# jamma version 0.0.5.900
+# jamma 0.0.5.900
 
 ## changes to existing functions
 
@@ -223,7 +257,7 @@ subset grouping independent, with the possible downside that
 comparisons across groupings may not be visible.
 
 
-# jamma version 0.0.4.900
+# jamma 0.0.4.900
 
 ## enhancements
 
@@ -243,7 +277,7 @@ as needed (`as.list()`) and expanded to `length(highlightPoints)`.
 This way, each highlight set of points can have custom
 color, size, and shape, to help visually discern them.
 
-# jamma version 0.0.2.900
+# jamma 0.0.2.900
 
 ## new functions
 
