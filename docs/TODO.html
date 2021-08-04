@@ -6,23 +6,31 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>NA • jamma</title>
+<title>TODO for jamma • jamma</title>
+
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/cosmo/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/cosmo/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="bootstrap-toc.css">
+<script src="bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
-<!-- sticky kit -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+<!-- headroom.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="pkgdown.css" rel="stylesheet">
@@ -30,7 +38,9 @@
 
 
 
-<meta property="og:title" content="NA" />
+
+<meta property="og:title" content="TODO for jamma" />
+
 
 
 
@@ -44,9 +54,10 @@
 <![endif]-->
 
 
+
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-title-body">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -60,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.10.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.16.900</span>
       </span>
     </div>
 
@@ -68,7 +79,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -91,11 +102,10 @@
   <a href="news/index.html">Changelog</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/jmw86069/jamma">
-    <span class="fa fa-github fa-lg"></span>
+  <a href="http://github.com/jmw86069/jamma/">
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -106,38 +116,121 @@
 </div><!--/.navbar -->
 
       
+
       </header>
 
 <div class="row">
   <div class="contents col-md-9">
     <div class="page-header">
-      <h1>NA</h1>
+      <h1>TODO for jamma</h1>
     </div>
 
+<div id="todo-for-jamma" class="section level1">
 
-<div id="todo-for-jamma" class="section level2">
+<div id="new-functions" class="section level2">
 <h2 class="hasAnchor">
-<a href="#todo-for-jamma" class="anchor"></a>TODO for jamma</h2>
-</div>
-<div id="refactor-to-separate-calculations-from-visualizations" class="section level2">
-<h2 class="hasAnchor">
-<a href="#refactor-to-separate-calculations-from-visualizations" class="anchor"></a>Refactor to separate calculations from visualizations</h2>
+<a href="#new-functions" class="anchor"></a>New functions</h2>
 <ul>
 <li>
-<code><a href="reference/jammaplot.html">jammaplot()</a></code> could be refactored to separate the calculations from the visualization. That change would make ggplot2 output more modular.</li>
-<li>MA-plot calculations require: centerGroups, controlSamples, mean/median definitions</li>
-<li>Consider using <code><a href="https://www.rdocumentation.org/packages/jamba/topics/rowGroupMeans">jamba::rowGroupMeans()</a></code> within <code><a href="reference/centerGeneData.html">centerGeneData()</a></code> which would allow optional outlier detection, which could substantially improve the quality of MA-plot panels.</li>
+<code>jammaplotDispEsts()</code> wrapper for <code><a href="https://rdrr.io/pkg/DESeq2/man/plotDispEsts.html">DESeq2::plotDispEsts()</a></code>, although this function needs the newer colorized <code>plotSmoothScatterG2()</code>.</li>
+</ul>
+</div>
+<div id="compatibility-with-summarizedexperiment" class="section level2">
+<h2 class="hasAnchor">
+<a href="#compatibility-with-summarizedexperiment" class="anchor"></a>compatibility with SummarizedExperiment</h2>
+</div>
+<div id="bug-fixes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#bug-fixes" class="anchor"></a>Bug fixes</h2>
+<ul>
+<li>
+<code><a href="reference/jammaplot.html">jammaplot()</a></code> argument <code>ablineV</code> is not functioning properly.</li>
+<li>
+<code><a href="reference/jammaplot.html">jammaplot()</a></code> highlight legend is not using <code>highlightPch</code>.</li>
+</ul>
+</div>
+<div id="vignettes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#vignettes" class="anchor"></a>Vignettes</h2>
+<ol>
+<li>Guides for MA-plots.</li>
+</ol>
+<ul>
+<li>
+<p>Basic guide to MA-plots for gene expression data.</p>
+<ul>
+<li><p>check data normality, apply appropriate transform, normalize data</p></li>
+<li><p>check within-group variability</p></li>
+<li><p>highlight points</p></li>
+<li>
+<p>common patterns and what they mean:</p>
+<ul>
+<li>shifted up/down</li>
+<li>skewed up/down</li>
+<li>low signal-to-noise, no signal</li>
+<li>the 45-degree lines</li>
+<li>batch effects</li>
+<li>technical versus biological controls</li>
+</ul>
+</li>
+<li><p>non-parametric (rank-based) MA-plot</p></li>
+</ul>
+</li>
+<li><p>When to do use <code>centerGroups</code>, <code>controlSamples</code>.</p></li>
+<li><p>How to interpret global-, group-, and technical replicate-centered data.</p></li>
+<li><p>How to detect sample outliers using a MAD factor threshold.</p></li>
+<li><p>How to guide data normalization by MA-plot review.</p></li>
+</ul>
+</div>
+<div id="useful-functions" class="section level2">
+<h2 class="hasAnchor">
+<a href="#useful-functions" class="anchor"></a>useful functions</h2>
+<ul>
+<li>
+<p><code>log2fold_to_fold()</code> and <code>fold_to_log2fold()</code> - to interconvert:</p>
+<ul>
+<li>normal space fold changes, which could be represented as positive and negative values (e.g. 2-fold and -2-fold) or as ratios (e.g. 2-fold and 0.5-fold); and</li>
+<li>log2 fold change values</li>
+<li>Consider <code>fold_sign()</code> function that takes either as input and returns either <code>1</code> or <code>-1</code>, and by default never returns <code>0</code> since 1-fold change cannot easily be multiplied by its <code>fold_sign()</code> without causing it to become zero. More thought to be had as to the workflow.</li>
+</ul>
+</li>
+</ul>
+</div>
+<div id="interface-with-other-r-packages" class="section level2">
+<h2 class="hasAnchor">
+<a href="#interface-with-other-r-packages" class="anchor"></a>Interface with other R packages</h2>
+<div id="deseq2" class="section level3">
+<h3 class="hasAnchor">
+<a href="#deseq2" class="anchor"></a>DESeq2</h3>
+<ul>
+<li>
+<code>plotMA()</code> is used for the <code><a href="https://rdrr.io/pkg/DESeq2/man/DESeqResults.html">DESeq2::DESeqResults</a></code> object, highlighting points that meet <code>alpha &lt; 0.1</code> by default.</li>
+<li>Add new method to run <code><a href="reference/jammaplot.html">jammaplot()</a></code> on the count data, optionally transformed using their recommended approach, or use <code>useRank=TRUE</code>.</li>
+</ul>
+</div>
+</div>
+<div id="bug-fixes-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#bug-fixes-1" class="anchor"></a>Bug fixes</h2>
+<ul>
+<li>
+<p>Version 0.0.10.900 fixed a bug where rowGroupMeans() was used to center values, but used default <code>na.rm=FALSE</code>, which caused groups with missing values not to display a centered value for other non-NA samples. The new version should provide two options:</p>
+<ol>
+<li>Hide or display values where groups with n&gt;1 members have only one non-NA value. The reasoning is that the MA-plot is intended to show “difference from mean” and has far less utility when a fraction of rows has only one non-NA value in the group, thus emphasizing the display of “zero difference” in those samples. Hiding these values therefore helps display the variability where data is available to judge the difference from mean.</li>
+<li>Hide groups with any NA values.</li>
+</ol>
+</li>
+</ul>
+</div>
+<div id="refactoring-ideas" class="section level2">
+<h2 class="hasAnchor">
+<a href="#refactoring-ideas" class="anchor"></a>Refactoring ideas</h2>
+<ul>
+<li>Consider using <code><a href="https://rdrr.io/pkg/jamba/man/rowGroupMeans.html">jamba::rowGroupMeans()</a></code> within <code><a href="reference/centerGeneData.html">centerGeneData()</a></code> which would allow optional outlier detection, which could substantially improve the quality of MA-plot panels.</li>
 <li>
 <code>jammagg()</code> or something similarly named, to produce a ggplot2 object.</li>
 <li>One goal for ggplot2 output is to produce interactive visualizations with plotly; however, if that is not sufficient for the desired properties, e.g. useful hover text over the smooth scatter density, then a custom interactive plot function may be needed, for example direct calls to plotly instead of using the ggplotly wrapper function.</li>
 </ul>
-<div id="allow-list-of-color-ramps" class="section level3">
-<h3 class="hasAnchor">
-<a href="#allow-list-of-color-ramps" class="anchor"></a>Allow list of color ramps</h3>
-<ul>
-<li>The goal is to allow panels to be colored by group or some other variable. An easy method would supply single colors per panel, then call <code><a href="https://www.rdocumentation.org/packages/jamba/topics/getColorRamp">jamba::getColorRamp("red")</a></code> which creates a red color gradient in that example.</li>
-</ul>
-</div>
 <div id="update-to-handle-summarizedexperiment-objects" class="section level3">
 <h3 class="hasAnchor">
 <a href="#update-to-handle-summarizedexperiment-objects" class="anchor"></a>Update to handle SummarizedExperiment objects</h3>
@@ -196,11 +289,18 @@
 </ul>
 </div>
 </div>
-
+</div>
 
   </div>
 
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
+  </div>
+
 </div>
+
 
 
       <footer>
@@ -209,13 +309,16 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
+
       </footer>
    </div>
 
   
 
+
   </body>
 </html>
+
 

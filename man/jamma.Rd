@@ -5,18 +5,60 @@
 \alias{jamma}
 \title{jamma: MA-plots for omics data}
 \description{
-The jamma package creates MA-plots for omics data, with
-important customizations to handle specific controls, and
-experimental subsets.
+The jamma package creates MA-plots for omics data, and provides
+important options to handle specific experiment designs and
+strategies for data quality control.
 }
-\section{MA-plots functions}{
+\details{
+MA-plots can be calculated using the mean or median signal,
+and data can be centered using a subset of reference samples.
+Further, data can be centered within groups of samples,
+in order to generate MA-plots within each sample group as
+needed.
 
-jammaplot,
-centerGeneData
+For example, it can be useful to generate MA-plots within
+biological sample replicates, or even among technical replicates.
+By this approach, MA-plots can effectively highlight technical
+outliers, where variability in one sample is measurably
+higher than that from other comparable samples. A MAD outlier
+approach is available to identify samples whose median
+variance is more than X times higher than that across other
+samples.
+
+It is useful to center within sample types, for example brain
+samples can be centered independently of kidney or liver
+samples. This approach is especially useful when statistical
+comparisons are not intended to be applied across brain
+and kidney for example. In general, it is recommended to use
+\code{centerGroups} to center data within meaningful experimental
+subsets where there are not expected to be statistical
+comparisons across these subsets. We find it useful
+to generate MA-plots across all samples even when there
+are distinct experimental subsets, because it provides
+context to the signal profiles obtained overall. For example
+it may be informative to recognize that signal from one
+experimental subset is lower and noisier than signal
+from another subset. It could be of biological, or technical
+importance.
+
+Lastly, the MA-plot approach has been so effective, a normalization
+method is available via \code{jammanorm()} which mimics the effect
+of normalizing data by the data displayed on MA-plots, effectively
+shifting data so the mean or median signal is at y=0.
+}
+\concept{jamma package
+\subsection{Core functions:}{
+\itemize{
+\item \code{jammaplot()}
+\item \code{centerGeneData()}
+\item \code{jammanorm()}
+\item \code{jammacalc()}
+}
 }
 
-\section{Additional plot functions}{
-
-points2polygonHull
+\subsection{Additional plot functions:}{
+\itemize{
+\item \code{points2polygonHull()}
+\item \code{outer_legend()}
 }
-
+}}

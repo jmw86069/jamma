@@ -10,6 +10,9 @@ vignette: >
 ---
 
 ```{r knitr_init, echo=FALSE}
+ragg_png <- function(..., res = 192) {
+  ragg::agg_png(..., res = res, units = "in")
+}
 knitr::opts_chunk$set(
   collapse=TRUE,
   warning=FALSE,

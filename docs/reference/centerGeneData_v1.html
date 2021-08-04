@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Center gene data — centerGeneData • jamma</title>
+<title>Center gene data — centerGeneData_v1 • jamma</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Center gene data — centerGeneData" />
-<meta property="og:description" content="Performs per-row centering on a numeric matrix" />
+<meta property="og:title" content="Center gene data — centerGeneData_v1" />
+<meta property="og:description" content="Performs row centering on a matrix of data in log space" />
 
 
 
@@ -125,25 +125,25 @@
     <div class="page-header">
     <h1>Center gene data</h1>
     <small class="dont-index">Source: <a href='http://github.com/jmw86069/jamma/blob/master/R/jamma-center.R'><code>R/jamma-center.R</code></a></small>
-    <div class="hidden name"><code>centerGeneData.Rd</code></div>
+    <div class="hidden name"><code>centerGeneData_v1.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Performs per-row centering on a numeric matrix</p>
+    <p>Performs row centering on a matrix of data in log space</p>
     </div>
 
-    <pre class="usage"><span class='fu'>centerGeneData</span><span class='op'>(</span>
+    <pre class="usage"><span class='fu'>centerGeneData_v1</span><span class='op'>(</span>
   <span class='va'>x</span>,
+  floor <span class='op'>=</span> <span class='cn'>NA</span>,
+  controlSamples <span class='op'>=</span> <span class='cn'>NA</span>,
   centerGroups <span class='op'>=</span> <span class='cn'>NULL</span>,
-  na.rm <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  controlSamples <span class='op'>=</span> <span class='cn'>NULL</span>,
-  useMedian <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  rmOutliers <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  madFactor <span class='op'>=</span> <span class='fl'>5</span>,
-  rowStatsFunc <span class='op'>=</span> <span class='cn'>NULL</span>,
+  needsLog <span class='op'>=</span> <span class='cn'>NULL</span>,
+  mean <span class='op'>=</span> <span class='cn'>FALSE</span>,
   returnGroupedValues <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  returnGroups <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  mean <span class='op'>=</span> <span class='cn'>NULL</span>,
+  returnValues <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  groupPrefix <span class='op'>=</span> <span class='st'>"group"</span>,
+  showGroups <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  scale <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"none"</span>, <span class='st'>"row"</span><span class='op'>)</span>,
   verbose <span class='op'>=</span> <span class='cn'>FALSE</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></pre>
@@ -153,157 +153,170 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p><code>numeric</code> matrix of input data. See assumptions,
-that data is assumed to be log2-transformed, or otherwise
-appropriately transformed.</p></td>
+      <td><p>numeric matrix typically containing measurements (genes)
+as rows, and samples as columns.</p></td>
     </tr>
     <tr>
-      <th>centerGroups</th>
-      <td><p><code>character</code> vector of group names, or
-<code>NULL</code> if there are no groups.</p></td>
-    </tr>
-    <tr>
-      <th>na.rm</th>
-      <td><p><code>logical</code> indicating whether NA values should be
-ignored for summary statistics. This argument is passed
-to the corresponding row stats function. Frankly, this
-value should be <code>na.rm=TRUE</code> for all stat functions by default,
-for example <code><a href='https://rdrr.io/r/base/mean.html'>mean(..., na.rm=TRUE)</a></code> should be default.</p></td>
+      <th>floor</th>
+      <td><p>optional numeric floor, below which values are set to the
+floor value, useful when one wants to avoid centering to values which
+may be below a noise threshold which might otherwise result in
+artificially inflated log fold changes.</p></td>
     </tr>
     <tr>
       <th>controlSamples</th>
-      <td><p><code>character</code> vector of values in <code><a href='https://rdrr.io/r/base/colnames.html'>colnames(x)</a></code>
-which defines the columns to use when calculating group
-summary values.</p></td>
+      <td><p>optional character vector of colnames(x) to be
+used as controls when centering data. In the event that centerGroups
+is also defined, the controlSamples are only used within each
+group of colnames. When this value is NULL or NA, or when any group
+of colnames defined by centerGroups contains no controlSamples, then
+all samples are used for centering. This relationship is clearly
+described in the attribute named "centerGroups".</p></td>
     </tr>
     <tr>
-      <th>useMedian</th>
-      <td><p><code>logical</code> indicating whether to use group median
-values when calculating summary statistics <code>TRUE</code>, or
-group means <code>FALSE</code>. In either case, when <code>rowStatsFunc</code>
-is provided, it is used instead.</p></td>
+      <th>centerGroups</th>
+      <td><p>optional character vector named by colnames, whose
+values are group names. Alternatively, a list of vectors of colnames,
+where each list element contains colnames in explicit groups.</p></td>
     </tr>
     <tr>
-      <th>rmOutliers</th>
-      <td><p><code>logical</code> indicating whether to perform outlier
-detection and removal prior to row group stats. This
-argument is passed to <code><a href='https://rdrr.io/pkg/jamba/man/rowGroupMeans.html'>jamba::rowGroupMeans()</a></code>. Note that
-outliers are only removed during the row group summary step,
-and not in the centered data.</p></td>
-    </tr>
-    <tr>
-      <th>madFactor</th>
-      <td><p><code>numeric</code> value passed to <code><a href='https://rdrr.io/pkg/jamba/man/rowGroupMeans.html'>jamba::rowGroupMeans()</a></code>,
-indicating the MAD factor threshold to use when <code>rmOutliers=TRUE</code>.
-The MAD of each row group is computed, the overall group median
-MAD is used to define 1x MAD factor, and any MAD more than
-<code>madFactor</code> times the group median MAD is considered an outlier
-and is removed. The remaining data is used to compute row
-group values.</p></td>
-    </tr>
-    <tr>
-      <th>rowStatsFunc</th>
-      <td><p><code>optional</code> function used to calculate row group
-summary values. This function should take a numeric matrix as
-input, and return a one-column numeric matrix as output, or
-a numeric vector with length <code><a href='https://rdrr.io/r/base/nrow.html'>nrow(x)</a></code>. The function should
-also accept <code>na.rm</code> as an argument.</p></td>
+      <th>mean</th>
+      <td><p>logical indicating whether to use row means, or row medians.
+If the matrixStats package is available, it uses
+<code><a href='https://rdrr.io/pkg/matrixStats/man/rowMedians.html'>matrixStats::rowMedians()</a></code> for calculations, otherwise
+falling back to apply(x, 1, median) which is notably slower for
+large data matrices.</p></td>
     </tr>
     <tr>
       <th>returnGroupedValues</th>
-      <td><p><code>logical</code> indicating whether to include
-the numeric matrix of row group values used during centering,
-returned in the attributes with name <code>"x_group"</code>.</p></td>
+      <td><p>logical indicating whether to append columns
+which contain the control mean or median values used during centering.</p></td>
     </tr>
     <tr>
-      <th>returnGroups</th>
-      <td><p><code>logical</code> indicating whether to return the
-centering summary data.frame in attributes with name "center_df".</p></td>
+      <th>showGroups</th>
+      <td><p>logical indicating whether to print the sample centring
+relationship to screen during processing. Note this information is
+also contained in attribute "centerGroups".</p></td>
     </tr>
     <tr>
-      <th>verbose</th>
-      <td><p><code>logical</code> indicating whether to print verbose output.</p></td>
+      <th>scale</th>
+      <td><p>character values indicating whether to scale data by row, or
+perform no row scaling. Scaling is dependent upon whether median or mean
+values are used in centering. If mean values are used, scaling is
+accomplished by dividing row values by the standard deviation. If median
+is used, then scaling divides row values by the MAD which is derived
+using the median instead of the mean.</p></td>
     </tr>
     <tr>
-      <th>...</th>
-      <td><p>additional arguments are passed to <code><a href='https://rdrr.io/pkg/jamba/man/rowGroupMeans.html'>jamba::rowGroupMeans()</a></code>.</p></td>
+      <th>needsLod</th>
+      <td><p>logical, indicating whether to perform log2 transformation
+of data prior to centering. If NULL, then if any value is above 40,
+it sets needsLog=TRUE and uses log2(x) for centering.</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p><code>numeric</code> <code>matrix</code> with the same row and column dimensions
+as input data. If <code>returnGroupedValues=TRUE</code>, the additional columns contain
+the row median or mean values, dependent upon mean=FALSE or mean=TRUE,
+respectively.
+An attribute <code>centerGroups</code> is included, which describes the specific
+relationship between each colname, and associated control sample colnames,
+and optional centerGroups grouping of colnames. When columns are grouped
+and centered to specific control samples, is it important to keep this
+information during downstream scrutiny of results.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>This function centers data by subtracting the median or
-mean for each row.</p>
-<p>Columns can be grouped using argument <code>centerGroups</code>.
-Each group group of columns defined by <code>centerGroups</code>
-is centered independently.</p>
-<p>Data can be centered relative to specific control columns
-using argument <code>controlSamples</code>.
-When <code>controlSamples</code> is not supplied, the default behavior
-is to use all columns. This process is consistent with
-typical MA-plots.</p>
-<p>It may be preferred to define <code>controlSamples</code> in cases where
-there are known reference samples, against which other samples
-should be compared.</p>
-<p>The <code>controlSamples</code> logic is applied independently to each
-group defined in <code>centerGroups</code>.</p>
-<p>You can confirm the <code>centerGroups</code> and <code>controlSamples</code> are
-correct in the result data, by accessing the attribute
-<code>"center_df"</code>, see examples below.</p>
-<p>Note: This function assumes input data is suitable for
-centering by subtraction.
-This data requirement is true for:</p><ul>
-<li><p>most log-transformed gene expression data</p></li>
-<li><p>quantitative PCR (QPCR) cycle threshold (CT) values</p></li>
-<li><p>other numeric data that has been suitably transformed
-to meet reasonable parametric assumption of normality,</p></li>
-<li><p>rank-transformed data which results in difference in rank</p></li>
-<li><p>generally speaking, any data where the difference between 5 and 7 (2)
-is reasonably similar to the difference between 15 and 17 (2).</p></li>
-</ul>
-
-<p>The data requirement is not true for:</p><ul>
-<li><p>most gene expression data in normal space (hint: if any value is above 100)</p></li>
-<li><p>numeric data that is strongly skewed</p></li>
-<li><p>generally speaking, any data where the difference between 5 and 7
-is not reasonably similar to the difference between 15 and 17. If
-the percent difference is more likely to be the interesting measure,
-data may be log-transformed for analysis.</p></li>
-</ul>
-
-<p>For special cases, <code>rowStatsFunc</code> can be supplied to perform
-specific group summary calculations per row.</p>
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p>Other jam matrix functions: 
-<code><a href='jammacalc.html'>jammacalc</a>()</code>,
-<code><a href='jammanorm.html'>jammanorm</a>()</code></p></div>
+    <p>This function is deprecated in favor of <code><a href='centerGeneData.html'>centerGeneData()</a></code>
+which includes more flexibility in data centering. It is
+maintained here for backward compatibility.</p>
+<p>This function is a relatively simple wrapper function which subtracts
+the row median (or row mean when mean=FALSE) from each row. The function
+allows defining a subset of columns to be used in determining the
+row control value via controlSamples, Similarly, columns can be grouped,
+where columns are centered versus their relevant control samples within
+each group of columns.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>100</span>, ncol<span class='op'>=</span><span class='fl'>10</span><span class='op'>)</span>;
 <span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='va'>letters</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span><span class='op'>]</span>;
 <span class='co'># basic centering</span>
-<span class='fu'>centerGeneData</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>;
-</div><div class='output co'>#&gt; <span class='error'>Error in rowMedians(iM, na.rm = na.rm): could not find function "rowMedians"</span></div><div class='input'>
+<span class='fu'>centerGeneData_v1</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>;
+</div><div class='output co'>#&gt;         a   b   c   d  e f  g  h  i  j
+#&gt;  [1,] -45 -35 -25 -15 -5 5 15 25 35 45
+#&gt;  [2,] -45 -35 -25 -15 -5 5 15 25 35 45
+#&gt;  [3,] -45 -35 -25 -15 -5 5 15 25 35 45
+#&gt;  [4,] -45 -35 -25 -15 -5 5 15 25 35 45
+#&gt;  [5,] -45 -35 -25 -15 -5 5 15 25 35 45
+#&gt;  [6,] -45 -35 -25 -15 -5 5 15 25 35 45
+#&gt;  [7,] -45 -35 -25 -15 -5 5 15 25 35 45
+#&gt;  [8,] -45 -35 -25 -15 -5 5 15 25 35 45
+#&gt;  [9,] -45 -35 -25 -15 -5 5 15 25 35 45
+#&gt; [10,] -45 -35 -25 -15 -5 5 15 25 35 45
+#&gt; attr(,"centerDF")
+#&gt;   sample centerControl
+#&gt; a      a          TRUE
+#&gt; b      b          TRUE
+#&gt; c      c          TRUE
+#&gt; d      d          TRUE
+#&gt; e      e          TRUE
+#&gt; f      f          TRUE
+#&gt; g      g          TRUE
+#&gt; h      h          TRUE
+#&gt; i      i          TRUE
+#&gt; j      j          TRUE</div><div class='input'>
 <span class='co'># grouped centering</span>
-<span class='fu'>centerGeneData</span><span class='op'>(</span><span class='va'>x</span>,
+<span class='fu'>centerGeneData_v1</span><span class='op'>(</span><span class='va'>x</span>,
    centerGroups<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"A"</span>,<span class='st'>"B"</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>5</span>,<span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>;
-</div><div class='output co'>#&gt; <span class='error'>Error in rowMedians(iM, na.rm = na.rm): could not find function "rowMedians"</span></div><div class='input'>
+</div><div class='output co'>#&gt; <span class='error'>Error in nameVectorN(centerGroups): could not find function "nameVectorN"</span></div><div class='input'>
 <span class='co'># centering versus specific control columns</span>
-<span class='fu'>centerGeneData</span><span class='op'>(</span><span class='va'>x</span>,
+<span class='fu'>centerGeneData_v1</span><span class='op'>(</span><span class='va'>x</span>,
    controlSamples<span class='op'>=</span><span class='va'>letters</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span><span class='op'>)</span><span class='op'>]</span><span class='op'>)</span>;
-</div><div class='output co'>#&gt; <span class='error'>Error in rowMedians(iM, na.rm = na.rm): could not find function "rowMedians"</span></div><div class='input'>
+</div><div class='output co'>#&gt;         a b  c  d  e  f  g  h  i  j
+#&gt;  [1,] -10 0 10 20 30 40 50 60 70 80
+#&gt;  [2,] -10 0 10 20 30 40 50 60 70 80
+#&gt;  [3,] -10 0 10 20 30 40 50 60 70 80
+#&gt;  [4,] -10 0 10 20 30 40 50 60 70 80
+#&gt;  [5,] -10 0 10 20 30 40 50 60 70 80
+#&gt;  [6,] -10 0 10 20 30 40 50 60 70 80
+#&gt;  [7,] -10 0 10 20 30 40 50 60 70 80
+#&gt;  [8,] -10 0 10 20 30 40 50 60 70 80
+#&gt;  [9,] -10 0 10 20 30 40 50 60 70 80
+#&gt; [10,] -10 0 10 20 30 40 50 60 70 80
+#&gt; attr(,"centerDF")
+#&gt;   sample centerControl
+#&gt; a      a          TRUE
+#&gt; b      b          TRUE
+#&gt; c      c          TRUE
+#&gt; d      d         FALSE
+#&gt; e      e         FALSE
+#&gt; f      f         FALSE
+#&gt; g      g         FALSE
+#&gt; h      h         FALSE
+#&gt; i      i         FALSE
+#&gt; j      j         FALSE</div><div class='input'>
 <span class='co'># grouped centering versus specific control columns</span>
-<span class='fu'>centerGeneData</span><span class='op'>(</span><span class='va'>x</span>,
+<span class='fu'>centerGeneData_v1</span><span class='op'>(</span><span class='va'>x</span>,
    centerGroups<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"A"</span>,<span class='st'>"B"</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>5</span>,<span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span>,
    controlSamples<span class='op'>=</span><span class='va'>letters</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span>, <span class='fl'>6</span><span class='op'>:</span><span class='fl'>8</span><span class='op'>)</span><span class='op'>]</span><span class='op'>)</span>;
-</div><div class='output co'>#&gt; <span class='error'>Error in rowMedians(iM, na.rm = na.rm): could not find function "rowMedians"</span></div><div class='input'>
+</div><div class='output co'>#&gt; <span class='error'>Error in nameVectorN(centerGroups): could not find function "nameVectorN"</span></div><div class='input'>
 <span class='co'># confirm the centerGroups and controlSamples</span>
-<span class='va'>x_ctr</span> <span class='op'>&lt;-</span> <span class='fu'>centerGeneData</span><span class='op'>(</span><span class='va'>x</span>,
+<span class='va'>x_ctr</span> <span class='op'>&lt;-</span> <span class='fu'>centerGeneData_v1</span><span class='op'>(</span><span class='va'>x</span>,
    centerGroups<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"A"</span>,<span class='st'>"B"</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>5</span>,<span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span>,
    controlSamples<span class='op'>=</span><span class='va'>letters</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span>, <span class='fl'>6</span><span class='op'>:</span><span class='fl'>8</span><span class='op'>)</span><span class='op'>]</span>,
-   returnGroups<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>;
-</div><div class='output co'>#&gt; <span class='error'>Error in rowMedians(iM, na.rm = na.rm): could not find function "rowMedians"</span></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span><span class='op'>(</span><span class='va'>x_ctr</span>, <span class='st'>"center_df"</span><span class='op'>)</span>;
+   showGroups<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>;
+</div><div class='output co'>#&gt;   sample centerGroups centerControl
+#&gt; a      a            A          TRUE
+#&gt; b      b            A          TRUE
+#&gt; c      c            A          TRUE
+#&gt; d      d            A         FALSE
+#&gt; e      e            A         FALSE
+#&gt; f      f            B          TRUE
+#&gt; g      g            B          TRUE
+#&gt; h      h            B          TRUE
+#&gt; i      i            B         FALSE
+#&gt; j      j            B         FALSE</div><div class='output co'>#&gt; <span class='error'>Error in nameVectorN(centerGroups): could not find function "nameVectorN"</span></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span><span class='op'>(</span><span class='va'>x_ctr</span>, <span class='st'>"centerDF"</span><span class='op'>)</span>;
 </div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): object 'x_ctr' not found</span></div><div class='input'>
 </div></pre>
   </div>

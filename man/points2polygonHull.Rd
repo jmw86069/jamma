@@ -46,7 +46,7 @@ polygon(xyhull, border="purple2", col="transparent");
 
 }
 \seealso{
-Other jam plot functions: 
-\code{\link{jammaplot}()}
+Other jam utility functions: 
+\code{\link{outer_legend}()}
 }
-\concept{jam plot functions}
+\concept{jam utility functions}

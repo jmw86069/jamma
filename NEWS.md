@@ -1,5 +1,26 @@
-# jamma 0.0.15.900
+# jamma 0.0.16.900
 
+## changes to existing functions
+
+* `centerGeneData()` has been changed to what was previously
+`centerGeneData_new()`, and the old function was renamed
+to `centerGeneData_v1()`. The new function is designed to
+be backward compatible.
+* `jammaplot()` now accepts `SummarizedExperiment` objects
+as input, used alongside new argument `assay_name` which
+determines the matrix to use for MA-plots. The `assay_name`
+input can be an integer index, or by default it will use
+the first assay matrix in `x`. Alternatively to use the
+last assay matrix (if normalized data is stored in the
+last assay position for example) supply `assay_name=Inf`
+and the default will use the last assay in the list.
+* `jammacalc()` now calls `centerGeneData()`.
+* `jammanorm()` help text was expanded.
+
+Added various entries to `TODO.md` for future work.
+
+
+# jamma 0.0.15.900
 
 ## bug fixes
 

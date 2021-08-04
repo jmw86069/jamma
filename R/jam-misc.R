@@ -39,6 +39,8 @@
 #' @param ... additional arguments are passed to
 #'    `graphics::legend()`.
 #'
+#' @family jam utility functions
+#'
 #' @examples
 #' opar <- par(no.readonly=TRUE);
 #' on.exit(par(opar));

@@ -15,12 +15,14 @@
 \usage{
 jammaplot(
   x,
+  assay_name = NULL,
   maintitle = NULL,
   titleBoxColor = "#DDBB9977",
   subtitleBoxColor = titleBoxColor,
   centerGroups = NULL,
   controlSamples = colnames(x),
-  useMean = TRUE,
+  useMedian = FALSE,
+  useMean = NULL,
   ylim = c(-4, 4),
   xlim = NULL,
   highlightPoints = NULL,
@@ -83,48 +85,69 @@ jammaplot(
 )
 }
 \arguments{
-\item{x}{\code{numeric} \code{matrix} typically containing log-normal
-values, with measurement rows, and sample columns. For example,
-with gene or protein expression data, the genes or proteins are
-represented in rows, and biological samples are represented
-in columns.}
+\item{x}{\code{numeric} object usually a \code{matrix} that contains
+values with measurement rows, and sample/observation columns.
+For example, with gene or protein expression data, the genes
+or proteins (or the assays of genes or proteins) are
+represented in rows, and obtained samples are represented
+in columns. Alternatively \code{x} can be \code{SummarizedExperiment}
+object, used alongside argument \code{assay_name}.}
 
-\item{maintitle}{\code{character} string with the main title for
-the overall plot, printed at the top of each page in the
-top outer margin.}
+\item{assay_name}{\code{character} used when \code{x} is a
+\code{SummarizedExperiment} object, to determine which assay
+\code{matrix} to use for the MA plots. When \code{assay_name=NULL}
+the first assay entry is used, for example \code{assays(x)[[1]]}.}
+
+\item{maintitle}{\code{character} string with the title displayed above
+all individual MA-plot panels. It will appear in the top outer
+margin.}
 
 \item{titleBoxColor, subtitleBoxColor}{\code{character} vector of
-R colors applied to title text, or subtitle text, respectively.
-When \code{doTitleBox=TRUE}
-one or no value is supplied, it defines colors using
-\code{jamba::setTextContrastColor()} to use a contrasting color.}
+R colors used as background color for each panel title text,
+or subtitle text respectively. The subtitle appears in the
+bottom-left corner, and usually indicates the center groups
+as defined by \code{centerGroups}.}
 
-\item{centerGroups}{vector of groups, with length \code{ncol(x)}
-indicating optional groupings to use during data centering.
-When \code{centerGroups} is defined, each subset of data is centered
-independently. It is useful to center within batches, or within
-subsets of samples that are not intended to be compared across
-one another. It is also informative to center by each sample
-group in order to view the variability among sample group
+\item{centerGroups}{\code{character} vector of groups passed to
+\code{jamma::centerGeneData()} which determines how data is centered.
+Each group is centered independently, to enable visual
+comparisons within each relevant centering group.
+It is useful to center within batches or within
+subsets of samples that are not intended to be compared to
+one another.
+Another useful alternative is to center by each sample
+group in order to view the variability among group
 replicates, which should be much lower than variability across
 sample groups. See \code{centerGeneData()} for more specific examples.}
 
-\item{controlSamples}{\code{character} vector of \code{colnames(x)} to define
-control samples during the data centering step. Default MA-plots are
-calculated relative to the overall mean, which uses all \code{colnames(x)}
-as \code{controlSamples}. However it can be helpful and informative
-to view MA-plots relative to a set of known control samples.}
+\item{controlSamples}{\code{character} vector of \code{colnames(x)} passed
+to \code{centerGeneData()} which defines the control samples during
+the data centering step.
+By default, and the most common practice, MA-plots are
+calculated across all samples, which effectively uses all
+\code{colnames(x)} as \code{controlSamples}.
+However, it is quite useful sometimes to provide a subset of
+samples especially if there are known quality samples, to which
+new samples of unknown quality are being compared.}
 
-\item{useMean}{\code{logical} indicating whether to center data using
-\code{mean} or \code{median} values. The default \code{useMean=TRUE} is chosen
-because it visually represents data as seen by typical parametric
-analysis methods downstream. When outlier sample are observed,
-it may be more useful to apply \code{useMean=FALSE} to use the \code{median}
-which is less prone to outlier effects. That said, if a particular
-sample is an outlier, another alternative is to define
-\code{controlSamples} which excludes the outlier sample(s), and
-therefore data centering is applied using only the non-outlier
-samples as the reference.}
+\item{useMedian}{\code{logical} indicates whether to center data
+using the \code{median} value, where \code{useMedian=FALSE} by default.
+For consistency, this argument is preferred to \code{useMean} which
+is deprecated and will be removed in future. The median is
+preferred in cases where outliers should not influence the
+centering. The mean is preferred in cases where the data
+should visualize data consistent with downstream parametric
+statistical analysis. When a particular sample
+is a technical outlier, one option is to define
+\code{controlSamples} to exclude the outlier sample(s), so
+the data centering will be applied using the non-outlier
+samples as reference.}
+
+\item{useMean}{\code{logical} (deprecated), use \code{useMean}. This argument
+indicates whether to center data using the \code{mean} value.
+When \code{useMean=NULL} the argument \code{useMedian} is preferred.
+For backward compatibility, when \code{useMean} is not \code{NULL},
+then \code{useMedian} is defined by \code{useMedian <- !useMean}.}
 
 \item{ylim, xlim}{\code{NULL} or \code{numeric} vector \code{length=2} indicating
 the y-axis and x-axis ranges, respectively. The values are useful
@@ -438,8 +461,9 @@ which uses the function \code{jammacalc()}.}
 \code{\link{jamba::plotSmoothScatter}}, \code{\link{centerGeneData}}.}
 }
 \value{
-List of data used by jamma() to produce an MA-plot, sufficient
-to use as input to produce another MA-plot.
+\code{list} of \code{numeric} \code{matrix} objects, one for each MA-plot,
+with colnames \code{"x"} and \code{"y"}. This \code{list} is sufficient input
+to \code{jammaplot()} to re-create the full set of MA-plots.
 }
 \description{
 Produce MA-plot of omics data.
@@ -593,13 +617,14 @@ scenarios where a batch effect may be involved.
 To do:
 \itemize{
 \item{Accept other object types as input, including Bioconductor
-classes: ExpressionSet, SummarizedExperiment, MultiExperimentSet.}
+classes: \code{ExpressionSet}, \code{SummarizedExperiment},
+\code{MultiExperimentSet}}
 \item{Make it efficient to convey group information, for example
-define titleBoxColor with group colors, allow centerByGroup==TRUE
-which would re-use known sample group information.'}
+define \code{titleBoxColor} with group colors, allow \code{centerByGroup=TRUE}
+which would re-use known sample group information.}
 \item{Adjust the suffix to indicate when \code{centerGroups} are being
-used. For example indicate 'sampleID vs groupA' instead of
-'sampleID vs median'.}
+used. For example indicate \code{'sampleID vs groupA'} instead of
+\code{'sampleID vs median'}.}
 }
 }
 
@@ -618,8 +643,5 @@ if (suppressPackageStartupMessages(require(affydata))) {
 \code{jamba::plotSmoothScatter()} for enhanced
 \code{graphics::smoothScatter()}, \code{centerGeneData()},
 \code{jamba::imageDefault()}, \code{jamba::nullPlot()}
-
-Other jam plot functions: 
-\code{\link{points2polygonHull}()}
 }
 \concept{jam plot functions}

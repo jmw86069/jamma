@@ -15,15 +15,59 @@
 
 #' jamma: MA-plots for omics data
 #'
-#' The jamma package creates MA-plots for omics data, with
-#' important customizations to handle specific controls, and
-#' experimental subsets.
+#' The jamma package creates MA-plots for omics data, and provides
+#' important options to handle specific experiment designs and
+#' strategies for data quality control.
 #'
-#' @section MA-plots functions:
-#'    jammaplot,
-#'    centerGeneData
-#' @section Additional plot functions:
-#'    points2polygonHull
+#' MA-plots can be calculated using the mean or median signal,
+#' and data can be centered using a subset of reference samples.
+#' Further, data can be centered within groups of samples,
+#' in order to generate MA-plots within each sample group as
+#' needed.
+#'
+#' For example, it can be useful to generate MA-plots within
+#' biological sample replicates, or even among technical replicates.
+#' By this approach, MA-plots can effectively highlight technical
+#' outliers, where variability in one sample is measurably
+#' higher than that from other comparable samples. A MAD outlier
+#' approach is available to identify samples whose median
+#' variance is more than X times higher than that across other
+#' samples.
+#'
+#' It is useful to center within sample types, for example brain
+#' samples can be centered independently of kidney or liver
+#' samples. This approach is especially useful when statistical
+#' comparisons are not intended to be applied across brain
+#' and kidney for example. In general, it is recommended to use
+#' `centerGroups` to center data within meaningful experimental
+#' subsets where there are not expected to be statistical
+#' comparisons across these subsets. We find it useful
+#' to generate MA-plots across all samples even when there
+#' are distinct experimental subsets, because it provides
+#' context to the signal profiles obtained overall. For example
+#' it may be informative to recognize that signal from one
+#' experimental subset is lower and noisier than signal
+#' from another subset. It could be of biological, or technical
+#' importance.
+#'
+#' Lastly, the MA-plot approach has been so effective, a normalization
+#' method is available via `jammanorm()` which mimics the effect
+#' of normalizing data by the data displayed on MA-plots, effectively
+#' shifting data so the mean or median signal is at y=0.
+#'
+#'
+#' @family jamma package
+#'
+#' ## Core functions:
+#'
+#' * `jammaplot()`
+#' * `centerGeneData()`
+#' * `jammanorm()`
+#' * `jammacalc()`
+#'
+#' ## Additional plot functions:
+#' * `points2polygonHull()`
+#' * `outer_legend()`
 #'
 #' @docType package
 #' @name jamma
@@ -178,20 +222,55 @@ NULL
 #' To do:
 #' \itemize{
 #'    \item{Accept other object types as input, including Bioconductor
-#'       classes: ExpressionSet, SummarizedExperiment, MultiExperimentSet.}
+#'       classes: `ExpressionSet`, `SummarizedExperiment`,
+#'       `MultiExperimentSet`}
 #'    \item{Make it efficient to convey group information, for example
-#'       define titleBoxColor with group colors, allow centerByGroup==TRUE
-#'       which would re-use known sample group information.'}
+#'       define `titleBoxColor` with group colors, allow `centerByGroup=TRUE`
+#'       which would re-use known sample group information.}
 #'    \item{Adjust the suffix to indicate when \code{centerGroups} are being
-#'       used. For example indicate 'sampleID vs groupA' instead of
-#'       'sampleID vs median'.}
+#'       used. For example indicate `'sampleID vs groupA'` instead of
+#'       `'sampleID vs median'`.}
 #' }
 #'
-#' @param x `numeric` `matrix` typically containing log-normal
-#'    values, with measurement rows, and sample columns. For example,
-#'    with gene or protein expression data, the genes or proteins are
-#'    represented in rows, and biological samples are represented
-#'    in columns.
+#' @param x `numeric` object usually a `matrix` that contains
+#'    values with measurement rows, and sample/observation columns.
+#'    For example, with gene or protein expression data, the genes
+#'    or proteins (or the assays of genes or proteins) are
+#'    represented in rows, and obtained samples are represented
+#'    in columns. Alternatively `x` can be `SummarizedExperiment`
+#'    object, used alongside argument `assay_name`.
+#' @param assay_name `character` used when `x` is a
+#'    `SummarizedExperiment` object, to determine which assay
+#'    `matrix` to use for the MA plots. When `assay_name=NULL`
+#'    the first assay entry is used, for example `assays(x)[[1]]`.
+#' @param maintitle `character` string with the title displayed above
+#'    all individual MA-plot panels. It will appear in the top outer
+#'    margin.
+#' @param titleBoxColor,subtitleBoxColor `character` vector of
+#'    R colors used as background color for each panel title text,
+#'    or subtitle text respectively. The subtitle appears in the
+#'    bottom-left corner, and usually indicates the center groups
+#'    as defined by `centerGroups`.
+#' @param centerGroups `character` vector of groups passed to
+#'    `jamma::centerGeneData()` which determines how data is centered.
+#'    Each group is centered independently, to enable visual
+#'    comparisons within each relevant centering group.
+#'    It is useful to center within batches or within
+#'    subsets of samples that are not intended to be compared to
+#'    one another.
+#'    Another useful alternative is to center by each sample
+#'    group in order to view the variability among group
+#'    replicates, which should be much lower than variability across
+#'    sample groups. See `centerGeneData()` for more specific examples.
+#' @param controlSamples `character` vector of `colnames(x)` passed
+#'    to `centerGeneData()` which defines the control samples during
+#'    the data centering step.
+#'    By default, and the most common practice, MA-plots are
+#'    calculated across all samples, which effectively uses all
+#'    `colnames(x)` as `controlSamples`.
+#'    However, it is quite useful sometimes to provide a subset of
+#'    samples especially if there are known quality samples, to which
+#'    new samples of unknown quality are being compared.
 #' @param colramp one of several inputs recognized by
 #'    `jamba::getColorRamp()`. It typically recognizes either the name of
 #'    a color ramp from RColorBrewer, the name of functions from the
@@ -226,9 +305,6 @@ NULL
 #'    samples in `whichSamples` are displayed. This argument keeps
 #'    the MA-plot calculations consistent even when viewing only
 #'    one or a subset of samples in more detail.
-#' @param maintitle `character` string with the main title for
-#'    the overall plot, printed at the top of each page in the
-#'    top outer margin.
 #' @param maintitleCex `numeric` cex character expansion used to
 #'    resize the `maintitle`.
 #' @param subtitle `NULL` or `character` vector to be drawn at
@@ -238,11 +314,6 @@ NULL
 #'    subtitle, using terms valid in `jamba::coordPresets()`. The default
 #'    `subtitlePreset="bottomleft"` places the subtitle at the
 #'    bottom left corner of each plot panel.
-#' @param titleBoxColor,subtitleBoxColor `character` vector of
-#'    R colors applied to title text, or subtitle text, respectively.
-#'    When `doTitleBox=TRUE`
-#'    one or no value is supplied, it defines colors using
-#'    `jamba::setTextContrastColor()` to use a contrasting color.
 #' @param titleColor `character` vector of colors applied to title text
 #'    in each MA-plot panel. When `doTitleBox=TRUE` and `titleColor`
 #'    contains only one or no value, the title color is defined by
@@ -341,30 +412,23 @@ NULL
 #'    to reduce the visual effect of having that much point density at
 #'    zero, for example with `xlim=c(0.001, 20)` and
 #'    `applyRangeCeiling=FALSE`.
-#' @param controlSamples `character` vector of `colnames(x)` to define
-#'    control samples during the data centering step. Default MA-plots are
-#'    calculated relative to the overall mean, which uses all `colnames(x)`
-#'    as `controlSamples`. However it can be helpful and informative
-#'    to view MA-plots relative to a set of known control samples.
-#' @param centerGroups vector of groups, with length `ncol(x)`
-#'    indicating optional groupings to use during data centering.
-#'    When `centerGroups` is defined, each subset of data is centered
-#'    independently. It is useful to center within batches, or within
-#'    subsets of samples that are not intended to be compared across
-#'    one another. It is also informative to center by each sample
-#'    group in order to view the variability among sample group
-#'    replicates, which should be much lower than variability across
-#'    sample groups. See `centerGeneData()` for more specific examples.
-#' @param useMean `logical` indicating whether to center data using
-#'    `mean` or `median` values. The default `useMean=TRUE` is chosen
-#'    because it visually represents data as seen by typical parametric
-#'    analysis methods downstream. When outlier sample are observed,
-#'    it may be more useful to apply `useMean=FALSE` to use the `median`
-#'    which is less prone to outlier effects. That said, if a particular
-#'    sample is an outlier, another alternative is to define
-#'    `controlSamples` which excludes the outlier sample(s), and
-#'    therefore data centering is applied using only the non-outlier
-#'    samples as the reference.
+#' @param useMedian `logical` indicates whether to center data
+#'    using the `median` value, where `useMedian=FALSE` by default.
+#'    For consistency, this argument is preferred to `useMean` which
+#'    is deprecated and will be removed in future. The median is
+#'    preferred in cases where outliers should not influence the
+#'    centering. The mean is preferred in cases where the data
+#'    should visualize data consistent with downstream parametric
+#'    statistical analysis. When a particular sample
+#'    is a technical outlier, one option is to define
+#'    `controlSamples` to exclude the outlier sample(s), so
+#'    the data centering will be applied using the non-outlier
+#'    samples as reference.
+#' @param useMean `logical` (deprecated), use `useMean`. This argument
+#'    indicates whether to center data using the `mean` value.
+#'    When `useMean=NULL` the argument `useMedian` is preferred.
+#'    For backward compatibility, when `useMean` is not `NULL`,
+#'    then `useMedian` is defined by `useMedian <- !useMean`.
 #' @param customFunc `NULL` or `function` used instead of `mean` or
 #'    `median` during the data centering step to generate a row summary
 #'    statistic. It should take `matrix` input, and return a `numeric` vector
@@ -488,8 +552,9 @@ NULL
 #' @param ... additional parameters sent to downstream functions,
 #'    \code{\link{jamba::plotSmoothScatter}}, \code{\link{centerGeneData}}.
 #'
-#' @return List of data used by jamma() to produce an MA-plot, sufficient
-#'          to use as input to produce another MA-plot.
+#' @return `list` of `numeric` `matrix` objects, one for each MA-plot,
+#'   with colnames `"x"` and `"y"`. This `list` is sufficient input
+#'   to `jammaplot()` to re-create the full set of MA-plots.
 #'
 #' @seealso `jamba::plotSmoothScatter()` for enhanced
 #'    `graphics::smoothScatter()`, `centerGeneData()`,
@@ -511,12 +576,14 @@ NULL
 #' @export
 jammaplot <- function
 (x,
+ assay_name=NULL,
  maintitle=NULL,
  titleBoxColor="#DDBB9977",
  subtitleBoxColor=titleBoxColor,
  centerGroups=NULL,
  controlSamples=colnames(x),
- useMean=TRUE,
+ useMedian=FALSE,
+ useMean=NULL,
  ylim=c(-4,4),
  xlim=NULL,
  highlightPoints=NULL,
@@ -641,7 +708,7 @@ jammaplot <- function
    #}
    #if (suppressPackageStartupMessages(require(matrixStats))) {
    #   doMS <- TRUE;
-   if ("matrixStats" %in% rownames(installed.packages())) {
+   if (jamba::check_pkg_installed("matrixStats")) {
       doMS <- TRUE;
       rowMedians <- matrixStats::rowMedians;
       colMedians <- matrixStats::colMedians;
@@ -664,6 +731,17 @@ jammaplot <- function
             ...);
       }
    }
+   if (length(useMean) > 0 && is.logical(useMean)) {
+      useMedian <- !useMean;
+      if (verbose) {
+         jamba::printDebug("jammaplot(): ",
+            "useMedian defined by !useMean, useMedian=",
+            useMedian);
+      }
+   }
+   if (length(useMedian) == 0) {
+      useMedian <- FALSE;
+   }
 
    transformation <- function(x){
       x^transFactor;
@@ -671,6 +749,32 @@ jammaplot <- function
    if ("list" %in% class(x)) {
       nsamples <- length(x);
       x_names <- names(x);
+   } else if ("SummarizedExperiment" %in% class(x)) {
+      if (!jamba::check_pkg_installed("SummarizedExperiment")) {
+         stop("The 'SummarizedExperiment' is required for SummarizedExperiment input x.");
+      }
+      #assay_name <- intersect(assay_name,
+      #   names(SummarizedExperiment::assays(x)));
+      if (length(assay_name) == 0) {
+         assay_name <- head(names(SummarizedExperiment::assays(x)));
+         if (verbose) {
+            jamba::printDebug("jammaplot(): ",
+               c("Using first assay_name: '", assay_name, "'"),
+               sep="");
+         }
+      }
+      if (is.numeric(assay_name)) {
+         if (assay_name > length(SummarizedExperiment::assays(x))) {
+            assay_name <- length(SummarizedExperiment::assays(x));
+         }
+         assay_name <- names(SummarizedExperiment::assays(x))[assay_name];
+      }
+      x <- assays(x)[[assay_name]];
+      nsamples <- ncol(x);
+      x_names <- colnames(x);
+      if (length(x) == 0) {
+         stop("assays(x)[[assay_name]] did not produce a usable data matrix.");
+      }
    } else {
       nsamples <- ncol(x);
       x_names <- colnames(x);
@@ -878,6 +982,12 @@ jammaplot <- function
       if (ma_method %in% "jammacalc") {
          ## Newer method using jammacalc()
       } else {
+         jamba::printDebug("jammaplot(): ",
+            sep="",
+            c("deprecated method ", "ma_method='old'",
+               " will be removed in future, please use ",
+               "ma_method='jammacalc'"),
+            fgText="red")
          if (verbose) {
             jamba::printDebug("jammaplot(): ",
                "Processing matrix input type, dim(x)", dim(x));
@@ -924,24 +1034,25 @@ jammaplot <- function
          ## used as the x-axis value for each panel
          if (groupedX && length(unique(centerGroups)) > 1) {
             yM <- centerGeneData(x,
+               useMedian=useMedian,
                controlSamples=controlSamples,
                centerGroups=centerGroups,
                returnValues=FALSE,
                returnGroupedValues=TRUE);
             centerGroups <- jamba::nameVector(centerGroups, x_names);
             ## TODO: Apply rowGroupsMeans() for custom y-values per group
-            if (useMean) {
-               y <- rowMeans(yM, na.rm=TRUE);
-            } else {
+            if (useMedian) {
                y <- rowMedians(yM, na.rm=TRUE);
+            } else {
+               y <- rowMeans(yM, na.rm=TRUE);
             }
          } else {
             if (length(customFunc) > 0) {
                y <- customFunc(x[,controlSamples,drop=FALSE], na.rm=TRUE);
-            } else if (useMean) {
-               y <- rowMeans(x[,controlSamples,drop=FALSE], na.rm=TRUE);
-            } else {
+            } else if (useMedian) {
                y <- rowMedians(x[,controlSamples,drop=FALSE], na.rm=TRUE);
+            } else {
+               y <- rowMeans(x[,controlSamples,drop=FALSE], na.rm=TRUE);
             }
          }
          if (verbose) {
@@ -965,11 +1076,11 @@ jammaplot <- function
       if (verbose) {
          jamba::printDebug("jammaplot(): ",
             "Calling jammacalc().",
-            "useMedian:", !useMean);
+            "useMedian:", useMedian);
       }
       mvaDatas <- jammacalc(x=x,
          na.rm=TRUE,
-         useMedian=!useMean,
+         useMedian=useMedian,
          controlSamples=controlSamples,
          centerGroups=centerGroups,
          groupedX=groupedX,
@@ -978,7 +1089,7 @@ jammaplot <- function
          noise_floor=filterFloor,
          noise_floor_value=filterFloorReplacement,
          naValue=filterNAreplacement,
-         centerFunc=centerGeneData_new,
+         centerFunc=centerGeneData,
          returnType="ma_list",
          mad_row_min=outlierRowMin,
          useRank=useRank,
@@ -992,12 +1103,12 @@ jammaplot <- function
       if (length(centerGroups) > 0) {
          objectCtr <- centerGeneData(x,
             centerGroups=centerGroups,
-            mean=useMean,
-            needsLog=FALSE,
+            useMedian=useMedian,
             returnGroupedValues=FALSE,
             returnValues=TRUE,
             controlSamples=controlSamples,
-            verbose=verbose);
+            verbose=verbose,
+            ...);
          if (verbose) {
             jamba::printDebug("jammaplot(): ",
                "objectCtr:");
@@ -1093,11 +1204,15 @@ jammaplot <- function
    }
    mvaMADoutliers <- x_names[whichSamples][which(mvaMADfactors >= outlierMAD)];
    if (verbose) {
-      jamba::printDebug("mvaMADs:");
+      jamba::printDebug("jammaplot(): ",
+         "mvaMADs:");
       print(format(digits=2, mvaMADs));
-      jamba::printDebug("mvaMADfactors:");
+      jamba::printDebug("jammaplot(): ",
+         "mvaMADfactors:");
       print(format(digits=2, mvaMADfactors));
-      jamba::printDebug("mvaMADoutliers:", mvaMADoutliers);
+      jamba::printDebug("jammaplot(): ",
+         "mvaMADoutliers:",
+         mvaMADoutliers);
    }
    attr(mvaDatas, "mvaMADs") <- mvaMADs;
    attr(mvaDatas, "mvaMADoutliers") <- mvaMADoutliers;
@@ -1342,9 +1457,6 @@ jammaplot <- function
                titleFont);
          }
          titleBoxTextColor <- titleColor[i];
-         #titleBoxTextColor <- ifelse(colnames(object)[i] %in% mvaMADoutliers,
-         #   blendColors(rep(c(titleColor[i], "red"), c(3,1))),
-         #   titleColor[i]);
          if (doTitleBox) {
             if (verbose) {
                jamba::printDebug("jammaplot(): ",
@@ -1437,361 +1549,6 @@ jammaplot <- function
 }
 
 
-#' Center gene data
-#'
-#' Performs row centering on a matrix of data in log space
-#'
-#' This function is a relatively simple wrapper function which subtracts
-#' the row median (or row mean when mean=FALSE) from each row. The function
-#' allows defining a subset of columns to be used in determining the
-#' row control value via controlSamples, Similarly, columns can be grouped,
-#' where columns are centered versus their relevant control samples within
-#' each group of columns.
-#'
-#' @param x numeric matrix typically containing measurements (genes)
-#'    as rows, and samples as columns.
-#' @param floor optional numeric floor, below which values are set to the
-#'    floor value, useful when one wants to avoid centering to values which
-#'    may be below a noise threshold which might otherwise result in
-#'    artificially inflated log fold changes.
-#' @param controlSamples optional character vector of colnames(x) to be
-#'    used as controls when centering data. In the event that centerGroups
-#'    is also defined, the controlSamples are only used within each
-#'    group of colnames. When this value is NULL or NA, or when any group
-#'    of colnames defined by centerGroups contains no controlSamples, then
-#'    all samples are used for centering. This relationship is clearly
-#'    described in the attribute named "centerGroups".
-#' @param centerGroups optional character vector named by colnames, whose
-#'    values are group names. Alternatively, a list of vectors of colnames,
-#'    where each list element contains colnames in explicit groups.
-#' @param needsLod logical, indicating whether to perform log2 transformation
-#'    of data prior to centering. If NULL, then if any value is above 40,
-#'    it sets needsLog=TRUE and uses log2(x) for centering.
-#' @param mean logical indicating whether to use row means, or row medians.
-#'    If the matrixStats package is available, it uses
-#'    `matrixStats::rowMedians()` for calculations, otherwise
-#'    falling back to apply(x, 1, median) which is notably slower for
-#'    large data matrices.
-#' @param returnGroupedValues logical indicating whether to append columns
-#'    which contain the control mean or median values used during centering.
-#' @param showGroups logical indicating whether to print the sample centring
-#'    relationship to screen during processing. Note this information is
-#'    also contained in attribute "centerGroups".
-#' @param scale character values indicating whether to scale data by row, or
-#'    perform no row scaling. Scaling is dependent upon whether median or mean
-#'    values are used in centering. If mean values are used, scaling is
-#'    accomplished by dividing row values by the standard deviation. If median
-#'    is used, then scaling divides row values by the MAD which is derived
-#'    using the median instead of the mean.
-#'
-#' @return numeric matrix output, with the same row and column dimensions
-#' as input data. If returnGroupedValues=TRUE, the additional columns contain
-#' the row median or mean values, dependent upon mean=FALSE or mean=TRUE,
-#' respectively.
-#' An attribute \code{centerGroups} is included, which describes the specific
-#' relationship between each colname, and associated control sample colnames,
-#' and optional centerGroups grouping of colnames. When columns are grouped
-#' and centered to specific control samples, is it important to keep this
-#' information during downstream scrutiny of results.
-#'
-#' @family jam matrix functions
-#'
-#' @examples
-#' x <- matrix(1:100, ncol=10);
-#' colnames(x) <- letters[1:10];
-#' # basic centering
-#' centerGeneData(x);
-#'
-#' # grouped centering
-#' centerGeneData(x,
-#'    centerGroups=rep(c("A","B"), c(5,5)));
-#'
-#' # centering versus specific control columns
-#' centerGeneData(x,
-#'    controlSamples=letters[c(1:3)]);
-#'
-#' # grouped centering versus specific control columns
-#' centerGeneData(x,
-#'    centerGroups=rep(c("A","B"), c(5,5)),
-#'    controlSamples=letters[c(1:3, 6:8)]);
-#'
-#' # confirm the centerGroups and controlSamples
-#' x_ctr <- centerGeneData(x,
-#'    centerGroups=rep(c("A","B"), c(5,5)),
-#'    controlSamples=letters[c(1:3, 6:8)],
-#'    showGroups=TRUE);
-#' attr(x_ctr, "centerDF");
-#'
-#' @export
-centerGeneData <- function
-(x,
- floor=NA,
- controlSamples=NA,
- centerGroups=NULL,
- needsLog=NULL,
- mean=FALSE,
- returnGroupedValues=FALSE,
- returnValues=TRUE,
- groupPrefix="group",
- showGroups=FALSE,
- scale=c("none", "row"),
- verbose=FALSE,
- ...)
-{
-   ## Purpose is to provide quik data-centering (subtracting average from each row, usually
-   ## in log2 space).
-   ##
-   ## If mean=FALSE, then median is used for centering, sometimes better than
-   ## using mean because it is less sensitive to outliers
-   ##
-   ## New: if data contains text and numeric columns, center the numeric columns only
-   ##
-   ## centerGroups subdivides samples into groups.  Each group will
-   ## be separately centered independent of the other groups.  Likewise, controlSamples
-   ## are only used within each group, if the samples exist in each group, otherwise
-   ## the group mean will be used for centering.
-   ##
-   ## centerGroups can be a list of vectors, containing colnames(x),
-   ## or it can be a vector of group names, in order of colnames(x).
-   ##
-   ## If centerGroups is a named vector, and all colnames(x) are contained in named(centerGroups)
-   ## then centerGroups[colnames(x)] will be used, to ensure they are both
-   ## in consistent order, and to allow using a subset of x accordingly.
-   ##
-   ## showGroups=TRUE will by default print a quick data.frame summary showing
-   ## samples, centerGroups, and controlSamples.
-   ##
-   ## returnGroupedValues=TRUE will append a column with the group values,
-   ## either median or mean, as used in centering.
-   ##
-   ## scale is optionally intended to allow centered-scaled data, usually
-   ## mean divided by standard deviation
-
-   scale <- match.arg(scale);
-   indata <- x;
-   if (!returnValues && !returnGroupedValues) {
-      stop("One must be TRUE: returnValues or returnGroupedValues.");
-   }
-
-   ## Determine whether the "matrixStats" R package is available
-   if ("matrixStats" %in% rownames(installed.packages())) {
-      rowMedians <- matrixStats::rowMedians;
-      colMedians <- matrixStats::colMedians;
-      rowSds <- matrixStats::rowSds;
-      rowMads <- matrixStats::rowMads;
-   } else {
-      rowMedians <- function(x, na.rm=TRUE) {
-         apply(x, 1, median, na.rm=na.rm);
-      }
-      colMedians <- function(x, na.rm=TRUE) {
-         apply(x, 2, median, na.rm=na.rm);
-      }
-      rowSds <- function(x, na.rm=TRUE) {
-         apply(x, 2, sd, na.rm=na.rm);
-      }
-      rowMads <- function(x, na.rm=TRUE) {
-         apply(x, 2, mad, na.rm=na.rm);
-      }
-   }
-
-   ## Separate character columns from numeric columns
-   hasCharColumns <- FALSE;
-   if (!any(class(indata) %in% c("matrix", "numeric"))) {
-      colClass <- sapply(1:ncol(indata), function(i){class(indata[,i])});
-      colClassChar <- which(!colClass %in% c("numeric", "integer"));
-      if (length(colClassChar) > 0) {
-         hasCharColumns <- TRUE;
-         indataChar <- indata[,colClassChar, drop=FALSE];
-         indata <- as.matrix(indata[,-colClassChar, drop=FALSE]);
-      }
-   }
-
-   if (length(controlSamples) == 0 ||
-       all(is.na(controlSamples))) {
-      controls <- rep(TRUE, ncol(indata));
-   } else {
-      if (any(class(controlSamples) %in% c("integer", "numeric")) &&
-            any(controlSamples <= ncol(indata))) {
-         controls <- (seq_len(ncol(indata)) %in% controlSamples);
-      } else if (length(colnames(indata)) > 0 &&
-            any(controlSamples %in% colnames(indata))) {
-         controls <- (colnames(indata) %in% controlSamples);
-      } else {
-         controls <- rep(TRUE, ncol(indata));
-      }
-      if (!any(controls)) {
-         controls <- rep(TRUE, ncol(indata));
-      }
-   }
-   if (length(colnames(indata)) > 0) {
-      c_names <- colnames(indata);
-      controlCols <- c_names[controls];
-   } else {
-      controlCols <- controls;
-      c_names <- seq_len(ncol(indata));
-   }
-
-   ## We will try to auto-detect whether to log2 transform the data
-   if (length(needsLog) == 0) {
-      needsLog <- max(indata, na.rm=TRUE) > 100;
-   }
-   if (needsLog) {
-      if (verbose) {
-         jamba::printDebug("centerGeneData(): ",
-            "applying log2 transform:",
-            "log2(1 + x)");
-      }
-      indata <- log2(1 + indata);
-   }
-
-   ## Create summary data.frame
-   centerDF <- as.data.frame(
-      jamba::rmNULL(
-         list(sample=c_names,
-            centerGroups=centerGroups,
-            centerControl=controls)));
-
-   if (verbose) {
-      jamba::printDebug("centerGeneData(): ",
-         "dim(indata):",
-         dim(indata));
-      jamba::printDebug("centerGeneData(): ",
-         "dim(centerDF):",
-         dim(centerDF));
-   }
-   rownames(centerDF) <- centerDF[,"sample"];
-
-   ## optionally show summary for visual confirmation
-   if (showGroups) {
-      print(centerDF);
-   }
-
-   ## Optionally center groups separately
-   if (length(centerGroups) > 0) {
-      if (!jamba::igrepHas("list", class(centerGroups))) {
-         if (length(names(centerGroups)) > 0) {
-            if (all(c_names %in% names(centerGroups))) {
-               centerGroups <- centerGroups[c_names];
-            } else {
-               stop("colnames(indata) must be contained in names(centerGroups) when centerGroups has names.");
-            }
-         }
-         centerGroups <- split(c_names, centerGroups);
-      }
-      ## Now iterate through the list
-      centeredSubsets <- lapply(nameVectorN(centerGroups), function(iGroupN){
-         iGroup <- centerGroups[[iGroupN]];
-         iGroupCols <- colnames(indata[,iGroup,drop=FALSE]);
-         iControls <- intersect(iGroupCols, controlCols);
-         iM <- centerGeneData(indata[,iGroup,drop=FALSE],
-            controlSamples=iControls,
-            floor=floor,
-            mean=mean,
-            returnGroupedValues=returnGroupedValues,
-            returnValues=returnValues,
-            groupPrefix=iGroupN,
-            needsLog=FALSE,
-            showGroups=FALSE,
-            centerGroups=NULL,
-            scale=scale,
-            ...);
-         iM;
-      });
-      centeredData <- do.call(cbind, centeredSubsets);
-      ## Correct rare cases when colnames are duplicated
-      if (length(tcount(colnames(centeredData), minCount=2)) > 0) {
-         colnames(centeredData) <- gsub("_v0$", "",
-            makeNames(colnames(centeredData), startN=0));
-      }
-      centeredData <- centeredData[,unique(c(intersect(colnames(indata),
-         colnames(centeredData)), colnames(centeredData))), drop=FALSE];
-      attr(centeredData, "centerGroups") <- centerGroups;
-      #return(centeredData);
-   } else if (mean) {
-      ## Note: Switched to using sweep() because it is much faster than apply()
-      indataMeans <- rowMeans(indata[,controls, drop=FALSE],
-         na.rm=TRUE);
-      if (returnGroupedValues && !returnValues) {
-         centeredData <- matrix(indataMeans,
-            ncol=1,
-            dimnames=list(rownames(indata), groupPrefix));
-      } else {
-         centeredData <- sweep(indata, 1, indataMeans);
-         if (scale %in% "row") {
-            indataSds <- rowSds(centeredData[,controls,drop=FALSE], na.rm=TRUE);
-            ## Make sure no sd values are zero
-            indataSds[indataSds == 0] <- mean(indataSds[indataSds != 0]);
-            indataSds[indataSds == 0] <- 1;
-            centeredData <- sweep(centeredData, 1, indataSds, "/")
-         }
-         if (returnGroupedValues) {
-            centeredData <- cbind(centeredData, "mean"=indataMeans);
-            if (length(groupPrefix) > 0 && nchar(groupPrefix) > 0) {
-               n1 <- ncol(centeredData);
-               colnames(centeredData)[n1] <- paste(
-                  c(groupPrefix, colnames(centeredData)[n1]),
-                  collapse="_");
-            }
-            if (scale %in% "row") {
-               centeredData <- cbind(centeredData, "SD"=indataSds);
-               if (length(groupPrefix) > 0 && nchar(groupPrefix) > 0) {
-                  n1 <- ncol(centeredData);
-                  colnames(centeredData)[n1] <- paste(
-                     c(groupPrefix, colnames(centeredData)[n1]),
-                     collapse="_");
-               }
-            }
-         }
-      }
-   } else {
-      ## Center by median
-      indataMedians <- rowMedians(indata[,controls,drop=FALSE],
-         na.rm=TRUE);
-      if (returnGroupedValues && !returnValues) {
-         centeredData <- matrix(indataMedians,
-            ncol=1,
-            dimnames=list(rownames(indata), groupPrefix));
-      } else {
-         centeredData <- sweep(indata, 1, indataMedians);
-         if (scale %in% "row") {
-            indataMads <- rowMads(centeredData[,controls, drop=FALSE],
-               na.rm=TRUE);
-            ## Make sure no sd values are zero
-            indataMads[indataMads == 0] <- mean(indataMads[indataMads != 0]);
-            indataMads[indataMads == 0] <- 1;
-            centeredData <- sweep(centeredData, 1, indataMads, "/")
-         }
-         if (returnGroupedValues) {
-            centeredData <- cbind(centeredData, "median"=indataMedians);
-            if (length(groupPrefix) > 0 && nchar(groupPrefix) > 0) {
-               n1 <- ncol(centeredData);
-               colnames(centeredData)[n1] <- paste(
-                  c(groupPrefix, colnames(centeredData)[n1]),
-                  collapse="_");
-            }
-            if (scale %in% "row") {
-               centeredData <- cbind(centeredData, "MAD"=indataMads);
-               if (length(groupPrefix) > 0 && nchar(groupPrefix) > 0) {
-                  n1 <- ncol(centeredData);
-                  colnames(centeredData)[n1] <- paste(
-                     c(groupPrefix, colnames(centeredData)[n1]),
-                     collapse="_");
-               }
-            }
-         }
-      }
-   }
-   if (hasCharColumns) {
-      if (verbose) {
-         jamba::printDebug("centerGeneData(): ",
-            "Keeping non-numeric columns as-is.");
-      }
-      centeredData <- cbind(indataChar, centeredData)
-   }
-   attr(centeredData, "centerDF") <- centerDF;
-   return(centeredData);
-}
-
 
 #' define a polygon hull around points
 #'
@@ -1819,7 +1576,7 @@ centerGeneData <- function
 #' `returnClass="SpatialPolygons"` it returns an object
 #' of class `sp::SpatialPolygons`.
 #'
-#' @family jam plot functions
+#' @family jam utility functions
 #'
 #' @examples
 #' set.seed(123);
@@ -1876,206 +1633,6 @@ points2polygonHull <- function
    return(x_hull);
 }
 
-#' Center gene data (modified)
-#'
-#' Performs per-row centering on a numeric matrix
-#'
-#' This function centers data by subtracting the median or
-#' mean for each row.
-#'
-#' Optionally columns can be grouped using the
-#' argument `centerGroups`, which will center
-#' data within each group independently.
-#'
-#' Data can be centered relative to specific control columns
-#' using the argument `controlSamples`. When used with
-#' `centerGroups`, each group of columns defined by
-#' `centerGroups` that does not contain a corresponding
-#' value in `controlSamples` will be centered using the
-#' entire group.
-#'
-#' Confirm the `centerGroups` and `controlSamples` are
-#' correct using the attribute `"center_df"` of the results,
-#' see examples below.
-#'
-#' Note: This function assumes input data is log2-transformed,
-#' or appropriately transformed to fit the assumption of
-#' normality. This assumption is necessary for two reasons:
-#'
-#' 1. The group value (mean or median) is correct only when
-#' data is transformed so the mean or median is not affected
-#' by skewed data. Alternatively, `rowStatsFunc` can be
-#' used to specify a custom group summary function.
-#' 2. The centering subtracts the group value from each column
-#' value.
-#'
-#' @param x numeric matrix of input data. See assumptions,
-#'    that data is assumed to be log2-transformed, or otherwise
-#'    appropriately transformed.
-#' @param centerGroups character vector of group names, or
-#'    `NULL` if there are no groups.
-#' @param na.rm logical indicating whether NA values should be
-#'    ignored for summary statistics. This argument is passed
-#'    to the corresponding row stats function.
-#' @param controlSamples character vector of values in `colnames(x)`
-#'    which defines the columns to use when calculating group
-#'    summary values.
-#' @param useMedian logical indicating whether to use group median
-#'    values when calculating summary statistics (`TRUE`), or
-#'    group means (`FALSE`). In either case, when `rowStatsFunc`
-#'    is provided, it is used instead.
-#' @param rmOutliers logical indicating whether to perform outlier
-#'    detection and removal prior to row group stats. This
-#'    argument is passed to `jamba::rowGroupMeans()`. Note that
-#'    outliers are only removed during the row group summary step,
-#'    and not in the centered data.
-#' @param madFactor numeric value passed to `jamba::rowGroupMeans()`,
-#'    indicating the MAD factor threshold to use when `rmOutliers=TRUE`.
-#'    The MAD of each row group is computed, the overall group median
-#'    MAD is used to define 1x MAD factor, and any MAD more than
-#'    `madFactor` times the group median MAD is considered an outlier
-#'    and is removed. The remaining data is used to compute row
-#'    group values.
-#' @param rowStatsFunc optional function used to calculate row group
-#'    summary values. This function should take a numeric matrix as
-#'    input, and return a one-column numeric matrix as output, or
-#'    a numeric vector with length `nrow(x)`. The function should
-#'    also accept `na.rm` as an argument.
-#' @param returnGroupedValues logical indicating whether to include
-#'    the numeric matrix of row group values used during centering,
-#'    returned in the attributes with name `"x_group"`.
-#' @param returnGroups logical indicating whether to return the
-#'    centering summary data.frame in attributes with name "center_df".
-#' @param verbose logical indicating whether to print verbose output.
-#' @param ... additional arguments are passed to `jamba::rowGroupMeans()`.
-#'
-#' @family jam matrix functions
-#'
-#' @examples
-#' x <- matrix(1:100, ncol=10);
-#' colnames(x) <- letters[1:10];
-#' # basic centering
-#' centerGeneData_new(x);
-#'
-#' # grouped centering
-#' centerGeneData_new(x,
-#'    centerGroups=rep(c("A","B"), c(5,5)));
-#'
-#' # centering versus specific control columns
-#' centerGeneData_new(x,
-#'    controlSamples=letters[c(1:3)]);
-#'
-#' # grouped centering versus specific control columns
-#' centerGeneData_new(x,
-#'    centerGroups=rep(c("A","B"), c(5,5)),
-#'    controlSamples=letters[c(1:3, 6:8)]);
-#'
-#' # confirm the centerGroups and controlSamples
-#' x_ctr <- centerGeneData_new(x,
-#'    centerGroups=rep(c("A","B"), c(5,5)),
-#'    controlSamples=letters[c(1:3, 6:8)],
-#'    returnGroups=TRUE);
-#' attr(x_ctr, "center_df");
-#'
-#' @export
-centerGeneData_new <- function
-(x,
- centerGroups=NULL,
- na.rm=TRUE,
- controlSamples=NULL,
- useMedian=TRUE,
- rmOutliers=FALSE,
- madFactor=5,
- rowStatsFunc=NULL,
- returnGroupedValues=FALSE,
- returnGroups=FALSE,
- verbose=FALSE,
- ...)
-{
-   ## This function is a refactor of centerGeneData() to consolidate
-   ## some logic into rowGroupMeans()
-   if (length(x) == 0 || ncol(x) == 0 || nrow(x) == 0) {
-      return(x);
-   }
-
-   ## Ensure that x has colnames
-   if (length(colnames(x)) == 0) {
-      colnames(x) <- seq_len(ncol(x));
-   }
-
-   ## Process controlSamples
-   if (any(class(controlSamples) %in% c("numeric", "integer"))) {
-      ## Numeric controlSamples are used to subset colnames(x)
-      if (!"integer" %in% class(controlSamples) &&
-            !all(controlSamples == as.integer(controlSamples))) {
-         stop("controlSamples must be integer or numeric integer values, decimal values were detected.");
-      }
-      controlSamples <- colnames(x)[seq_len(ncol(x)) %in% controlSamples];
-   } else {
-      controlSamples <- intersect(controlSamples, colnames(x));
-   }
-   if (length(controlSamples) == 0) {
-      if (verbose) {
-         jamba::printDebug("centerGeneData_new(): ",
-            "controlSamples using all colnames(x)");
-      }
-      controlSamples <- colnames(x);
-   }
-
-   ## Process centerGroups
-   if (length(centerGroups) == 0) {
-      centerGroups <- rep("Group", ncol(x));
-   } else if (length(centerGroups) == 1) {
-      ## Note that NA is converted to "NA"
-      centerGroups <- rep(
-         jamba::rmNA(centerGroups,
-            naValue="NA"),
-         length.out=ncol(x));
-   }
-   if (length(centerGroups) < ncol(x)) {
-      stop("length(centerGroups) must equal ncol(x), or be length 0 or 1 to indicate no groups.");
-   }
-   names(centerGroups) <- colnames(x);
-
-   ## Confirm all centerGroups contains controlSamples,
-   ## use all samples when any centerGroup has no controlSamples
-   samples_l <- split(colnames(x),
-      centerGroups);
-   controls_l <- lapply(samples_l, function(i){
-      if (!any(i %in% controlSamples)) {
-         i;
-      } else {
-         intersect(i, controlSamples);
-      }
-   })
-   controls_v <- unname(unlist(controls_l));
-   center_df <- data.frame(sample=colnames(x),
-      centerGroups=centerGroups,
-      controlSamples=colnames(x) %in% controls_v);
-
-   ## Calculate row summary values
-   x_group <- jamba::rowGroupMeans(x[,controls_v, drop=FALSE],
-      na.rm=na.rm,
-      groups=centerGroups[controls_v],
-      useMedian=useMedian,
-      rmOutliers=rmOutliers,
-      madFactor=madFactor,
-      rowStatsFunc=rowStatsFunc,
-      verbose=verbose,
-      ...);
-
-   ## Now produce centered values by subtracting the group summary values
-   x_centered <- (x - x_group[,centerGroups[colnames(x)], drop=FALSE]);
-
-   if (returnGroupedValues) {
-      attr(x_centered, "x_group") <- x_group;
-   }
-   if (returnGroups) {
-      attr(x_centered, "center_df") <- center_df;
-   }
-
-   return(x_centered);
-}
 
 #' Calculate MA-plot data
 #'
@@ -2171,7 +1728,7 @@ centerGeneData_new <- function
 #'    particularly high variability group may have all its
 #'    group members labeled with a high MAD factor.
 #' @param centerFunc function used for centering data, by default
-#'    one of the functions `centerGeneData()` or `centerGeneData_new()`.
+#'    one of the functions `centerGeneData()` or `centerGeneData_v1()`.
 #'    This argument will be removed in the near future and is mainly
 #'    intended to allow testing the two centering functions.
 #' @param returnType character string indicating the format of data
@@ -2197,7 +1754,7 @@ jammacalc <- function
  naValue=NA,
  mad_row_min=0,
  grouped_mad=TRUE,
- centerFunc=centerGeneData_new,
+ centerFunc=centerGeneData,
  useRank=FALSE,
  returnType=c("ma_list", "tidy"),
  verbose=FALSE,
@@ -2230,13 +1787,16 @@ jammacalc <- function
          whichSamples);
    }
 
-   if (!suppressPackageStartupMessages(require(matrixStats))) {
+   if (!jamba::check_pkg_installed("matrixStats")) {
       rowMedians <- function(x, na.rm=TRUE) {
          apply(x, 1, median, na.rm=na.rm);
       }
       colMedians <- function(x, na.rm=TRUE) {
          apply(x, 2, median, na.rm=na.rm);
       }
+   } else {
+      rowMedians <- matrixStats::rowMedians;
+      colMedians <- matrixStats::colMedians;
    }
 
    ## Apply noise_floor if needed

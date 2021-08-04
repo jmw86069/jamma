@@ -18,7 +18,7 @@ jammacalc(
   naValue = NA,
   mad_row_min = 0,
   grouped_mad = TRUE,
-  centerFunc = centerGeneData_new,
+  centerFunc = centerGeneData,
   useRank = FALSE,
   returnType = c("ma_list", "tidy"),
   verbose = FALSE,
@@ -107,7 +107,7 @@ particularly high variability group may have all its
 group members labeled with a high MAD factor.}
 
 \item{centerFunc}{function used for centering data, by default
-one of the functions \code{centerGeneData()} or \code{centerGeneData_new()}.
+one of the functions \code{centerGeneData()} or \code{centerGeneData_v1()}.
 This argument will be removed in the near future and is mainly
 intended to allow testing the two centering functions.}
 
@@ -146,7 +146,7 @@ the control median within the centering group."
 }
 \seealso{
 Other jam matrix functions: 
-\code{\link{centerGeneData_new}()},
-\code{\link{centerGeneData}()}
+\code{\link{centerGeneData}()},
+\code{\link{jammanorm}()}
 }
 \concept{jam matrix functions}

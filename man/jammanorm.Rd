@@ -10,7 +10,8 @@ jammanorm(
   minimum_mean = 0,
   controlSamples = NULL,
   centerGroups = NULL,
-  useMean = TRUE,
+  useMedian = FALSE,
+  useMean = NULL,
   noise_floor = -Inf,
   noise_floor_value = noise_floor,
   verbose = FALSE,
@@ -18,9 +19,68 @@ jammanorm(
 )
 }
 \arguments{
-\item{x}{numeric matrix with expression data suitable for use
+\item{x}{\code{numeric} matrix with expression data suitable for use
 by \code{jammaplot()}. Gene expression data is typically transformed
-using \code{log2(1+x)} to roughly normally distributed data.}
+using \code{log2(1+x)} to represent reasonably normal distribution.}
+
+\item{minimum_mean}{\code{numeric} value used to filter \code{controlGenes},
+a control gene must have at least this level of expression to
+be included in the normalization, where the expression is
+determined by the mean or median value analogous to the x-axis
+value in MA-plots.}
+
+\item{controlSamples}{\code{character} vector of \code{colnames(x)} passed
+to \code{centerGeneData()} which defines the control samples during
+the data centering step.
+By default, and the most common practice, MA-plots are
+calculated across all samples, which effectively uses all
+\code{colnames(x)} as \code{controlSamples}.
+However, it is quite useful sometimes to provide a subset of
+samples especially if there are known quality samples, to which
+new samples of unknown quality are being compared.}
+
+\item{centerGroups}{\code{character} vector of groups passed to
+\code{jamma::centerGeneData()} which determines how data is centered.
+Each group is centered independently, to enable visual
+comparisons within each relevant centering group.
+It is useful to center within batches or within
+subsets of samples that are not intended to be compared to
+one another.
+Another useful alternative is to center by each sample
+group in order to view the variability among group
+replicates, which should be much lower than variability across
+sample groups. See \code{centerGeneData()} for more specific examples.}
+
+\item{useMedian}{\code{logical} indicates whether to center data
+using the \code{median} value, where \code{useMedian=FALSE} by default.
+For consistency, this argument is preferred to \code{useMean} which
+is deprecated and will be removed in future. The median is
+preferred in cases where outliers should not influence the
+centering. The mean is preferred in cases where the data
+should visualize data consistent with downstream parametric
+statistical analysis. When a particular sample
+is a technical outlier, one option is to define
+\code{controlSamples} to exclude the outlier sample(s), so
+the data centering will be applied using the non-outlier
+samples as reference.}
+
+\item{useMean}{\code{logical} (deprecated), use \code{useMean}. This argument
+indicates whether to center data using the \code{mean} value.
+When \code{useMean=NULL} the argument \code{useMedian} is preferred.
+For backward compatibility, when \code{useMean} is not \code{NULL},
+then \code{useMedian} is defined by \code{useMedian <- !useMean}.}
+
+\item{noise_floor, noise_floor_value}{\code{numeric} values passed
+to \code{jammacalc()}. The \code{noise_floor} is the value below which
+a floor is applied. The floor sets all values below this floor
+to \code{noise_floor_value}. For example, one could apply \code{noise_floor=0}
+and \code{noise_floor_value=NA} which would change any value below 0
+to \code{NA}.}
+
+\item{verbose}{logical indicating whether to print verbose output.}
+
+\item{...}{additional parameters sent to downstream functions,
+\code{\link{jamba::plotSmoothScatter}}, \code{\link{centerGeneData}}.}
 }
 \value{
 numeric matrix whose columns have been normalized using
@@ -33,25 +93,105 @@ number of controlGenes used for each sample.
 Normalize data using MA-plot logic
 }
 \details{
-This function normalizes data using the MA-plot y-axis
-offset to define the normalization factor. It can optionally
-use only a subset of \code{controlGenes}, such as known
-housekeeper genes. It can optionally apply a \code{minimum_mean}
-threshold, to ensure the mean abundance of each row
-is at least this value.
+This function normalizes data using an approach analogous
+to data viewed in MA-plots. Normalization is applied by shifting
+data along the y-axis so the mean (or median) expression among
+control genes is zero, shown on an MA-plot as y=0.
 
-The approach is very similar to other housekeeper normalization
-methods, which typically use the geometric mean (or the mean
-of the log-transformed abundances.) However, the strategy here
-is to assert that the mean difference from average for the
-selected \code{controlGenes} is equal to zero.
+It effectively reinforces the assumption that the mean log fold
+change for control genes is expected to be zero. When \code{useMedian=TRUE}
+it reinforces the assumption that the log fold change for the
+majority of control genes should be zero.
+
+It is useful to run \code{jammaplot()} data after \code{jammanorm()}
+to visualize the effect of this normalization. If data is not
+centered at y=0, the parameters should be adjusted.
+\subsection{About the normalization}{
+
+This normalization is a "linear normalization" in that it uniformly
+shifts data up or down relative to other samples, without
+modifying the relative distribution of signal. It is very similar
+to housekeeper normalization, geometric mean normalization, and
+global signal scaling, which are all also "linear normalization"
+methods. An example of non-linear normalization is quantile or
+VSN normalization.
+
+The control genes can be defined upfront with \code{controlGenes},
+which can be housekeeper genes, or a custom subset of genes.
+The \code{controlGenes} are filtered to require the mean or median
+expression at or above \code{minimum_mean} in order to be used
+during normalization.
+
+The \code{minimum_mean} threshold is useful and important to match
+the variability seen in the MA-plots. For example data below
+a certain x-axis value may have very high variability, and
+should usually not be used for normalization.
+
+When the MA-plot after normalization does not show signal centered
+at y=0, the most common and effective adjustment is to apply
+\code{minimum_mean} to require \code{controGenes} to have expression
+at or above this threshold. The next most effective option is
+\code{useMedian=TRUE} which will center the majority of genes at
+y=0 instead of the overall mean at y=0.
+}
+
+\subsection{Comparison to geometric mean normalization}{
+
+The end result is very similar to other housekeeper normalization
+methods which typically define normalization factors by
+calculating the geometric mean of log-transformed housekeeper
+gene abundances. Such approaches usually work in part because
+higher expressed housekeeper genes usually have lower variability,
+which keeps the influence on geometric mean reasonably consistent
+across a broad range of expression. That said, genes with higher
+expression have more influence on the geometric mean than genes
+with much lower expression.
+
+However, the strategy with \code{jammanorm()} is to assert that
+the mean difference from average expression for the \code{controlGenes}
+should be equal to zero. The effect is applied evenly across
+control genes by evaluating the mean or median difference from y=0
+for each sample.
+}
+
+\subsection{Assumptions}{
 
 In order for this approach to be valid:
 \itemize{
-\item Data on the MA-plots should be horizontal for all samples.
-\item The majority of controlGenes should not be changing, which
-is seen as the controlGenes representing the mean expression.
-\item For data with a small number of genes, known controlGenes
-should be selected and verified to be unchanging across samples.
+\item Data on the MA-plots should be horizontal for all samples,
+particularly for \code{controlGenes}. When data is not horizontal
+across samples, data should instead be normalized using another
+approach, typically something like quantile normalization which
+is intended to impose a consistent signal distribution across
+all samples.
+\item The majority of \code{controlGenes} should not be changing, therefore
+the \code{controlGenes} should not have substantial variation along
+the y-axis within each sample.
+\item For data with a small number of genes, normalization should use
+a set of pre-defined \code{controlGenes} that were verified to have
+no change across samples.
 }
 }
+
+\subsection{Noise threshold}{
+
+Note that some platform technologies generate a noise threshold,
+below which data may be skewed up or down relative to other samples.
+It is recommended to ignore this type of skew below the threshold
+when determining whether data is horizontal on MA-plots.
+
+For example Nanostring data includes a series of positive and
+negative control probes, and a suitable noise threshold is either
+the midpoint between the lowest positive and highest negative probe,
+or the lowest positive probe. When this noise threshold is applied,
+data above the noise threshold is typically horizontal, although
+data below the threshold may be skewed up or down depending upon
+the effective input RNA concentration.
+}
+}
+\seealso{
+Other jam matrix functions: 
+\code{\link{centerGeneData}()},
+\code{\link{jammacalc}()}
+}
+\concept{jam matrix functions}

@@ -2,6 +2,10 @@ template:
   params:
     bootswatch: cosmo
 reference:
+- title: Jamma package
+  desc: About the jamma package
+  contents:
+  - has_concept("jamma package")
 - title: Plot functions
   desc: Functions that assist with R plotting
   contents:
@@ -10,3 +14,11 @@ reference:
   desc: Functions that manipulate numeric matrix data
   contents:
   - has_concept("jam matrix functions")
+- title: Utility functions
+  desc: Functions that are used internally by jamma functions
+  contents:
+  - has_concept("jam utility functions")
+- title: Deprecated functions
+  desc: Functions that will be removed in a future release
+  contents:
+  - has_concept("jamma deprecated functions")

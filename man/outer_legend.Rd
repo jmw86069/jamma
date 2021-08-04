@@ -85,3 +85,8 @@ outer_legend("bottom",
    col=colorjam::rainbowJam(3));
 
 }
+\seealso{
+Other jam utility functions: 
+\code{\link{points2polygonHull}()}
+}
+\concept{jam utility functions}

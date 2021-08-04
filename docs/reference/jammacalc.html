@@ -8,21 +8,29 @@
 
 <title>Calculate MA-plot data — jammacalc • jamma</title>
 
-<!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-<!-- Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/cosmo/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<!-- jquery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<!-- Bootstrap -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/cosmo/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
-<!-- sticky kit -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+<!-- headroom.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -30,10 +38,10 @@
 
 
 
-<meta property="og:title" content="Calculate MA-plot data — jammacalc" />
 
+<meta property="og:title" content="Calculate MA-plot data — jammacalc" />
 <meta property="og:description" content="Calculate MA-plot data" />
-<meta name="twitter:card" content="summary" />
+
 
 
 
@@ -47,9 +55,10 @@
 <![endif]-->
 
 
+
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -63,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.10.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.16.900</span>
       </span>
     </div>
 
@@ -71,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -94,11 +103,10 @@
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/jmw86069/jamma">
-    <span class="fa fa-github fa-lg"></span>
+  <a href="http://github.com/jmw86069/jamma/">
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -109,29 +117,42 @@
 </div><!--/.navbar -->
 
       
+
       </header>
 
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Calculate MA-plot data</h1>
-    <small class="dont-index">Source: <a href='https://github.com/jmw86069/jamma/blob/master/R/jamma.r'><code>R/jamma.r</code></a></small>
+    <small class="dont-index">Source: <a href='http://github.com/jmw86069/jamma/blob/master/R/jamma.r'><code>R/jamma.r</code></a></small>
     <div class="hidden name"><code>jammacalc.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    
     <p>Calculate MA-plot data</p>
-    
     </div>
 
-    <pre class="usage"><span class='fu'>jammacalc</span>(<span class='no'>x</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>controlSamples</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>centerGroups</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>groupedX</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>useMedian</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>useMean</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>whichSamples</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>noise_floor</span> <span class='kw'>=</span> -<span class='fl'>Inf</span>,
-  <span class='kw'>noise_floor_value</span> <span class='kw'>=</span> <span class='no'>noise_floor</span>, <span class='kw'>naValue</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>mad_row_min</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>grouped_mad</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>centerFunc</span> <span class='kw'>=</span> <span class='no'>centerGeneData_new</span>,
-  <span class='kw'>returnType</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"ma_list"</span>, <span class='st'>"tidy"</span>), <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)</pre>
-    
+    <pre class="usage"><span class='fu'>jammacalc</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  na.rm <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  controlSamples <span class='op'>=</span> <span class='cn'>NULL</span>,
+  centerGroups <span class='op'>=</span> <span class='cn'>NULL</span>,
+  groupedX <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  useMedian <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  useMean <span class='op'>=</span> <span class='cn'>NULL</span>,
+  whichSamples <span class='op'>=</span> <span class='cn'>NULL</span>,
+  noise_floor <span class='op'>=</span> <span class='op'>-</span><span class='cn'>Inf</span>,
+  noise_floor_value <span class='op'>=</span> <span class='va'>noise_floor</span>,
+  naValue <span class='op'>=</span> <span class='cn'>NA</span>,
+  mad_row_min <span class='op'>=</span> <span class='fl'>0</span>,
+  grouped_mad <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  centerFunc <span class='op'>=</span> <span class='va'>centerGeneData</span>,
+  useRank <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  returnType <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"ma_list"</span>, <span class='st'>"tidy"</span><span class='op'>)</span>,
+  verbose <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -148,12 +169,12 @@ during numeric summary functions.</p></td>
     <tr>
       <th>controlSamples</th>
       <td><p>character vector containing values in
-<code><a href='https://www.rdocumentation.org/packages/base/topics/colnames'>colnames(x)</a></code> to define control samples used during centering.
+<code><a href='https://rdrr.io/r/base/colnames.html'>colnames(x)</a></code> to define control samples used during centering.
 These values are passed to <code><a href='centerGeneData.html'>centerGeneData()</a></code>.</p></td>
     </tr>
     <tr>
       <th>centerGroups</th>
-      <td><p>character vector with length equal to <code><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>ncol(x)</a></code>
+      <td><p>character vector with length equal to <code><a href='https://rdrr.io/r/base/nrow.html'>ncol(x)</a></code>
 which defines the group for each column in <code>x</code>. Data will
 be centered within each group.</p></td>
     </tr>
@@ -183,7 +204,7 @@ in order to improve consistency with other Jam package functions.</p></td>
     </tr>
     <tr>
       <th>whichSamples</th>
-      <td><p>character vector containing <code><a href='https://www.rdocumentation.org/packages/base/topics/colnames'>colnames(x)</a></code>, or
+      <td><p>character vector containing <code><a href='https://rdrr.io/r/base/colnames.html'>colnames(x)</a></code>, or
 integer vector referencing column numbers in <code>x</code>. This argument
 specifies which columns to return, but does not change the columns
 used to define the group centering values. For example, the
@@ -227,7 +248,7 @@ useful to filter out counts below roughly 8, where Poisson
 noise is a more dominant component than real count data.
 Remember that count data should already be log2-transformed,
 so the threshold should also be identically transformed,
-for example using <code><a href='https://www.rdocumentation.org/packages/base/topics/Log'>log2(1 + 8)</a></code> to set a minimum count
+for example using <code><a href='https://rdrr.io/r/base/Log.html'>log2(1 + 8)</a></code> to set a minimum count
 threshold of at least 8.</p></td>
     </tr>
     <tr>
@@ -244,7 +265,7 @@ group members labeled with a high MAD factor.</p></td>
     <tr>
       <th>centerFunc</th>
       <td><p>function used for centering data, by default
-one of the functions <code><a href='centerGeneData.html'>centerGeneData()</a></code> or <code><a href='centerGeneData_new.html'>centerGeneData_new()</a></code>.
+one of the functions <code><a href='centerGeneData.html'>centerGeneData()</a></code> or <code><a href='centerGeneData_v1.html'>centerGeneData_v1()</a></code>.
 This argument will be removed in the near future and is mainly
 intended to allow testing the two centering functions.</p></td>
     </tr>
@@ -252,7 +273,7 @@ intended to allow testing the two centering functions.</p></td>
       <th>returnType</th>
       <td><p>character string indicating the format of data
 to return: <code>"ma_list"</code> is a list of MA-plot two-column
-numeric matrices with colnames <code><a href='https://www.rdocumentation.org/packages/base/topics/c'>c("x","y")</a></code>; "tidy"
+numeric matrices with colnames <code><a href='https://rdrr.io/r/base/c.html'>c("x","y")</a></code>; "tidy"
 returns a tall <code>data.frame</code> suitable for use in ggplot2.</p></td>
     </tr>
     <tr>
@@ -264,7 +285,7 @@ returns a tall <code>data.frame</code> suitable for use in ggplot2.</p></td>
       <td><p>additional arguments are ignored.</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>This function takes a numeric matrix as input, and calculates
@@ -282,26 +303,20 @@ be "difference from control median".</p>
 <p>The sample grouping, and control samples can be combined,
 in which case the y-axis values will be "difference from
 the control median within the centering group."</p>
-    
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>Other jam matrix functions: <code><a href='centerGeneData_new.html'>centerGeneData_new</a></code>,
-  <code><a href='centerGeneData.html'>centerGeneData</a></code></p></div>
-    
+    <div class='dont-index'><p>Other jam matrix functions: 
+<code><a href='centerGeneData.html'>centerGeneData</a>()</code>,
+<code><a href='jammanorm.html'>jammanorm</a>()</code></p></div>
 
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#details">Details</a></li>
-
-      <li><a href="#see-also">See also</a></li>
-          </ul>
-
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
+
 
       <footer>
       <div class="copyright">
@@ -309,13 +324,16 @@ the control median within the centering group."</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
+
       </footer>
    </div>
 
   
 
+
   </body>
 </html>
+
 

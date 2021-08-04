@@ -1,5 +1,19 @@
 # TODO for jamma
 
+## New functions
+
+* `jammaplotDispEsts()` wrapper for `DESeq2::plotDispEsts()`, although
+this function needs the newer colorized `plotSmoothScatterG2()`.
+
+
+## compatibility with SummarizedExperiment
+
+
+## Bug fixes
+
+* `jammaplot()` argument `ablineV` is not functioning properly.
+* `jammaplot()` highlight legend is not using `highlightPch`.
+
 ## Vignettes
 
 1. Guides for MA-plots.
@@ -25,6 +39,30 @@
 * How to detect sample outliers using a MAD factor threshold.
 * How to guide data normalization by MA-plot review.
 
+
+## useful functions
+
+* `log2fold_to_fold()` and `fold_to_log2fold()` - to interconvert:
+
+   * normal space fold changes, which could be represented as positive and
+   negative values (e.g. 2-fold and -2-fold) or as ratios
+   (e.g. 2-fold and 0.5-fold); and
+   * log2 fold change values
+   * Consider `fold_sign()` function that takes either as input and
+   returns either `1` or `-1`, and by default never returns `0` since
+   1-fold change cannot easily be multiplied by its `fold_sign()` without
+   causing it to become zero. More thought to be had as to the workflow.
+
+
+## Interface with other R packages
+
+### DESeq2
+
+* `plotMA()` is used for the `DESeq2::DESeqResults` object,
+highlighting points that meet `alpha < 0.1` by default.
+* Add new method to run `jammaplot()` on the count data,
+optionally transformed using their recommended approach,
+or use `useRank=TRUE`.
 
 
 ## Bug fixes

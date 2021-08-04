@@ -8,21 +8,29 @@
 
 <title>Produce MA-plot of omics data. — jammaplot • jamma</title>
 
-<!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-<!-- Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/cosmo/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<!-- jquery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<!-- Bootstrap -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/cosmo/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
-<!-- sticky kit -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+<!-- headroom.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -30,10 +38,10 @@
 
 
 
-<meta property="og:title" content="Produce MA-plot of omics data. — jammaplot" />
 
+<meta property="og:title" content="Produce MA-plot of omics data. — jammaplot" />
 <meta property="og:description" content="Produce MA-plot of omics data." />
-<meta name="twitter:card" content="summary" />
+
 
 
 
@@ -47,9 +55,10 @@
 <![endif]-->
 
 
+
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -63,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.10.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.16.900</span>
       </span>
     </div>
 
@@ -71,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -94,11 +103,10 @@
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/jmw86069/jamma">
-    <span class="fa fa-github fa-lg"></span>
+  <a href="http://github.com/jmw86069/jamma/">
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -109,374 +117,572 @@
 </div><!--/.navbar -->
 
       
+
       </header>
 
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Produce MA-plot of omics data.</h1>
-    <small class="dont-index">Source: <a href='https://github.com/jmw86069/jamma/blob/master/R/jamma.r'><code>R/jamma.r</code></a></small>
+    <small class="dont-index">Source: <a href='http://github.com/jmw86069/jamma/blob/master/R/jamma.r'><code>R/jamma.r</code></a></small>
     <div class="hidden name"><code>jammaplot.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    
     <p>Produce MA-plot of omics data.</p>
-    
     </div>
 
-    <pre class="usage"><span class='fu'>jammaplot</span>(<span class='no'>x</span>, <span class='kw'>colramp</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"white"</span>, <span class='st'>"lightblue"</span>, <span class='st'>"blue"</span>, <span class='st'>"navy"</span>, <span class='st'>"orange"</span>,
-  <span class='st'>"orangered2"</span>), <span class='kw'>colrampOutlier</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>outlierColor</span> <span class='kw'>=</span> <span class='st'>"palegoldenrod"</span>,
-  <span class='kw'>whichSamples</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>maintitle</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>maintitleCex</span> <span class='kw'>=</span> <span class='fl'>1.8</span>,
-  <span class='kw'>subtitle</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>subtitlePreset</span> <span class='kw'>=</span> <span class='st'>"bottomleft"</span>, <span class='kw'>titleCexFactor</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>titleCex</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>doTitleBox</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>titleBoxColor</span> <span class='kw'>=</span> <span class='st'>"#DDBB9977"</span>,
-  <span class='kw'>subtitleBoxColor</span> <span class='kw'>=</span> <span class='no'>titleBoxColor</span>, <span class='kw'>titleColor</span> <span class='kw'>=</span> <span class='st'>"black"</span>,
-  <span class='kw'>titleFont</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>titlePreset</span> <span class='kw'>=</span> <span class='st'>"top"</span>, <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>""</span>, <span class='kw'>xlabline</span> <span class='kw'>=</span> <span class='fl'>2</span>,
-  <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>""</span>, <span class='kw'>ylabline</span> <span class='kw'>=</span> <span class='fl'>1.5</span>, <span class='kw'>groupSuffix</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>highlightPoints</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>highlightPch</span> <span class='kw'>=</span> <span class='fl'>21</span>, <span class='kw'>highlightCex</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>highlightColor</span> <span class='kw'>=</span> <span class='st'>"#00AAAA66"</span>, <span class='kw'>doHighlightPolygon</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>highlightPolygonAlpha</span> <span class='kw'>=</span> <span class='fl'>0.3</span>, <span class='kw'>smoothPtCol</span> <span class='kw'>=</span> <span class='st'>"#00000055"</span>,
-  <span class='kw'>margins</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>3.5</span>, <span class='fl'>3</span>, <span class='fl'>0.7</span>, <span class='fl'>0.5</span>), <span class='kw'>useRaster</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>ncol</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>doPar</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>las</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(-<span class='fl'>4</span>, <span class='fl'>4</span>),
-  <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>controlSamples</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/colnames'>colnames</a></span>(<span class='no'>x</span>), <span class='kw'>centerGroups</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>groupedX</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>useMean</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>customFunc</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>filterNA</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>filterNAreplacement</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>filterNeg</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>filterFloor</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>filterFloorReplacement</span> <span class='kw'>=</span> <span class='no'>filterFloor</span>,
-  <span class='kw'>transFactor</span> <span class='kw'>=</span> <span class='fl'>0.18</span>, <span class='kw'>nrpoints</span> <span class='kw'>=</span> <span class='fl'>50</span>,
-  <span class='kw'>smoothScatterFunc</span> <span class='kw'>=</span> <span class='kw pkg'>jamba</span><span class='kw ns'>::</span><span class='no'><a href='https://www.rdocumentation.org/packages/jamba/topics/plotSmoothScatter'>plotSmoothScatter</a></span>,
-  <span class='kw'>applyRangeCeiling</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>doTxtplot</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>ablineV</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>ablineH</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(-<span class='fl'>2</span>, <span class='fl'>0</span>, <span class='fl'>2</span>), <span class='kw'>blankPlotPos</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>outlierMAD</span> <span class='kw'>=</span> <span class='fl'>5</span>,
-  <span class='kw'>outlierRowMin</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>groupedMAD</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>displayMAD</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>fillBackground</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>ma_method</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"old"</span>, <span class='st'>"jammacalc"</span>),
-  <span class='kw'>doPlot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)</pre>
-    
+    <pre class="usage"><span class='fu'>jammaplot</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  assay_name <span class='op'>=</span> <span class='cn'>NULL</span>,
+  maintitle <span class='op'>=</span> <span class='cn'>NULL</span>,
+  titleBoxColor <span class='op'>=</span> <span class='st'>"#DDBB9977"</span>,
+  subtitleBoxColor <span class='op'>=</span> <span class='va'>titleBoxColor</span>,
+  centerGroups <span class='op'>=</span> <span class='cn'>NULL</span>,
+  controlSamples <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>,
+  useMedian <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  useMean <span class='op'>=</span> <span class='cn'>NULL</span>,
+  ylim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>4</span>, <span class='fl'>4</span><span class='op'>)</span>,
+  xlim <span class='op'>=</span> <span class='cn'>NULL</span>,
+  highlightPoints <span class='op'>=</span> <span class='cn'>NULL</span>,
+  outlierMAD <span class='op'>=</span> <span class='fl'>5</span>,
+  outlierRowMin <span class='op'>=</span> <span class='fl'>5</span>,
+  displayMAD <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  groupedMAD <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  colramp <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"white"</span>, <span class='st'>"lightblue"</span>, <span class='st'>"blue"</span>, <span class='st'>"navy"</span>, <span class='st'>"orange"</span>, <span class='st'>"orangered2"</span><span class='op'>)</span>,
+  colrampOutlier <span class='op'>=</span> <span class='cn'>NULL</span>,
+  outlierColor <span class='op'>=</span> <span class='st'>"palegoldenrod"</span>,
+  whichSamples <span class='op'>=</span> <span class='cn'>NULL</span>,
+  maintitleCex <span class='op'>=</span> <span class='fl'>1.8</span>,
+  subtitle <span class='op'>=</span> <span class='cn'>NULL</span>,
+  subtitlePreset <span class='op'>=</span> <span class='st'>"bottomleft"</span>,
+  titleCexFactor <span class='op'>=</span> <span class='fl'>1</span>,
+  titleCex <span class='op'>=</span> <span class='cn'>NULL</span>,
+  doTitleBox <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  titleColor <span class='op'>=</span> <span class='st'>"black"</span>,
+  titleFont <span class='op'>=</span> <span class='fl'>2</span>,
+  titlePreset <span class='op'>=</span> <span class='st'>"top"</span>,
+  xlab <span class='op'>=</span> <span class='st'>""</span>,
+  xlabline <span class='op'>=</span> <span class='fl'>2</span>,
+  ylab <span class='op'>=</span> <span class='st'>""</span>,
+  ylabline <span class='op'>=</span> <span class='fl'>1.5</span>,
+  groupSuffix <span class='op'>=</span> <span class='cn'>NULL</span>,
+  highlightPch <span class='op'>=</span> <span class='fl'>21</span>,
+  highlightCex <span class='op'>=</span> <span class='fl'>1.5</span>,
+  highlightColor <span class='op'>=</span> <span class='st'>"#00AAAA66"</span>,
+  doHighlightPolygon <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  highlightPolygonAlpha <span class='op'>=</span> <span class='fl'>0.3</span>,
+  doHighlightLegend <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  smoothPtCol <span class='op'>=</span> <span class='st'>"#00000055"</span>,
+  margins <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>3.5</span>, <span class='fl'>2</span>, <span class='fl'>0.3</span>, <span class='fl'>0.2</span><span class='op'>)</span>,
+  useRaster <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  ncol <span class='op'>=</span> <span class='cn'>NULL</span>,
+  nrow <span class='op'>=</span> <span class='cn'>NULL</span>,
+  doPar <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  las <span class='op'>=</span> <span class='fl'>2</span>,
+  groupedX <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  customFunc <span class='op'>=</span> <span class='cn'>NULL</span>,
+  filterNA <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  filterNAreplacement <span class='op'>=</span> <span class='cn'>NA</span>,
+  filterNeg <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  filterFloor <span class='op'>=</span> <span class='fl'>0</span>,
+  filterFloorReplacement <span class='op'>=</span> <span class='va'>filterFloor</span>,
+  transFactor <span class='op'>=</span> <span class='fl'>0.18</span>,
+  nrpoints <span class='op'>=</span> <span class='fl'>0</span>,
+  smoothScatterFunc <span class='op'>=</span> <span class='fu'>jamba</span><span class='fu'>::</span><span class='va'><a href='https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html'>plotSmoothScatter</a></span>,
+  applyRangeCeiling <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  doTxtplot <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  ablineV <span class='op'>=</span> <span class='fl'>0</span>,
+  ablineH <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>2</span>, <span class='fl'>0</span>, <span class='fl'>2</span><span class='op'>)</span>,
+  blankPlotPos <span class='op'>=</span> <span class='cn'>NULL</span>,
+  fillBackground <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  useRank <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  ma_method <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"jammacalc"</span>, <span class='st'>"old"</span><span class='op'>)</span>,
+  doPlot <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  verbose <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>numeric matrix typically containing log-normal measurements,
-with measurement rows, and sample columns.</p></td>
+      <td><p><code>numeric</code> object usually a <code>matrix</code> that contains
+values with measurement rows, and sample/observation columns.
+For example, with gene or protein expression data, the genes
+or proteins (or the assays of genes or proteins) are
+represented in rows, and obtained samples are represented
+in columns. Alternatively <code>x</code> can be <code>SummarizedExperiment</code>
+object, used alongside argument <code>assay_name</code>.</p></td>
+    </tr>
+    <tr>
+      <th>assay_name</th>
+      <td><p><code>character</code> used when <code>x</code> is a
+<code>SummarizedExperiment</code> object, to determine which assay
+<code>matrix</code> to use for the MA plots. When <code>assay_name=NULL</code>
+the first assay entry is used, for example <code>assays(x)[[1]]</code>.</p></td>
+    </tr>
+    <tr>
+      <th>maintitle</th>
+      <td><p><code>character</code> string with the title displayed above
+all individual MA-plot panels. It will appear in the top outer
+margin.</p></td>
+    </tr>
+    <tr>
+      <th>titleBoxColor, subtitleBoxColor</th>
+      <td><p><code>character</code> vector of
+R colors used as background color for each panel title text,
+or subtitle text respectively. The subtitle appears in the
+bottom-left corner, and usually indicates the center groups
+as defined by <code>centerGroups</code>.</p></td>
+    </tr>
+    <tr>
+      <th>centerGroups</th>
+      <td><p><code>character</code> vector of groups passed to
+<code><a href='centerGeneData.html'>jamma::centerGeneData()</a></code> which determines how data is centered.
+Each group is centered independently, to enable visual
+comparisons within each relevant centering group.
+It is useful to center within batches or within
+subsets of samples that are not intended to be compared to
+one another.
+Another useful alternative is to center by each sample
+group in order to view the variability among group
+replicates, which should be much lower than variability across
+sample groups. See <code><a href='centerGeneData.html'>centerGeneData()</a></code> for more specific examples.</p></td>
+    </tr>
+    <tr>
+      <th>controlSamples</th>
+      <td><p><code>character</code> vector of <code><a href='https://rdrr.io/r/base/colnames.html'>colnames(x)</a></code> passed
+to <code><a href='centerGeneData.html'>centerGeneData()</a></code> which defines the control samples during
+the data centering step.
+By default, and the most common practice, MA-plots are
+calculated across all samples, which effectively uses all
+<code><a href='https://rdrr.io/r/base/colnames.html'>colnames(x)</a></code> as <code>controlSamples</code>.
+However, it is quite useful sometimes to provide a subset of
+samples especially if there are known quality samples, to which
+new samples of unknown quality are being compared.</p></td>
+    </tr>
+    <tr>
+      <th>useMedian</th>
+      <td><p><code>logical</code> indicates whether to center data
+using the <code>median</code> value, where <code>useMedian=FALSE</code> by default.
+For consistency, this argument is preferred to <code>useMean</code> which
+is deprecated and will be removed in future. The median is
+preferred in cases where outliers should not influence the
+centering. The mean is preferred in cases where the data
+should visualize data consistent with downstream parametric
+statistical analysis. When a particular sample
+is a technical outlier, one option is to define
+<code>controlSamples</code> to exclude the outlier sample(s), so
+the data centering will be applied using the non-outlier
+samples as reference.</p></td>
+    </tr>
+    <tr>
+      <th>useMean</th>
+      <td><p><code>logical</code> (deprecated), use <code>useMean</code>. This argument
+indicates whether to center data using the <code>mean</code> value.
+When <code>useMean=NULL</code> the argument <code>useMedian</code> is preferred.
+For backward compatibility, when <code>useMean</code> is not <code>NULL</code>,
+then <code>useMedian</code> is defined by <code>useMedian &lt;- !useMean</code>.</p></td>
+    </tr>
+    <tr>
+      <th>ylim, xlim</th>
+      <td><p><code>NULL</code> or <code>numeric</code> vector <code>length=2</code> indicating
+the y-axis and x-axis ranges, respectively. The values are useful
+to define consistent dimensions across all panels. The
+default <code>ylim=c(-4,4)</code> represents 16-fold up and down range in
+normal space, and is typically a reasonable starting point for
+most purposes. Even if numeric values are all between
+<code>-1.5</code> and <code>1.5</code>, it is still recommended to keep a range in
+context of <code><a href='https://rdrr.io/r/base/c.html'>c(-4, 4)</a></code>, to indicate that the observed values
+are lower than typically observed. The <code><a href='https://rdrr.io/r/base/c.html'>c(-4, 4)</a></code> may be adjusted
+relative to the typical ranges expected for the data.
+It is sometimes helpful to define <code>xlim</code> slightly above zero for
+datasets that have an extremely large proportion of zeros, in order
+to reduce the visual effect of having that much point density at
+zero, for example with <code>xlim=c(0.001, 20)</code> and
+<code>applyRangeCeiling=FALSE</code>.</p></td>
+    </tr>
+    <tr>
+      <th>highlightPoints</th>
+      <td><p><code>NULL</code>, or <code>character</code> vector, or a
+<code>list</code> of <code>character</code> vectors indicating <code><a href='https://rdrr.io/r/base/colnames.html'>rownames(x)</a></code> to
+highlight in each MA-plot panel. When <code>NULL</code>, no points are
+highlighted; when <code>character</code> vector, points are highlighted in
+all MA-plot panels; when <code>list</code> of <code>character</code> vectors, each
+<code>character</code> vector in the list is highlighted using a unique
+color in <code>highlightColor</code>. Points are drawn using
+<code><a href='https://rdrr.io/r/graphics/points.html'>graphics::points()</a></code> and colored using <code>highlightColor</code>,
+which can be time-consuming for a large number of highlight
+points.</p></td>
+    </tr>
+    <tr>
+      <th>outlierMAD</th>
+      <td><p><code>numeric</code> threshold above which a MA-plot panel
+MAD factor is considered an outlier. When a MA-plot panel is
+considered an outlier, the <code>outlierColramp</code> or <code>outlierColor</code>
+is applied to the panel color ramp to display a visual
+indication.</p></td>
+    </tr>
+    <tr>
+      <th>outlierRowMin</th>
+      <td><p><code>numeric</code> value indicating the minimum mean
+value as displayed on the MA-plot panel x-axis, in order for
+the row to be included in MAD calculations. This argument is
+intended to prevent measurements whose mean value is below
+a noise threshold from being included, therefore only including
+points whose mean measurement is above noise and represents
+"typical" variability.</p></td>
+    </tr>
+    <tr>
+      <th>displayMAD</th>
+      <td><p><code>logical</code> indicating whether to display each
+MA-plot panel MAD factor (median absolute deviation). A MAD
+value for each panel is calculated by taking the median absolute
+deviation from zero across all points, using points whose mean
+value is equal or greater than <code>outlierRowMin</code>. The overall MAD
+is defined by the median MAD from the MA-plot panels. The MAD
+factor is defined as the ratio of each MA-plot panel MAD value
+to the overall MAD value, and therefore most MAD factor values
+should be roughly <code>1</code>. The overall MAD value is defined by the
+median across all samples when <code>groupedMAD=FALSE</code>, or defined
+within each <code>centerGroup</code> when <code>groupedMAD=TRUE</code>. A value
+with MAD factor 2 is interpreted as a sample whose median
+deviation from zero is twice as high as the typical sample,
+which is a reasonably indication that this sample has twice
+the inherent level of noise compared to other samples. Note
+that MAD values should be interpreted within sample processing
+batches if relevant, or within logical experimental units --
+roughly interpreted to mean sets of samples within which direct
+statistical comparisons are intended to be applied. For example,
+gene expression data that include brain and liver samples would
+probably use <code>centerGroups</code> for brain and liver to be centered
+separately, therefore the MAD factors should be separately
+calculated for brain and for liver.</p></td>
+    </tr>
+    <tr>
+      <th>groupedMAD</th>
+      <td><p>logical indicating how the MAD calculation
+should be performed: <code>groupedMAD=TRUE</code> will calculate the
+median MAD and corresponsing MAD factor within each
+<code>centerGroups</code> grouping; <code>groupedMAD=FALSE</code> will calculate
+one overall median MAD, and corresponding MAD factor values
+will be performed across all samples.</p></td>
     </tr>
     <tr>
       <th>colramp</th>
       <td><p>one of several inputs recognized by
-<code>getColorRamp</code>. It typically recognizes either the name of
+<code><a href='https://rdrr.io/pkg/jamba/man/getColorRamp.html'>jamba::getColorRamp()</a></code>. It typically recognizes either the name of
 a color ramp from RColorBrewer, the name of functions from the
-<code><a href='https://www.rdocumentation.org/packages/viridis/topics/reexports'>viridis</a></code> package, or single R colors, or
-a vector of R colors.</p></td>
+<code>viridis</code> package such as <code><a href='https://rdrr.io/pkg/viridisLite/man/viridis.html'>viridis::viridis()</a></code>, or single R colors, or
+a vector of R colors. When a single color is supplied, a gradient
+is created from white to that color, where the default base color
+can be customized with <code>defaultBaseColor="black"</code> for example.</p></td>
     </tr>
     <tr>
       <th>colrampOutlier</th>
       <td><p>one of several inputs recognized by
-<code>getColorRamp</code>, to be used only in panels determined to be
-outliers based upon MAD outlier logic. Typically the color ramp is
-identical to <code>colramp</code> except the background color indicates
-an error, for example yellow background instead of white.</p></td>
+<code><a href='https://rdrr.io/pkg/jamba/man/getColorRamp.html'>jamba::getColorRamp()</a></code> to define a specific color ramp for
+MA-plot outlier panels, used when <code>outlierMAD</code> is defined.
+When <code>colrampOutlier</code> is <code>NULL</code> the <code>outlierColor</code> is used.</p></td>
     </tr>
     <tr>
       <th>outlierColor</th>
-      <td><p>character R color, used when <code>colrampOutlier is NULL</code>
-to substitute as the first color from <code>colramp</code>. This method keeps the
-color ramp consistent, but changes the background color to highlight
-the plot panel as an outlier.</p></td>
+      <td><p><code>character</code> string representing one R color,
+used when <code>colrampOutlier</code> is <code>NULL</code> and when <code>outlierMAD</code> is
+defined. This color is used for MA-plot outlier panels by
+substituting the first color from the <code>colramp</code> color ramp,
+to act as a visual cue that the panel represents an outlier.</p></td>
     </tr>
     <tr>
       <th>whichSamples</th>
-      <td><p>NULL or integer vector, representing an index of samples
-to include in the MA-plots. Note that all samples are used to create
-the MA-plot data, but only these samples will be plotted, which is useful
-when wanting to view only a subset of samples in detail, but where the
-MA-plot data is identical to the full dataset.</p></td>
-    </tr>
-    <tr>
-      <th>maintitle</th>
-      <td><p>the main title for the overall plot, printed at the
-top of each page in the top outer margin.</p></td>
+      <td><p><code>NULL</code> or <code>integer</code> vector, representing
+an index subset of samples to include in the MA-plots. When
+<code>whichSamples</code> represents a subset of samples in <code>x</code>, the
+MA-plot calculations are performed on all samples, then only
+samples in <code>whichSamples</code> are displayed. This argument keeps
+the MA-plot calculations consistent even when viewing only
+one or a subset of samples in more detail.</p></td>
     </tr>
     <tr>
       <th>maintitleCex</th>
-      <td><p>numeric cex character expansion used to resize the
-<code>maintitle</code> when supplied.</p></td>
+      <td><p><code>numeric</code> cex character expansion used to
+resize the <code>maintitle</code>.</p></td>
     </tr>
     <tr>
       <th>subtitle</th>
-      <td><p>NULL or character text to be drawn at the bottom center
-of each plot panel.</p></td>
+      <td><p><code>NULL</code> or <code>character</code> vector to be drawn at
+the bottom left corner of each plot panel, the location
+is defined by <code>subtitlePreset</code>.</p></td>
     </tr>
     <tr>
       <th>subtitlePreset</th>
       <td><p>character value describing where to position the
-subtitle, using terms valid in <code><a href='https://www.rdocumentation.org/packages/jamba/topics/coordPresets'>jamba::coordPresets()</a></code>. The default
-"bottomleft" places the subtitle at the bottom-left corner of each
-panel.</p></td>
+subtitle, using terms valid in <code><a href='https://rdrr.io/pkg/jamba/man/coordPresets.html'>jamba::coordPresets()</a></code>. The default
+<code>subtitlePreset="bottomleft"</code> places the subtitle at the
+bottom left corner of each plot panel.</p></td>
     </tr>
     <tr>
       <th>doTitleBox</th>
-      <td><p>logical whether to draw plot titles using a colored box.</p></td>
-    </tr>
-    <tr>
-      <th>titleBoxColor, subtitleBoxColor</th>
-      <td><p>vector of colors applied to title
-text, or subtitle text, respectively. When <code>doTitleBox=TRUE</code>
-one or no value is supplied, it defines colors using
-<code><a href='https://www.rdocumentation.org/packages/jamba/topics/setTextContrastColor'>jamba::setTextContrastColor</a></code> to use a contrasting color.</p></td>
+      <td><p><code>logical</code> indicating whether to draw plot
+titles using a colored box. When <code>doTitleBox=TRUE</code> the
+<code><a href='https://rdrr.io/pkg/jamba/man/drawLabels.html'>jamba::drawLabels()</a></code> is called to display a label box at
+the top of each plot panel, with <code>drawBox=TRUE</code>. When
+<code>doTitleBox=FALSE</code>, <code><a href='https://rdrr.io/pkg/jamba/man/drawLabels.html'>jamba::drawLabels()</a></code> is called with
+<code>drawBox=FALSE</code>.</p></td>
     </tr>
     <tr>
       <th>titleColor</th>
-      <td><p>vector of colors applied to title text. When doTitleBox=TRUE
-one or no value is supplied, it defines colors using
-<code><a href='https://www.rdocumentation.org/packages/jamba/topics/setTextContrastColor'>jamba::setTextContrastColor</a></code> to use a contrasting color.</p></td>
+      <td><p><code>character</code> vector of colors applied to title text
+in each MA-plot panel. When <code>doTitleBox=TRUE</code> and <code>titleColor</code>
+contains only one or no value, the title color is defined by
+<code><a href='https://rdrr.io/pkg/jamba/man/setTextContrastColor.html'>jamba::setTextContrastColor()</a></code> along with <code>titleBoxColor</code>.</p></td>
     </tr>
     <tr>
       <th>titleFont</th>
-      <td><p>integer font compatible with <code><a href='https://www.rdocumentation.org/packages/graphics/topics/par'>par("font")</a></code>. Values
-are recycled across panels.</p></td>
+      <td><p><code>integer</code> font compatible with <code><a href='https://rdrr.io/r/graphics/par.html'>par("font")</a></code>.
+Values are recycled across panels, so each panel can use a custom
+value if needed.</p></td>
     </tr>
     <tr>
       <th>titlePreset</th>
-      <td><p>character value describing where to position the
-subtitle, using terms valid in <code><a href='https://www.rdocumentation.org/packages/jamba/topics/coordPresets'>jamba::coordPresets()</a></code>. The default is
-"top" which centers the label at the top of each panel.</p></td>
+      <td><p><code>character</code> value describing where to position the
+subtitle, using terms valid in <code><a href='https://rdrr.io/pkg/jamba/man/coordPresets.html'>jamba::coordPresets()</a></code>.
+The default <code>titlePreset="top"</code> centers the label at the
+top of each panel.</p></td>
     </tr>
     <tr>
       <th>xlab, ylab</th>
-      <td><p>character x- and y-axis labels.</p></td>
+      <td><p><code>character</code> x- and y-axis labels, respectively.
+The default values are blank <code>""</code> because there are a wide variety
+of possible labels, and the labels take up more space
+than is often useful for most MA-plots.</p></td>
     </tr>
     <tr>
       <th>xlabline, ylabline</th>
-      <td><p>numeric number of text lines as used by
-<code>title</code> to position labels relative to the plot area.</p></td>
+      <td><p><code>numeric</code> number indicating the text line
+distance from the edge of plot border to place <code>xlab</code> and <code>ylab</code>
+text, as used by <code><a href='https://rdrr.io/r/graphics/title.html'>graphics::title()</a></code>.</p></td>
     </tr>
     <tr>
       <th>groupSuffix</th>
-      <td><p>character text appended to each plot panel title,
-useful for indicating how a sample was processed, beyond just using
-colnames. By default, <code>groupSuffix</code> is blank, except when
-supplying <code>centerGroups</code>, in which case the <code>centerGroups</code> value is
-used as a suffix.</p></td>
+      <td><p><code>character</code> text appended to each MA-plot
+panel title. This argument is deprecated in favor of
+using <code>subtitle</code> to place additional text at the bottom left
+corner of each MA-plot panel.</p></td>
     </tr>
     <tr>
-      <th>highlightPoints</th>
-      <td><p>NULL, character vector, or list of character vectors,
-containing points to highlight based upon <code><a href='https://www.rdocumentation.org/packages/base/topics/colnames'>rownames(object)</a></code>. If
-a list is supplied, then colors from <code>highlightColors</code> are recycled
-to <code><a href='https://www.rdocumentation.org/packages/base/topics/length'>length(highlightPoints)</a></code> so that each list element can receive
-its own color. This coloring may be useful for coloring several subsets
-of rows, for example housekeeper genes, ribosomal genes, or platform
-positive- and negative-control genes.</p></td>
+      <th>highlightCex</th>
+      <td><p><code>numeric</code> value recycled to <code><a href='https://rdrr.io/r/base/length.html'>length(highlightPoints)</a></code>
+indicating the highlight point size.</p></td>
     </tr>
     <tr>
-      <th>highlightColor, highlightCex</th>
-      <td><p>values recycled to the length of
-highlightPoints. If highlightPoints is a list, then a list or vector
-can be supplied.</p></td>
+      <th>highlightColor</th>
+      <td><p><code>character</code> vector used when <code>highlightPoints</code>
+is defined. It is recycled to <code><a href='https://rdrr.io/r/base/length.html'>length(highlightPoints)</a></code> and
+is applied either to</p></td>
     </tr>
     <tr>
       <th>doHighlightPolygon</th>
-      <td><p>logical whether to draw a polygon encompassing
-highlighted points. If highlightPoints is a list, a polygon is drawn
-around each list element subset of points, using the appropriate
-highlightColors for each list element. The polygon is defined by
-<code><a href='https://www.rdocumentation.org/packages/grDevices/topics/chull'>grDevices::chull()</a></code>.</p></td>
+      <td><p><code>logical</code> indicating whether to draw
+a shaded polygon encompassing <code>highlightPoints</code>, using
+<code>highlightColor</code>.The polygon is defined by <code><a href='https://rdrr.io/r/grDevices/chull.html'>grDevices::chull()</a></code>
+via the function <code><a href='points2polygonHull.html'>points2polygonHull()</a></code>.</p></td>
     </tr>
     <tr>
       <th>highlightPolygonAlpha</th>
-      <td><p>numeric value between 0 and 1 indicating the
-alpha transparency to use for the polygon color, based upon
-highlightColor.</p></td>
+      <td><p><code>numeric</code> value indicating alpha
+transparency, where <code>0</code> is fully transparent, and <code>1</code> is completely
+not transparent.</p></td>
+    </tr>
+    <tr>
+      <th>doHighlightLegend</th>
+      <td><p><code>logical</code> indicating whether to print a
+color legend when <code>highlightPoints</code> is defined. The legend is
+displayed in the bottom outer margin of the page using
+<code><a href='outer_legend.html'>outer_legend()</a></code>, and the page is adjusted to add bottom
+outer margin.</p></td>
     </tr>
     <tr>
       <th>smoothPtCol</th>
-      <td><p>color used when nrpoints&gt;0, and
-<code><a href='https://www.rdocumentation.org/packages/jamba/topics/plotSmoothScatter'>jamba::plotSmoothScatter</a></code> draws this many points in the extremities.</p></td>
+      <td><p><code>color</code> used to draw points when <code>nrpoints</code> is
+non-zero, which draws points in the extremities of the
+smooth scatter plot. See <code><a href='https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html'>jamba::plotSmoothScatter()</a></code>.
+The effect can also be achieved by adjusting <code>transFactor</code> to
+a lower value, which increases the visual contrast of individual
+points in the point density.</p></td>
     </tr>
     <tr>
       <th>margins</th>
-      <td><p>vector of margins compatible with <code><a href='https://www.rdocumentation.org/packages/graphics/topics/par'>par("mar")</a></code>. Defaults
-are applied, but provided here for convenient override.</p></td>
+      <td><p><code>numeric</code> vector of margins compatible with
+<code><a href='https://rdrr.io/r/graphics/par.html'>graphics::par("mar")</a></code>. Default values
+are applied, but provided here for convenience.</p></td>
     </tr>
     <tr>
       <th>useRaster</th>
-      <td><p>logical whether to define <code>useRaster=TRUE</code> in
-<code><a href='https://www.rdocumentation.org/packages/jamba/topics/plotSmoothScatter'>jamba::plotSmoothScatter</a></code>, which ultimately calls
-<code>imageDefault</code>. When TRUE, it creates a much smaller
-plot object, because it returns a raster image instead of a set of
-rectangles when rendering the image.</p></td>
+      <td><p><code>logical</code> indicating whether to draw the
+smooth scatter plot using raster logic, <code>useRaster=TRUE</code> is
+passed to <code><a href='https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html'>jamba::plotSmoothScatter()</a></code>. The default <code>TRUE</code>
+creates a much smaller plot object by rendering each plot
+panel as a single raster image instead of rendering individual
+colored rectangles.</p></td>
     </tr>
     <tr>
       <th>ncol, nrow</th>
-      <td><p>integer number of columns and rows used by
-<code><a href='https://www.rdocumentation.org/packages/graphics/topics/par'>par("mfrow")</a></code> when <code>doPar=TRUE</code> is defined. These values
-are helpful in defining a fixed layout for multiple MA-plot panels.</p></td>
+      <td><p><code>integer</code> number of MA-plot panel columns and rows
+passed to <code><a href='https://rdrr.io/r/graphics/par.html'>graphics::par("mfrow")</a></code> when <code>doPar=TRUE</code>. When only one
+value is supplied, <code>nrow</code> or <code>ncol</code>, the other value is defined
+by <code><a href='https://rdrr.io/r/base/nrow.html'>ncol(x)</a></code> and <code>blankPlotPos</code> so all panels can be contained on
+one page. When <code>nrow</code> and <code>ncol</code> are defined such that multiple
+pages are produced, each page will be annotated with <code>maintitle</code>
+and <code>doHighlightLegend</code> as relevant.</p></td>
     </tr>
     <tr>
       <th>doPar</th>
-      <td><p>logical whether <code><a href='https://www.rdocumentation.org/packages/graphics/topics/par'>par("mfrow")</a></code> should be defined, in
-order to fit multiple panels in one plot window. Set to FALSE if the plot
-layout is already defined, or if plotting one panel per page, for
-example.</p></td>
+      <td><p><code>logical</code> indicating whether to apply
+<code><a href='https://rdrr.io/r/graphics/par.html'>graphics::par("mfrow")</a></code> to define MA-plot panel rows and columns.
+When <code>doPar=FALSE</code> each plot panel is
+rendered without adjusting the <code><a href='https://rdrr.io/r/graphics/par.html'>graphics::par("mfrow")</a></code> setting.</p></td>
     </tr>
     <tr>
       <th>las</th>
-      <td><p>integer value 1 or 2, indicating whether axis labels should be
-parallel or perpendicular to the axes, respectively. This default value
-is defined and provided here for convenience to override it.</p></td>
-    </tr>
-    <tr>
-      <th>ylim, xlim</th>
-      <td><p>NULL or vector length 2 indicating the y- and x-axis
-ranges, respectively. These values are useful to define upfront when
-it is best to focus on fixed, consistent ranges across all samples. The
-default <code>ylim=c(-4,4)</code> represents 16-fold range in normal space, and
-is typically a reasonable starting point for most purposes. If values are
-all between -1.5 and 1.5, then it is still good to keep that range in
-context of -4 and 4, to indicate that the observed noise is lower than
-typically observed. It is also helpful to use xlim to trim off zeros
-for some data where there might be many undetected entries, combined
-with <code>applyRangeCeiling=FALSE</code> which also removed outlier points
-from the plot density calculation. The result can notably boost the
-detail displayed in the plot range.</p></td>
-    </tr>
-    <tr>
-      <th>controlSamples</th>
-      <td><p>vector of colnames(object) which should be used
-as control samples in the data centering step. Typical MA-plots are
-calculated relative to the overall mean, however it can be insightful
-to calculate values relative to a known control group.</p></td>
-    </tr>
-    <tr>
-      <th>useMean</th>
-      <td><p>logical whether to perform centering using mean or
-median. The default median is intended to represent the data without
-being skewed by outliers, however it can be informative to use the mean
-values when there are few replicates, or when there are no particular
-sample outliers.</p></td>
+      <td><p><code>integer</code> value <code>1</code> or <code>2</code> indicating whether axis labels
+should be parallel or perpendicular to the axes, respectively.</p></td>
     </tr>
     <tr>
       <th>customFunc</th>
-      <td><p>an optional function that is used instead of mean or
-median. It should take a matrix input, and return a numeric vector
-output summarizing each row in <code>object</code>. It is intended to
+      <td><p><code>NULL</code> or <code>function</code> used instead of <code>mean</code> or
+<code>median</code> during the data centering step to generate a row summary
+statistic. It should take <code>matrix</code> input, and return a <code>numeric</code> vector
+output summarizing each row in <code>x</code>, to be subtracted from each
+<code>numeric</code> value by row in <code>x</code>. It is intended to
 provide custom row statistics, for example geometric mean, or other
 row summary function.</p></td>
     </tr>
     <tr>
-      <th>filterNA, filterNeg</th>
-      <td><p>logical indicating whether to remove NA or
-negative values before creating the MA-plot. It can be useful to
-filter negative values, which are often defined as noise in upstream
-normalization steps, so they do not impart visible features into the
-MA-plot since they are based upon noise. Negative values are set to
-zero when filtered, which gives a characteristic 45 degree angle
-symmetry above and below zero.</p></td>
+      <th>filterNA, filterNAreplacement</th>
+      <td><p><code>logical</code> and <code>vector</code> respectively.
+When <code>filterNA=TRUE</code>, all <code>NA</code> values are replaced with
+<code>filterNAreplacement</code>, which can be helpful to handle <code>NA</code> values
+as zero <code>0</code> for example. In reality, <code>NA</code> values should probably
+be left as-is, so subsequent data centering does not use these values,
+and so the MA-plot panel does not draw a point when no measurement
+exists.</p></td>
+    </tr>
+    <tr>
+      <th>filterNeg</th>
+      <td><p><code>logical</code> deprecated argument, use <code>filterFloor</code>
+instead. The <code>filterNeg</code> indicates whether to change all negative
+values to zero <code>0</code> before proceeding with data centering.
+Negative values are often the result of measurements
+being below a noise threshold in upstream data processing,
+and therefore the magnitude of negative value is usually
+either not informative, or not on similar scale as positive
+values.
+When <code>filterNeg=TRUE</code>, negative values are set to zero, and
+can result in a characteristic 45 degree angle line originating at
+<code>x=0</code> extending to the right.</p></td>
     </tr>
     <tr>
       <th>filterFloor, filterFloorReplacement</th>
-      <td><p>numeric or NULL, when numeric
-values in <code>object</code> are below <code>filterFloor</code>, they are replaced
-with <code>filterFloorReplacement</code>. This mechanism is an alternative to
-<code>filterNeg</code>, in that it allows defining a filter above or below
-zero. For some platform data , it might be useful to define a
-<code>filterFloor</code> roughly equivalent to its noise threshold.</p></td>
+      <td><p><code>numeric</code> or <code>NULL</code> indicating
+a numeric floor, where values in <code>x</code> <strong>at or below</strong> <code>filterFloor</code> are
+replaced with <code>filterFloorReplacement</code>. Note that this argument
+can be used to replace zero <code>0</code> with <code>NA</code> in the event that
+zeros do not represent measurements. One can typically tell whether
+input data includes zero <code>0</code> values by the presence of characteristic
+45-degree angle lines originating from <code>x=0</code> angled to the right.
+The default values replace any values <strong>at or below zero</strong> with zero,
+which also applies a numeric floor to negative values.
+For some platform data technologies, it can be useful to define a
+<code>filterFloor</code> roughly equivalent to its noise threshold. For example
+quantitative PCR sometimes uses <code>log_expression = (40 - Ct)</code>, where
+<code>Ct</code> values above <code>35</code> are considered to be noise. That noise threshold
+implies that any <code>expression</code> values <code>5</code> or lower are roughly
+equivalent noise, so applying <code>filterFloor=5</code> is appropriate.</p></td>
     </tr>
     <tr>
       <th>transFactor</th>
-      <td><p>numeric adjustment used by
-<code><a href='https://www.rdocumentation.org/packages/jamba/topics/plotSmoothScatter'>jamba::plotSmoothScatter</a></code>. The default is defined, but available
-here as a convenient override. The value is used in a power function in
-the form <code>transformation=function(x)x^transFactor</code>. Lower values
-make the scatterplot point density more intense.</p></td>
+      <td><p><code>numeric</code> adjustment to the visual density of
+points by <code><a href='https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html'>jamba::plotSmoothScatter()</a></code>. The value is based upon
+<code><a href='https://rdrr.io/r/graphics/smoothScatter.html'>graphics::smoothScatter()</a></code> argument <code>transformation</code> which uses
+<code>function(x)x^0.24</code>. The <code>transFactor</code> is equivalent to the
+exponential in the form: <code>function(x)x^transFactor</code>. Lower values
+increase the visual density more intense, higher values make the
+visual density less intense.</p></td>
     </tr>
     <tr>
       <th>nrpoints</th>
-      <td><p>integer or NULL, the number of points to display on the
-extremity, as used by <code><a href='https://www.rdocumentation.org/packages/jamba/topics/plotSmoothScatter'>jamba::plotSmoothScatter</a></code>.</p></td>
+      <td><p><code>integer</code> or <code>NULL</code> indicating the number of points
+to display on the extremity of the smooth scatter density,
+passed to <code><a href='https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html'>jamba::plotSmoothScatter()</a></code>.</p></td>
     </tr>
     <tr>
       <th>smoothScatterFunc</th>
-      <td><p>function used to plot smooth scatter plot, by
-default <code><a href='https://www.rdocumentation.org/packages/jamba/topics/plotSmoothScatter'>jamba::plotSmoothScatter</a></code>.</p></td>
+      <td><p><code>function</code> used for the smooth scatter plot,
+default <code><a href='https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html'>jamba::plotSmoothScatter()</a></code>. Note that a custom function
+may not recognize <code>nrpoints</code> or <code>transformation</code>.</p></td>
     </tr>
     <tr>
       <th>applyRangeCeiling</th>
-      <td><p>see <code><a href='https://www.rdocumentation.org/packages/jamba/topics/plotSmoothScatter'>jamba::plotSmoothScatter</a></code> for details,
-logical whether to apply a noise floor and ceiling to display points
-outside the plot region at the boundaries of the plot. This parameter
-is useful to set FALSE when cropping a plot, in order to remove outlier
-points from the density calculation. For example when there is a
-very large number of zero values, it can be helpful to define
-<code>xlim=c(0.1,20), applyRangeCeiling=FALSE</code>.</p></td>
+      <td><p><code>logical</code> passed to
+<code><a href='https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html'>jamba::plotSmoothScatter()</a></code> which determines how to handle points
+outside the plot x-axis and y-axis range: <code>applyRangeCeiling=TRUE</code>
+will place points at the border of the plot, which is helpful
+to indicate that there are more points outside the viewing range;
+<code>applyRangeCeiling=FALSE</code> will crop and remove points outside
+the viewing range, which is helpful for example when a large
+number of points are at zero and overwhelm the point density.
+When there are a large proportion of values at zero, it
+can be helpful to apply <code>xlim=c(0.01, 20)</code> and
+<code>applyRangeCeiling=FALSE</code>.</p></td>
     </tr>
     <tr>
       <th>doTxtplot</th>
-      <td><p>logical whether to plot results in colored text output,
-currently under development and is still experimental.</p></td>
+      <td><p><code>logical</code> not yet implemented, indicating whether
+to plot results using colored text output.</p></td>
     </tr>
     <tr>
       <th>ablineH, ablineV</th>
-      <td><p>numeric vector indicating where to draw indicator
-lines, at these horizontal or vertical positions, respectively.</p></td>
+      <td><p><code>numeric</code> vector indicating horizontal and
+vertical lines to draw in each MA-plot panel, respectively.
+These values are passed to <code><a href='https://rdrr.io/r/graphics/abline.html'>graphics::abline()</a></code>.</p></td>
     </tr>
     <tr>
       <th>blankPlotPos</th>
-      <td><p>NULL or integer vector indicating which plot panels
-should be used as blank filler positions. These blank panels can be
-used to help organize multiple plot panels to indicate sample groups.
-A mechanism similar to ggplot2 facets, except with the ability to
-insert known blank positions for organization. The facet_grid mechanic
-may be used in future, however is not always ideal depending upon the
-experiment design, and so for now a simple manual method is provided.</p></td>
-    </tr>
-    <tr>
-      <th>outlierMAD</th>
-      <td><p>the MAD factor threshold to define a sample an outlier.</p></td>
-    </tr>
-    <tr>
-      <th>outlierRowMin</th>
-      <td><p>the minimum value as displayed on the x-axis, for
-a row in <code>object</code> to be used in the MAD outlier calculations. This
-threshold is intended to define a noise threshold, so that outlier
-samples are determined by using rows above the noise threshold. Thus
-a sample outlier would need to have greater than five times median
-absolute deviation compared to its center group, based only upon
-measurements above noise.</p></td>
-    </tr>
-    <tr>
-      <th>groupedMAD</th>
-      <td><p>logical indicating whether the MAD calculation should
-operate only within <code>centerGroups</code> (<code>groupedMAD=TRUE</code>) or whether the
-MAD calculation is shared across all samples (<code>groupedMAD=FALSE</code>).</p></td>
-    </tr>
-    <tr>
-      <th>displayMAD</th>
-      <td><p>logical whether to display MAD (median absolute deviation)
-values for each panel. MAD values are defined for each centerGroup if
-supplied, or globally if not. The MAD value is CALCULATED by taking the
-median deviation from zero as displayed on the y-axis of each MA-plot
-panel, then taking the median of those values. Then a MAD factor is
-calculated for each MA-plot panel by taking its median devation divided
-by the MAD value for its centerGroup. Most samples should therefore be
-close to 1. A value of 2 is interpreted as "two times the MAD factor for
-its center group." An outlierMAD of 5x is a reasonable cutoff, which
-roughly says that sample has 5 times higher median deviation than other
-samples in its center group. If all samples are noisy, it would define
-a high MAD value, and therefore all samples would be expected to have
-similar MAD factors, near 1.</p></td>
+      <td><p><code>NULL</code> or <code>integer</code> vector indicating
+plot panel positions to be drawn blank, skipped. Blank panel
+positions are intended to help customize the visual alignment
+of MA-plot panels. The mechanism is similar to <code><a href='https://ggplot2.tidyverse.org/reference/facet_wrap.html'>ggplot2::facet_wrap()</a></code>
+except that blank positions can be manually defined by what makes
+sense to the experiment design.</p></td>
     </tr>
     <tr>
       <th>fillBackground</th>
-      <td><p>logical sent to <code><a href='https://www.rdocumentation.org/packages/jamba/topics/plotSmoothScatter'>jamba::plotSmoothScatter</a></code>
+      <td><p><code>logical</code> passed to <code><a href='https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html'>jamba::plotSmoothScatter()</a></code>
 indicating whether to fill the plot panel with the background color,
-which is typically the first value in the <code>colramp</code>. Set to TRUE
-when axis ranges may be defined which are outside the range of values
-for any particular column in <code>object</code>.</p></td>
+using the first value in the color ramp for each MA-plot panel.</p></td>
+    </tr>
+    <tr>
+      <th>useRank</th>
+      <td><p><code>logical</code> indicating whether to create column-wide
+ranks, then create MA-plots using the rank data. When <code>useRank=TRUE</code>
+the y-axis represents the rank difference from mean, and the
+x-axis represents the mean rank. Using <code>useRank=TRUE</code> is a good
+method to evaluate whether data can be normalized, or whether
+data across samples is inherently noisy.</p></td>
     </tr>
     <tr>
       <th>ma_method</th>
       <td><p>character string indicating whether to perform
 MA-plot calculations using the old method <code>"old"</code>; or <code>"jammacalc"</code>
-which uses the newer function <code><a href='jammacalc.html'>jammacalc()</a></code>.</p></td>
+which uses the function <code><a href='jammacalc.html'>jammacalc()</a></code>.</p></td>
+    </tr>
+    <tr>
+      <th>doPlot</th>
+      <td><p><code>logical</code> indicating whether to create plots. When
+<code>doPlot=FALSE</code> only the MA-plot panel data is returned.</p></td>
     </tr>
     <tr>
       <th>verbose</th>
@@ -485,23 +691,15 @@ which uses the newer function <code><a href='jammacalc.html'>jammacalc()</a></co
     <tr>
       <th>...</th>
       <td><p>additional parameters sent to downstream functions,
-<code><a href='https://www.rdocumentation.org/packages/jamba/topics/plotSmoothScatter'>jamba::plotSmoothScatter</a></code>, <code><a href='centerGeneData.html'>centerGeneData</a></code>.</p></td>
-    </tr>
-    <tr>
-      <th>centerGoups</th>
-      <td><p>vector of groups, of <code><a href='https://www.rdocumentation.org/packages/base/topics/length'>length(colnames(object))</a></code>
-indicating optional subgroups to use when performing data centering.
-For example it may be appropriate to center samples of one cell type
-only relative to other samples of the same cell type. See
-<code><a href='centerGeneData.html'>centerGeneData</a></code> for more specifics.</p></td>
+<code><a href='https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html'>jamba::plotSmoothScatter</a></code>, <code><a href='centerGeneData.html'>centerGeneData</a></code>.</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>List of data used by jamma() to produce an MA-plot, sufficient
-to use as input to produce another MA-plot.</p>
-    
+    <p><code>list</code> of <code>numeric</code> <code>matrix</code> objects, one for each MA-plot,
+with colnames <code>"x"</code> and <code>"y"</code>. This <code>list</code> is sufficient input
+to <code>jammaplot()</code> to re-create the full set of MA-plots.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p><code>jammaplot</code> takes a numeric matrix, typically of gene expression data,
@@ -510,64 +708,122 @@ median-difference plot. One panel is created for each column of
 data. Within each panel, the x-axis represents the mean or median
 expression of each row; the y-axis represents the difference from
 mean or median for that column.</p>
-<p>By default, the plot uses <code><a href='https://www.rdocumentation.org/packages/jamba/topics/plotSmoothScatter'>jamba::plotSmoothScatter()</a></code>, with optional
-highlighted points draw using <code><a href='https://www.rdocumentation.org/packages/graphics/topics/points'>points()</a></code>.</p>
+<p>By default, the plot uses <code><a href='https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html'>jamba::plotSmoothScatter()</a></code>, with optional
+highlighted points draw using <code><a href='https://rdrr.io/r/graphics/points.html'>points()</a></code>.</p>
 <p>The function will determine an appropriate layout of plot panels,
 which can be overridden using <code>ncol</code> and <code>nrow</code> to specify the
 number of columns and rows of plot panels, respectively. For now,
 this function uses base R graphics instead of ggplot2, in order
 to accomodate some custom features.</p>
 <p>This function uses "useRaster=TRUE" by default, which causes
-<code><a href='https://www.rdocumentation.org/packages/jamba/topics/plotSmoothScatter'>jamba::plotSmoothScatter()</a></code> to render a rasterized image as opposed
+<code><a href='https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html'>jamba::plotSmoothScatter()</a></code> to render a rasterized image as opposed
 to a composite of colored rectangles. This process substantially
 reduces the render time in all cases, and reduces the image size
-when saving as PDF or SVG.Notable featuresHighlighting points</p>
+when saving as PDF or SVG.</p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Notable features</h3>
+
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Highlighting points</h4>
+
+
 <p>Specific points can be highlighted with argument <code>highlightPoints</code>
-which can be a vector or named list of vectors, containing <code><a href='https://www.rdocumentation.org/packages/base/topics/colnames'>rownames(x)</a></code>.
+which can be a vector or named list of vectors, containing <code><a href='https://rdrr.io/r/base/colnames.html'>rownames(x)</a></code>.
 When using a list, point colors are assigned to each element in the
-list in order, using the argument <code>highlightColor</code>.Centering by control samples</p>
+list in order, using the argument <code>highlightColor</code>.</p>
+
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Centering by control samples</h4>
+
+
 <p>Typical MA-plots are "global-centered", which calculates the
 mean/median across all columns in <code>x</code>, and this value is subtracted
 from each individual value per row.</p>
 <p>By specifying <code>controlSamples</code>
-the mean/median is calculated using only the <code><a href='https://www.rdocumentation.org/packages/base/topics/colnames'>colnames(x)</a></code> which match
+the mean/median is calculated using only the <code><a href='https://rdrr.io/r/base/colnames.html'>colnames(x)</a></code> which match
 <code>controlSamples</code>, thus representing "difference from control."</p>
 <p>It may also be useful to center data by known high-quality samples,
-so the effect of potential outlier samples is avoided.Centering within subgroups</p>
+so the effect of potential outlier samples is avoided.</p>
+
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Centering within subgroups</h4>
+
+
 <p>By specifying <code>centerGroups</code> as a vector of group names,
-the centering is calculated within each group of <code><a href='https://www.rdocumentation.org/packages/base/topics/colnames'>colnames(x)</a></code>.
+the centering is calculated within each group of <code><a href='https://rdrr.io/r/base/colnames.html'>colnames(x)</a></code>.
 In this way, subsets of samples can be treated independently in
 the MA-plots. A good example might be producing MA-plots for
 "kidney" samples, and "muscle" samples, which may have
-fundamentally different signal distributions.</p>
-<p>Another very useful technique is to center by sample group,
+fundamentally different signal distributions. A good rule
+of thumb is to apply <code>centerGroups</code> to represent separate
+groups of samples where you do not intend to apply direct
+statistical comparisons across those samples, without at
+least applying a two-way contrast, a fold change of fold
+changes.</p>
+<p>Another informative technique is to center by sample group,
 for example <code>centerGroups=sample_group</code>.
 This technique produces MA-plots that depict the
-"difference from group", and is very useful for visualizing
-the variance of replicates in sample groups. Outlier samples
-are sometimes very apparent at this step. See <code>displayMAD</code> and
-<code>outlierMAD</code> below for detection of potential outlier samples.</p>
-<p>Note: filterNeg=TRUE will floor log2 values at 0, which has the
-effect of adding the "45 degree lines" originating from c(0,0).Customizing the panel layout</p>
-<p>Panels are drawn using the order of <code><a href='https://www.rdocumentation.org/packages/base/topics/colnames'>colnames(x)</a></code> by row,
+"difference from group" for each sample replicate of a sample
+group, and is very useful for identifying sample replicates
+with markedly higher variability to its sample group than
+others. In general, the variability within sample group
+should be substantially lower than variability across
+sample groups. Use <code>displayMAD=TRUE</code> and <code>outlierMAD=2</code>
+as a recommended starting point for this technique.</p>
+
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Applying a noise floor</h4>
+
+
+<p>The argument <code>filterFloor</code> provides a numeric lower threshold,
+where individual values <strong>at or below</strong> this threshold are
+set to a defined value. The default defined value is the
+floor itself, which has the effect of removing information from
+points that are already below the noise threshold and therefore
+are unreliable for this purpose.</p>
+<p>Another useful alternative
+is to define <code>filterFloor=0</code> and <code>filterFloorReplacement=NA</code>
+so that values of zero <code>0</code> are set to <code>NA</code> and are not included
+in the MA-plot calculations, and are not represented as points
+in each MA-plot panel. For data with many sparse missing values
+represented as zero, these options can be very helpful because
+each MA-plot panel will only represent actual measurements,
+compared to only those sample which also have actual
+measurements for those rows.</p>
+
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Customizing the panel layout</h4>
+
+
+<p>Panels are drawn using the order of <code><a href='https://rdrr.io/r/base/colnames.html'>colnames(x)</a></code> by row,
 from left-to-right, then top-to-bottom.
 The argument <code>blankPlotPos</code> is intended to insert an empty panel
 at a particular panel position, to help customize the alignment
 of sample panels.
 This option is typically used with <code>ncol</code> and <code>nrow</code> to define
 a fixed layout of panel columns and rows. <code>blankPlotPos</code> refers
-to panels numbered as drawn per row of panels,Identifying potential sample outliers</p>
-<p>The argument <code>displayMAD</code> will display the per-sample MAD factor
-relative to its <code>centerGroups</code> value, if provided. The MAD threshold
-is calculated using values whose mean/median is at least
-<code>outlierRowMin</code>, based upon the median absolute difference (MAD)
-from the mean/median. The median MAD is defined as the reference MAD,
-and all other MAD factors are multiples of that reference. For example,
-1xMAD is equal to the median MAD value, and 2xMAD is two times higher
-than the median MAD value.</p>
-<p>Potential outlier samples should not be evaluated when supplying
-<code>controlSamples</code> unless those samples represent more than
-experimantal control samples.</p>
+to panels numbered as drawn per row of panels,</p>
+
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Identifying potential sample outliers</h4>
+
+
+<p>Use argument <code>displayMAD=TRUE</code> to display the per-sample MAD factor
+relative to its <code>centerGroups</code> value, if provided. The MAD value
+for each MA-plot panel is calculated using rows whose mean
+is at or above <code>outlierRowMin</code>. The median MAD value is calculated
+for each <code>centerGroups</code> grouping when <code>groupedMAD=TRUE</code>, by default.
+Finally, each MA-plot panel MAD factor is the ratio of its MAD value
+to the relevant median MAD value. MA-plot panels with MAD factor
+above <code>outlierMAD</code> are considered outliers, and the color ramp
+uses <code>outlierColramp</code> or <code>outlierColor</code> as a visual cue.</p>
+<p>Putative outlier samples should usually not be determined
+when:</p><ul>
+<li><p><code>controlSamples</code> are defined to include only a subset
+of sample groups,</p></li>
+<li><p><code>centerGroups</code> is not defined, or represents more than one
+set of sample groups that are not intended to be statistically
+compared directly to one another.</p></li>
+</ul>
+
+<p>Putative outlier samples may be defined when:</p><ul>
+<li><p><code>centerGroups</code> represents a set of sample groups that are
+intended to be involved in direct comparisons</p></li>
+<li><p><code>centerGroups</code> represents each sample group</p></li>
+</ul>
+
 <p>Potential sample outliers may be identified by setting a threshold
 with <code>outlierMAD</code>, by default 5xMAD. For a sample to be considered
 an outlier, its median difference from mean/median needs to be
@@ -581,51 +837,45 @@ is typically symptomatic of possible technical failure.</p>
 scenarios where a batch effect may be involved.</p>
 <p>To do:</p><ul>
 <li><p>Accept other object types as input, including Bioconductor
-classes: ExpressionSet, SummarizedExperiment, MultiExperimentSet.</p></li>
+classes: <code>ExpressionSet</code>, <code>SummarizedExperiment</code>,
+<code>MultiExperimentSet</code></p></li>
 <li><p>Make it efficient to convey group information, for example
-define titleBoxColor with group colors, allow centerByGroup==TRUE
-which would re-use known sample group information.'</p></li>
+define <code>titleBoxColor</code> with group colors, allow <code>centerByGroup=TRUE</code>
+which would re-use known sample group information.</p></li>
 <li><p>Adjust the suffix to indicate when <code>centerGroups</code> are being
-used. For example indicate 'sampleID vs groupA' instead of
-'sampleID vs median'.</p></li>
+used. For example indicate <code>'sampleID vs groupA'</code> instead of
+<code>'sampleID vs median'</code>.</p></li>
 </ul>
-    
+
+
+
+
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='https://www.rdocumentation.org/packages/jamba/topics/plotSmoothScatter'>jamba::plotSmoothScatter()</a></code> for enhanced
-<code><a href='https://www.rdocumentation.org/packages/graphics/topics/smoothScatter'>graphics::smoothScatter()</a></code>, <code><a href='centerGeneData.html'>centerGeneData()</a></code>,
-<code><a href='https://www.rdocumentation.org/packages/jamba/topics/imageDefault'>jamba::imageDefault()</a></code>, <code><a href='https://www.rdocumentation.org/packages/jamba/topics/nullPlot'>jamba::nullPlot()</a></code></p>
-<p>Other jam plot functions: <code><a href='points2polygonHull.html'>points2polygonHull</a></code></p></div>
-    
+    <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html'>jamba::plotSmoothScatter()</a></code> for enhanced
+<code><a href='https://rdrr.io/r/graphics/smoothScatter.html'>graphics::smoothScatter()</a></code>, <code><a href='centerGeneData.html'>centerGeneData()</a></code>,
+<code><a href='https://rdrr.io/pkg/jamba/man/imageDefault.html'>jamba::imageDefault()</a></code>, <code><a href='https://rdrr.io/pkg/jamba/man/nullPlot.html'>jamba::nullPlot()</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># Note the example data requires the affydata Bioconductor package</span>
-<span class='kw'>if</span> (<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/message'>suppressPackageStartupMessages</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>require</a></span>(<span class='no'>affydata</span>))) {
-   <span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/data'>data</a></span>(<span class='no'>Dilution</span>);
-   <span class='no'>edata</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/Log'>log2</a></span>(<span class='fl'>1</span>+<span class='fu'>exprs</span>(<span class='no'>Dilution</span>));
-   <span class='fu'>jammaplot</span>(<span class='no'>edata</span>);
-}</div><div class='output co'>#&gt;      Package    LibPath                               Item      
-#&gt; [1,] "affydata" "/Users/wardjm/Library/R/3.5/library" "Dilution"
+<span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/message.html'>suppressPackageStartupMessages</a></span><span class='op'>(</span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='va'>affydata</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
+   <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>Dilution</span><span class='op'>)</span>;
+   <span class='va'>edata</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log2</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>+</span><span class='fu'>exprs</span><span class='op'>(</span><span class='va'>Dilution</span><span class='op'>)</span><span class='op'>)</span>;
+   <span class='fu'>jammaplot</span><span class='op'>(</span><span class='va'>edata</span><span class='op'>)</span>;
+<span class='op'>}</span>
+</div><div class='output co'>#&gt;      Package    LibPath                               Item      
+#&gt; [1,] "affydata" "/Users/wardjm/Library/R/3.6/library" "Dilution"
 #&gt;      Title                        
-#&gt; [1,] "AffyBatch instance Dilution"</div><div class='output co'>#&gt; <span class='warning'>Warning: package ‘colorspace’ was built under R version 3.5.2</span></div><div class='img'><img src='jammaplot-1.png' alt='' width='700' height='433' /></div><div class='input'>
+#&gt; [1,] "AffyBatch instance Dilution"</div><div class='img'><img src='jammaplot-1.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#value">Value</a></li>
-
-      <li><a href="#details">Details</a></li>
-
-      <li><a href="#see-also">See also</a></li>
-      
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
+
 
       <footer>
       <div class="copyright">
@@ -633,13 +883,16 @@ used. For example indicate 'sampleID vs groupA' instead of
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
+
       </footer>
    </div>
 
   
 
+
   </body>
 </html>
+
 
