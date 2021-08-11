@@ -1766,8 +1766,13 @@ jammacalc <- function
       return(NULL);
    }
    returnType <- match.arg(returnType);
-   if (length(useMean) > 0) {
+   if (length(useMean) > 0 && is.logical(useMean)) {
       useMedian <- !useMean;
+      if (verbose) {
+         jamba::printDebug("jammacalc(): ",
+            "useMedian defined by !useMean, useMedian=",
+            useMedian);
+      }
    }
 
    ## Validate whichSamples

@@ -1,3 +1,12 @@
+# jamma 0.0.17.900
+
+## changes to existing functions
+
+* `jammaplot()`, `jammanorm()` and `jammacalc()` were
+updated to handle `useMedian` by default, but to accept
+`useMean` for backward compatibility.
+
+
 # jamma 0.0.16.900
 
 ## changes to existing functions

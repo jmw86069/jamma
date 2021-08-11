@@ -10,7 +10,7 @@ jammanorm(
   minimum_mean = 0,
   controlSamples = NULL,
   centerGroups = NULL,
-  useMedian = FALSE,
+  useMedian = TRUE,
   useMean = NULL,
   noise_floor = -Inf,
   noise_floor_value = noise_floor,
@@ -83,11 +83,13 @@ to \code{NA}.}
 \code{\link{jamba::plotSmoothScatter}}, \code{\link{centerGeneData}}.}
 }
 \value{
-numeric matrix whose columns have been normalized using
-the y-axis mean offset following MA-plot calculations. The output
-contains attributes: \code{"nf"} numeric vector of normalization factors;
-\code{"hk"} list of controlGenes used for each sample; \code{"hk_count"} the
-number of controlGenes used for each sample.
+\code{numeric} \code{matrix} whose columns have been normalized,
+with the following named \code{attributes}:
+\itemize{
+\item \code{"nf"} numeric vector of normalization factors;
+\item \code{"hk"} a \code{character} vector of controlGenes for each sample;
+\item \code{"hk_count"} the \code{integer} number of controlGenes for each sample.
+}
 }
 \description{
 Normalize data using MA-plot logic
@@ -96,16 +98,101 @@ Normalize data using MA-plot logic
 This function normalizes data using an approach analogous
 to data viewed in MA-plots. Normalization is applied by shifting
 data along the y-axis so the mean (or median) expression among
-control genes is zero, shown on an MA-plot as y=0.
+control genes is zero, indicated on an MA-plot as y=0.
 
-It effectively reinforces the assumption that the mean log fold
-change for control genes is expected to be zero. When \code{useMedian=TRUE}
-it reinforces the assumption that the log fold change for the
-majority of control genes should be zero.
+\strong{Note:} This method should be performed only after reviewing the MA-plots,
+to ensure the assumptions are met. Similarly, data can also be
+viewed in MA-plots after normalization to confirm and review the
+effect of normalization.
 
 It is useful to run \code{jammaplot()} data after \code{jammanorm()}
 to visualize the effect of this normalization. If data is not
 centered at y=0, the parameters should be adjusted.
+\subsection{Assumptions}{
+
+This method effectively reinforces the assumption that the mean log fold
+change for control genes is expected to be zero. When \code{useMedian=TRUE}
+it reinforces the assumption that the log fold change for the
+majority of control genes should be zero.
+
+Therefore, the assumptions may be summarized as follows:
+\itemize{
+\item The principle assumption is that the set of \code{controlGenes},
+whose mean expression is at or above the \code{minimum_mean} value,
+are unchanged within the respective \code{centerGroups}. For typical
+whole genome transcript microarray and RNA-seq experiments,
+this assumption is typically valid when using \code{useMedian=TRUE}.
+For experiments with specific reference genes, or housekeeper
+genes, this assumption may only be true for those specific genes.
+\item The data signal is assumed to be a roughly linear representation
+of the relative abundance of each measured entity, which is usually
+true for log-transformed microarray intensity, or log-transformed
+RNA-seq read counts. For QPCR or TaqMan, this assumption is valid
+for the direct CT cycle threshold values, or after log-transformation
+of the exponentiated CT values, for example 2^(40-CT).
+All that said, a straightforward way to visualize this assumption
+is with MA-plots, to confirm that signal is horizontal across
+the full signal range - either for the majority of all genes,
+or for the specific \code{controlGenes} used for normalization.
+\item The variability among control genes should not be more than twice
+the median absolute deviation across other samples within the
+relevant \code{centerGroups}. Effectively this assumption means the
+control genes on the MA-plot should not show wide spread along the
+y-axis.
+}
+
+In cases where some samples show non-horizontal signal across the
+MA-plot, the data is not conforming to a consistent and proportional
+signal across the response range of the experiment. In effect, it
+means signal is being compressed, or expanded along the response
+as compared to other samples in the same \code{centerGroups}. In this
+scenario, the best normalization method may be
+\code{limma::normalizeQuantiles()}, \code{limma::normalizeCyclicLoess()},
+or \code{vsn::vsn()}. These methods adjust the distribution of signal
+to enforce consistency across samples.
+
+In general, the signal distribution itself should not be adjusted
+unless necessary, in order to retain as much information from the
+underlying technology as possible. This method \code{jammanorm()} is
+intended to apply linear normalization, which effectively shifts
+the entire signal for a sample up or down relative to other samples.
+
+This scenario is effective for technologies such as QPCR, TaqMan,
+Nanostring counts, and RNA-seq counts or RNA-seq pseudocounts.
+
+When the MA-plot demonstrates non-horizontal
+signal, it is most often the result one or both of these influences:
+\enumerate{
+\item batch effect, imposed either by different upstream sample
+processing steps among the samples being tested, or
+\item platform technology that tends to produce relative signal strength
+but not absolute quantitative signal, commonly seen with
+microarray hybridization technologies such as Affymetrix, Illumina,
+Agilent, SomaLogic, or Myriad RBM.
+}
+
+Note that any upstream sample amplification technique may also impose
+non-linear effects on the molecules being measured.
+
+One method to test for a batch effect is to define \code{centerGroups}
+to include batch, so the data will be centered for each batch
+independently. If this centering resolves the non-horizontal
+signal, then batch is very likely to be a component to be modeled
+in the experiment. See \code{limma::removeBatchEffect()}. The batch effect
+adjustment by  \code{limma::removeBatchEffect()} and \code{sva::ComBat()}
+almost exactly subtract the batch component from the signal.
+
+That said, it may or may not be ideal to apply batch adjustment
+prior to running downstream statistical tests, as opposed to
+including batch as a covariate term in the statistical
+model used for testing, example when using \code{DESeq2}.
+The main benefit of applying batch adjustment at this step is to
+visualize data downstream consistent with the method used by
+those statistical tests, or when running a clustering technique
+that does not have the capability of applying appropriate
+batch effect modeling.
+}
+
 \subsection{About the normalization}{
 
 This normalization is a "linear normalization" in that it uniformly
@@ -152,25 +239,6 @@ the mean difference from average expression for the \code{controlGenes}
 should be equal to zero. The effect is applied evenly across
 control genes by evaluating the mean or median difference from y=0
 for each sample.
-}
-
-\subsection{Assumptions}{
-
-In order for this approach to be valid:
-\itemize{
-\item Data on the MA-plots should be horizontal for all samples,
-particularly for \code{controlGenes}. When data is not horizontal
-across samples, data should instead be normalized using another
-approach, typically something like quantile normalization which
-is intended to impose a consistent signal distribution across
-all samples.
-\item The majority of \code{controlGenes} should not be changing, therefore
-the \code{controlGenes} should not have substantial variation along
-the y-axis within each sample.
-\item For data with a small number of genes, normalization should use
-a set of pre-defined \code{controlGenes} that were verified to have
-no change across samples.
-}
 }
 
 \subsection{Noise threshold}{
