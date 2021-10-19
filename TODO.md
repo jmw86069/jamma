@@ -1,5 +1,15 @@
 # TODO for jamma
 
+## ggjammaplot()
+
+* make empty plot panels completely blank, relevant when using `blankPlotPos`
+* set `xlab`, `ylab` using summary, difference labels
+* add subtitleBox to bottomleft corner
+* investigate using `element_text()` instead of `ggtext::element_textbox()`
+* allow `geom_text_repel()` to label highlighted points
+* consider selectable x- and y-ranges, to highlight a box and points within it
+
+
 ## New functions
 
 * `jammaplotDispEsts()` wrapper for `DESeq2::plotDispEsts()`, although

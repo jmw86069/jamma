@@ -2,8 +2,10 @@
 
 export(centerGeneData)
 export(centerGeneData_v1)
+export(ggjammaplot)
 export(jammacalc)
 export(jammanorm)
 export(jammaplot)
 export(outer_legend)
 export(points2polygonHull)
+import(ggtext)

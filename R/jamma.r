@@ -750,26 +750,7 @@ jammaplot <- function
       nsamples <- length(x);
       x_names <- names(x);
    } else if ("SummarizedExperiment" %in% class(x)) {
-      if (!jamba::check_pkg_installed("SummarizedExperiment")) {
-         stop("The 'SummarizedExperiment' is required for SummarizedExperiment input x.");
-      }
-      #assay_name <- intersect(assay_name,
-      #   names(SummarizedExperiment::assays(x)));
-      if (length(assay_name) == 0) {
-         assay_name <- head(names(SummarizedExperiment::assays(x)));
-         if (verbose) {
-            jamba::printDebug("jammaplot(): ",
-               c("Using first assay_name: '", assay_name, "'"),
-               sep="");
-         }
-      }
-      if (is.numeric(assay_name)) {
-         if (assay_name > length(SummarizedExperiment::assays(x))) {
-            assay_name <- length(SummarizedExperiment::assays(x));
-         }
-         assay_name <- names(SummarizedExperiment::assays(x))[assay_name];
-      }
-      x <- assays(x)[[assay_name]];
+      x <- get_se_assaydata(x);
       nsamples <- ncol(x);
       x_names <- colnames(x);
       if (length(x) == 0) {
@@ -1785,6 +1766,7 @@ jammacalc <- function
       }
    } else {
       whichSamples <- whichSamples[whichSamples %in% colnames(x)];
+      whichSamples <- match(whichSamples, colnames(x));
    }
    if (verbose) {
       jamba::printDebug("jammacalc(): ",
@@ -1951,10 +1933,13 @@ jammacalc <- function
    names(jammadata) <- colnames(x)[whichSamples];
 
    if ("tidy" %in% returnType) {
-      jammadata <- rbindList(lapply(names(jammadata), function(i){
+      jammadata <- jamba::rbindList(lapply(names(jammadata), function(i){
          j <- jammadata[[i]];
-         data.frame(row=rownames(j),
-            sample=i,
+         data.frame(
+            check.names=FALSE,
+            stringsAsFactors=FALSE,
+            item=rownames(j),
+            name=i,
             colnum=match(i, colnames(x)),
             x=j[,"x"],
             y=j[,"y"]

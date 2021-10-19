@@ -1,3 +1,45 @@
+# jamma 0.0.18.900
+
+## new functions
+
+* `ggjammaplot()` - the ggplot2 equivalent to `jammaplot()`. See examples,
+there are a variety of example figures, using straight MA-plots, raw
+and normalized data, using subset of samples, and optionally highlighted
+points.
+
+   Still to-do:
+   * when `blankPlotPos` is used, the plot itself should be empty, without grid lines
+   * add `subtitle` to the bottom-left corner of each plot panel
+   * use `geom_text_repel()` to label `highlightPoints` - should probably be optional.
+   * more testing for large number of plot panels, for example test the
+   aspect ratio for density and pixel size calculations
+
+* `element_textbox_colorsub()` - a custom ggplot2 element that
+enables colored facet strip background colors using name-value
+pairs.
+
+   * The technique was based upon a post by Claus O. Wilke,
+   and is the closest to a "true ggplot2" methodology that I found.
+   Other alternatives involved using the `gtable` package, and
+   modifying `grob` grid graphical objects directly.
+   See https://stackoverflow.com/questions/60332202/conditionally-fill-ggtext-text-boxes-in-facet-wrap
+   * Note that this function very likely will move into the `colorjam`
+   package to become the default of `colorjam::theme_jam()`
+   * This function has not been tested with `facet_grid()` but in
+   principle it should work.
+
+* `element_grob.element_textbox_colorsub()` - required for the ggplot2
+workaround with facet strip label background colors.
+
+
+## new dependency
+
+* `ggtext` package is a dependency for `ggjammaplot()`, however it
+is a lightweight and useful package, whose dependencies are largely
+also in common with `ggplot2`.
+
+
+
 # jamma 0.0.17.900
 
 ## changes to existing functions
