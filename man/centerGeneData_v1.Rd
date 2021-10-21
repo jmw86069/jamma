@@ -115,6 +115,7 @@ x_ctr <- centerGeneData_v1(x,
    centerGroups=rep(c("A","B"), c(5,5)),
    controlSamples=letters[c(1:3, 6:8)],
    showGroups=TRUE);
+
 attr(x_ctr, "centerDF");
 
 }

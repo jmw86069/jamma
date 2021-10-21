@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.16.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.18.900</span>
       </span>
     </div>
 
@@ -105,7 +105,7 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="http://github.com/jmw86069/jamma/">
+  <a href="https://github.com/jmw86069/jamma/">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -124,7 +124,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Center gene data</h1>
-    <small class="dont-index">Source: <a href='http://github.com/jmw86069/jamma/blob/master/R/jamma-center.R'><code>R/jamma-center.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/jmw86069/jamma/blob/master/R/jamma-center.R'><code>R/jamma-center.R</code></a></small>
     <div class="hidden name"><code>centerGeneData.Rd</code></div>
     </div>
 
@@ -284,27 +284,77 @@ specific group summary calculations per row.</p>
 <span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='va'>letters</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span><span class='op'>]</span>;
 <span class='co'># basic centering</span>
 <span class='fu'>centerGeneData</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>;
-</div><div class='output co'>#&gt; <span class='error'>Error in rowMedians(iM, na.rm = na.rm): could not find function "rowMedians"</span></div><div class='input'>
+</div><div class='output co'>#&gt;         a   b   c   d  e f  g  h  i  j
+#&gt;  [1,] -45 -35 -25 -15 -5 5 15 25 35 45
+#&gt;  [2,] -45 -35 -25 -15 -5 5 15 25 35 45
+#&gt;  [3,] -45 -35 -25 -15 -5 5 15 25 35 45
+#&gt;  [4,] -45 -35 -25 -15 -5 5 15 25 35 45
+#&gt;  [5,] -45 -35 -25 -15 -5 5 15 25 35 45
+#&gt;  [6,] -45 -35 -25 -15 -5 5 15 25 35 45
+#&gt;  [7,] -45 -35 -25 -15 -5 5 15 25 35 45
+#&gt;  [8,] -45 -35 -25 -15 -5 5 15 25 35 45
+#&gt;  [9,] -45 -35 -25 -15 -5 5 15 25 35 45
+#&gt; [10,] -45 -35 -25 -15 -5 5 15 25 35 45</div><div class='input'>
 <span class='co'># grouped centering</span>
 <span class='fu'>centerGeneData</span><span class='op'>(</span><span class='va'>x</span>,
    centerGroups<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"A"</span>,<span class='st'>"B"</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>5</span>,<span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>;
-</div><div class='output co'>#&gt; <span class='error'>Error in rowMedians(iM, na.rm = na.rm): could not find function "rowMedians"</span></div><div class='input'>
+</div><div class='output co'>#&gt;         a   b c  d  e   f   g h  i  j
+#&gt;  [1,] -20 -10 0 10 20 -20 -10 0 10 20
+#&gt;  [2,] -20 -10 0 10 20 -20 -10 0 10 20
+#&gt;  [3,] -20 -10 0 10 20 -20 -10 0 10 20
+#&gt;  [4,] -20 -10 0 10 20 -20 -10 0 10 20
+#&gt;  [5,] -20 -10 0 10 20 -20 -10 0 10 20
+#&gt;  [6,] -20 -10 0 10 20 -20 -10 0 10 20
+#&gt;  [7,] -20 -10 0 10 20 -20 -10 0 10 20
+#&gt;  [8,] -20 -10 0 10 20 -20 -10 0 10 20
+#&gt;  [9,] -20 -10 0 10 20 -20 -10 0 10 20
+#&gt; [10,] -20 -10 0 10 20 -20 -10 0 10 20</div><div class='input'>
 <span class='co'># centering versus specific control columns</span>
 <span class='fu'>centerGeneData</span><span class='op'>(</span><span class='va'>x</span>,
    controlSamples<span class='op'>=</span><span class='va'>letters</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span><span class='op'>)</span><span class='op'>]</span><span class='op'>)</span>;
-</div><div class='output co'>#&gt; <span class='error'>Error in rowMedians(iM, na.rm = na.rm): could not find function "rowMedians"</span></div><div class='input'>
+</div><div class='output co'>#&gt;         a b  c  d  e  f  g  h  i  j
+#&gt;  [1,] -10 0 10 20 30 40 50 60 70 80
+#&gt;  [2,] -10 0 10 20 30 40 50 60 70 80
+#&gt;  [3,] -10 0 10 20 30 40 50 60 70 80
+#&gt;  [4,] -10 0 10 20 30 40 50 60 70 80
+#&gt;  [5,] -10 0 10 20 30 40 50 60 70 80
+#&gt;  [6,] -10 0 10 20 30 40 50 60 70 80
+#&gt;  [7,] -10 0 10 20 30 40 50 60 70 80
+#&gt;  [8,] -10 0 10 20 30 40 50 60 70 80
+#&gt;  [9,] -10 0 10 20 30 40 50 60 70 80
+#&gt; [10,] -10 0 10 20 30 40 50 60 70 80</div><div class='input'>
 <span class='co'># grouped centering versus specific control columns</span>
 <span class='fu'>centerGeneData</span><span class='op'>(</span><span class='va'>x</span>,
    centerGroups<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"A"</span>,<span class='st'>"B"</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>5</span>,<span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span>,
    controlSamples<span class='op'>=</span><span class='va'>letters</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span>, <span class='fl'>6</span><span class='op'>:</span><span class='fl'>8</span><span class='op'>)</span><span class='op'>]</span><span class='op'>)</span>;
-</div><div class='output co'>#&gt; <span class='error'>Error in rowMedians(iM, na.rm = na.rm): could not find function "rowMedians"</span></div><div class='input'>
+</div><div class='output co'>#&gt;         a b  c  d  e   f g  h  i  j
+#&gt;  [1,] -10 0 10 20 30 -10 0 10 20 30
+#&gt;  [2,] -10 0 10 20 30 -10 0 10 20 30
+#&gt;  [3,] -10 0 10 20 30 -10 0 10 20 30
+#&gt;  [4,] -10 0 10 20 30 -10 0 10 20 30
+#&gt;  [5,] -10 0 10 20 30 -10 0 10 20 30
+#&gt;  [6,] -10 0 10 20 30 -10 0 10 20 30
+#&gt;  [7,] -10 0 10 20 30 -10 0 10 20 30
+#&gt;  [8,] -10 0 10 20 30 -10 0 10 20 30
+#&gt;  [9,] -10 0 10 20 30 -10 0 10 20 30
+#&gt; [10,] -10 0 10 20 30 -10 0 10 20 30</div><div class='input'>
 <span class='co'># confirm the centerGroups and controlSamples</span>
 <span class='va'>x_ctr</span> <span class='op'>&lt;-</span> <span class='fu'>centerGeneData</span><span class='op'>(</span><span class='va'>x</span>,
    centerGroups<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"A"</span>,<span class='st'>"B"</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>5</span>,<span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span>,
    controlSamples<span class='op'>=</span><span class='va'>letters</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span>, <span class='fl'>6</span><span class='op'>:</span><span class='fl'>8</span><span class='op'>)</span><span class='op'>]</span>,
    returnGroups<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>;
-</div><div class='output co'>#&gt; <span class='error'>Error in rowMedians(iM, na.rm = na.rm): could not find function "rowMedians"</span></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span><span class='op'>(</span><span class='va'>x_ctr</span>, <span class='st'>"center_df"</span><span class='op'>)</span>;
-</div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): object 'x_ctr' not found</span></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span><span class='op'>(</span><span class='va'>x_ctr</span>, <span class='st'>"center_df"</span><span class='op'>)</span>;
+</div><div class='output co'>#&gt;   sample centerGroups controlSamples
+#&gt; a      a            A           TRUE
+#&gt; b      b            A           TRUE
+#&gt; c      c            A           TRUE
+#&gt; d      d            A          FALSE
+#&gt; e      e            A          FALSE
+#&gt; f      f            B           TRUE
+#&gt; g      g            B           TRUE
+#&gt; h      h            B           TRUE
+#&gt; i      i            B          FALSE
+#&gt; j      j            B          FALSE</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

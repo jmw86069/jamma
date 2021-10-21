@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.16.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.18.900</span>
       </span>
     </div>
 
@@ -105,7 +105,7 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="http://github.com/jmw86069/jamma/">
+  <a href="https://github.com/jmw86069/jamma/">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -124,7 +124,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Normalize data using MA-plot logic</h1>
-    <small class="dont-index">Source: <a href='http://github.com/jmw86069/jamma/blob/master/R/jamma-norm.R'><code>R/jamma-norm.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/jmw86069/jamma/blob/master/R/jamma-norm.R'><code>R/jamma-norm.R</code></a></small>
     <div class="hidden name"><code>jammanorm.Rd</code></div>
     </div>
 
@@ -138,7 +138,7 @@
   minimum_mean <span class='op'>=</span> <span class='fl'>0</span>,
   controlSamples <span class='op'>=</span> <span class='cn'>NULL</span>,
   centerGroups <span class='op'>=</span> <span class='cn'>NULL</span>,
-  useMedian <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  useMedian <span class='op'>=</span> <span class='cn'>TRUE</span>,
   useMean <span class='op'>=</span> <span class='cn'>NULL</span>,
   noise_floor <span class='op'>=</span> <span class='op'>-</span><span class='cn'>Inf</span>,
   noise_floor_value <span class='op'>=</span> <span class='va'>noise_floor</span>,
@@ -234,24 +234,103 @@ to <code>NA</code>.</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>numeric matrix whose columns have been normalized using
-the y-axis mean offset following MA-plot calculations. The output
-contains attributes: <code>"nf"</code> numeric vector of normalization factors;
-<code>"hk"</code> list of controlGenes used for each sample; <code>"hk_count"</code> the
-number of controlGenes used for each sample.</p>
+    <p><code>numeric</code> <code>matrix</code> whose columns have been normalized,
+with the following named <code>attributes</code>:</p><ul>
+<li><p><code>"nf"</code> numeric vector of normalization factors;</p></li>
+<li><p><code>"hk"</code> a <code>character</code> vector of controlGenes for each sample;</p></li>
+<li><p><code>"hk_count"</code> the <code>integer</code> number of controlGenes for each sample.</p></li>
+</ul>
+
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>This function normalizes data using an approach analogous
 to data viewed in MA-plots. Normalization is applied by shifting
 data along the y-axis so the mean (or median) expression among
-control genes is zero, shown on an MA-plot as y=0.</p>
-<p>It effectively reinforces the assumption that the mean log fold
+control genes is zero, indicated on an MA-plot as y=0.</p>
+<p><strong>Note:</strong> This method should be performed only after reviewing the MA-plots,
+to ensure the assumptions are met. Similarly, data can also be
+viewed in MA-plots after normalization to confirm and review the
+effect of normalization.</p>
+<p>It is useful to run <code><a href='jammaplot.html'>jammaplot()</a></code> data after <code>jammanorm()</code>
+to visualize the effect of this normalization. If data is not
+centered at y=0, the parameters should be adjusted.</p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Assumptions</h3>
+
+
+<p>This method effectively reinforces the assumption that the mean log fold
 change for control genes is expected to be zero. When <code>useMedian=TRUE</code>
 it reinforces the assumption that the log fold change for the
 majority of control genes should be zero.</p>
-<p>It is useful to run <code><a href='jammaplot.html'>jammaplot()</a></code> data after <code>jammanorm()</code>
-to visualize the effect of this normalization. If data is not
-centered at y=0, the parameters should be adjusted.</p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>About the normalization</h3>
+<p>Therefore, the assumptions may be summarized as follows:</p><ul>
+<li><p>The principle assumption is that the set of <code>controlGenes</code>,
+whose mean expression is at or above the <code>minimum_mean</code> value,
+are unchanged within the respective <code>centerGroups</code>. For typical
+whole genome transcript microarray and RNA-seq experiments,
+this assumption is typically valid when using <code>useMedian=TRUE</code>.
+For experiments with specific reference genes, or housekeeper
+genes, this assumption may only be true for those specific genes.</p></li>
+<li><p>The data signal is assumed to be a roughly linear representation
+of the relative abundance of each measured entity, which is usually
+true for log-transformed microarray intensity, or log-transformed
+RNA-seq read counts. For QPCR or TaqMan, this assumption is valid
+for the direct CT cycle threshold values, or after log-transformation
+of the exponentiated CT values, for example 2^(40-CT).
+All that said, a straightforward way to visualize this assumption
+is with MA-plots, to confirm that signal is horizontal across
+the full signal range - either for the majority of all genes,
+or for the specific <code>controlGenes</code> used for normalization.</p></li>
+<li><p>The variability among control genes should not be more than twice
+the median absolute deviation across other samples within the
+relevant <code>centerGroups</code>. Effectively this assumption means the
+control genes on the MA-plot should not show wide spread along the
+y-axis.</p></li>
+</ul>
+
+<p>In cases where some samples show non-horizontal signal across the
+MA-plot, the data is not conforming to a consistent and proportional
+signal across the response range of the experiment. In effect, it
+means signal is being compressed, or expanded along the response
+as compared to other samples in the same <code>centerGroups</code>. In this
+scenario, the best normalization method may be
+<code><a href='https://rdrr.io/pkg/limma/man/normalizequantiles.html'>limma::normalizeQuantiles()</a></code>, <code><a href='https://rdrr.io/pkg/limma/man/normalizeCyclicLoess.html'>limma::normalizeCyclicLoess()</a></code>,
+or <code>vsn::vsn()</code>. These methods adjust the distribution of signal
+to enforce consistency across samples.</p>
+<p>In general, the signal distribution itself should not be adjusted
+unless necessary, in order to retain as much information from the
+underlying technology as possible. This method <code>jammanorm()</code> is
+intended to apply linear normalization, which effectively shifts
+the entire signal for a sample up or down relative to other samples.</p>
+<p>This scenario is effective for technologies such as QPCR, TaqMan,
+Nanostring counts, and RNA-seq counts or RNA-seq pseudocounts.</p>
+<p>When the MA-plot demonstrates non-horizontal
+signal, it is most often the result one or both of these influences:</p><ol>
+<li><p>batch effect, imposed either by different upstream sample
+processing steps among the samples being tested, or</p></li>
+<li><p>platform technology that tends to produce relative signal strength
+but not absolute quantitative signal, commonly seen with
+microarray hybridization technologies such as Affymetrix, Illumina,
+Agilent, SomaLogic, or Myriad RBM.</p></li>
+</ol>
+
+<p>Note that any upstream sample amplification technique may also impose
+non-linear effects on the molecules being measured.</p>
+<p>One method to test for a batch effect is to define <code>centerGroups</code>
+to include batch, so the data will be centered for each batch
+independently. If this centering resolves the non-horizontal
+signal, then batch is very likely to be a component to be modeled
+in the experiment. See <code><a href='https://rdrr.io/pkg/limma/man/removeBatchEffect.html'>limma::removeBatchEffect()</a></code>. The batch effect
+adjustment by  <code><a href='https://rdrr.io/pkg/limma/man/removeBatchEffect.html'>limma::removeBatchEffect()</a></code> and <code><a href='https://rdrr.io/pkg/sva/man/ComBat.html'>sva::ComBat()</a></code>
+almost exactly subtract the batch component from the signal.</p>
+<p>That said, it may or may not be ideal to apply batch adjustment
+prior to running downstream statistical tests, as opposed to
+including batch as a covariate term in the statistical
+model used for testing, example when using <code>DESeq2</code>.
+The main benefit of applying batch adjustment at this step is to
+visualize data downstream consistent with the method used by
+those statistical tests, or when running a clustering technique
+that does not have the capability of applying appropriate
+batch effect modeling.</p>
+
+<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>About the normalization</h3>
 
 
 <p>This normalization is a "linear normalization" in that it uniformly
@@ -294,25 +373,6 @@ the mean difference from average expression for the <code>controlGenes</code>
 should be equal to zero. The effect is applied evenly across
 control genes by evaluating the mean or median difference from y=0
 for each sample.</p>
-
-<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Assumptions</h3>
-
-
-<p>In order for this approach to be valid:</p><ul>
-<li><p>Data on the MA-plots should be horizontal for all samples,
-particularly for <code>controlGenes</code>. When data is not horizontal
-across samples, data should instead be normalized using another
-approach, typically something like quantile normalization which
-is intended to impose a consistent signal distribution across
-all samples.</p></li>
-<li><p>The majority of <code>controlGenes</code> should not be changing, therefore
-the <code>controlGenes</code> should not have substantial variation along
-the y-axis within each sample.</p></li>
-<li><p>For data with a small number of genes, normalization should use
-a set of pre-defined <code>controlGenes</code> that were verified to have
-no change across samples.</p></li>
-</ul>
-
 
 <h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Noise threshold</h3>
 

@@ -6,15 +6,15 @@ Description: Create MA-plots with specific control samples,
     using sample groups. Volcano plots with hit filtering by gene.
     All plots use smooth scatter plots for large number of points.
 Depends: R (>= 3.5.0)
-Imports: jamba (>= 0.0.64.900),
+Imports: jamba (>= 0.0.66.900),
     grDevices,
     KernSmooth,
     methods,
     grDevices,
     colorjam,
+    matrixStats,
     ggtext
 Suggests: crayon,
-    matrixStats,
     knitr,
     rmarkdown,
     affydata
@@ -22,9 +22,9 @@ biocViews:
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
-URL: http://github.com/jmw86069/jamma
-BugReports: http://github.com/jmw86069/jamma/issues
-RoxygenNote: 7.0.2
+URL: https://github.com/jmw86069/jamma
+BugReports: https://github.com/jmw86069/jamma/issues
+RoxygenNote: 7.1.2
 VignetteBuilder: knitr
 Remotes: github::jmw86069/jamba,
     github::jmw86069/colorjam

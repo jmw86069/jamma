@@ -80,6 +80,7 @@ par("mfrow"=c(2,2));
 for (i in 1:4) {
    jamba::nullPlot(plotAreaTitle=paste("Panel", i));
 }
+require(jamba);
 outer_legend("bottom",
    legend=c("one", "two", "three"),
    col=colorjam::rainbowJam(3));
@@ -87,6 +88,10 @@ outer_legend("bottom",
 }
 \seealso{
 Other jam utility functions: 
+\code{\link{element_grob.element_textbox_colorsub}()},
+\code{\link{element_textbox_colorsub}()},
+\code{\link{get_se_assaydata}()},
+\code{\link{handle_highlightPoints}()},
 \code{\link{points2polygonHull}()}
 }
 \concept{jam utility functions}

@@ -643,5 +643,8 @@ if (suppressPackageStartupMessages(require(affydata))) {
 \code{jamba::plotSmoothScatter()} for enhanced
 \code{graphics::smoothScatter()}, \code{centerGeneData()},
 \code{jamba::imageDefault()}, \code{jamba::nullPlot()}
+
+Other jam plot functions: 
+\code{\link{ggjammaplot}()}
 }
 \concept{jam plot functions}

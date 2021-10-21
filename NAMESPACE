@@ -2,6 +2,8 @@
 
 export(centerGeneData)
 export(centerGeneData_v1)
+export(element_grob.element_textbox_colorsub)
+export(element_textbox_colorsub)
 export(ggjammaplot)
 export(jammacalc)
 export(jammanorm)
@@ -9,3 +11,4 @@ export(jammaplot)
 export(outer_legend)
 export(points2polygonHull)
 import(ggtext)
+importFrom(matrixStats,rowMedians)

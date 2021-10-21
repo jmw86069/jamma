@@ -1,5 +1,14 @@
 # jamma 0.0.18.900
 
+Bumped dependency on `jamba` to version `0.0.66.900` to
+avoid error with `rowMedians()` that should use `matrixStats::rowMedians()`.
+
+Note: The `pkgdown::build_site()` failed due to SSL certificate expiration,
+apparently from the crandb.r-pkg.org site. The workaround is to set this
+option beforehand, which prevents `pkgdown::build_news()` from trying
+to access that URL.
+`options("pkgdown.internet"=FALSE)`
+
 ## new functions
 
 * `ggjammaplot()` - the ggplot2 equivalent to `jammaplot()`. See examples,
@@ -22,7 +31,7 @@ pairs.
    and is the closest to a "true ggplot2" methodology that I found.
    Other alternatives involved using the `gtable` package, and
    modifying `grob` grid graphical objects directly.
-   See https://stackoverflow.com/questions/60332202/conditionally-fill-ggtext-text-boxes-in-facet-wrap
+   See stackoverflow questions/60332202/conditionally-fill-ggtext-text-boxes-in-facet-wrap
    * Note that this function very likely will move into the `colorjam`
    package to become the default of `colorjam::theme_jam()`
    * This function has not been tested with `facet_grid()` but in

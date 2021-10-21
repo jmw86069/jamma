@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.16.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.18.900</span>
       </span>
     </div>
 
@@ -104,7 +104,7 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="http://github.com/jmw86069/jamma/">
+  <a href="https://github.com/jmw86069/jamma/">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -123,15 +123,67 @@
   <div class="col-md-9 contents">
     <div class="page-header">
       <h1 data-toc-skip>Changelog <small></small></h1>
-      <small>Source: <a href='http://github.com/jmw86069/jamma/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
+      <small>Source: <a href='https://github.com/jmw86069/jamma/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div id="jamma-0016900" class="section level1">
-<h1 class="page-header" data-toc-text="0.0.16.900">
-<a href="#jamma-0016900" class="anchor"></a>jamma 0.0.16.900</h1>
+    <div id="jamma-0018900" class="section level1">
+<h1 class="page-header" data-toc-text="0.0.18.900">
+<a href="#jamma-0018900" class="anchor"></a>jamma 0.0.18.900</h1>
+<p>Bumped dependency on <code>jamba</code> to version <code>0.0.66.900</code> to avoid error with <code>rowMedians()</code> that should use <code><a href="https://rdrr.io/pkg/matrixStats/man/rowMedians.html">matrixStats::rowMedians()</a></code>.</p>
+<p>Note: The <code><a href="https://rdrr.io/pkg/pkgdown/man/build_site.html">pkgdown::build_site()</a></code> failed due to SSL certificate expiration, apparently from the crandb.r-pkg.org site. The workaround is to set this option beforehand, which prevents <code><a href="https://rdrr.io/pkg/pkgdown/man/build_news.html">pkgdown::build_news()</a></code> from trying to access that URL. <code><a href="https://rdrr.io/r/base/options.html">options("pkgdown.internet"=FALSE)</a></code></p>
+<div id="new-functions" class="section level2">
+<h2 class="hasAnchor">
+<a href="#new-functions" class="anchor"></a>new functions</h2>
+<ul>
+<li>
+<p><code><a href="../reference/ggjammaplot.html">ggjammaplot()</a></code> - the ggplot2 equivalent to <code><a href="../reference/jammaplot.html">jammaplot()</a></code>. See examples, there are a variety of example figures, using straight MA-plots, raw and normalized data, using subset of samples, and optionally highlighted points.</p>
+<p>Still to-do:</p>
+<ul>
+<li>when <code>blankPlotPos</code> is used, the plot itself should be empty, without grid lines</li>
+<li>add <code>subtitle</code> to the bottom-left corner of each plot panel</li>
+<li>use <code>geom_text_repel()</code> to label <code>highlightPoints</code> - should probably be optional.</li>
+<li>more testing for large number of plot panels, for example test the aspect ratio for density and pixel size calculations</li>
+</ul>
+</li>
+<li>
+<p><code><a href="../reference/element_textbox_colorsub.html">element_textbox_colorsub()</a></code> - a custom ggplot2 element that enables colored facet strip background colors using name-value pairs.</p>
+<ul>
+<li>The technique was based upon a post by Claus O. Wilke, and is the closest to a “true ggplot2” methodology that I found. Other alternatives involved using the <code>gtable</code> package, and modifying <code>grob</code> grid graphical objects directly. See stackoverflow questions/60332202/conditionally-fill-ggtext-text-boxes-in-facet-wrap</li>
+<li>Note that this function very likely will move into the <code>colorjam</code> package to become the default of <code><a href="https://rdrr.io/pkg/colorjam/man/theme_jam.html">colorjam::theme_jam()</a></code>
+</li>
+<li>This function has not been tested with <code>facet_grid()</code> but in principle it should work.</li>
+</ul>
+</li>
+<li><p><code><a href="../reference/element_grob.element_textbox_colorsub.html">element_grob.element_textbox_colorsub()</a></code> - required for the ggplot2 workaround with facet strip label background colors.</p></li>
+</ul>
+</div>
+<div id="new-dependency" class="section level2">
+<h2 class="hasAnchor">
+<a href="#new-dependency" class="anchor"></a>new dependency</h2>
+<ul>
+<li>
+<code>ggtext</code> package is a dependency for <code><a href="../reference/ggjammaplot.html">ggjammaplot()</a></code>, however it is a lightweight and useful package, whose dependencies are largely also in common with <code>ggplot2</code>.</li>
+</ul>
+</div>
+</div>
+    <div id="jamma-0017900" class="section level1">
+<h1 class="page-header" data-toc-text="0.0.17.900">
+<a href="#jamma-0017900" class="anchor"></a>jamma 0.0.17.900</h1>
 <div id="changes-to-existing-functions" class="section level2">
 <h2 class="hasAnchor">
 <a href="#changes-to-existing-functions" class="anchor"></a>changes to existing functions</h2>
+<ul>
+<li>
+<code><a href="../reference/jammaplot.html">jammaplot()</a></code>, <code><a href="../reference/jammanorm.html">jammanorm()</a></code> and <code><a href="../reference/jammacalc.html">jammacalc()</a></code> were updated to handle <code>useMedian</code> by default, but to accept <code>useMean</code> for backward compatibility.</li>
+</ul>
+</div>
+</div>
+    <div id="jamma-0016900" class="section level1">
+<h1 class="page-header" data-toc-text="0.0.16.900">
+<a href="#jamma-0016900" class="anchor"></a>jamma 0.0.16.900</h1>
+<div id="changes-to-existing-functions-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#changes-to-existing-functions-1" class="anchor"></a>changes to existing functions</h2>
 <ul>
 <li>
 <code><a href="../reference/centerGeneData.html">centerGeneData()</a></code> has been changed to what was previously <code>centerGeneData_new()</code>, and the old function was renamed to <code><a href="../reference/centerGeneData_v1.html">centerGeneData_v1()</a></code>. The new function is designed to be backward compatible.</li>
@@ -168,9 +220,9 @@
 <li>Edited the wording for <code><a href="../reference/jammaplot.html">jammaplot()</a></code> function parameters.</li>
 </ul>
 </div>
-<div id="changes-to-existing-functions-1" class="section level2">
+<div id="changes-to-existing-functions-2" class="section level2">
 <h2 class="hasAnchor">
-<a href="#changes-to-existing-functions-1" class="anchor"></a>changes to existing functions</h2>
+<a href="#changes-to-existing-functions-2" class="anchor"></a>changes to existing functions</h2>
 <ul>
 <li>
 <code><a href="../reference/jammaplot.html">jammaplot()</a></code> cleaned up logic on handling <code>colramp</code> and <code>colrampOutlier</code> arguments.</li>
@@ -218,9 +270,9 @@
     <div id="jamma-0011900" class="section level1">
 <h1 class="page-header" data-toc-text="0.0.11.900">
 <a href="#jamma-0011900" class="anchor"></a>jamma 0.0.11.900</h1>
-<div id="new-functions" class="section level2">
+<div id="new-functions-1" class="section level2">
 <h2 class="hasAnchor">
-<a href="#new-functions" class="anchor"></a>new functions</h2>
+<a href="#new-functions-1" class="anchor"></a>new functions</h2>
 <ul>
 <li>
 <code><a href="../reference/outer_legend.html">outer_legend()</a></code> is used to place a color legend outside multi-panel base R graphics, for example when using <code><a href="https://rdrr.io/r/graphics/par.html">par("mfrow"=c(2,2))</a></code>. By default it places the legend at the bottom, centered in the plot device. It of course may move to <code>jamba</code> but that package is already getting overloaded.</li>
@@ -242,9 +294,9 @@
     <div id="jamma-0010900" class="section level1">
 <h1 class="page-header" data-toc-text="0.0.10.900">
 <a href="#jamma-0010900" class="anchor"></a>jamma 0.0.10.900</h1>
-<div id="new-functions-1" class="section level2">
+<div id="new-functions-2" class="section level2">
 <h2 class="hasAnchor">
-<a href="#new-functions-1" class="anchor"></a>new functions</h2>
+<a href="#new-functions-2" class="anchor"></a>new functions</h2>
 <ul>
 <li>
 <code><a href="../reference/jammacalc.html">jammacalc()</a></code> is used to calculate data ready for MA-plots, to separate this logic from the <code><a href="../reference/jammaplot.html">jammaplot()</a></code> function used for visualization.</li>
@@ -330,17 +382,17 @@
     <div id="jamma-006900" class="section level1">
 <h1 class="page-header" data-toc-text="0.0.6.900">
 <a href="#jamma-006900" class="anchor"></a>jamma 0.0.6.900</h1>
-<div id="new-functions-2" class="section level2">
+<div id="new-functions-3" class="section level2">
 <h2 class="hasAnchor">
-<a href="#new-functions-2" class="anchor"></a>new functions</h2>
+<a href="#new-functions-3" class="anchor"></a>new functions</h2>
 <ul>
 <li>
 <code><a href="https://rdrr.io/pkg/jamba/man/drawLabels.html">drawLabels()</a></code> which draws a colored box with label inside, positioned by default at the center of the x and y coordinates provided. This function will be tested then moved to the “jamba” package.</li>
 </ul>
 </div>
-<div id="changes-to-existing-functions-2" class="section level2">
+<div id="changes-to-existing-functions-3" class="section level2">
 <h2 class="hasAnchor">
-<a href="#changes-to-existing-functions-2" class="anchor"></a>changes to existing functions</h2>
+<a href="#changes-to-existing-functions-3" class="anchor"></a>changes to existing functions</h2>
 <ul>
 <li>
 <code><a href="../reference/jammaplot.html">jammaplot()</a></code> by default will use <code><a href="https://rdrr.io/pkg/jamba/man/drawLabels.html">drawLabels()</a></code> to print a label in each panel, instead of the previous method which used <code><a href="https://rdrr.io/r/graphics/legend.html">legend()</a></code> and was not properly centered. In future, labels may detect whether to enforce word-wrap in order to keep labels from overlapping adjacent panels.</li>
@@ -357,9 +409,9 @@
     <div id="jamma-005900" class="section level1">
 <h1 class="page-header" data-toc-text="0.0.5.900">
 <a href="#jamma-005900" class="anchor"></a>jamma 0.0.5.900</h1>
-<div id="changes-to-existing-functions-3" class="section level2">
+<div id="changes-to-existing-functions-4" class="section level2">
 <h2 class="hasAnchor">
-<a href="#changes-to-existing-functions-3" class="anchor"></a>changes to existing functions</h2>
+<a href="#changes-to-existing-functions-4" class="anchor"></a>changes to existing functions</h2>
 <ul>
 <li>
 <code><a href="../reference/jammaplot.html">jammaplot()</a></code> had a fairly substantial shift in default behavior, concerning the x-axis coordinate when using <code>centerGroups</code> to center a subset of samples. Previous default was to use one global x-axis coordinate across all samples, regardless of the <code>centerGroups</code>. New default behavior is to calculate an x-axis value for each <code>centerGroups</code> so within each group the data is self-contained. This behavior can be controlled with <code>groupX=TRUE</code> which applies grouping to the x-axis, and <code>groupX=FALSE</code> for the previous behavior. I admit, this change has pros and cons. On the one hand, there is inherent benefit for keeping each subset grouping independent, with the possible downside that comparisons across groupings may not be visible.</li>
@@ -380,9 +432,9 @@
     <div id="jamma-002900" class="section level1">
 <h1 class="page-header" data-toc-text="0.0.2.900">
 <a href="#jamma-002900" class="anchor"></a>jamma 0.0.2.900</h1>
-<div id="new-functions-3" class="section level2">
+<div id="new-functions-4" class="section level2">
 <h2 class="hasAnchor">
-<a href="#new-functions-3" class="anchor"></a>new functions</h2>
+<a href="#new-functions-4" class="anchor"></a>new functions</h2>
 <ul>
 <li>
 <code><a href="../reference/centerGeneData.html">centerGeneData()</a></code> the main tool for calculations by <code><a href="../reference/jammaplot.html">jammaplot()</a></code>, centers data by subtracting the row mean or median; optionally within groups of columns; optionally with specified control columns per group.</li>

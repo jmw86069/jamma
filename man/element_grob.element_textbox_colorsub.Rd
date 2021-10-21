@@ -9,3 +9,12 @@ element_grob.element_textbox_colorsub(element, label = "", ...)
 \description{
 Custom ggplot2 element textbox highlight grob
 }
+\seealso{
+Other jam utility functions: 
+\code{\link{element_textbox_colorsub}()},
+\code{\link{get_se_assaydata}()},
+\code{\link{handle_highlightPoints}()},
+\code{\link{outer_legend}()},
+\code{\link{points2polygonHull}()}
+}
+\concept{jam utility functions}

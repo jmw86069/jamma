@@ -9,6 +9,7 @@
 * allow `geom_text_repel()` to label highlighted points
 * consider selectable x- and y-ranges, to highlight a box and points within it
 
+* Needed a workaround to build pkgdown site, see: https://github.com/r-lib/pkgdown/issues/1157
 
 ## New functions
 

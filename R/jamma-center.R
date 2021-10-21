@@ -62,6 +62,8 @@
 #'
 #' @family jamma deprecated functions
 #'
+#' @importFrom matrixStats rowMedians
+#'
 #' @examples
 #' x <- matrix(1:100, ncol=10);
 #' colnames(x) <- letters[1:10];
@@ -86,6 +88,7 @@
 #'    centerGroups=rep(c("A","B"), c(5,5)),
 #'    controlSamples=letters[c(1:3, 6:8)],
 #'    showGroups=TRUE);
+#'
 #' attr(x_ctr, "centerDF");
 #'
 #' @export
@@ -140,7 +143,7 @@ centerGeneData_v1 <- function
    }
 
    ## Determine whether the "matrixStats" R package is available
-   if ("matrixStats" %in% rownames(installed.packages())) {
+   if (jamba::check_pkg_installed("matrixStats")) {
       rowMedians <- matrixStats::rowMedians;
       colMedians <- matrixStats::colMedians;
       rowSds <- matrixStats::rowSds;
@@ -245,7 +248,7 @@ centerGeneData_v1 <- function
          centerGroups <- split(c_names, centerGroups);
       }
       ## Now iterate through the list
-      centeredSubsets <- lapply(nameVectorN(centerGroups), function(iGroupN){
+      centeredSubsets <- lapply(jamba::nameVectorN(centerGroups), function(iGroupN){
          iGroup <- centerGroups[[iGroupN]];
          iGroupCols <- colnames(indata[,iGroup,drop=FALSE]);
          iControls <- intersect(iGroupCols, controlCols);
@@ -265,7 +268,7 @@ centerGeneData_v1 <- function
       });
       centeredData <- do.call(cbind, centeredSubsets);
       ## Correct rare cases when colnames are duplicated
-      if (length(tcount(colnames(centeredData), minCount=2)) > 0) {
+      if (length(jamba::tcount(colnames(centeredData), minCount=2)) > 0) {
          colnames(centeredData) <- gsub("_v0$", "",
             makeNames(colnames(centeredData), startN=0));
       }

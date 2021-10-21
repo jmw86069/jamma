@@ -1,6 +1,15 @@
 
 #' Custom ggplot2 element textbox highlight
 #'
+#' Custom ggplot2 element textbox highlight
+#'
+#' This function is used internally by `ggjammaplot()` to colorize
+#' ggplot2 facet strip panel background using a named color vector
+#' supplied as `colorSub`.
+#'
+#' @family jam utility functions
+#'
+#' @export
 element_textbox_colorsub <- function
 (...,
    colorSub=NULL,
@@ -35,6 +44,9 @@ element_textbox_colorsub <- function
 
 #' Custom ggplot2 element textbox highlight grob
 #'
+#' @family jam utility functions
+#'
+#' @export
 element_grob.element_textbox_colorsub <- function
 (element,
    label="",

@@ -6,8 +6,9 @@
 #' This method is under active development and may change as
 #' features are implemented.
 #'
-#' Currently the input to this function is the output of
-#' `jammaplot()`.
+#' It is currently fully functional and is being documented.
+#'
+#' @family jam plot functions
 #'
 #' @import ggtext
 #'
@@ -21,45 +22,39 @@
 #'    titleBoxColor <- jamba::nameVector(
 #'       farrisdata::colorSub[as.character(colData(GeneSE)$groupName)],
 #'       colnames(GeneSE));
-#'
-#'    jp2 <- jammaplot(GeneSE,
-#'       outlierMAD=2,
-#'       doPlot=FALSE,
-#'       assay_name="raw_counts",
-#'       filterFloor=1e-10,
-#'       filterFloorReplacement=NA,
-#'       centerGroups=colData(GeneSE)$Compartment,
-#'       subtitleBoxColor=farrisdata::colorSub[as.character(colData(GeneSE)$Compartment)],
-#'       useRank=FALSE);
-#'
-#'    gg1 <- ggjammaplot(jp2,
-#'       ncol=6,
-#'       titleBoxColor=titleBoxColor);
-#'    print(gg1);
-#'
-#'    gg <- ggjammaplot(GeneSE, assay_name="raw_counts")
+#'    options("warn"=FALSE);
 #'
 #'    gg <- ggjammaplot(GeneSE,
+#'       ncol=6,
+#'       base_size=12,
+#'       assay_name="raw_counts")
+#'
+#'    gg <- ggjammaplot(GeneSE,
+#'       ncol=6,
 #'       assay_name="counts",
 #'       useRank=TRUE,
+#'       ylim=c(-11000, 11000),
+#'       maintitle="MA-plots by rank and rank difference",
 #'       titleBoxColor=titleBoxColor)
 #'
 #'    gg <- ggjammaplot(GeneSE,
-#'       assay_name="counts",
-#'       useRank=FALSE,
-#'       titleBoxColor=titleBoxColor,
 #'       ncol=6,
+#'       assay_name="counts",
+#'       titleBoxColor=titleBoxColor,
+#'       base_size=10,
+#'       maintitle="MA-plots showing MAD factor",
 #'       displayMAD=TRUE)
 #'
 #'    gg <- ggjammaplot(GeneSE,
-#'       assay_name="counts",
-#'       useRank=FALSE,
-#'       titleBoxColor=titleBoxColor,
 #'       ncol=6,
+#'       assay_name="counts",
+#'       titleBoxColor=titleBoxColor,
+#'       maintitle="MA-plot omitting one panel, then using blankPlotPos",
 #'       whichSamples=colnames(GeneSE)[c(1:21, 23:24)],
 #'       blankPlotPos=22,
 #'       displayMAD=TRUE)
 #'
+#'    if (FALSE) {
 #'    ggdf <- ggjammaplot(GeneSE,
 #'       assay_name="counts",
 #'       whichSamples=c(1:3, 7:9),
@@ -79,12 +74,122 @@
 #'       return_type="data",
 #'       titleBoxColor=titleBoxColor)
 #'
+#'    # you can use output from `jammaplot()` as input to `ggjammaplot()`:
+#'    jp2 <- jammaplot(GeneSE,
+#'       outlierMAD=2,
+#'       doPlot=FALSE,
+#'       assay_name="raw_counts",
+#'       filterFloor=1e-10,
+#'       filterFloorReplacement=NA,
+#'       centerGroups=colData(GeneSE)$Compartment,
+#'       subtitleBoxColor=farrisdata::colorSub[as.character(colData(GeneSE)$Compartment)],
+#'       useRank=FALSE);
+#'
+#'    gg1 <- ggjammaplot(jp2,
+#'       ncol=6,
+#'       titleBoxColor=titleBoxColor);
+#'    print(gg1);
+#'    }
 #' }
+#'
+#' @param x one of the following inputs:
+#'    * `numeric` matrix
+#'    * `SummarizedExperiment` object, where the
+#'    assay data is defined using `assays(x)[[assay_name]]`. Accordingly,
+#'    `assay_name` can be either an integer index or `character` string
+#'    matching the `names(assays(x))`.
+#'    * `list` output from `jammacalc()` or `jammaplot()`, where each
+#'    element in the list is a two-column `matrix` with colnames `c("x", "y")`.
+#' @param nbin_factor `numeric` value used to adjust the number of bins
+#'    used to display the MA-plots, where values higher than `1` increase
+#'    the resolution and level of detail, and values below `1` decrease
+#'    the resolution. Note the number of bins are already adjusted based
+#'    upon the square root of the number of plot panels, and `nbin_factor`
+#'    applied to that value.
+#' @param bw_factor `numeric` used to adjust the resolution of the
+#'    2-dimensional bandwidth calculation, where higher values create
+#'    more detailed density, and lower values create a smoother density
+#'    across the range of data.
+#' @param assay_name relevant only when `x` is `SummarizedExperiment`,
+#'    one of these input types:
+#'    * `character` string that matches `names(assays(x))`
+#'    * `integer` index for `assays(x)`, where any value higher than
+#'    `length(assays(x))` is adjusted to `length(assays(x))`, which makes
+#'    it convenient to select the last element in the list of `assays(x)`
+#'    by using `assay_name = Inf`.
+#' @param useMedian `logical` indicating whether calculations should use
+#'    `median`, or when `useMedian=FALSE` the `mean` is used. The median
+#'    has the benefit of reducing effect of outliers, however the mean
+#'    has the advantage that it represents data consistent with most
+#'    parametric statistical analyses.
+#' @param controlSamples `character` vector of `colnames(x)` to use as
+#'    the control when calculating centered data. By default, all samples
+#'    are used, so the classic MA-plot is the value of each sample,
+#'    subtracting the median or mean value calculated across all samples.
+#'    It is sometimes useful to define a subset of known samples for this
+#'    calculation, which can be beneficial in avoiding outliers, or for
+#'    consistency by selecting high quality control samples.
+#' @param centerGroups `character` vector with length equal to `ncol(x)`,
+#'    which defines subgroups of `colnames(x)` to be treated independently
+#'    during the MA-plot calculation.
+#' @param groupedX `logical` indicating whether the x-axis value, which
+#'    represents the median or mean value, should be calculated independently
+#'    for each group when `centerGroups` is used with multiple groups.
+#'    Typically `groupedX=TRUE` is recommended, however it can be beneficial
+#'    to share an overall x-axis value in specific circumstances.
+#' @param grouped_mad `logical` indicating whether the MAD factor calculation
+#'    of variability among samples should be performed independently
+#'    for each group when `centerGroups` is used with multiple groups.
+#'    Typically `grouped_max=TRUE` is recommended, however it can be beneficial
+#'    to share an overall MAD factor threshold across all samples
+#'    in specific circumstances.
+#' @param outlierMAD `numeric` indicating the MAD factor threshold above
+#'    which a particular sample is considered an outlier.
+#' @param mad_row_min `numeric` value indicating the minimum x-axis
+#'    value, calculated using either median or mean as defined by
+#'    argument `useMedian`, at or above which a measurement is used in the
+#'    MAD factor calculation. This threshold is useful to restrict the
+#'    MAD variability calculation to measurements (rows in `x`) with
+#'    signal that meets a minimum noise threshold.
+#' @param displayMAD `logical` indicating whether to display the MAD factor
+#'    in the bottom right corner of each MA-plot panel.
+#' @param noise_floor `numeric` value indicating the minimum numeric value,
+#'    below which the value is converted to `noise_floor_value`. Typically
+#'    this threshold is useful to convert values `0` into `NA` so they will
+#'    not be used in the MA-plots nor the associated calculations. It is
+#'    also useful to establish a noise floor above zero, for example
+#'    in QPCR if noise threshold for calculated expression is roughly 50,
+#'    a useful noise floor might be `noise_floor=log2(50)` and
+#'    `noise_floor_value=log2(50)`, which will set any expression value
+#'    at or below `log2(50)` to that value. It prevents noise from becoming
+#'    meaningful, when it may be just instrument noise with no relevance.
+#'    Those values could also reasonably be converted to `NA` for this
+#'    purpose.
+#' @param naValue `character` string used to convert values of `NA` to
+#'    something else. This argument is useful when a numeric matrix may
+#'    contain `NA` values but would prefer them to be, for example, `0`.
+#' @param centerFunc `function` used to supply a custom data centering
+#'    function. In practice this argument should rarely be changed.
+#' @param whichSamples `integer` index of samples in `colnames(x)` to be
+#'    plotted, however all samples in `colnames(x)` will be used for the
+#'    MA-plot calculations and data centering. This argument is intended
+#'    to help zoom in to inspect a specific subset of samples, without
+#'    having to plot all samples in `x`.
+#' @param useRank `logical` indicating whether to plot rank on the x-axis,
+#'    rank-difference on the y-axis for each sample. This transformation
+#'    is rather useful, especially when downstream analysis tools may
+#'    also refer to the rank value of particular measurements.
+#' @param titleBoxColor `character` vector of R colors, where
+#'    `titleBoxColor` is equal to `ncol(x)`, or where
+#'    `names(titleBoxColor)` matches `colnames(x)`. When supplied, each
+#'    plot panel strip background will be colored accordingly.
 #'
 #' @export
 ggjammaplot <- function
-(jp2,
-   x=NULL,
+(x,
+   nbin_factor=1,
+   bw_factor=1,
+   assay_name=1,
    useMedian=FALSE,
    controlSamples=NULL,
    centerGroups=NULL,
@@ -99,7 +204,6 @@ ggjammaplot <- function
    centerFunc=centerGeneData,
    whichSamples=NULL,
    useRank=FALSE,
-   assay_name=1,
    titleBoxColor="lightgoldenrod1",
    outlierColor="palegoldenrod",
    maintitle=NULL,
@@ -113,9 +217,8 @@ ggjammaplot <- function
    highlightCex=1.5,
    highlightColor=NULL,
    doHighlightLegend=TRUE,
-   nbin_factor=1,
    ablineH=c(-2, 0, 2),
-   base_size=18,
+   base_size=12,
    panel.grid.major.colour="grey90",
    panel.grid.minor.colour="grey95",
    return_type=c("ggplot",
@@ -130,27 +233,27 @@ ggjammaplot <- function
 {
    # expand titleBoxColor as needed
    if (length(names(titleBoxColor)) == 0) {
-      if (is.list(jp2)) {
+      if (is.list(x)) {
          titleBoxColor <- jamba::nameVector(
             rep(titleBoxColor,
-               length.out=length(jp2)),
-            names(jp2));
+               length.out=length(x)),
+            names(x));
       } else {
          titleBoxColor <- jamba::nameVector(
             rep(titleBoxColor,
-               length.out=length(colnames(jp2))),
-            colnames(jp2));
+               length.out=length(colnames(x))),
+            colnames(x));
       }
    }
 
    # newer method of calling jammacalc()
-   if (is.list(jp2) && "matrix" %in% class(jp2[[1]]) && all(c("x", "y") %in% colnames(jp2[[1]]))) {
+   if (is.list(x) &&
+         "matrix" %in% class(x[[1]]) &&
+         all(c("x", "y") %in% colnames(x[[1]]))) {
       # input is previous jammaplot()
+      jp2 <- x;
+      rm(x);
    } else {
-      if (length(x) == 0 && length(jp2) > 0 && length(dim(jp2)) == 2) {
-         x <- jp2;
-         rm(jp2);
-      }
       if ("SummarizedExperiment" %in% class(x)) {
          x <- get_se_assaydata(x,
             assay_name=assay_name,
@@ -332,8 +435,10 @@ ggjammaplot <- function
    }
 
    # h values for MASS::kde2()
-   hx <- diff(range(xlim, na.rm=TRUE)) / 50 * 1;
-   hy <- diff(range(ylim, na.rm=TRUE)) / 50 * 1;
+   bw_factor <- rep(bw_factor,
+      length.out=2);
+   hx <- diff(range(xlim, na.rm=TRUE)) / 30 * bw_factor[1];
+   hy <- diff(range(ylim, na.rm=TRUE)) / 30 * bw_factor[2];
 
    nbin <- nbin_factor * 400 / sqrt(length(jp2));
    if (verbose > 1) {
@@ -513,6 +618,10 @@ ggjammaplot <- function
 }
 
 
+#' Get SummarizedExperiment assay matrix data
+#'
+#' @family jam utility functions
+#'
 get_se_assaydata <- function
 (x,
    assay_name=NULL,
@@ -553,7 +662,10 @@ get_se_assaydata <- function
    x;
 }
 
-
+#' Handle highlightPoints argument to jammaplot()
+#'
+#' @family jam utility functions
+#'
 handle_highlightPoints <- function
 (highlightPoints=NULL,
    highlightColor=NULL,

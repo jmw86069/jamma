@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.16.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.18.900</span>
       </span>
     </div>
 
@@ -105,7 +105,7 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="http://github.com/jmw86069/jamma/">
+  <a href="https://github.com/jmw86069/jamma/">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -124,7 +124,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Add legend in the outer margin</h1>
-    <small class="dont-index">Source: <a href='http://github.com/jmw86069/jamma/blob/master/R/jam-misc.R'><code>R/jam-misc.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/jmw86069/jamma/blob/master/R/jam-misc.R'><code>R/jam-misc.R</code></a></small>
     <div class="hidden name"><code>outer_legend.Rd</code></div>
     </div>
 
@@ -228,6 +228,10 @@ for example when using <code><a href='https://rdrr.io/r/graphics/par.html'>par("
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other jam utility functions: 
+<code><a href='element_grob.element_textbox_colorsub.html'>element_grob.element_textbox_colorsub</a>()</code>,
+<code><a href='element_textbox_colorsub.html'>element_textbox_colorsub</a>()</code>,
+<code><a href='get_se_assaydata.html'>get_se_assaydata</a>()</code>,
+<code><a href='handle_highlightPoints.html'>handle_highlightPoints</a>()</code>,
 <code><a href='points2polygonHull.html'>points2polygonHull</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -238,7 +242,11 @@ for example when using <code><a href='https://rdrr.io/r/graphics/par.html'>par("
 <span class='kw'>for</span> <span class='op'>(</span><span class='va'>i</span> <span class='kw'>in</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>4</span><span class='op'>)</span> <span class='op'>{</span>
    <span class='fu'>jamba</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/jamba/man/nullPlot.html'>nullPlot</a></span><span class='op'>(</span>plotAreaTitle<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='st'>"Panel"</span>, <span class='va'>i</span><span class='op'>)</span><span class='op'>)</span>;
 <span class='op'>}</span>
-</div><div class='input'><span class='fu'>outer_legend</span><span class='op'>(</span><span class='st'>"bottom"</span>,
+</div><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='va'><a href='http://github.com/jmw86069/jamba'>jamba</a></span><span class='op'>)</span>;
+</div><div class='output co'>#&gt; <span class='message'>Loading required package: jamba</span></div><div class='output co'>#&gt; <span class='message'></span>
+#&gt; <span class='message'>Attaching package: ‘jamba’</span></div><div class='output co'>#&gt; <span class='message'>The following object is masked from ‘package:IRanges’:</span>
+#&gt; <span class='message'></span>
+#&gt; <span class='message'>    heads</span></div><div class='input'><span class='fu'>outer_legend</span><span class='op'>(</span><span class='st'>"bottom"</span>,
    legend<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"one"</span>, <span class='st'>"two"</span>, <span class='st'>"three"</span><span class='op'>)</span>,
    col<span class='op'>=</span><span class='fu'>colorjam</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/colorjam/man/rainbowJam.html'>rainbowJam</a></span><span class='op'>(</span><span class='fl'>3</span><span class='op'>)</span><span class='op'>)</span>;
 </div><div class='img'><img src='outer_legend-1.png' alt='' width='700' height='433' /></div><div class='input'>

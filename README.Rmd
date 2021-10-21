@@ -5,6 +5,9 @@ output: github_document
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ```{r setup, include=FALSE}
+ragg_png <- function(..., res = 192) {
+  ragg::agg_png(..., res = res, units = "in")
+}
 knitr::opts_chunk$set(
   collapse=TRUE,
   warning=FALSE,
@@ -41,7 +44,7 @@ library(jamma);
 library(jamba);
 if (suppressPackageStartupMessages(require(affydata))) {
    data(Dilution);
-   edata <- log2(1+exprs(Dilution));
+   edata <- log2(1+Biobase::exprs(Dilution));
    jammaplot(edata);
 }
 ```
@@ -64,10 +67,10 @@ with new technologies.
 
 First, we show the same MA-plot using single pixel points:
 
-```{r pch1, results="hide", fig.height=4, fig.width=8}
+```{r pch1, results="hide", fig.height=4, fig.width=8, dependson="Dilution"}
 if (exists("edata")) {
    jammaplot(edata[,2:3], ylim=c(-1.5,1.5), titleCexFactor=0.8,
-      smoothScatterFunc=function(col="navy",...){plot(pch=".",col="#000077",...)},
+      smoothScatterFunc=function(x, col="navy", ...){plot(x=x, pch=".",col="#000077",...)},
       maintitle="plot(pch='.')");
 }
 ```
@@ -78,7 +81,7 @@ not clear from that plot. Adding alpha transparency helps somewhat:
 ```{r pchAlpha, results="hide", fig.height=4, fig.width=8}
 if (exists("edata")) {
    jammaplot(edata[,2:3], ylim=c(-1.5,1.5), titleCexFactor=0.8,
-      smoothScatterFunc=function(col="navy",...){plot(pch=".",col="#00007711",...)},
+      smoothScatterFunc=function(x, col="navy", ...){plot(x=x, pch=".",col="#00007711",...)},
       maintitle="plot(pch='.', alpha=0.07)");
 }
 ```
@@ -90,8 +93,13 @@ color ramp:
 
 ```{r Smooth, results="hide", fig.height=4, fig.width=8}
 if (exists("edata")) {
-   jammaplot(edata[,2:3], ylim=c(-1.5,1.5), titleCexFactor=0.8,
-      smoothScatterFunc=smoothScatter, colramp="Blues",
+   jammaplot(edata[,2:3],
+      xlim=c(6, 14),
+      ylim=c(-1.5,1.5),
+      titleCexFactor=0.8,
+      smoothScatterFunc=function(colramp,...){
+         smoothScatter(...,colramp=jamba::getColorRamp(colramp, n=NULL))},
+      colramp="Blues",
       maintitle="smoothScatter()");
 }
 ```
@@ -101,8 +109,12 @@ Again, the visualization is improved, but the default "Blues" color ramp
 
 ```{r Smoove, results="hide", fig.height=4, fig.width=8}
 if (exists("edata")) {
-   jammaplot(edata[,2:3], ylim=c(-1.5,1.5), titleCexFactor=0.8,
-      smoothScatterFunc=smoothScatter,
+   jammaplot(edata[,2:3],
+      xlim=c(6, 14),
+      ylim=c(-1.5,1.5),
+      titleCexFactor=0.8,
+      smoothScatterFunc=function(colramp,...){
+         smoothScatter(...,colramp=jamba::getColorRamp(colramp, n=NULL))},
       maintitle="smoothScatter()");
 }
 ```
@@ -130,7 +142,9 @@ detail, so smaller features are less blurry.
 
 ```{r plotSmoove, results="hide", fig.height=4, fig.width=8}
 if (exists("edata")) {
-   jammaplot(edata[,2:3], ylim=c(-1.5,1.5), titleCexFactor=0.8,
+   jammaplot(edata[,2:3],
+      ylim=c(-1.5,1.5),
+      titleCexFactor=0.8,
       maintitle="plotSmoothScatter()");
 }
 ```
@@ -146,9 +160,14 @@ done by smoothScatter().
 ```{r SmoothViridis, results="hide", fig.height=8, fig.width=8}
 if (exists("edata")) {
    par("mfrow"=c(2,2));
-   jammaplot(edata[,2:3], ylim=c(-2,2), titleCexFactor=0.8,
-      colramp="viridis", doPar=FALSE,
-      smoothScatterFunc=smoothScatter,
+   jammaplot(edata[,2:3],
+      xlim=c(6, 14),
+      ylim=c(-2,2),
+      titleCexFactor=0.8,
+      colramp="viridis",
+      doPar=FALSE,
+      smoothScatterFunc=function(colramp,...){
+         smoothScatter(...,colramp=jamba::getColorRamp(colramp, n=NULL))},
       maintitle="smoothScatter(colramp='viridis')");
    jammaplot(edata[,2:3], ylim=c(-2,2), titleCexFactor=0.8,
       colramp="viridis", doPar=FALSE,

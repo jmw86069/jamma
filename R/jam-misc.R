@@ -49,6 +49,7 @@
 #' for (i in 1:4) {
 #'    jamba::nullPlot(plotAreaTitle=paste("Panel", i));
 #' }
+#' require(jamba);
 #' outer_legend("bottom",
 #'    legend=c("one", "two", "three"),
 #'    col=colorjam::rainbowJam(3));
