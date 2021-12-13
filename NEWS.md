@@ -1,3 +1,16 @@
+# jamma 0.0.19.900
+
+## updates to package dependencies
+
+Unfortunately the `gridtext` R package issue
+https://github.com/wilkelab/gridtext/issues/22 results in removing
+this package and `ggtext` as dependencies from `jamma`. The installation
+requires specific recent versions of GCC compiler that I have trouble
+resolving on my own linux servers. As a result, they are moved to
+`Suggests` and the corresponding `jamma` functions will handle
+them as optional.
+
+
 # jamma 0.0.18.900
 
 Bumped dependency on `jamba` to version `0.0.66.900` to

@@ -7,7 +7,7 @@
 #' ggplot2 facet strip panel background using a named color vector
 #' supplied as `colorSub`.
 #'
-#' @family jam utility functions
+#' @family jam ggtext functions
 #'
 #' @export
 element_textbox_colorsub <- function
@@ -44,7 +44,7 @@ element_textbox_colorsub <- function
 
 #' Custom ggplot2 element textbox highlight grob
 #'
-#' @family jam utility functions
+#' @family jam ggtext functions
 #'
 #' @export
 element_grob.element_textbox_colorsub <- function

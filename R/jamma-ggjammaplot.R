@@ -10,8 +10,6 @@
 #'
 #' @family jam plot functions
 #'
-#' @import ggtext
-#'
 #' @examples
 #' if (jamba::check_pkg_installed("SummarizedExperiment") &&
 #'    jamba::check_pkg_installed("farrisdata")) {
@@ -582,7 +580,8 @@ ggjammaplot <- function
    }
 
    # manually adjust titleBoxColor with strip text background color
-   if (length(unique(titleBoxColor)) > 1) {
+   if (length(unique(titleBoxColor)) > 1 &&
+         jamba::check_pkg_installed("ggtext")) {
       p <- p +
          ggplot2::theme(
             strip.background=ggplot2::element_blank(),

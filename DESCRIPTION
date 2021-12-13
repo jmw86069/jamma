@@ -1,6 +1,6 @@
 Package: jamma
 Title: MA-plots for omics data
-Version: 0.0.18.900
+Version: 0.0.19.900
 Authors@R: person("James", "Ward", email="jmw86069@gmail.com", role=c("aut", "cre"))
 Description: Create MA-plots with specific control samples,
     using sample groups. Volcano plots with hit filtering by gene.
@@ -12,12 +12,12 @@ Imports: jamba (>= 0.0.66.900),
     methods,
     grDevices,
     colorjam,
-    matrixStats,
-    ggtext
+    matrixStats
 Suggests: crayon,
     knitr,
     rmarkdown,
-    affydata
+    affydata,
+    ggtext
 biocViews:
 License: GPL-2
 Encoding: UTF-8

@@ -88,8 +88,6 @@ outer_legend("bottom",
 }
 \seealso{
 Other jam utility functions: 
-\code{\link{element_grob.element_textbox_colorsub}()},
-\code{\link{element_textbox_colorsub}()},
 \code{\link{get_se_assaydata}()},
 \code{\link{handle_highlightPoints}()},
 \code{\link{points2polygonHull}()}

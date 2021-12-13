@@ -11,8 +11,6 @@ Get SummarizedExperiment assay matrix data
 }
 \seealso{
 Other jam utility functions: 
-\code{\link{element_grob.element_textbox_colorsub}()},
-\code{\link{element_textbox_colorsub}()},
 \code{\link{handle_highlightPoints}()},
 \code{\link{outer_legend}()},
 \code{\link{points2polygonHull}()}
