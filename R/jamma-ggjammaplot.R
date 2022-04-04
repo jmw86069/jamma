@@ -621,11 +621,18 @@ ggjammaplot <- function
 #'
 #' @family jam utility functions
 #'
+#' @param x `SummarizedExperiment` object
+#' @param assay_name `character` string that should match one entry
+#'    in `names(assays(x))`.
+#' @param verbose `logical` indicating whether to print verbose output.
+#' @param ... additional arguments are ignored.
+#'
+#' @export
 get_se_assaydata <- function
 (x,
-   assay_name=NULL,
-   verbose=FALSE,
-   ...)
+ assay_name=NULL,
+ verbose=FALSE,
+ ...)
 {
    if ("SummarizedExperiment" %in% class(x)) {
       if (!jamba::check_pkg_installed("SummarizedExperiment")) {

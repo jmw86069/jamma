@@ -6,6 +6,16 @@
 \usage{
 get_se_assaydata(x, assay_name = NULL, verbose = FALSE, ...)
 }
+\arguments{
+\item{x}{\code{SummarizedExperiment} object}
+
+\item{assay_name}{\code{character} string that should match one entry
+in \code{names(assays(x))}.}
+
+\item{verbose}{\code{logical} indicating whether to print verbose output.}
+
+\item{...}{additional arguments are ignored.}
+}
 \description{
 Get SummarizedExperiment assay matrix data
 }

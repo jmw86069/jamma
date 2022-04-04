@@ -750,7 +750,9 @@ jammaplot <- function
       nsamples <- length(x);
       x_names <- names(x);
    } else if ("SummarizedExperiment" %in% class(x)) {
-      x <- get_se_assaydata(x);
+      x <- get_se_assaydata(x,
+         assay_name=assay_name,
+         verbose=verbose);
       nsamples <- ncol(x);
       x_names <- colnames(x);
       if (length(x) == 0) {

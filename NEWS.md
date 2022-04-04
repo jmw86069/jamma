@@ -1,3 +1,13 @@
+# jamma 0.0.20.900
+
+## bug fixes
+
+* `jammaplot()` was not properly passing argument `assay_name` to
+downstream function `get_se_assaydata()` when the input was
+`SummarizedExperiment`. It was by default always using the
+first assay stored in the SE object.
+
+
 # jamma 0.0.19.900
 
 ## updates to package dependencies
