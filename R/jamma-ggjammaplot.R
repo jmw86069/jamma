@@ -1,12 +1,5 @@
 
-#' MA-plots using ggplot2
-#'
-#' MA-plots using ggplot2
-#'
-#' This method is under active development and may change as
-#' features are implemented.
-#'
-#' It is currently fully functional and is being documented.
+#' @describeIn jammaplot
 #'
 #' @family jam plot functions
 #'
@@ -90,6 +83,7 @@
 #'    }
 #' }
 #'
+#' @inheritParams jammaplot
 #' @param x one of the following inputs:
 #'    * `numeric` matrix
 #'    * `SummarizedExperiment` object, where the
@@ -151,18 +145,32 @@
 #'    signal that meets a minimum noise threshold.
 #' @param displayMAD `logical` indicating whether to display the MAD factor
 #'    in the bottom right corner of each MA-plot panel.
-#' @param noise_floor `numeric` value indicating the minimum numeric value,
-#'    below which the value is converted to `noise_floor_value`. Typically
-#'    this threshold is useful to convert values `0` into `NA` so they will
-#'    not be used in the MA-plots nor the associated calculations. It is
-#'    also useful to establish a noise floor above zero, for example
-#'    in QPCR if noise threshold for calculated expression is roughly 50,
-#'    a useful noise floor might be `noise_floor=log2(50)` and
-#'    `noise_floor_value=log2(50)`, which will set any expression value
-#'    at or below `log2(50)` to that value. It prevents noise from becoming
-#'    meaningful, when it may be just instrument noise with no relevance.
-#'    Those values could also reasonably be converted to `NA` for this
-#'    purpose.
+#' @param noise_floor,noise_floor_value `numeric` to define a numeric
+#'    floor, or `NULL` for no numeric floor. Values **at or below**
+#'    `noise_floor` are set to `noise_floor_value`, intended for two
+#'    potential uses:
+#'    1. Filter out value below a threshold, so they do not affect centering.
+#'       * This option is valuable to remove zeros when a zero `0` is considered
+#'       "no measurement observed", typically for count data such as RNA-seq,
+#'       NanoString, and especially single-cell protocols or other protocols
+#'       that produce a large number of missing values.
+#'       * One can typically tell whether input data includes zero `0`
+#'       values by the presence of characteristic 45-degree angle lines
+#'       originating from `x=0` angled toward the right. The points along
+#'       this line are rows with more measurements of zero than non-zero,
+#'       there this sample has a non-zero value.
+#'
+#'    2. Set values at a noise floor to the noise floor, to retain the
+#'    measurement but minimize the effect during centering to the lowest
+#'    realiable measurement for the platform technology.
+#'       * This value may be set to a platform noise floor
+#'       for something like microarray data where the intensity may be
+#'       unreliable below a threshold; or
+#'       * for quantitative PCR measurements where cycle threshold (Ct)
+#'       values may become unreliable, for example above CT=40 or CT=35.
+#'       Data is often transformed to abundance with `2 ^ (40 - CT)` then
+#'       log2-transformed for analysis. In this case, to apply a `noise_floor`
+#'       effective for CT=35, one would use `noise_floor=5`.
 #' @param naValue `character` string used to convert values of `NA` to
 #'    something else. This argument is useful when a numeric matrix may
 #'    contain `NA` values but would prefer them to be, for example, `0`.
@@ -191,19 +199,26 @@ ggjammaplot <- function
    useMedian=FALSE,
    controlSamples=NULL,
    centerGroups=NULL,
+   colramp=c("transparent",
+      "lightblue",
+      "blue",
+      "navy",
+      "orange",
+      "orangered2"),
    groupedX=TRUE,
    grouped_mad=TRUE,
    outlierMAD=5,
    mad_row_min=4,
    displayMAD=FALSE,
-   noise_floor=1e-10,
+   noise_floor=0,
    noise_floor_value=NA,
    naValue=NA,
    centerFunc=centerGeneData,
    whichSamples=NULL,
    useRank=FALSE,
    titleBoxColor="lightgoldenrod1",
-   outlierColor="palegoldenrod",
+   outlierColor="lemonchiffon",
+   fillBackground=TRUE,
    maintitle=NULL,
    subtitle=NULL,
    summary="mean",
@@ -339,9 +354,10 @@ ggjammaplot <- function
    }
 
    # outliers
-   mad_outliers <- attr(jp2, "MADoutliers");
-   if (!any(mad_outliers %in% names(jp2))) {
-      mad_outliers <- NULL;
+   mad_outliers <- NULL;
+   if (any(!is.na(attr(jp2, "MADfactors")) &
+         attr(jp2, "MADfactors") > outlierMAD)) {
+      mad_outliers <- names(which(attr(jp2, "MADfactors") > outlierMAD));
    }
    jp2tall$outlier <- ifelse(jp2tall$name %in% mad_outliers,
       TRUE,
@@ -358,15 +374,25 @@ ggjammaplot <- function
    }
 
    # color gradient
-   smooth_colors <- c("transparent",
-      "lightblue",
-      "blue",
-      "navy",
-      "orange",
-      "orangered2");
+   if (length(colramp) > 0) {
+      smooth_colors <- colramp;
+   } else {
+      smooth_colors <- c("transparent",
+         "lightblue",
+         "blue",
+         "navy",
+         "orange",
+         "orangered2");
+   }
    smooth_colors1 <- jamba::getColorRamp(smooth_colors, n=51);
-   smooth_colors2 <- c("#FF000000", #"#EEE8AA7F",
-      tail(jamba::getColorRamp(smooth_colors, n=51), -1));
+   baseColor <- head(smooth_colors1, 1);
+   if (length(outlierColor) == 1 && all(jamba::isColor(outlierColor))) {
+      smooth_colors2 <- c(outlierColor, #"#FF000000", #"#EEE8AA7F",
+         tail(jamba::getColorRamp(smooth_colors, n=51), -1));
+   } else {
+      smooth_colors2 <- jamba::getColorRamp(outlierColor, n=51);
+      outlierColor <- head(smooth_colors2, 1);
+   }
 
    # expanded x- and y-axis ranges
    if (length(xlim) == 0) {
@@ -455,8 +481,20 @@ ggjammaplot <- function
          x=xlim,
          y=ylim) +
       ggplot2::xlab(summary) +
-      ggplot2::xlab(difference) +
+      ggplot2::xlab(difference);
       # ggplot2::scale_y_continuous(name=summary)
+   if (fillBackground) {
+      p <- p +
+         ggplot2::geom_rect(
+            fill=baseColor,
+            data=subset(jp2tall, !outlier & !duplicated(name)),
+            alpha=1,
+            xmin=x_exp[1],
+            xmax=x_exp[2],
+            ymin=y_exp[1],
+            ymax=y_exp[2])
+   }
+   p <- p +
       ggplot2::stat_density_2d(geom="raster",
          stat="density_2d",
          data=subset(jp2tall, !outlier),
@@ -482,15 +520,18 @@ ggjammaplot <- function
             "plotting mad_outliers: ",
             mad_outliers);
       }
+      if (fillBackground) {
+         p <- p +
+            ggplot2::geom_rect(
+               fill=outlierColor,#"lemonchiffon",
+               data=subset(jp2tall, outlier & !duplicated(name)),
+               alpha=1,
+               xmin=x_exp[1],
+               xmax=x_exp[2],
+               ymin=y_exp[1],
+               ymax=y_exp[2])
+      }
       p <- p +
-         ggplot2::geom_rect(
-            fill="lemonchiffon",
-            data=subset(jp2tall, outlier & !duplicated(name)),
-            alpha=0.7,
-            xmin=x_exp[1],
-            xmax=x_exp[2],
-            ymin=y_exp[1],
-            ymax=y_exp[2]) +
          ggnewscale::new_scale_fill() +
          ggplot2::stat_density_2d(geom="raster",
             stat="density_2d",
@@ -510,19 +551,39 @@ ggjammaplot <- function
       mad_factors_f <- factor(names(mad_factors),
          levels=levels(jp2tall$name));
       mad_df <- data.frame(name=mad_factors_f,
+         mad_factors=mad_factors,
          label=paste0("MAD x",
             format(digits=2,
                mad_factors)),
          x=Inf,
          y=-Inf
       );
+      alt_baseColor <- jamba::setTextContrastColor(baseColor);
+      alt_outlierColor <- jamba::setTextContrastColor(outlierColor);
+      alt_outlierColorL <- jamba::col2hcl(alt_outlierColor)["L",];
+      alt_outlierColor <- ifelse(alt_outlierColorL > 50,
+         "gold",
+         "red3");
       p <- p +
-         ggplot2::geom_text(data=mad_df,
+         ggplot2::geom_text(
+            data=subset(mad_df, mad_factors < outlierMAD),
             ggplot2::aes(x=x,
                y=y,
                label=label),
+            col=alt_baseColor,
             hjust=1.1,
             vjust=-1.0);
+      if (length(mad_outliers) > 0) {
+         p <- p +
+            ggplot2::geom_text(
+               data=subset(mad_df, mad_factors >= outlierMAD),
+               ggplot2::aes(x=x,
+                  y=y,
+                  label=label),
+               col=alt_outlierColor,
+               hjust=1.1,
+               vjust=-1.0);
+      }
    }
 
    # optional ablines
@@ -563,12 +624,9 @@ ggjammaplot <- function
 
       highlightPointsTall2 <- merge(jp2tall,
          highlightPointsTall);
-      print(head(highlightPointsTall2));
       highlightColorSub <- jamba::nameVector(
          highlightColor,
          names(highlightPoints));
-      print(highlightColorSub);
-      jamba::printDebug(highlightColorSub);
       p <- p +
          ggplot2::geom_point(
             data=highlightPointsTall2,

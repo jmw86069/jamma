@@ -1,3 +1,98 @@
+# jamma 0.0.21.900
+
+## notable changes to default values
+
+`jammaplot()` argument default `filterFloorReplacement=NA`:
+
+* This change corrects an issue where the row mean was calculated
+using values that may contain a large proportion of zero `0`,
+therefore pushing the x-axis position toward zero. The effect
+often also pushed the y-axis difference-from-mean to slightly
+larger magnitude, since the baseline value was typically closer
+to zero.
+* The effect of the change in argument defaults is that the x-axis
+position of points displayed will reflect the mean/median of
+values above zero, and y-axis will reflect the difference from
+mean/median of values above zero, thus displaying mean and variation
+of those measurements that detected a signal, without being influenced
+by the proportion of those points that detected a signal.
+* Specifics:
+
+   * `noise_floor` and `noise_floor_value` will replace deprecated
+   arguments `filterFloor` and `filterFloorReplacement`, respectively.
+   But the main change is to the default values.
+   * previous default: `filterFloor=0` and `filterFloorReplacement=filterFloor`
+   set any value at or below `0` to `0`.
+   * new default: `noise_floor=0` and `noise_floor_value=NA`
+   sets any value at or below `0` to `NA`.
+   * The change mostly affects data with large number of zero `0` values.
+   * Points below `noise_floor` will no longer contribute toward
+   the sample MAD factor, which should be correct as the default.
+   * The x-axis summary value, by default is the mean unless `useMedian=TRUE`
+   in which case it uses the median, is calculated using the remaining
+   measurements, above the `noise_floor`, so by default values above zero
+   will be displayed in each plot panel.
+   * The assumption is that a measurement `0` is an absence of measurement,
+   and therefore should not contribute to the mean for that row of data,
+   nor to the variability (or absence of variability) for the sample column.
+   * The same assumption should hold true for values below zero, where
+   upstream processing should in theory have generated negative values
+   as a result of background subtraction/adjustment by appropriate methods.
+   Negative values are therefore also considered "absence of measurement"
+   and the specific numeric value has no quantitative meaning in this
+   function.
+   
+* All that said, the previous behavior can be used with argument
+`noise_floor_value=noise_floor`.
+* Finally, some case can be made that the points filtered may optionally
+be displayed, in order to indicate their presence in the data. This option
+may be enabled in future if it seems necessary.
+
+   * It is unclear how to plot points whose values were zero.
+   * If for example the non-zero mean x-axis position for a row is 12,
+   does it imply the points at for this row would use x=12 and y=-12?
+   Or should these points use x=0 and y=0?
+   * It seems more sensible not to display points whose measurements have been
+   filtered from analysis - at least for now.
+
+
+## changes to make `jammaplot()` and `ggjammaplot()` consistent:
+
+* `ggjammaplot()` was modified for consistency with `jammaplot()`:
+
+   * `colramp` argument added
+   * `outlierColor` can be a color function, for example `colramp="inferno"`
+   and `outlierColor="inferno_r"` will use the reverse color ramp for
+   a nice visual effect.
+   * new argument `fillBackground=TRUE` optionally fills each
+   plot panel with the first color ramp color, affecting outlier panels.
+   Previously each plot panel has a small region around the outside
+   that was not filled, due to ggplot2 axis range expansion slightly
+   beyond the 2d density coordinates.
+   * MAD outlier panels were not properly recognized, the MAD values
+   were displayed but the background was not highlighted with `outlierColor`.
+   Issue has been resolved.
+   * `noise_floor=0` is the new default value, consistent with `jammaplot()`.
+   Any value **at or below** is set to `noise_floor_value` which by default
+   is NA, but can be changed to `noise_floor`.
+   * The MAD factor text color uses a color that contrasts with the base
+   color gradient used in each plot panel, using white text versus
+   dark background for example. It calls `jamba::setTextContrastColor()`.
+   Outlier text is either red or gold, as appropriate.
+
+* `jammaplot()` was modified for consistency with `ggjammaplot()`:
+
+   * New arguments `noise_floor` and `noise_floor_value`, which replace
+   * Deprecated arguments `filterFloor` and `filterFloorValue`.
+   * `filterFloorReplacement=NA` is the new default value, which may
+   be a substantial change for data that contains a large proportion
+   of missing values.
+   * The MAD factor text color uses a contrasting color, as with
+   `ggjammaplot()`.
+   * `outlierColor="lemonchiffon"` default, consistent with `ggjammaplot()`.
+   It sounds yummy.
+
+
 # jamma 0.0.20.900
 
 ## bug fixes

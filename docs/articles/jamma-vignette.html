@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,18 +33,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.18.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.21.900</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
@@ -64,7 +60,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/jmw86069/jamma/">
+  <a href="https://github.com/jmw86069/jamma/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -79,51 +75,51 @@
 
       
 
-      </header><script src="jamma-vignette_files/header-attrs-2.9/header-attrs.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Introduction to jamma</h1>
-                        <h4 class="author">James M. Ward</h4>
+                        <h4 data-toc-skip class="author">James M. Ward</h4>
             
-            <h4 class="date">2021-10-20</h4>
+            <h4 data-toc-skip class="date">2022-05-02</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/jmw86069/jamma/blob/master/vignettes/jamma-vignette.Rmd"><code>vignettes/jamma-vignette.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/jmw86069/jamma/blob/HEAD/vignettes/jamma-vignette.Rmd" class="external-link"><code>vignettes/jamma-vignette.Rmd</code></a></small>
       <div class="hidden name"><code>jamma-vignette.Rmd</code></div>
 
     </div>
 
     
     
-<div id="introduction-to-jamma" class="section level1">
-<h1 class="hasAnchor">
-<a href="#introduction-to-jamma" class="anchor"></a>Introduction to jamma</h1>
+<div class="section level1">
+<h1 id="introduction-to-jamma">Introduction to jamma<a class="anchor" aria-label="anchor" href="#introduction-to-jamma"></a>
+</h1>
 <p>The jamma package is primarily intended to produce MA-plots, a special form of Bland-Altman plot applied to genomics or omics data, typically representing log2-transformed expression measurements form DNA or RNA microarrays, RNA-seq counts, or other expression measurements.</p>
 <p>MA-plots have great utility as a data quality control (QC) methodology, as they effectively depict several aspects of data directly related to common downstream statistical assumptions. They can make it easy to recognize an obvious sample failure, or similarly to identify when one or more samples are not properly normalized, relative to downstream analysis steps.</p>
 <p>That said, MA-plots often suffer from ineffective display of tens of thousands of datapoints, and so this package was motivated initially simply by the desire to display the density of datapoints rather than each individual point. It evolved to provide specific benefits, driven by a large number of analysis projects across several different platform technologies.</p>
 <p>The jamma package also contains helper functions used to create and manipulate MA-plots which have been quite useful. This vignette demonstrates MA-plots, the various alternate ways of displaying MA-plot data, and the usefulness or the helper functions.</p>
-<div id="ma-plot-content" class="section level2">
-<h2 class="hasAnchor">
-<a href="#ma-plot-content" class="anchor"></a>MA-plot content</h2>
+<div class="section level2">
+<h2 id="ma-plot-content">MA-plot content<a class="anchor" aria-label="anchor" href="#ma-plot-content"></a>
+</h2>
 <p>MA-plots show difference in log2 signal from average, as a function of average log2 signal. Typically one creates MA-plots to compare multiple samples, but one can compare sample groups using group mean values. The typical MA-plot for our purpose will display an individual sample in each panel.</p>
 <p>The visual distribution of points is intended to show the spread of points from low to high expression along the x-axis, and the deviation from mean along the y-axis. The relationship of signal (x-axis) to noise (y-axis) is a visual indicator of several characteristics of the data, and impacts the choice and effectiveness of numerous downstream statistical tests. The review of numerous panels of MA-plots can also be an effective way to judge the consistency of data from the samples and sample groups.</p>
-<div id="example-ma-plot" class="section level3">
-<h3 class="hasAnchor">
-<a href="#example-ma-plot" class="anchor"></a>Example MA-plot</h3>
+<div class="section level3">
+<h3 id="example-ma-plot">Example MA-plot<a class="anchor" aria-label="anchor" href="#example-ma-plot"></a>
+</h3>
 <p>A reasonable example MA-plot can be created using data from the affydata package.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/message.html">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va">affydata</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-   <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">Dilution</span><span class="op">)</span>;
-   <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="fu">exprs</span><span class="op">(</span><span class="va">Dilution</span><span class="op">)</span>, na.rm<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">100</span><span class="op">)</span> <span class="op">{</span>
-      <span class="fu">exprs</span><span class="op">(</span><span class="va">Dilution</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log2</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="fu">exprs</span><span class="op">(</span><span class="va">Dilution</span><span class="op">)</span><span class="op">)</span>;
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va">affydata</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+   <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">Dilution</span><span class="op">)</span>;
+   <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html" class="external-link">exprs</a></span><span class="op">(</span><span class="va">Dilution</span><span class="op">)</span>, na.rm<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">100</span><span class="op">)</span> <span class="op">{</span>
+      <span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html" class="external-link">exprs</a></span><span class="op">(</span><span class="va">Dilution</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log2</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html" class="external-link">exprs</a></span><span class="op">(</span><span class="va">Dilution</span><span class="op">)</span><span class="op">)</span>;
    <span class="op">}</span>
-   <span class="fu"><a href="../reference/jammaplot.html">jammaplot</a></span><span class="op">(</span><span class="fu">exprs</span><span class="op">(</span><span class="va">Dilution</span><span class="op">)</span><span class="op">)</span>;
-<span class="op">}</span></pre></div>
+   <span class="fu"><a href="../reference/jammaplot.html">jammaplot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html" class="external-link">exprs</a></span><span class="op">(</span><span class="va">Dilution</span><span class="op">)</span><span class="op">)</span>;
+<span class="op">}</span></code></pre></div>
 <p><img src="jammaVignette-Dilution-1.png" width="768"></p>
 </div>
 </div>
-<div id="interpretation-of-ma-plots" class="section level2">
-<h2 class="hasAnchor">
-<a href="#interpretation-of-ma-plots" class="anchor"></a>Interpretation of MA-plots</h2>
+<div class="section level2">
+<h2 id="interpretation-of-ma-plots">Interpretation of MA-plots<a class="anchor" aria-label="anchor" href="#interpretation-of-ma-plots"></a>
+</h2>
 <p>MA-plots display several really useful features which tie directly into many of the assumptions of downstream statistical tools. Often, when something appears puzzling in downstream analysis results, MA-plots are a great place to look into what might be causing the issues.</p>
 <p>For example, in the MA plots above, it is clear the data has not been normalized. The evidence is that the points are not horizontal, centered with y-axis value of zero.</p>
 </div>
@@ -141,11 +137,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by James Ward.</p>
+  <p></p>
+<p>Developed by James Ward.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.9000.9000.9000.</p>
 </div>
 
       </footer>
@@ -153,6 +151,8 @@
 
   
 
+
+  
 
   </body>
 </html>

@@ -76,7 +76,8 @@ NULL
 
 #' Produce MA-plot of omics data.
 #'
-#' Produce MA-plot of omics data.
+#' Produce MA-plot of omics data, where `jammaplot()` uses base R graphics,
+#' `ggjammaplot()` uses ggplot2 graphics.
 #'
 #' `jammaplot` takes a numeric matrix, typically of gene expression data,
 #' and produces an MA-plot (Bland-Altman plot), also known as a
@@ -149,22 +150,20 @@ NULL
 #'
 #' ### Applying a noise floor
 #'
-#' The argument `filterFloor` provides a numeric lower threshold,
+#' The argument `noise_floor` provides a numeric lower threshold,
 #' where individual values **at or below** this threshold are
-#' set to a defined value. The default defined value is the
-#' floor itself, which has the effect of removing information from
+#' set to a defined value, defined by argument `noise_floor_value`.
+#' The default was updated in version `0.0.21.900` to
+#' `noise_floor=0` and `noise_floor_value=NA`.
+#' Values of zero `0` are set to `NA` and therefore are not included
+#' in the MA-plot calculations. Only points above zero are included
+#' as points in each MA-plot panel.
+#'
+#' Another useful alternative is to define `noise_floor_value=noise_floor`
+#' which sets any measurement **at or below** the `noise_floor` to
+#' this value. This option has the effect of reducing random noise from
 #' points that are already below the noise threshold and therefore
 #' are unreliable for this purpose.
-#'
-#' Another useful alternative
-#' is to define `filterFloor=0` and `filterFloorReplacement=NA`
-#' so that values of zero `0` are set to `NA` and are not included
-#' in the MA-plot calculations, and are not represented as points
-#' in each MA-plot panel. For data with many sparse missing values
-#' represented as zero, these options can be very helpful because
-#' each MA-plot panel will only represent actual measurements,
-#' compared to only those sample which also have actual
-#' measurements for those rows.
 #'
 #' ### Customizing the panel layout
 #'
@@ -454,45 +453,63 @@ NULL
 #'    be left as-is, so subsequent data centering does not use these values,
 #'    and so the MA-plot panel does not draw a point when no measurement
 #'    exists.
-#' @param filterFloor,filterFloorReplacement `numeric` or `NULL` indicating
-#'    a numeric floor, where values in `x` **at or below** `filterFloor` are
-#'    replaced with `filterFloorReplacement`. Note that this argument
-#'    can be used to replace zero `0` with `NA` in the event that
-#'    zeros do not represent measurements. One can typically tell whether
-#'    input data includes zero `0` values by the presence of characteristic
-#'    45-degree angle lines originating from `x=0` angled to the right.
-#'    The default values replace any values **at or below zero** with zero,
-#'    which also applies a numeric floor to negative values.
-#'    For some platform data technologies, it can be useful to define a
-#'    `filterFloor` roughly equivalent to its noise threshold. For example
-#'    quantitative PCR sometimes uses `log_expression = (40 - Ct)`, where
-#'    `Ct` values above `35` are considered to be noise. That noise threshold
-#'    implies that any `expression` values `5` or lower are roughly
-#'    equivalent noise, so applying `filterFloor=5` is appropriate.
+#' @param noise_floor,noise_floor_value `numeric` to define a numeric
+#'    floor, or `NULL` for no numeric floor. Values **at or below**
+#'    `noise_floor` are set to `noise_floor_value`, intended for two
+#'    potential uses:
+#'    1. Filter out value below a threshold, so they do not affect centering.
+#'       * This option is valuable to remove zeros when a zero `0` is considered
+#'       "no measurement observed", typically for count data such as RNA-seq,
+#'       NanoString, and especially single-cell protocols or other protocols
+#'       that produce a large number of missing values.
+#'       * One can typically tell whether input data includes zero `0`
+#'       values by the presence of characteristic 45-degree angle lines
+#'       originating from `x=0` angled toward the right. The points along
+#'       this line are rows with more measurements of zero than non-zero,
+#'       there this sample has a non-zero value.
+#'
+#'    2. Set values at a noise floor to the noise floor, to retain the
+#'    measurement but minimize the effect during centering to the lowest
+#'    realiable measurement for the platform technology.
+#'       * This value may be set to a platform noise floor
+#'       for something like microarray data where the intensity may be
+#'       unreliable below a threshold; or
+#'       * for quantitative PCR measurements where cycle threshold (Ct)
+#'       values may become unreliable, for example above CT=40 or CT=35.
+#'       Data is often transformed to abundance with `2 ^ (40 - CT)` then
+#'       log2-transformed for analysis. In this case, to apply a `noise_floor`
+#'       effective for CT=35, one would use `noise_floor=5`.
+#' @param filterFloor,filterFloorReplacement (deprecated) in favor of
+#'    `noise_floor`, and `noise_floor_replacement` respectively.
 #' @param transFactor `numeric` adjustment to the visual density of
-#'    points by `jamba::plotSmoothScatter()`. The value is based upon
-#'    `graphics::smoothScatter()` argument `transformation` which uses
-#'    `function(x)x^0.24`. The `transFactor` is equivalent to the
+#'    smooth scatter points. For base R graphics, this argument is
+#'    passed to `jamba::plotSmoothScatter()`. The argument value is based upon
+#'    `graphics::smoothScatter()` argument `transformation`, which uses
+#'    default `function(x)x^0.25`. The `transFactor` is equivalent to the
 #'    exponential in the form: `function(x)x^transFactor`. Lower values
-#'    increase the visual density more intense, higher values make the
-#'    visual density less intense.
+#'    make the point density more visually intense, higher values make the
+#'    point density less visually intense.
 #' @param nrpoints `integer` or `NULL` indicating the number of points
 #'    to display on the extremity of the smooth scatter density,
 #'    passed to `jamba::plotSmoothScatter()`.
-#' @param smoothScatterFunc `function` used for the smooth scatter plot,
-#'    default `jamba::plotSmoothScatter()`. Note that a custom function
-#'    may not recognize `nrpoints` or `transformation`.
-#' @param ablineH,ablineV `numeric` vector indicating horizontal and
-#'    vertical lines to draw in each MA-plot panel, respectively.
-#'    These values are passed to `graphics::abline()`.
-#' @param doTxtplot `logical` not yet implemented, indicating whether
-#'    to plot results using colored text output.
+#' @param smoothScatterFunc `function` used to produce a smooth scatter plot
+#'    in base R graphics. The default `jamba::plotSmoothScatter()` controls
+#'    the level of detail in the density calculation, and in the graphical
+#'    resolution of that density in each plot panel. The custom function
+#'    should accept argument `transformation` as described in `transFactor`,
+#'    even if the argument is not used.
+#' @param ablineH,ablineV `numeric` vector indicating position of
+#'    horizontal and vertical lines in each MA-plot panel.
+#' @param doTxtplot `logical` (not yet implemented in `jamma`),
+#'    indicating to produce colored ANSI text plot output, for example
+#'    to a text terminal.
 #' @param blankPlotPos `NULL` or `integer` vector indicating
-#'    plot panel positions to be drawn blank, skipped. Blank panel
-#'    positions are intended to help customize the visual alignment
-#'    of MA-plot panels. The mechanism is similar to `ggplot2::facet_wrap()`
-#'    except that blank positions can be manually defined by what makes
-#'    sense to the experiment design.
+#'    plot panel positions to be drawn blank, and therefore skipped.
+#'    Plot panels are drawn in the exact order of `colnames(x)` received.
+#'    Blank panel positions are intended to help customize the visual
+#'    alignment of MA-plot panels. The mechanism is similar to
+#'    `ggplot2::facet_wrap()` except that blank positions can be manually
+#'    defined by what makes sense for the experiment design.
 #' @param displayMAD `logical` indicating whether to display each
 #'    MA-plot panel MAD factor (median absolute deviation). A MAD
 #'    value for each panel is calculated by taking the median absolute
@@ -516,7 +533,7 @@ NULL
 #'    probably use `centerGroups` for brain and liver to be centered
 #'    separately, therefore the MAD factors should be separately
 #'    calculated for brain and for liver.
-#' @param groupedMAD logical indicating how the MAD calculation
+#' @param groupedMAD `logical` indicating how the MAD calculation
 #'    should be performed: `groupedMAD=TRUE` will calculate the
 #'    median MAD and corresponsing MAD factor within each
 #'    `centerGroups` grouping; `groupedMAD=FALSE` will calculate
@@ -534,9 +551,14 @@ NULL
 #'    a noise threshold from being included, therefore only including
 #'    points whose mean measurement is above noise and represents
 #'    "typical" variability.
-#' @param fillBackground `logical` passed to `jamba::plotSmoothScatter()`
-#'    indicating whether to fill the plot panel with the background color,
-#'    using the first value in the color ramp for each MA-plot panel.
+#' @param fillBackground `logical` currently used for base R graphics
+#'    output, and passed to `jamba::plotSmoothScatter()`,
+#'    indicating whether to fill the plot panel using the
+#'    first color in the color ramp for each MA-plot panel, or when
+#'    a plot panel is an outlier, it uses `outlierColor`.
+#'    This argument is mainly useful to highlight outlier panels,
+#'    although it is also useful when the color ramp has non-white
+#'    base color, for example `viridis::viridis()`.
 #' @param ma_method character string indicating whether to perform
 #'    MA-plot calculations using the old method `"old"`; or `"jammacalc"`
 #'    which uses the function `jammacalc()`.
@@ -593,7 +615,7 @@ jammaplot <- function
  groupedMAD=TRUE,
  colramp=c("white", "lightblue", "blue", "navy", "orange", "orangered2"),
  colrampOutlier=NULL,
- outlierColor="palegoldenrod",
+ outlierColor="lemonchiffon",
  whichSamples=NULL,
  maintitleCex=1.8,
  subtitle=NULL,
@@ -627,8 +649,10 @@ jammaplot <- function
  filterNA=TRUE,
  filterNAreplacement=NA,
  filterNeg=TRUE,
- filterFloor=0,
- filterFloorReplacement=filterFloor,
+ noise_floor=0,
+ noise_floor_value=NA,
+ filterFloor=NULL,
+ filterFloorReplacement=NULL,
  transFactor=0.18,
  nrpoints=0,
  smoothScatterFunc=jamba::plotSmoothScatter,
@@ -949,6 +973,19 @@ jammaplot <- function
    if ("data.frame" %in% class(x)) {
       x <- as.matrix(x);
    }
+
+   # Handle noise_floor,noise_floor_value, in place of deprecated arguments
+   # filterFloor,filterFloorReplacement
+   deprecate_warn <- character(0);
+   if (length(filterFloor) > 0) {
+      deprecate_warn <- c(deprecate_warn, "filterFloor");
+      noise_floor <- filterFloor;
+   }
+   if (length(filterFloorReplacement) > 0) {
+      deprecate_warn <- c(deprecate_warn, "filterFloorReplacement");
+      noise_floor_value <- filterFloorReplacement;
+   }
+
    if (class(x) %in% "list" &&
       all(c("x", "y") %in% colnames(x[[1]]))) {
       ## Re-use MA-plot data as provided
@@ -981,8 +1018,8 @@ jammaplot <- function
          if (filterNeg) {
             x[x <= 0] <- 0;
          }
-         if (!is.null(filterFloor)) {
-            x[!is.na(x) & x <= filterFloor] <- filterFloorReplacement;
+         if (length(noise_floor) > 0) {
+            x[!is.na(x) & x <= noise_floor] <- noise_floor_value;
          }
 
          # apply rank here
@@ -1048,7 +1085,6 @@ jammaplot <- function
             ## Calculate x range using the range of data overall
             xlim <- range(c(range(x, na.rm=TRUE), range(y, na.rm=TRUE)));
             #xlimMax <- mean(c(max(object, na.rm=TRUE), max(y, na.rm=TRUE)));
-            #xlim <- c(filterFloor, xlimMax);
          }
          mvaDatas <- lapply(jamba::nameVector(whichSamples), function(i){NA});
       }
@@ -1069,8 +1105,8 @@ jammaplot <- function
          groupedX=groupedX,
          grouped_mad=groupedMAD,
          whichSamples=whichSamples,
-         noise_floor=filterFloor,
-         noise_floor_value=filterFloorReplacement,
+         noise_floor=noise_floor,
+         noise_floor_value=noise_floor_value,
          naValue=filterNAreplacement,
          centerFunc=centerGeneData,
          returnType="ma_list",
@@ -1493,6 +1529,15 @@ jammaplot <- function
          }
 
          ## Optionally print the MAD factor in the bottom right corner
+         panelCol <- head(colrampUse(51), 1);
+         labelBaseCol <- jamba::setTextContrastColor(panelCol);
+         labelBaseColL <- jamba::col2hcl(labelBaseCol)["L",];
+         labelCol <- ifelse(
+            mvaMADfactors[whichSamples[i]] >= outlierMAD,
+            ifelse(labelBaseColL > 50,
+               "gold",
+               "red3"),
+            labelBaseCol);
          if (length(outlierMAD) > 0 && displayMAD == 1) {
             jamba::drawLabels(preset="bottomright",
                labelCex=titleCex[i]*0.9,
@@ -1502,8 +1547,7 @@ jammaplot <- function
                      mvaMADfactors[whichSamples[i]])
                ),
                drawBox=FALSE,
-               labelCol=ifelse(mvaMADfactors[whichSamples[i]] >= outlierMAD,
-                  "red3", "grey40")
+               labelCol=labelCol
                );
          } else if (length(outlierMAD) > 0 && displayMAD == 2) {
             jamba::drawLabels(preset="bottomright",
@@ -1513,8 +1557,7 @@ jammaplot <- function
                   format(digits=2,
                      mvaMADs[whichSamples[i]])),
                drawBox=FALSE,
-               labelCol=ifelse(mvaMADfactors[whichSamples[i]] >= outlierMAD,
-                  "red3", "grey40")
+               labelCol=labelCol
             );
          }
          #mvaData;
