@@ -2,7 +2,7 @@
 % Please edit documentation in R/jam-update-fn-params.R
 \name{update_list_elements}
 \alias{update_list_elements}
-\title{Update a subset of list elements}
+\title{Update a subset of list elements (deprecated)}
 \usage{
 update_list_elements(
   source_list,
@@ -25,9 +25,11 @@ which defines the list depth when traversing a nested list.}
 \item{...}{additional arguments are ignored.}
 }
 \description{
-Update a subset of list elements
+Update a subset of list elements (deprecated)
 }
 \details{
+Deprecated.
+
 This function is intended to help update a nested \code{source_list},
 a subset of whose values should be replaced with entries
 in \code{update_list}, leaving any original entries in \code{source_list}
@@ -36,6 +38,22 @@ which were not defined in \code{update_list}.
 This function may be useful when manipulating lattice or ggplot2
 graphical parameters, which are often stored in a nested
 list structure.
+
+Note: This function is deprecated, because there exists a function
+\code{utils::modifyList()} written by Lattice co-author
+Dr. Deepayan Sarkar, that serves the same purpose as this function.
+No doubt the comment above is accurate, that this function is
+widely used in the Lattice R package to update graphical
+parameters.
+}
+\examples{
+# function starts with y formals, adds or updates new values
+y <- list(a=1, b=4, e=NULL)
+update_list_elements(y, list(b=5:6, d=1:5));
+
+# also see the preferred function utils::modifyList below
+utils::modifyList(y, list(b=5:6, d=1:5));
+
 }
 \seealso{
 Other jam utilities: 

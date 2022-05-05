@@ -1,5 +1,15 @@
 # TODO for jamma
 
+## outlier detection in jammaplot by leave-one-out
+
+Basic workflow:
+
+* within each `centerGroups` grouping
+* iterate each sample to leave one sample out
+* call `jammacalc()` to calculate MADfactors for all replicates,
+focusing on the omitted sample.
+* determine if there are robust sample outliers
+
 ## volcano_plot()
 
 * COMPLETE. Add new function.

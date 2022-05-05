@@ -41,7 +41,6 @@
 #' }
 #' test_function_2(y=list(b=5:6, d=1:5))
 #'
-#'
 #' @export
 update_function_params <- function
 (function_name=NULL,
@@ -62,15 +61,19 @@ update_function_params <- function
          "str(default_params)");
       print(str(default_params));
    }
-   default_params <- update_list_elements(default_params,
-      new_values,
-      verbose=verbose);
+   default_params <- utils::modifyList(default_params,
+      new_values);
+   # default_params <- update_list_elements(default_params,
+   #    new_values,
+   #    verbose=verbose);
    return(default_params);
 }
 
-#' Update a subset of list elements
+#' Update a subset of list elements (deprecated)
 #'
-#' Update a subset of list elements
+#' Update a subset of list elements (deprecated)
+#'
+#' Deprecated.
 #'
 #' This function is intended to help update a nested `source_list`,
 #' a subset of whose values should be replaced with entries
@@ -81,6 +84,13 @@ update_function_params <- function
 #' graphical parameters, which are often stored in a nested
 #' list structure.
 #'
+#' Note: This function is deprecated, because there exists a function
+#' `utils::modifyList()` written by Lattice co-author
+#' Dr. Deepayan Sarkar, that serves the same purpose as this function.
+#' No doubt the comment above is accurate, that this function is
+#' widely used in the Lattice R package to update graphical
+#' parameters.
+#'
 #' @family jam utilities
 #'
 #' @param source_list `list` with input values
@@ -89,6 +99,14 @@ update_function_params <- function
 #'    which defines the list depth when traversing a nested list.
 #' @param verbose `logical` indicating whether to print verbose output.
 #' @param ... additional arguments are ignored.
+#'
+#' @examples
+#' # function starts with y formals, adds or updates new values
+#' y <- list(a=1, b=4, e=NULL)
+#' update_list_elements(y, list(b=5:6, d=1:5));
+#'
+#' # also see the preferred function utils::modifyList below
+#' utils::modifyList(y, list(b=5:6, d=1:5));
 #'
 #' @export
 update_list_elements <- function

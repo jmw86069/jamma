@@ -57,7 +57,6 @@ test_function_2 <- function(y=list(a=1, b=4)) {
 }
 test_function_2(y=list(b=5:6, d=1:5))
 
-
 }
 \seealso{
 Other jam utilities: 

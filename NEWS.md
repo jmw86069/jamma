@@ -22,6 +22,15 @@ in ggplot2.
 * `update_function_params()` - update function arguments in place
 * `update_list_elements()` - utility called by `update_function_params()`.
 
+## immediate change to existing functions
+
+* `update_list_elements()` appears to have identical purpose and
+functionality as `utils::modifyList()`
+
+   * `update_function_params()` was updated to call `utils::modifyList()`
+   * `update_list_elements()` is deprecated while this change is tested.
+
+
 # jamma 0.0.21.900
 
 ## notable changes to default values
