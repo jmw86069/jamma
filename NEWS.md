@@ -1,3 +1,27 @@
+# jamma 0.0.22.900
+
+## new functions: volcano_plot()
+
+The `volcano_plot()` function has been in use for a long time,
+but not in R package form. The sticking point has been the
+block arrows drawn in plot margins (outside the plot panel)
+which describe the number of points that exceed statistical
+thresholds.
+Colleagues seem to like having these block arrows
+with summary numbers, and they've appeared in some published papers.
+That said, sizing block arrows consistently for all plot aspect
+ratios has been tricky, and migrating everything to ggplot2
+is on the short to-do list. Unclear how block arrows would work
+in ggplot2.
+
+* `volcano_plot()` - Draw volcano plot, work in progress
+* `blockArrowMargin()` - draws block arrows in plot margins
+* `gradient_rect()` - draw rectangle with gradient color fill
+* `logAxis()` - draw log-transformed `-log10(pvalue)` axis labels
+* `find_colname()` - find colname matching a character string
+* `update_function_params()` - update function arguments in place
+* `update_list_elements()` - utility called by `update_function_params()`.
+
 # jamma 0.0.21.900
 
 ## notable changes to default values

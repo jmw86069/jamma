@@ -1,5 +1,12 @@
 # TODO for jamma
 
+## volcano_plot()
+
+* COMPLETE. Add new function.
+* Add ggplot2 variation on this function.
+* Add `volcano_sestats()` that takes `sestats` input from
+`jamses::se_contrast_stats()`.
+
 ## ggjammaplot()
 
 * make empty plot panels completely blank, relevant when using `blankPlotPos`
