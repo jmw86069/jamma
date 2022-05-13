@@ -1,5 +1,24 @@
 # TODO for jamma
 
+## 11may2022
+
+* `jammaplot()` should have some ability to provide column labels,
+in place of using `colnames(x)` which may be a super-long text string.
+
+Potential bugs:
+
+* `jammaplot()` highlightPch point shapes are not honored in the legend.
+* `jammaplot()` draws plot labels after `highlightPoints`, which can obscure
+the `highlightPoints`. Ideally, draw the labels then the highlighted points.
+This bug may not be evident with `ggjammaplot()`.
+* `ggjammaplot()` does not display `subtitle` box in the bottom-left.
+Consider using `ggtext` or `ggplot2::geom_label()`.
+* `jammaplot()` and `ggjammaplot()` should somehow indicate which samples
+were used as controlSamples. Perhaps asterisk "*" in the title?
+* The MAD factor label is difficult to read when it overlaps points,
+particularly highlight points.
+* When only one sample per centerGroups, hide MAD factor `"NaN"`.
+
 ## outlier detection in jammaplot by leave-one-out
 
 Basic workflow:

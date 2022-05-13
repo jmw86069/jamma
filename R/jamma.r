@@ -309,10 +309,13 @@ NULL
 #' @param subtitle `NULL` or `character` vector to be drawn at
 #'    the bottom left corner of each plot panel, the location
 #'    is defined by `subtitlePreset`.
-#' @param subtitlePreset character value describing where to position the
-#'    subtitle, using terms valid in `jamba::coordPresets()`. The default
-#'    `subtitlePreset="bottomleft"` places the subtitle at the
-#'    bottom left corner of each plot panel.
+#' @param subtitlePreset `character` string passed to `jamba::coordPresets()`.
+#'    The default `subtitlePreset="bottomleft"` defines the bottom-left
+#'    corner of each panel.
+#' @param subtitleAdjPreset `character` string passed to `jamba::coordPresets()`.
+#'    The default `subtitleAdjPreset="topright"` places labels to the
+#'    top-right of the subtitle position, which by default is the bottom-left
+#'    corner of each panel.
 #' @param titleColor `character` vector of colors applied to title text
 #'    in each MA-plot panel. When `doTitleBox=TRUE` and `titleColor`
 #'    contains only one or no value, the title color is defined by
@@ -326,10 +329,11 @@ NULL
 #' @param titleFont `integer` font compatible with `par("font")`.
 #'    Values are recycled across panels, so each panel can use a custom
 #'    value if needed.
-#' @param titlePreset `character` value describing where to position the
-#'    subtitle, using terms valid in `jamba::coordPresets()`.
-#'    The default `titlePreset="top"` centers the label at the
-#'    top of each panel.
+#' @param titlePreset `character` string passed to `jamba::coordPresets()`.
+#'    The default `titlePreset="top"` defines the top edge of each panel.
+#' @param titleAdjPreset `character` string passed to `jamba::coordPresets()`.
+#'    The default `titleAdjPreset="top"` places labels above the `titlePreset`
+#'    location, by default above the top edge of each panel.
 #' @param xlab,ylab `character` x- and y-axis labels, respectively.
 #'    The default values are blank `""` because there are a wide variety
 #'    of possible labels, and the labels take up more space
@@ -620,12 +624,14 @@ jammaplot <- function
  maintitleCex=1.8,
  subtitle=NULL,
  subtitlePreset="bottomleft",
+ subtitleAdjPreset="topright",
  titleCexFactor=1,
  titleCex=NULL,
  doTitleBox=TRUE,
  titleColor="black",
  titleFont=2,
  titlePreset="top",
+ titleAdjPreset="top",
  xlab="",
  xlabline=2,
  ylab="",
@@ -932,11 +938,16 @@ jammaplot <- function
       if (length(maintitle) > 0) {
          maintitle_nlines <- length(unlist(strsplit(maintitle, "\n")));
          par("oma"=pmax(par("oma"),
-            c(0, 0, 1.5+1.5*maintitle_nlines, 0)));
+            c(0, 0, 1.5 * (maintitle_nlines + 3), 0)));
       }
+      # if highlightPoints, add margin at the bottom
       if (length(highlightPoints) > 0 && doHighlightLegend) {
          par("oma"=pmax(par("oma"),
             c(3, 0, 0, 0)));
+      }
+      # if useRank=TRUE add minor margin to left
+      if (useRank %in% TRUE) {
+         margins <- margins + c(0, 1, 0, 0);
       }
    }
    if (length(titleCex) == 0) {
@@ -1488,6 +1499,7 @@ jammaplot <- function
             par("xpd"=NA);
             ## Use drawLabels() for more control over the text box
             jamba::drawLabels(preset=titlePreset,
+               adjPreset=titleAdjPreset,
                txt=paste0(titleText, groupSuffix[i]),
                boxColor=titleBoxColor[i],
                boxBorderColor=jamba::makeColorDarker(titleBoxColor[i]),
@@ -1518,6 +1530,7 @@ jammaplot <- function
          if (length(subtitle) > 0) {
             ## Use drawLabels() for more control over the text box
             jamba::drawLabels(preset=subtitlePreset,
+               adjPreset=subtitleAdjPreset,
                txt=subtitle[i],
                boxColor=subtitleBoxColor[i],
                boxBorderColor=jamba::makeColorDarker(subtitleBoxColor[i]),

@@ -1,3 +1,32 @@
+# jamma 0.0.23.900
+
+## changes to existing functions
+
+* `jammaplot()` title box labels are now placed *above* plot panels!
+
+   * This changes is being tested, but it seems like a sensible default
+   not to obscure points in each plot panel.
+   * two new arguments: `titleAdjPreset`, `subtitleAdjPreset`
+   * passed to `jamba::coordPresets()` which defines coordinate positions
+   in base R graphics context.
+   The two main arguments are `preset` and `adjPreset`, where `preset`
+   defines the coordinate "edge" or "corner" position, typically something
+   like "top" or "bottomleft"; and `adjPreset` defines relative placement
+   of the label. By default, `adjPreset` chooses the opposite orientation,
+   to keep labels inside the plot panel. However `preset="top"` defines
+   the top edge of the plot, and `adjPreset="top"` places the label
+   above the top edge of the plot panel.
+   * The calculation of top outer margin is dependent upon the number of
+   text lines in `maintitle`, and was increased to accomodate the new
+   default placement of title box labels above the top panel. It does
+   not account for multi-line title box labels, in that case, supply
+   `maintitle` with empty extra lines at the end to add spacing.
+
+* `jammaplot()` argument `margins=c(3.5, 2, 0.3, 0.2)` is typically good
+for non-ranked MA-plots. When `useRank=TRUE` the numbers typically have
+4 or more digits, and need more space. In this case by default,
+`margins + c(0, 1, 0, 0)` is used.
+
 # jamma 0.0.22.900
 
 ## new functions: volcano_plot()

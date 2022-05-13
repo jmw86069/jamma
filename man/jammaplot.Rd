@@ -86,12 +86,14 @@ jammaplot(
   maintitleCex = 1.8,
   subtitle = NULL,
   subtitlePreset = "bottomleft",
+  subtitleAdjPreset = "topright",
   titleCexFactor = 1,
   titleCex = NULL,
   doTitleBox = TRUE,
   titleColor = "black",
   titleFont = 2,
   titlePreset = "top",
+  titleAdjPreset = "top",
   xlab = "",
   xlabline = 2,
   ylab = "",
@@ -104,7 +106,7 @@ jammaplot(
   highlightPolygonAlpha = 0.3,
   doHighlightLegend = TRUE,
   smoothPtCol = "#00000055",
-  margins = c(3.5, 2, 0.3, 0.2),
+  margins = c(3.5, 3, 0.3, 0.2),
   useRaster = TRUE,
   ncol = NULL,
   nrow = NULL,
@@ -441,10 +443,14 @@ When \code{colrampOutlier} is \code{NULL} the \code{outlierColor} is used.}
 \item{maintitleCex}{\code{numeric} cex character expansion used to
 resize the \code{maintitle}.}
 
-\item{subtitlePreset}{character value describing where to position the
-subtitle, using terms valid in \code{jamba::coordPresets()}. The default
-\code{subtitlePreset="bottomleft"} places the subtitle at the
-bottom left corner of each plot panel.}
+\item{subtitlePreset}{\code{character} string passed to \code{jamba::coordPresets()}.
+The default \code{subtitlePreset="bottomleft"} defines the bottom-left
+corner of each panel.}
+
+\item{subtitleAdjPreset}{\code{character} string passed to \code{jamba::coordPresets()}.
+The default \code{subtitleAdjPreset="topright"} places labels to the
+top-right of the subtitle position, which by default is the bottom-left
+corner of each panel.}
 
 \item{doTitleBox}{\code{logical} indicating whether to draw plot
 titles using a colored box. When \code{doTitleBox=TRUE} the
@@ -462,10 +468,12 @@ contains only one or no value, the title color is defined by
 Values are recycled across panels, so each panel can use a custom
 value if needed.}
 
-\item{titlePreset}{\code{character} value describing where to position the
-subtitle, using terms valid in \code{jamba::coordPresets()}.
-The default \code{titlePreset="top"} centers the label at the
-top of each panel.}
+\item{titlePreset}{\code{character} string passed to \code{jamba::coordPresets()}.
+The default \code{titlePreset="top"} defines the top edge of each panel.}
+
+\item{titleAdjPreset}{\code{character} string passed to \code{jamba::coordPresets()}.
+The default \code{titleAdjPreset="top"} places labels above the \code{titlePreset}
+location, by default above the top edge of each panel.}
 
 \item{xlab, ylab}{\code{character} x- and y-axis labels, respectively.
 The default values are blank \code{""} because there are a wide variety
