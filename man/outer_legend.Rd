@@ -6,13 +6,13 @@
 \usage{
 outer_legend(
   x = "bottom",
-  y,
+  y = NULL,
   doPar = TRUE,
   legend,
   bg = "white",
   box.col = "grey70",
   col,
-  pt.bg = col,
+  pt.bg = NULL,
   pch = 21,
   ncol = min(c(5, length(legend))),
   cex = 1.2,
@@ -39,12 +39,14 @@ display each legend label.}
 \item{box.col}{color used as the frame border color of the
 legend box.}
 
-\item{col}{vector of colors used to color each entry in \code{legend}.}
+\item{col}{\code{character} vector of colors used to color each
+entry in \code{legend}.}
 
-\item{pt.bg}{vector of colors used as the background color,
-when \code{pch} refers to point shapes that require two colors.
-The default \code{pch=21} uses \code{pt.bg} as the fill color,
-and \code{col} as the border color for each point.}
+\item{pt.bg}{vector of colors used as the background color
+when \code{pch} is any value from 21 to 25. When \code{pt.bg=NULL}
+this value and \code{col} are adjusted so the outline is
+darker, via \code{jamba::makeColorDarker()}, with the fill
+color \code{pt.bg} using the original \code{col} value.}
 
 \item{pch}{integer or character vector of point shapes,
 as described in \code{graphics::points()}.}

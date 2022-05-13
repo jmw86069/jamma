@@ -21,11 +21,13 @@
 #' @param bg color used as the background of the legend box.
 #' @param box.col color used as the frame border color of the
 #'    legend box.
-#' @param col vector of colors used to color each entry in `legend`.
-#' @param pt.bg vector of colors used as the background color,
-#'    when `pch` refers to point shapes that require two colors.
-#'    The default `pch=21` uses `pt.bg` as the fill color,
-#'    and `col` as the border color for each point.
+#' @param col `character` vector of colors used to color each
+#'    entry in `legend`.
+#' @param pt.bg vector of colors used as the background color
+#'    when `pch` is any value from 21 to 25. When `pt.bg=NULL`
+#'    this value and `col` are adjusted so the outline is
+#'    darker, via `jamba::makeColorDarker()`, with the fill
+#'    color `pt.bg` using the original `col` value.
 #' @param pch integer or character vector of point shapes,
 #'    as described in `graphics::points()`.
 #' @param ncol integer number of columns to use for legend
@@ -57,13 +59,13 @@
 #' @export
 outer_legend <- function
 (x="bottom",
- y,
+ y=NULL,
  doPar=TRUE,
  legend,
  bg="white",
  box.col="grey70",
  col,
- pt.bg=col,
+ pt.bg=NULL,
  pch=21,
  ncol=min(c(5, length(legend))),
  cex=1.2,
@@ -71,6 +73,21 @@ outer_legend <- function
  ...)
 {
    ##
+   if (length(pch) == 0) {
+      pch <- 21;
+   }
+   if (length(pt.cex) == 0) {
+      pt.cex <- 1.4;
+   }
+   pch <- rep(pch,
+      length.out=length(legend));
+   if (length(pt.bg) == 0) {
+      pt.bg <- col;
+      col <- ifelse(pch %in% c(21:25),
+         jamba::makeColorDarker(col),
+         col);
+   }
+
    if (doPar) {
       opar <- par(no.readonly=TRUE);
       on.exit(par(opar));
@@ -80,8 +97,8 @@ outer_legend <- function
          mar=c(0, 0, 0, 0),
          new=TRUE);
       jamba::nullPlot(doBoxes=FALSE);
-      #plot(0, 0, type='n', bty='n', xaxt='n', yaxt='n');
    }
+
    legend(x=x,
       y=y,
       legend=legend,

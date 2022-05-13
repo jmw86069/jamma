@@ -1261,6 +1261,8 @@ jammaplot <- function
     maintitle,
     doHighlightLegend=FALSE,
     highlightColor=NULL,
+    highlightCex=NULL,
+    highlightPch=NULL,
     verbose=FALSE,
     ...) {
       if (length(maintitle) == 0 &&
@@ -1294,8 +1296,10 @@ jammaplot <- function
             }
             outer_legend(x="bottom",
                legend=names(highlightColor),
-               col=jamba::makeColorDarker(unlist(highlightColor)),
-               pt.bg=unlist(highlightColor));
+               col=unname(unlist(highlightColor)),
+               pch=unname(unlist(highlightPch)),
+               pt.cex=unname(unlist(highlightCex)),
+               pt.bg=NULL);
          } else {
             if (verbose) {
                jamba::printDebug("check_panel_page(): ",
@@ -1322,6 +1326,8 @@ jammaplot <- function
             maintitle,
             doHighlightLegend=doHighlightLegend,
             highlightColor=highlightColor,
+            highlightPch=highlightPch,
+            highlightCex=highlightCex,
             verbose=verbose,
             ...);
          if (verbose) {
@@ -1340,6 +1346,8 @@ jammaplot <- function
                   maintitle,
                   doHighlightLegend=doHighlightLegend,
                   highlightColor=highlightColor,
+                  highlightPch=highlightPch,
+                  highlightCex=highlightCex,
                   verbose=verbose,
                   ...);
                if (verbose) {
@@ -1580,6 +1588,8 @@ jammaplot <- function
          maintitle,
          doHighlightLegend=doHighlightLegend,
          highlightColor=highlightColor,
+         highlightPch=highlightPch,
+         highlightCex=highlightCex,
          verbose=verbose,
          ...);
    }

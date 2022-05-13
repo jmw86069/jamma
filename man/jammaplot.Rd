@@ -106,7 +106,7 @@ jammaplot(
   highlightPolygonAlpha = 0.3,
   doHighlightLegend = TRUE,
   smoothPtCol = "#00000055",
-  margins = c(3.5, 3, 0.3, 0.2),
+  margins = c(3.5, 2, 0.3, 0.2),
   useRaster = TRUE,
   ncol = NULL,
   nrow = NULL,

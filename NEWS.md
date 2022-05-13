@@ -27,6 +27,15 @@ for non-ranked MA-plots. When `useRank=TRUE` the numbers typically have
 4 or more digits, and need more space. In this case by default,
 `margins + c(0, 1, 0, 0)` is used.
 
+## bug fixes / improvements
+
+* `jammaplot()` correctly represents `highlightPch` point shapes in
+the highlight point legend at the bottom, via `outer_legend()`.
+* `outer_legend()` when `pt.bg=NULL` it will adjust `col` slightly
+darker for point shapes ranging from 21 to 25, and will assign `pt.bg=col`
+so the fill color is correct.
+
+
 # jamma 0.0.22.900
 
 ## new functions: volcano_plot()

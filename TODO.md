@@ -4,6 +4,10 @@
 
 * `jammaplot()` should have some ability to provide column labels,
 in place of using `colnames(x)` which may be a super-long text string.
+* `jammaplot()` consider using `jamba::adjustAxisLabelMargins()` for
+panel margins by default, making `margins` optional for custom use.
+This change would ensure each margin fully displays text labels,
+closer to how ggplot2 works.
 
 Potential bugs:
 
