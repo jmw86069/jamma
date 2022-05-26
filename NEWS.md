@@ -1,3 +1,12 @@
+# jamma 0.0.24.900
+
+## bug fixes
+
+* `volcano_plot()` was throwing an error due to the new use of
+`utils::modifyList()`, ultimately caused by `update_function_params()`.
+That function was updated, resolving the error.
+
+
 # jamma 0.0.23.900
 
 ## changes to existing functions

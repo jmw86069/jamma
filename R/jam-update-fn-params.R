@@ -60,9 +60,18 @@ update_function_params <- function
       jamba::printDebug("update_function_params(): ",
          "str(default_params)");
       print(str(default_params));
+      jamba::printDebug("update_function_params(): ",
+         "str(new_values)");
+      print(str(new_values));
    }
-   default_params <- utils::modifyList(default_params,
-      new_values);
+   if (length(new_values) > 0) {
+      default_params_list <- list(default_params);
+      names(default_params_list) <- param_name;
+      new_values_list <- list(new_values);
+      names(new_values_list) <- param_name;
+      default_params <- utils::modifyList(default_params_list,
+         new_values_list)[[param_name]];
+   }
    # default_params <- update_list_elements(default_params,
    #    new_values,
    #    verbose=verbose);

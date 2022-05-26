@@ -1,5 +1,14 @@
 # TODO for jamma
 
+## 26may2022
+
+* `volcano_plot()` throwing an error:
+
+   * ```"Error in utils::modifyList(default_params, new_values):
+   is.list(x) is not TRUE```
+   * `update_function_params(function_name = "volcano_plot", param_name = "color_set", 
+    new_values = color_set) at jam-volcano-plot.R#374`
+
 ## 11may2022
 
 * `jammaplot()` should have some ability to provide column labels,
@@ -11,10 +20,14 @@ closer to how ggplot2 works.
 
 Potential bugs:
 
-* `jammaplot()` highlightPch point shapes are not honored in the legend.
-* `jammaplot()` draws plot labels after `highlightPoints`, which can obscure
+* COMPLETE: `jammaplot()` highlightPch point shapes are not honored in the legend.
+* COMPLETE: `jammaplot()` draws plot labels after `highlightPoints`, which can obscure
 the `highlightPoints`. Ideally, draw the labels then the highlighted points.
 This bug may not be evident with `ggjammaplot()`.
+
+   * Partially completed by moving title box labels outside the plot. It
+   is still possible with subtitle box labels, but will leave as-is for now.
+
 * `ggjammaplot()` does not display `subtitle` box in the bottom-left.
 Consider using `ggtext` or `ggplot2::geom_label()`.
 * `jammaplot()` and `ggjammaplot()` should somehow indicate which samples
