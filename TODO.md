@@ -2,7 +2,16 @@
 
 ## 26may2022
 
-* `volcano_plot()` throwing an error:
+* There should be some indication for samples that are `controlSamples`
+during centering.
+
+   * Perhaps an asterisk in the topleft corner inside each plot panel?
+
+* Allow `sample_color_list` input as alternative to `colorSub`?
+Or auto-detect `list` input and try to match values in the `list`.
+* COMPLETE: Update the usage of `drawLabel()` to size the title box at least
+the width of each plot panel.
+* FIXED: `volcano_plot()` throwing an error:
 
    * ```"Error in utils::modifyList(default_params, new_values):
    is.list(x) is not TRUE```

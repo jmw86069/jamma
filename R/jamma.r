@@ -1508,6 +1508,7 @@ jammaplot <- function
             ## Use drawLabels() for more control over the text box
             jamba::drawLabels(preset=titlePreset,
                adjPreset=titleAdjPreset,
+               panelWidth="minimum",
                txt=paste0(titleText, groupSuffix[i]),
                boxColor=titleBoxColor[i],
                boxBorderColor=jamba::makeColorDarker(titleBoxColor[i]),

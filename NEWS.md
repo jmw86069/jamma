@@ -5,6 +5,10 @@
 * `volcano_plot()` was throwing an error due to the new use of
 `utils::modifyList()`, ultimately caused by `update_function_params()`.
 That function was updated, resolving the error.
+* `jammaplot()` was updated to pass `panelWidth="minimum"` to
+`jamba::drawLabels()` for the title box when using base R
+graphics plots. This change ensures the box is at least the plot panel
+width, and will be larger if the label is wider than each panel.
 
 
 # jamma 0.0.23.900
