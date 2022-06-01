@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.21.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.25.900</span>
       </span>
     </div>
 
@@ -64,13 +64,13 @@
 
     <div class="ref-usage sourceCode"><pre class="sourceCode r"><code><span class="fu">outer_legend</span><span class="op">(</span>
   x <span class="op">=</span> <span class="st">"bottom"</span>,
-  <span class="va">y</span>,
+  y <span class="op">=</span> <span class="cn">NULL</span>,
   doPar <span class="op">=</span> <span class="cn">TRUE</span>,
   <span class="va">legend</span>,
   bg <span class="op">=</span> <span class="st">"white"</span>,
   box.col <span class="op">=</span> <span class="st">"grey70"</span>,
   <span class="va">col</span>,
-  pt.bg <span class="op">=</span> <span class="va">col</span>,
+  pt.bg <span class="op">=</span> <span class="cn">NULL</span>,
   pch <span class="op">=</span> <span class="fl">21</span>,
   ncol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">legend</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,
   cex <span class="op">=</span> <span class="fl">1.2</span>,
@@ -100,12 +100,14 @@ display each legend label.</p></dd>
 <dd><p>color used as the frame border color of the
 legend box.</p></dd>
 <dt>col</dt>
-<dd><p>vector of colors used to color each entry in <code>legend</code>.</p></dd>
+<dd><p><code>character</code> vector of colors used to color each
+entry in <code>legend</code>.</p></dd>
 <dt>pt.bg</dt>
-<dd><p>vector of colors used as the background color,
-when <code>pch</code> refers to point shapes that require two colors.
-The default <code>pch=21</code> uses <code>pt.bg</code> as the fill color,
-and <code>col</code> as the border color for each point.</p></dd>
+<dd><p>vector of colors used as the background color
+when <code>pch</code> is any value from 21 to 25. When <code>pt.bg=NULL</code>
+this value and <code>col</code> are adjusted so the outline is
+darker, via <code><a href="https://rdrr.io/pkg/jamba/man/makeColorDarker.html" class="external-link">jamba::makeColorDarker()</a></code>, with the fill
+color <code>pt.bg</code> using the original <code>col</code> value.</p></dd>
 <dt>pch</dt>
 <dd><p>integer or character vector of point shapes,
 as described in <code><a href="https://rdrr.io/r/graphics/points.html" class="external-link">graphics::points()</a></code>.</p></dd>
@@ -134,8 +136,10 @@ for example when using <code>par("mfrow"=c(2,2))</code>.</p>
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index"><p>Other jam utility functions: 
+<code><a href="fold_to_log2fold.html">fold_to_log2fold</a>()</code>,
 <code><a href="get_se_assaydata.html">get_se_assaydata</a>()</code>,
 <code><a href="handle_highlightPoints.html">handle_highlightPoints</a>()</code>,
+<code><a href="log2fold_to_fold.html">log2fold_to_fold</a>()</code>,
 <code><a href="points2polygonHull.html">points2polygonHull</a>()</code></p></div>
     </div>
     </div>

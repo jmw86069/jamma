@@ -21,7 +21,9 @@ Get SummarizedExperiment assay matrix data
 }
 \seealso{
 Other jam utility functions: 
+\code{\link{fold_to_log2fold}()},
 \code{\link{handle_highlightPoints}()},
+\code{\link{log2fold_to_fold}()},
 \code{\link{outer_legend}()},
 \code{\link{points2polygonHull}()}
 }

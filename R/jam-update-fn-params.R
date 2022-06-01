@@ -33,7 +33,7 @@
 #'
 #' # function starts with y formals, adds or updates new values
 #' test_function_2 <- function(y=list(a=1, b=4)) {
-#'    y <- update_function_params(test_function,
+#'    y <- update_function_params(test_function_1,
 #'       param_name="y",
 #'       new_values=y);
 #'    print("y:");

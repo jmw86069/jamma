@@ -90,8 +90,10 @@ outer_legend("bottom",
 }
 \seealso{
 Other jam utility functions: 
+\code{\link{fold_to_log2fold}()},
 \code{\link{get_se_assaydata}()},
 \code{\link{handle_highlightPoints}()},
+\code{\link{log2fold_to_fold}()},
 \code{\link{points2polygonHull}()}
 }
 \concept{jam utility functions}

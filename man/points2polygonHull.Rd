@@ -47,8 +47,10 @@ polygon(xyhull, border="purple2", col="transparent");
 }
 \seealso{
 Other jam utility functions: 
+\code{\link{fold_to_log2fold}()},
 \code{\link{get_se_assaydata}()},
 \code{\link{handle_highlightPoints}()},
+\code{\link{log2fold_to_fold}()},
 \code{\link{outer_legend}()}
 }
 \concept{jam utility functions}

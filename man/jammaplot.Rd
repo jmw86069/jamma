@@ -70,6 +70,8 @@ jammaplot(
   subtitleBoxColor = titleBoxColor,
   centerGroups = NULL,
   controlSamples = colnames(x),
+  controlIndicator = c("labelstar", "titlestar", "none"),
+  sample_labels = NULL,
   useMedian = FALSE,
   useMean = NULL,
   ylim = c(-4, 4),
@@ -106,7 +108,7 @@ jammaplot(
   highlightPolygonAlpha = 0.3,
   doHighlightLegend = TRUE,
   smoothPtCol = "#00000055",
-  margins = c(3.5, 2, 0.3, 0.2),
+  margins = c(2.5, 2.5, 2, 0.2),
   useRaster = TRUE,
   ncol = NULL,
   nrow = NULL,
@@ -132,6 +134,7 @@ jammaplot(
   fillBackground = TRUE,
   useRank = FALSE,
   ma_method = c("jammacalc", "old"),
+  panel_hook_function = NULL,
   doPlot = TRUE,
   verbose = FALSE,
   ...
@@ -586,6 +589,26 @@ to a text terminal.}
 MA-plot calculations using the old method \code{"old"}; or \code{"jammacalc"}
 which uses the function \code{jammacalc()}.}
 
+\item{panel_hook_function}{\code{function} or \code{NULL}, with custom function
+to be called as a "hook" after each MA-plot panel has been drawn.
+This \code{panel_hook_function} is recycled to the number of samples,
+defined internally as \code{nsamples}, although the same function can
+be called on all panels. If \code{panel_hook_function} is supplied as
+a \code{list}, it is recycled to the number of samples \code{nsamples},
+and any element in the list which has \code{length==0} or is \code{NA} will
+not be called as a function.
+This function should accept at least two arguments:
+\itemize{
+\item \code{i} - an \code{integer} indicating the sample to be plotted in order,
+as defined by \code{colnames(x)}, and \code{whichSamples} in the event samples
+are subsetted or re-ordered with \code{whichSamples}.
+\item \code{...} additional arguments passed by \code{...} in this function.
+\item Any arguments of \code{jammaplot()} are available inside the panel
+hook function as a by-product of calling this function within
+the environment of the active \code{jammaplot()}, therefore any
+argument values will be available for use inside that function.
+}}
+
 \item{titleBoxColor, subtitleBoxColor}{\code{character} vector of
 R colors used as background color for each panel title text,
 or subtitle text respectively. The subtitle appears in the
@@ -851,6 +874,25 @@ if (suppressPackageStartupMessages(require(affydata))) {
    data(Dilution);
    edata <- log2(1+exprs(Dilution));
    jammaplot(edata);
+
+   jammaplot(edata,
+      whichSamples=c(1, 2));
+
+   jammaplot(edata,
+      sample_labels=paste("Sample", colnames(edata)));
+
+   jammaplot(edata,
+      controlIndicator="titlestar");
+
+   jammaplot(edata,
+      controlIndicator="none");
+
+   jammaplot(edata,
+      panel_hook_function=function(i,...){box("figure")});
+
+   jammaplot(edata,
+      useRank=TRUE,
+      maintitle="Rank MA-plots");
 }
 
 }

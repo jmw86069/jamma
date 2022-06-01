@@ -18,7 +18,7 @@ ggjammaplot() uses ggplot2 graphics."><!-- mathjax --><script src="https://cdnjs
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.21.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.25.900</span>
       </span>
     </div>
 
@@ -120,6 +120,8 @@ ggjammaplot() uses ggplot2 graphics."><!-- mathjax --><script src="https://cdnjs
   subtitleBoxColor <span class="op">=</span> <span class="va">titleBoxColor</span>,
   centerGroups <span class="op">=</span> <span class="cn">NULL</span>,
   controlSamples <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>,
+  controlIndicator <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"labelstar"</span>, <span class="st">"titlestar"</span>, <span class="st">"none"</span><span class="op">)</span>,
+  sample_labels <span class="op">=</span> <span class="cn">NULL</span>,
   useMedian <span class="op">=</span> <span class="cn">FALSE</span>,
   useMean <span class="op">=</span> <span class="cn">NULL</span>,
   ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">4</span>, <span class="fl">4</span><span class="op">)</span>,
@@ -136,12 +138,14 @@ ggjammaplot() uses ggplot2 graphics."><!-- mathjax --><script src="https://cdnjs
   maintitleCex <span class="op">=</span> <span class="fl">1.8</span>,
   subtitle <span class="op">=</span> <span class="cn">NULL</span>,
   subtitlePreset <span class="op">=</span> <span class="st">"bottomleft"</span>,
+  subtitleAdjPreset <span class="op">=</span> <span class="st">"topright"</span>,
   titleCexFactor <span class="op">=</span> <span class="fl">1</span>,
   titleCex <span class="op">=</span> <span class="cn">NULL</span>,
   doTitleBox <span class="op">=</span> <span class="cn">TRUE</span>,
   titleColor <span class="op">=</span> <span class="st">"black"</span>,
   titleFont <span class="op">=</span> <span class="fl">2</span>,
   titlePreset <span class="op">=</span> <span class="st">"top"</span>,
+  titleAdjPreset <span class="op">=</span> <span class="st">"top"</span>,
   xlab <span class="op">=</span> <span class="st">""</span>,
   xlabline <span class="op">=</span> <span class="fl">2</span>,
   ylab <span class="op">=</span> <span class="st">""</span>,
@@ -154,7 +158,7 @@ ggjammaplot() uses ggplot2 graphics."><!-- mathjax --><script src="https://cdnjs
   highlightPolygonAlpha <span class="op">=</span> <span class="fl">0.3</span>,
   doHighlightLegend <span class="op">=</span> <span class="cn">TRUE</span>,
   smoothPtCol <span class="op">=</span> <span class="st">"#00000055"</span>,
-  margins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3.5</span>, <span class="fl">2</span>, <span class="fl">0.3</span>, <span class="fl">0.2</span><span class="op">)</span>,
+  margins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2.5</span>, <span class="fl">2.5</span>, <span class="fl">2</span>, <span class="fl">0.2</span><span class="op">)</span>,
   useRaster <span class="op">=</span> <span class="cn">TRUE</span>,
   ncol <span class="op">=</span> <span class="cn">NULL</span>,
   nrow <span class="op">=</span> <span class="cn">NULL</span>,
@@ -180,6 +184,7 @@ ggjammaplot() uses ggplot2 graphics."><!-- mathjax --><script src="https://cdnjs
   fillBackground <span class="op">=</span> <span class="cn">TRUE</span>,
   useRank <span class="op">=</span> <span class="cn">FALSE</span>,
   ma_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"jammacalc"</span>, <span class="st">"old"</span><span class="op">)</span>,
+  panel_hook_function <span class="op">=</span> <span class="cn">NULL</span>,
   doPlot <span class="op">=</span> <span class="cn">TRUE</span>,
   verbose <span class="op">=</span> <span class="cn">FALSE</span>,
   <span class="va">...</span>
@@ -488,10 +493,14 @@ When <code>colrampOutlier</code> is <code>NULL</code> the <code>outlierColor</co
 <dd><p><code>numeric</code> cex character expansion used to
 resize the <code>maintitle</code>.</p></dd>
 <dt>subtitlePreset</dt>
-<dd><p>character value describing where to position the
-subtitle, using terms valid in <code><a href="https://rdrr.io/pkg/jamba/man/coordPresets.html" class="external-link">jamba::coordPresets()</a></code>. The default
-<code>subtitlePreset="bottomleft"</code> places the subtitle at the
-bottom left corner of each plot panel.</p></dd>
+<dd><p><code>character</code> string passed to <code><a href="https://rdrr.io/pkg/jamba/man/coordPresets.html" class="external-link">jamba::coordPresets()</a></code>.
+The default <code>subtitlePreset="bottomleft"</code> defines the bottom-left
+corner of each panel.</p></dd>
+<dt>subtitleAdjPreset</dt>
+<dd><p><code>character</code> string passed to <code><a href="https://rdrr.io/pkg/jamba/man/coordPresets.html" class="external-link">jamba::coordPresets()</a></code>.
+The default <code>subtitleAdjPreset="topright"</code> places labels to the
+top-right of the subtitle position, which by default is the bottom-left
+corner of each panel.</p></dd>
 <dt>doTitleBox</dt>
 <dd><p><code>logical</code> indicating whether to draw plot
 titles using a colored box. When <code>doTitleBox=TRUE</code> the
@@ -509,10 +518,12 @@ contains only one or no value, the title color is defined by
 Values are recycled across panels, so each panel can use a custom
 value if needed.</p></dd>
 <dt>titlePreset</dt>
-<dd><p><code>character</code> value describing where to position the
-subtitle, using terms valid in <code><a href="https://rdrr.io/pkg/jamba/man/coordPresets.html" class="external-link">jamba::coordPresets()</a></code>.
-The default <code>titlePreset="top"</code> centers the label at the
-top of each panel.</p></dd>
+<dd><p><code>character</code> string passed to <code><a href="https://rdrr.io/pkg/jamba/man/coordPresets.html" class="external-link">jamba::coordPresets()</a></code>.
+The default <code>titlePreset="top"</code> defines the top edge of each panel.</p></dd>
+<dt>titleAdjPreset</dt>
+<dd><p><code>character</code> string passed to <code><a href="https://rdrr.io/pkg/jamba/man/coordPresets.html" class="external-link">jamba::coordPresets()</a></code>.
+The default <code>titleAdjPreset="top"</code> places labels above the <code>titlePreset</code>
+location, by default above the top edge of each panel.</p></dd>
 <dt>xlab, ylab</dt>
 <dd><p><code>character</code> x- and y-axis labels, respectively.
 The default values are blank <code>""</code> because there are a wide variety
@@ -624,6 +635,24 @@ to a text terminal.</p></dd>
 <dd><p>character string indicating whether to perform
 MA-plot calculations using the old method <code>"old"</code>; or <code>"jammacalc"</code>
 which uses the function <code><a href="jammacalc.html">jammacalc()</a></code>.</p></dd>
+<dt>panel_hook_function</dt>
+<dd><p><code>function</code> or <code>NULL</code>, with custom function
+to be called as a "hook" after each MA-plot panel has been drawn.
+This <code>panel_hook_function</code> is recycled to the number of samples,
+defined internally as <code>nsamples</code>, although the same function can
+be called on all panels. If <code>panel_hook_function</code> is supplied as
+a <code>list</code>, it is recycled to the number of samples <code>nsamples</code>,
+and any element in the list which has <code>length==0</code> or is <code>NA</code> will
+not be called as a function.
+This function should accept at least two arguments:</p><ul><li><p><code>i</code> - an <code>integer</code> indicating the sample to be plotted in order,
+as defined by <code>colnames(x)</code>, and <code>whichSamples</code> in the event samples
+are subsetted or re-ordered with <code>whichSamples</code>.</p></li>
+<li><p><code>...</code> additional arguments passed by <code>...</code> in this function.</p></li>
+<li><p>Any arguments of <code>jammaplot()</code> are available inside the panel
+hook function as a by-product of calling this function within
+the environment of the active <code>jammaplot()</code>, therefore any
+argument values will be available for use inside that function.</p></li>
+</ul></dd>
 <dt>titleBoxColor, subtitleBoxColor</dt>
 <dd><p><code>character</code> vector of
 R colors used as background color for each panel title text,
@@ -889,7 +918,6 @@ used. For example indicate <code>'sampleID vs groupA'</code> instead of
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>package ‘IRanges’ was built under R version 3.6.2</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>package ‘GenomeInfoDb’ was built under R version 3.6.3</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>package ‘DelayedArray’ was built under R version 3.6.3</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>package ‘matrixStats’ was built under R version 3.6.2</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>package ‘BiocParallel’ was built under R version 3.6.2</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Ignoring unknown parameters: stat</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 534 rows containing non-finite values (stat_density2d).</span>
@@ -913,8 +941,33 @@ used. For example indicate <code>'sampleID vs groupA'</code> instead of
 <span class="r-in">   <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">Dilution</span><span class="op">)</span>;</span>
 <span class="r-in">   <span class="va">edata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log2</a></span><span class="op">(</span><span class="fl">1</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html" class="external-link">exprs</a></span><span class="op">(</span><span class="va">Dilution</span><span class="op">)</span><span class="op">)</span>;</span>
 <span class="r-in">   <span class="fu">jammaplot</span><span class="op">(</span><span class="va">edata</span><span class="op">)</span>;</span>
+<span class="r-in"></span>
+<span class="r-in">   <span class="fu">jammaplot</span><span class="op">(</span><span class="va">edata</span>,</span>
+<span class="r-in">      whichSamples<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>;</span>
+<span class="r-in"></span>
+<span class="r-in">   <span class="fu">jammaplot</span><span class="op">(</span><span class="va">edata</span>,</span>
+<span class="r-in">      sample_labels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">edata</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>;</span>
+<span class="r-in"></span>
+<span class="r-in">   <span class="fu">jammaplot</span><span class="op">(</span><span class="va">edata</span>,</span>
+<span class="r-in">      controlIndicator<span class="op">=</span><span class="st">"titlestar"</span><span class="op">)</span>;</span>
+<span class="r-in"></span>
+<span class="r-in">   <span class="fu">jammaplot</span><span class="op">(</span><span class="va">edata</span>,</span>
+<span class="r-in">      controlIndicator<span class="op">=</span><span class="st">"none"</span><span class="op">)</span>;</span>
+<span class="r-in"></span>
+<span class="r-in">   <span class="fu">jammaplot</span><span class="op">(</span><span class="va">edata</span>,</span>
+<span class="r-in">      panel_hook_function<span class="op">=</span><span class="kw">function</span><span class="op">(</span><span class="va">i</span>,<span class="va">...</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/graphics/box.html" class="external-link">box</a></span><span class="op">(</span><span class="st">"figure"</span><span class="op">)</span><span class="op">}</span><span class="op">)</span>;</span>
+<span class="r-in"></span>
+<span class="r-in">   <span class="fu">jammaplot</span><span class="op">(</span><span class="va">edata</span>,</span>
+<span class="r-in">      useRank<span class="op">=</span><span class="cn">TRUE</span>,</span>
+<span class="r-in">      maintitle<span class="op">=</span><span class="st">"Rank MA-plots"</span><span class="op">)</span>;</span>
 <span class="r-in"><span class="op">}</span></span>
 <span class="r-plt img"><img src="jammaplot-5.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="jammaplot-6.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="jammaplot-7.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="jammaplot-8.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="jammaplot-9.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="jammaplot-10.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="jammaplot-11.png" alt="" width="700" height="433"></span>
 <span class="r-in"></span>
 </code></pre></div>
     </div>

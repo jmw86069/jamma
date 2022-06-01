@@ -1,8 +1,37 @@
 # TODO for jamma
 
+## 31may2022
+
+* COMPLETE: Related to indicating `controlSamples` below, some plot hook to add
+annotations to each panel while plotting for R base graphics. This
+feature is likely already possible with `ggjammaplot()` with custom
+ggplot2 layers.
+
+   * COMPLETE: new argument `plot_hook_function` allows full customization
+   after each panel is rendered, for `jammaplot()` in base R graphics.
+   * Note: `ggjammaplot()` is fairly slow for this purpose, rendering
+   may overall be slower than base R graphics, though this difference
+   could be from lack of particular optimizations.
+
+* Visual differences in `jammaplot()` and `ggjammaplot()` assignment of
+colors to point density. Unclear whether this difference is due to
+cropping of points outside the visual range, as happens with base R
+graphics `plotSmoothScatter()` and `applyRangeCeiling=TRUE`.
+* `ggjammaplot()` does not honor the order of samples when applying
+`facet_wrap()`, it should convert the facet column to factor with
+levels equal to the order of columns to be plotted.
+* Consider `subtitle` being able to use one or more `colnames` in
+`colData(se)` when the input data is `SummarizedExperiment`.
+
+   * When multiple columns are provided, include them as multiple lines,
+   each colored using `colorSub`?
+
+* Consider using `shadowText()` to display the MAD values, otherwise
+it is not visible in some panels.
+
 ## 26may2022
 
-* There should be some indication for samples that are `controlSamples`
+* COMPLETE: There should be some indication for samples that are `controlSamples`
 during centering.
 
    * Perhaps an asterisk in the topleft corner inside each plot panel?
@@ -20,7 +49,7 @@ the width of each plot panel.
 
 ## 11may2022
 
-* `jammaplot()` should have some ability to provide column labels,
+* COMPLETE: `jammaplot()` should have some ability to provide column labels,
 in place of using `colnames(x)` which may be a super-long text string.
 * `jammaplot()` consider using `jamba::adjustAxisLabelMargins()` for
 panel margins by default, making `margins` optional for custom use.

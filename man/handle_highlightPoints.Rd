@@ -17,7 +17,9 @@ Handle highlightPoints argument to jammaplot()
 }
 \seealso{
 Other jam utility functions: 
+\code{\link{fold_to_log2fold}()},
 \code{\link{get_se_assaydata}()},
+\code{\link{log2fold_to_fold}()},
 \code{\link{outer_legend}()},
 \code{\link{points2polygonHull}()}
 }

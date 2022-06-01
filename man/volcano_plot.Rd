@@ -354,14 +354,15 @@ x <- data.frame(
    `P.Value Group-Control`=x_pv[order(-abs(x_lfc))],
    `mgm Group-Contol`=((rnorm(1500)+5)^2)/5,
    check.names=FALSE);
-volcano_plot(x);
-volcano_plot(x,expr_cutoff=3);
-volcano_plot(x, mar_min=c(7, 6, 6, 5), blockarrow_cex=1);
 
-par("mfrow"=c(2, 1));
 volcano_plot(x);
-volcano_plot(x);
-par("mfrow"=c(1, 1));
+volcano_plot(x, expr_cutoff=3);
+# volcano_plot(x, mar_min=c(7, 6, 6, 5), blockarrow_cex=1);
+
+# par("mfrow"=c(2, 1));
+# volcano_plot(x);
+# volcano_plot(x);
+# par("mfrow"=c(1, 1));
 
 x[["fold Group-Control"]] <- log2fold_to_fold(x[["log2fold Group-Control"]]);
 x[["adj.P.Val Group-Control"]] <- x[["P.Value Group-Control"]];

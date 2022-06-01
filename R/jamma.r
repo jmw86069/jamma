@@ -566,6 +566,23 @@ NULL
 #' @param ma_method character string indicating whether to perform
 #'    MA-plot calculations using the old method `"old"`; or `"jammacalc"`
 #'    which uses the function `jammacalc()`.
+#' @param panel_hook_function `function` or `NULL`, with custom function
+#'    to be called as a "hook" after each MA-plot panel has been drawn.
+#'    This `panel_hook_function` is recycled to the number of samples,
+#'    defined internally as `nsamples`, although the same function can
+#'    be called on all panels. If `panel_hook_function` is supplied as
+#'    a `list`, it is recycled to the number of samples `nsamples`,
+#'    and any element in the list which has `length==0` or is `NA` will
+#'    not be called as a function.
+#'    This function should accept at least two arguments:
+#'    * `i` - an `integer` indicating the sample to be plotted in order,
+#'    as defined by `colnames(x)`, and `whichSamples` in the event samples
+#'    are subsetted or re-ordered with `whichSamples`.
+#'    * `...` additional arguments passed by `...` in this function.
+#'    * Any arguments of `jammaplot()` are available inside the panel
+#'    hook function as a by-product of calling this function within
+#'    the environment of the active `jammaplot()`, therefore any
+#'    argument values will be available for use inside that function.
 #' @param doPlot `logical` indicating whether to create plots. When
 #'    `doPlot=FALSE` only the MA-plot panel data is returned.
 #' @param useRank `logical` indicating whether to create column-wide
@@ -597,6 +614,25 @@ NULL
 #'    data(Dilution);
 #'    edata <- log2(1+exprs(Dilution));
 #'    jammaplot(edata);
+#'
+#'    jammaplot(edata,
+#'       whichSamples=c(1, 2));
+#'
+#'    jammaplot(edata,
+#'       sample_labels=paste("Sample", colnames(edata)));
+#'
+#'    jammaplot(edata,
+#'       controlIndicator="titlestar");
+#'
+#'    jammaplot(edata,
+#'       controlIndicator="none");
+#'
+#'    jammaplot(edata,
+#'       panel_hook_function=function(i,...){box("figure")});
+#'
+#'    jammaplot(edata,
+#'       useRank=TRUE,
+#'       maintitle="Rank MA-plots");
 #' }
 #'
 #' @export
@@ -608,6 +644,11 @@ jammaplot <- function
  subtitleBoxColor=titleBoxColor,
  centerGroups=NULL,
  controlSamples=colnames(x),
+ controlIndicator=c(
+    "labelstar",
+    "titlestar",
+    "none"),
+ sample_labels=NULL,
  useMedian=FALSE,
  useMean=NULL,
  ylim=c(-4,4),
@@ -644,7 +685,7 @@ jammaplot <- function
  highlightPolygonAlpha=0.3,
  doHighlightLegend=TRUE,
  smoothPtCol="#00000055",
- margins=c(3.5, 2, 0.3, 0.2),
+ margins=c(2.5, 2.5, 2.0, 0.2),
  useRaster=TRUE,
  ncol=NULL,
  nrow=NULL,
@@ -670,6 +711,7 @@ jammaplot <- function
  fillBackground=TRUE,
  useRank=FALSE,
  ma_method=c("jammacalc", "old"),
+ panel_hook_function=NULL,
  doPlot=TRUE,
  verbose=FALSE,
  ...)
@@ -752,6 +794,7 @@ jammaplot <- function
       }
    }
    ma_method <- match.arg(ma_method);
+   controlIndicator <- match.arg(controlIndicator);
    if (doTxtplot) {
       blankPlotPos <- NULL;
       smoothScatterFunc <- function(...){
@@ -792,13 +835,38 @@ jammaplot <- function
       nsamples <- ncol(x);
       x_names <- colnames(x);
    }
-   if (length(x_names) == 0) {
-      x_names <- jamba::makeNames(rep("V", ncol(x)));
-      if ("list" %in% class(x)) {
-         names(x) <- x_names;
-      } else {
-         colnames(x) <- x_names;
+   if (nsamples == 0) {
+      stop("No samples are available to plot.");
+   }
+
+   # optional hook function for each panel
+   if (length(panel_hook_function) > 0) {
+      if (is.function(panel_hook_function)) {
+         panel_hook_function <- list(panel_hook_function);
       }
+      panel_hook_function <- rep(panel_hook_function,
+         length.out=nsamples);
+   }
+
+   if (length(x_names) == 0) {
+      if (length(sample_labels) == nsamples) {
+         if ("list" %in% class(x)) {
+            names(x) <- sample_labels;
+         } else {
+            colnames(x) <- sample_labels;
+         }
+         x_names <- sample_labels;
+      } else {
+         x_names <- jamba::makeNames(rep("V", ncol(x)));
+         if ("list" %in% class(x)) {
+            names(x) <- x_names;
+         } else {
+            colnames(x) <- x_names;
+         }
+      }
+   }
+   if (length(sample_labels) == 0) {
+      sample_labels <- x_names;
    }
 
    ## if colrampOutlier is a single color, use it to replace
@@ -947,7 +1015,7 @@ jammaplot <- function
       }
       # if useRank=TRUE add minor margin to left
       if (useRank %in% TRUE) {
-         margins <- margins + c(0, 1, 0, 0);
+         margins <- margins + c(0, 2, 0, 0);
       }
    }
    if (length(titleCex) == 0) {
@@ -969,15 +1037,29 @@ jammaplot <- function
       }
    }
 
-   par("mar"=margins);
-   nARR <- nsamples;
-   if (is.null(whichSamples)) {
-      whichSamples <- 1:nARR;
+   if (doPar) {
+      par("mar"=margins);
+   }
+   if (length(whichSamples) == 0) {
+      whichSamples <- seq_len(nsamples);
    } else {
-      if (is.numeric(whichSamples)) {
-         whichSamples <- x_names[whichSamples]
+      # 0.0.25.900 updated to accept character,factor and not change numeric
+      if (class(whichSamples) %in% c("character", "factor")) {
+         whichSamples <- match(as.character(whichSamples),
+            x_names);
+         if (any(is.na(whichSamples))) {
+            if (all(is.na(whichSamples))) {
+               stop("whichSamples supplied as character/factor does not match any names in x");
+            }
+            whichSamples <- whichSamples[!is.na(whichSamples)];
+         }
       }
-      whichSamples <- match(whichSamples, x_names);
+      if (is.numeric(whichSamples)) {
+         if (any(whichSamples > nsamples)) {
+            whichSamples <- whichSamples[whichSamples <= nsamples];
+         }
+         # whichSamples <- x_names[whichSamples]
+      }
    }
    names(whichSamples) <- x_names[whichSamples];
    gaveMVA <- FALSE;
@@ -1314,6 +1396,9 @@ jammaplot <- function
       }
    }
 
+   ######################################
+   ## Iterate each plot panel
+   ##
    ## iPanelNumber keeps track of the numbered panels as they are plotted,
    ## so we can insert blank panels at the specified positions.
    if (doPlot) {
@@ -1360,7 +1445,8 @@ jammaplot <- function
          groupName <- paste(c(x_names[i],
             groupSuffix[i]),
             collapse="");
-         titleText <- x_names[i];
+         # titleText <- x_names[i];
+         titleText <- sample_labels[i];
 
          ## Calculate the MAD, i.e. the median absolute deviation from zero
          mvaMAD <- mvaMADs[whichSamples[i]];
@@ -1373,7 +1459,9 @@ jammaplot <- function
             colrampUse <- colramp[[i]];
          }
 
-         if (all(is.na(mvaData[,"y"]))) {
+         if (length(mvaData) == 0 ||
+               nrow(mvaData) == 0 ||
+               all(is.na(mvaData[,"y"]))) {
             jamba::nullPlot(doBoxes=FALSE,
                xlim=xlim,
                ylim=ylim
@@ -1388,6 +1476,7 @@ jammaplot <- function
                las=las,
                xlim=xlim,
                ylim=ylim,
+               yaxt="n",
                transformation=transformation,
                #col=smoothPtCol,
                useRaster=useRaster,
@@ -1395,6 +1484,14 @@ jammaplot <- function
                fillBackground=fillBackground,
                applyRangeCeiling=applyRangeCeiling,
                ...);
+            y_axis_at <- pretty(ylim);
+            axis(2,
+               las=2,
+               at=y_axis_at,
+               labels=format(y_axis_at,
+                  trim=TRUE,
+                  big.mark=","),
+               ...)
          }
          ## Add axis labels
          title(xlab=xlab,
@@ -1495,6 +1592,16 @@ jammaplot <- function
                titleFont);
          }
          titleBoxTextColor <- titleColor[i];
+         ## Optionally indicate control with asterisk in the plot title
+         if (x_names[i] %in% controlSamples &&
+               "titlestar" %in% controlIndicator) {
+            titleText <- paste0(titleText,
+               "*",
+               groupSuffix[i]);
+         } else {
+            titleText <- paste0(titleText,
+               groupSuffix[i]);
+         }
          if (doTitleBox) {
             if (verbose) {
                jamba::printDebug("jammaplot(): ",
@@ -1509,7 +1616,7 @@ jammaplot <- function
             jamba::drawLabels(preset=titlePreset,
                adjPreset=titleAdjPreset,
                panelWidth="minimum",
-               txt=paste0(titleText, groupSuffix[i]),
+               txt=titleText,
                boxColor=titleBoxColor[i],
                boxBorderColor=jamba::makeColorDarker(titleBoxColor[i]),
                labelCol=titleColor[i],
@@ -1528,7 +1635,7 @@ jammaplot <- function
                col.main=titleBoxTextColor,
                font.main=titleFont[i],
                ...);
-            title(main=paste(titleText, groupSuffix[i]),
+            title(main=titleText,
                cex.main=titleCex[i],
                line=titleLine-1,
                col.main=titleBoxTextColor,
@@ -1546,6 +1653,28 @@ jammaplot <- function
                labelCol=jamba::setTextContrastColor(subtitleBoxColor[i]),
                labelCex=titleCex[i]*0.9,
                drawBox=TRUE,
+               font=titleFont[i],
+               ...);
+         }
+         ## Optionally print control indicator inside the plot panel
+         if (x_names[i] %in% controlSamples &&
+               "labelstar" %in% controlIndicator) {
+            preset_star <- "topleft";
+            adjPreset_star <- "bottomright";
+            if (doTitleBox) {
+               if (grepl("bottom", titleAdjPreset)) {
+                  adjPreset_star <- gsub("bottom",
+                     "top",
+                     adjPreset_star)
+               }
+            }
+            jamba::drawLabels(preset=preset_star,
+               adjPreset=adjPreset_star,
+               panelWidth="default",
+               txt=" * ",
+               drawBox=FALSE,
+               labelCol="black",
+               labelCex=titleCex[i]*1.5,
                font=titleFont[i],
                ...);
          }
@@ -1583,6 +1712,13 @@ jammaplot <- function
             );
          }
          #mvaData;
+         ## Optional per-panel hook function
+         if (length(panel_hook_function) > 0 &&
+               length(panel_hook_function[[i]]) > 0 &&
+               is.function(panel_hook_function[[i]])) {
+            panel_hook_function[[i]](i,
+               ...)
+         }
       }
       ## End of the per-panel MVA plot loop
       check_panel_page(iPanelNumber=prod(par("mfrow")) + 1,

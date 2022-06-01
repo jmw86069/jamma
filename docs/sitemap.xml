@@ -22,6 +22,9 @@
     <loc>/news/index.html</loc>
   </url>
   <url>
+    <loc>/reference/blockArrowMargin.html</loc>
+  </url>
+  <url>
     <loc>/reference/centerGeneData.html</loc>
   </url>
   <url>
@@ -34,10 +37,19 @@
     <loc>/reference/element_textbox_colorsub.html</loc>
   </url>
   <url>
+    <loc>/reference/find_colname.html</loc>
+  </url>
+  <url>
+    <loc>/reference/fold_to_log2fold.html</loc>
+  </url>
+  <url>
     <loc>/reference/get_se_assaydata.html</loc>
   </url>
   <url>
     <loc>/reference/ggjammaplot.html</loc>
+  </url>
+  <url>
+    <loc>/reference/gradient_rect.html</loc>
   </url>
   <url>
     <loc>/reference/handle_highlightPoints.html</loc>
@@ -58,9 +70,24 @@
     <loc>/reference/jammaplot.html</loc>
   </url>
   <url>
+    <loc>/reference/log2fold_to_fold.html</loc>
+  </url>
+  <url>
+    <loc>/reference/logAxis.html</loc>
+  </url>
+  <url>
     <loc>/reference/outer_legend.html</loc>
   </url>
   <url>
     <loc>/reference/points2polygonHull.html</loc>
+  </url>
+  <url>
+    <loc>/reference/update_function_params.html</loc>
+  </url>
+  <url>
+    <loc>/reference/update_list_elements.html</loc>
+  </url>
+  <url>
+    <loc>/reference/volcano_plot.html</loc>
   </url>
 </urlset>

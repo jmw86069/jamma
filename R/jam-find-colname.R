@@ -65,6 +65,7 @@
 #' print(head(y));
 #' find_colname(c("p.val"), y, exclude_pattern=c("adj"))
 #'
+#' @export
 find_colname <- function
 (pattern,
  x,

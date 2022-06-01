@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.21.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.25.900</span>
       </span>
     </div>
 
@@ -58,6 +58,65 @@
 
 <div id="todo-for-jamma" class="section level1">
 
+<div class="section level2">
+<h2 id="31may2022">31may2022<a class="anchor" aria-label="anchor" href="#31may2022"></a></h2>
+<ul><li>
+<p>COMPLETE: Related to indicating <code>controlSamples</code> below, some plot hook to add annotations to each panel while plotting for R base graphics. This feature is likely already possible with <code><a href="reference/jammaplot.html">ggjammaplot()</a></code> with custom ggplot2 layers.</p>
+<ul><li>COMPLETE: new argument <code>plot_hook_function</code> allows full customization after each panel is rendered, for <code><a href="reference/jammaplot.html">jammaplot()</a></code> in base R graphics.</li>
+<li>Note: <code><a href="reference/jammaplot.html">ggjammaplot()</a></code> is fairly slow for this purpose, rendering may overall be slower than base R graphics, though this difference could be from lack of particular optimizations.</li>
+</ul></li>
+<li><p>Visual differences in <code><a href="reference/jammaplot.html">jammaplot()</a></code> and <code><a href="reference/jammaplot.html">ggjammaplot()</a></code> assignment of colors to point density. Unclear whether this difference is due to cropping of points outside the visual range, as happens with base R graphics <code>plotSmoothScatter()</code> and <code>applyRangeCeiling=TRUE</code>.</p></li>
+<li><p><code><a href="reference/jammaplot.html">ggjammaplot()</a></code> does not honor the order of samples when applying <code>facet_wrap()</code>, it should convert the facet column to factor with levels equal to the order of columns to be plotted.</p></li>
+<li>
+<p>Consider <code>subtitle</code> being able to use one or more <code>colnames</code> in <code>colData(se)</code> when the input data is <code>SummarizedExperiment</code>.</p>
+<ul><li>When multiple columns are provided, include them as multiple lines, each colored using <code>colorSub</code>?</li>
+</ul></li>
+<li><p>Consider using <code>shadowText()</code> to display the MAD values, otherwise it is not visible in some panels.</p></li>
+</ul></div>
+<div class="section level2">
+<h2 id="26may2022">26may2022<a class="anchor" aria-label="anchor" href="#26may2022"></a></h2>
+<ul><li>
+<p>COMPLETE: There should be some indication for samples that are <code>controlSamples</code> during centering.</p>
+<ul><li>Perhaps an asterisk in the topleft corner inside each plot panel?</li>
+</ul></li>
+<li><p>Allow <code>sample_color_list</code> input as alternative to <code>colorSub</code>? Or auto-detect <code>list</code> input and try to match values in the <code>list</code>.</p></li>
+<li><p>COMPLETE: Update the usage of <code>drawLabel()</code> to size the title box at least the width of each plot panel.</p></li>
+<li>
+<p>FIXED: <code><a href="reference/volcano_plot.html">volcano_plot()</a></code> throwing an error:</p>
+<ul><li><code>"Error in utils::modifyList(default_params, new_values):  is.list(x) is not TRUE</code></li>
+<li><code>update_function_params(function_name = "volcano_plot", param_name = "color_set",    new_values = color_set) at jam-volcano-plot.R#374</code></li>
+</ul></li>
+</ul></div>
+<div class="section level2">
+<h2 id="11may2022">11may2022<a class="anchor" aria-label="anchor" href="#11may2022"></a></h2>
+<ul><li>COMPLETE: <code><a href="reference/jammaplot.html">jammaplot()</a></code> should have some ability to provide column labels, in place of using <code>colnames(x)</code> which may be a super-long text string.</li>
+<li>
+<code><a href="reference/jammaplot.html">jammaplot()</a></code> consider using <code><a href="https://rdrr.io/pkg/jamba/man/adjustAxisLabelMargins.html" class="external-link">jamba::adjustAxisLabelMargins()</a></code> for panel margins by default, making <code>margins</code> optional for custom use. This change would ensure each margin fully displays text labels, closer to how ggplot2 works.</li>
+</ul><p>Potential bugs:</p>
+<ul><li><p>COMPLETE: <code><a href="reference/jammaplot.html">jammaplot()</a></code> highlightPch point shapes are not honored in the legend.</p></li>
+<li>
+<p>COMPLETE: <code><a href="reference/jammaplot.html">jammaplot()</a></code> draws plot labels after <code>highlightPoints</code>, which can obscure the <code>highlightPoints</code>. Ideally, draw the labels then the highlighted points. This bug may not be evident with <code><a href="reference/jammaplot.html">ggjammaplot()</a></code>.</p>
+<ul><li>Partially completed by moving title box labels outside the plot. It is still possible with subtitle box labels, but will leave as-is for now.</li>
+</ul></li>
+<li><p><code><a href="reference/jammaplot.html">ggjammaplot()</a></code> does not display <code>subtitle</code> box in the bottom-left. Consider using <code>ggtext</code> or <code><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">ggplot2::geom_label()</a></code>.</p></li>
+<li><p><code><a href="reference/jammaplot.html">jammaplot()</a></code> and <code><a href="reference/jammaplot.html">ggjammaplot()</a></code> should somehow indicate which samples were used as controlSamples. Perhaps asterisk “*” in the title?</p></li>
+<li><p>The MAD factor label is difficult to read when it overlaps points, particularly highlight points.</p></li>
+<li><p>When only one sample per centerGroups, hide MAD factor <code>"NaN"</code>.</p></li>
+</ul></div>
+<div class="section level2">
+<h2 id="outlier-detection-in-jammaplot-by-leave-one-out">outlier detection in jammaplot by leave-one-out<a class="anchor" aria-label="anchor" href="#outlier-detection-in-jammaplot-by-leave-one-out"></a></h2>
+<p>Basic workflow:</p>
+<ul><li>within each <code>centerGroups</code> grouping</li>
+<li>iterate each sample to leave one sample out</li>
+<li>call <code><a href="reference/jammacalc.html">jammacalc()</a></code> to calculate MADfactors for all replicates, focusing on the omitted sample.</li>
+<li>determine if there are robust sample outliers</li>
+</ul></div>
+<div class="section level2">
+<h2 id="volcano_plot">volcano_plot()<a class="anchor" aria-label="anchor" href="#volcano_plot"></a></h2>
+<ul><li>COMPLETE. Add new function.</li>
+<li>Add ggplot2 variation on this function.</li>
+<li>Add <code>volcano_sestats()</code> that takes <code>sestats</code> input from <code><a href="https://rdrr.io/pkg/jamses/man/se_contrast_stats.html" class="external-link">jamses::se_contrast_stats()</a></code>.</li>
+</ul></div>
 <div class="section level2">
 <h2 id="ggjammaplot">ggjammaplot()<a class="anchor" aria-label="anchor" href="#ggjammaplot"></a></h2>
 <ul><li><p>make empty plot panels completely blank, relevant when using <code>blankPlotPos</code></p></li>
@@ -110,7 +169,7 @@
 <div class="section level2">
 <h2 id="useful-functions">useful functions<a class="anchor" aria-label="anchor" href="#useful-functions"></a></h2>
 <ul><li>
-<p><code>log2fold_to_fold()</code> and <code>fold_to_log2fold()</code> - to interconvert:</p>
+<p><code><a href="reference/log2fold_to_fold.html">log2fold_to_fold()</a></code> and <code><a href="reference/fold_to_log2fold.html">fold_to_log2fold()</a></code> - to interconvert:</p>
 <ul><li>normal space fold changes, which could be represented as positive and negative values (e.g. 2-fold and -2-fold) or as ratios (e.g. 2-fold and 0.5-fold); and</li>
 <li>log2 fold change values</li>
 <li>Consider <code>fold_sign()</code> function that takes either as input and returns either <code>1</code> or <code>-1</code>, and by default never returns <code>0</code> since 1-fold change cannot easily be multiplied by its <code>fold_sign()</code> without causing it to become zero. More thought to be had as to the workflow.</li>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.21.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.25.900</span>
       </span>
     </div>
 
@@ -57,6 +57,99 @@
       <small>Source: <a href="https://github.com/jmw86069/jamma/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.0.25.900" id="jamma-0025900">jamma 0.0.25.900<a class="anchor" aria-label="anchor" href="#jamma-0025900"></a></h2>
+<p>Main change: this version:</p>
+<ol style="list-style-type: decimal"><li>Automatic indication of <code>controlSamples</code> in each MA-plot panel.</li>
+<li>Ability to supply custom names for each MA-plot panel.</li>
+</ol><div class="section level3">
+<h3 id="updates-to-existing-functions-0-0-25-900">updates to existing functions<a class="anchor" aria-label="anchor" href="#updates-to-existing-functions-0-0-25-900"></a></h3>
+<ul><li>
+<p><code><a href="../reference/jammaplot.html">jammaplot()</a></code></p>
+<ul><li><p><code>whichSamples</code> accepts <code>character</code> or <code>numeric</code> and will subset itself to match available <code>names(x)</code> or <code>nsamples</code> accordingly.</p></li>
+<li><p>New argument <code>sample_labels</code> to provide custom labels for each sample without having to rename <code>colnames(x)</code> in the process. An example has been added.</p></li>
+<li>
+<p>New argument <code>controlIndicator</code>:</p>
+<ul><li>
+<code>"titlestar"</code> - asterisk appended to the title of each plot</li>
+<li>
+<code>"labelstar"</code> - asterisk labeled inside the top corner of each plot</li>
+<li>
+<code>"none"</code> - no indicator is drawn</li>
+</ul></li>
+<li><p><code>par("mar")</code> is now only updated when <code>doPar=TRUE</code>.</p></li>
+<li><p>New argument <code>panel_hook_function</code> to supply a custom function to be run after drawing each plot panel. An example has been added, showing how to draw a box around each figure.</p></li>
+<li><p>y-axis labels are drawn using <code>format(..., big.mark=",")</code> as an improvement for <code>useRank=TRUE</code>.</p></li>
+<li><p>Margins have been adjusted so the title box default above each plot has more room when there is no <code>maintitle</code> that would otherwise have added space to the top of each overall figure.</p></li>
+</ul></li>
+<li><p><code><a href="../reference/find_colname.html">find_colname()</a></code> is now exported.</p></li>
+<li><p>added <code><a href="../reference/log2fold_to_fold.html">log2fold_to_fold()</a></code> and <code><a href="../reference/fold_to_log2fold.html">fold_to_log2fold()</a></code> functions as required by <code><a href="../reference/volcano_plot.html">volcano_plot()</a></code>.</p></li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.0.24.900" id="jamma-0024900">jamma 0.0.24.900<a class="anchor" aria-label="anchor" href="#jamma-0024900"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-0-0-24-900">bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-0-24-900"></a></h3>
+<ul><li>
+<code><a href="../reference/volcano_plot.html">volcano_plot()</a></code> was throwing an error due to the new use of <code><a href="https://rdrr.io/r/utils/modifyList.html" class="external-link">utils::modifyList()</a></code>, ultimately caused by <code><a href="../reference/update_function_params.html">update_function_params()</a></code>. That function was updated, resolving the error.</li>
+<li>
+<code><a href="../reference/jammaplot.html">jammaplot()</a></code> was updated to pass <code>panelWidth="minimum"</code> to <code><a href="https://rdrr.io/pkg/jamba/man/drawLabels.html" class="external-link">jamba::drawLabels()</a></code> for the title box when using base R graphics plots. This change ensures the box is at least the plot panel width, and will be larger if the label is wider than each panel.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.0.23.900" id="jamma-0023900">jamma 0.0.23.900<a class="anchor" aria-label="anchor" href="#jamma-0023900"></a></h2>
+<div class="section level3">
+<h3 id="changes-to-existing-functions-0-0-23-900">changes to existing functions<a class="anchor" aria-label="anchor" href="#changes-to-existing-functions-0-0-23-900"></a></h3>
+<ul><li>
+<p><code><a href="../reference/jammaplot.html">jammaplot()</a></code> title box labels are now placed <em>above</em> plot panels!</p>
+<ul><li>This changes is being tested, but it seems like a sensible default not to obscure points in each plot panel.</li>
+<li>two new arguments: <code>titleAdjPreset</code>, <code>subtitleAdjPreset</code>
+</li>
+<li>passed to <code><a href="https://rdrr.io/pkg/jamba/man/coordPresets.html" class="external-link">jamba::coordPresets()</a></code> which defines coordinate positions in base R graphics context. The two main arguments are <code>preset</code> and <code>adjPreset</code>, where <code>preset</code> defines the coordinate “edge” or “corner” position, typically something like “top” or “bottomleft”; and <code>adjPreset</code> defines relative placement of the label. By default, <code>adjPreset</code> chooses the opposite orientation, to keep labels inside the plot panel. However <code>preset="top"</code> defines the top edge of the plot, and <code>adjPreset="top"</code> places the label above the top edge of the plot panel.</li>
+<li>The calculation of top outer margin is dependent upon the number of text lines in <code>maintitle</code>, and was increased to accomodate the new default placement of title box labels above the top panel. It does not account for multi-line title box labels, in that case, supply <code>maintitle</code> with empty extra lines at the end to add spacing.</li>
+</ul></li>
+<li><p><code><a href="../reference/jammaplot.html">jammaplot()</a></code> argument <code>margins=c(3.5, 2, 0.3, 0.2)</code> is typically good for non-ranked MA-plots. When <code>useRank=TRUE</code> the numbers typically have 4 or more digits, and need more space. In this case by default, <code>margins + c(0, 1, 0, 0)</code> is used.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes--improvements-0-0-23-900">bug fixes / improvements<a class="anchor" aria-label="anchor" href="#bug-fixes--improvements-0-0-23-900"></a></h3>
+<ul><li>
+<code><a href="../reference/jammaplot.html">jammaplot()</a></code> correctly represents <code>highlightPch</code> point shapes in the highlight point legend at the bottom, via <code><a href="../reference/outer_legend.html">outer_legend()</a></code>.</li>
+<li>
+<code><a href="../reference/outer_legend.html">outer_legend()</a></code> when <code>pt.bg=NULL</code> it will adjust <code>col</code> slightly darker for point shapes ranging from 21 to 25, and will assign <code>pt.bg=col</code> so the fill color is correct.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.0.22.900" id="jamma-0022900">jamma 0.0.22.900<a class="anchor" aria-label="anchor" href="#jamma-0022900"></a></h2>
+<div class="section level3">
+<h3 id="new-functions-volcano_plot-0-0-22-900">new functions: volcano_plot()<a class="anchor" aria-label="anchor" href="#new-functions-volcano_plot-0-0-22-900"></a></h3>
+<p>The <code><a href="../reference/volcano_plot.html">volcano_plot()</a></code> function has been in use for a long time, but not in R package form. The sticking point has been the block arrows drawn in plot margins (outside the plot panel) which describe the number of points that exceed statistical thresholds. Colleagues seem to like having these block arrows with summary numbers, and they’ve appeared in some published papers. That said, sizing block arrows consistently for all plot aspect ratios has been tricky, and migrating everything to ggplot2 is on the short to-do list. Unclear how block arrows would work in ggplot2.</p>
+<ul><li>
+<code><a href="../reference/volcano_plot.html">volcano_plot()</a></code> - Draw volcano plot, work in progress</li>
+<li>
+<code><a href="../reference/blockArrowMargin.html">blockArrowMargin()</a></code> - draws block arrows in plot margins</li>
+<li>
+<code><a href="../reference/gradient_rect.html">gradient_rect()</a></code> - draw rectangle with gradient color fill</li>
+<li>
+<code><a href="../reference/logAxis.html">logAxis()</a></code> - draw log-transformed <code>-log10(pvalue)</code> axis labels</li>
+<li>
+<code><a href="../reference/find_colname.html">find_colname()</a></code> - find colname matching a character string</li>
+<li>
+<code><a href="../reference/update_function_params.html">update_function_params()</a></code> - update function arguments in place</li>
+<li>
+<code><a href="../reference/update_list_elements.html">update_list_elements()</a></code> - utility called by <code><a href="../reference/update_function_params.html">update_function_params()</a></code>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="immediate-change-to-existing-functions-0-0-22-900">immediate change to existing functions<a class="anchor" aria-label="anchor" href="#immediate-change-to-existing-functions-0-0-22-900"></a></h3>
+<ul><li>
+<p><code><a href="../reference/update_list_elements.html">update_list_elements()</a></code> appears to have identical purpose and functionality as <code><a href="https://rdrr.io/r/utils/modifyList.html" class="external-link">utils::modifyList()</a></code></p>
+<ul><li>
+<code><a href="../reference/update_function_params.html">update_function_params()</a></code> was updated to call <code><a href="https://rdrr.io/r/utils/modifyList.html" class="external-link">utils::modifyList()</a></code>
+</li>
+<li>
+<code><a href="../reference/update_list_elements.html">update_list_elements()</a></code> is deprecated while this change is tested.</li>
+</ul></li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.0.21.900" id="jamma-0021900">jamma 0.0.21.900<a class="anchor" aria-label="anchor" href="#jamma-0021900"></a></h2>
 <div class="section level3">

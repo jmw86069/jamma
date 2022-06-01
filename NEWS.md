@@ -1,3 +1,40 @@
+# jamma 0.0.25.900
+
+
+Main change: this version:
+
+1. Automatic indication of `controlSamples` in each MA-plot panel.
+2. Ability to supply custom names for each MA-plot panel.
+
+## updates to existing functions
+
+* `jammaplot()`
+
+   * `whichSamples` accepts `character` or `numeric` and will subset
+   itself to match available `names(x)` or `nsamples` accordingly.
+   * New argument `sample_labels` to provide custom labels for each
+   sample without having to rename `colnames(x)` in the process.
+   An example has been added.
+   * New argument `controlIndicator`:
+   
+      * `"titlestar"` - asterisk appended to the title of each plot
+      * `"labelstar"` - asterisk labeled inside the top corner of each plot
+      * `"none"` - no indicator is drawn
+   
+   * `par("mar")` is now only updated when `doPar=TRUE`.
+   * New argument `panel_hook_function` to supply a custom function to be
+   run after drawing each plot panel.
+   An example has been added, showing how to draw a box around each figure.
+   * y-axis labels are drawn using `format(..., big.mark=",")` as
+   an improvement for `useRank=TRUE`.
+   * Margins have been adjusted so the title box default above each plot
+   has more room when there is no `maintitle` that would otherwise
+   have added space to the top of each overall figure.
+
+* `find_colname()` is now exported.
+* added `log2fold_to_fold()` and `fold_to_log2fold()` functions as required
+by `volcano_plot()`.
+
 # jamma 0.0.24.900
 
 ## bug fixes
