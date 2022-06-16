@@ -56,6 +56,7 @@ volcano_plot(
   tophist_fraction = 1/3,
   tophist_by = 0.2,
   hi_points = NULL,
+  hi_colors = NULL,
   hi_hits = FALSE,
   hi_cex = 1,
   do_both = FALSE,

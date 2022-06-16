@@ -1,5 +1,22 @@
 # jamma 0.0.25.900
 
+* `volcano_plot()` updates:
+
+   * Fixed bug where `lfc_colname` was used even when only `fold_colname`
+   was appropriate for the data. It now properly uses the `lfc_values`
+   internal vector for relevant steps.
+   * `hi_points` now accepts a `list` input, to color code different subsets
+   of points different colors
+   * new argument `hi_colors` coincident with `hi_points` having `list`
+   input: `length(hi_colors)` should match `length(hi_points)` so colors
+   will be applied to each vector in the `list`. If no colors are assigned,
+   then bright categorical colors will be defined by `colorjam::group2colors()`.
+   * when `hi_points` is a `list`, a color key is placed at the bottom
+   of the plot, making the bottom margin 2 lines taller, and shifting other
+   captions up by 2 lines.
+
+# jamma 0.0.25.900
+
 
 Main change: this version:
 

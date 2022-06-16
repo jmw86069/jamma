@@ -336,6 +336,7 @@ volcano_plot <- function
    tophist_fraction=1/3,
    tophist_by=0.20,
    hi_points=NULL,
+   hi_colors=NULL,
    hi_hits=FALSE,
    hi_cex=1,
    do_both=FALSE,
@@ -456,8 +457,8 @@ volcano_plot <- function
    ## consider replacing NA lfc_values with 0?
    #lfc_values[is.na(lfc_values)] <- 0;
    if (length(fold_cutoff) > 0 && head(fold_cutoff, 1) > 1) {
-      met_fold <- (!is.na(x[[lfc_colname]]) &
-            abs(x[[lfc_colname]]) >= log2(head(fold_cutoff, 1)));
+      met_fold <- (!is.na(lfc_values) &
+            abs(lfc_values) >= log2(head(fold_cutoff, 1)));
    } else {
       fold_cutoff <- NULL;
    }
@@ -517,8 +518,18 @@ volcano_plot <- function
    #downHits <- rownames(x)[pvHitsDownWhich];
 
    ## Allow highlighting a subset of points
+   hi_points_list <- NULL;
    if (length(hi_points) > 0) {
-      if (is.numeric(hi_points)) {
+      if (is.list(hi_points)) {
+         hi_points_list <- hi_points;
+         hi_points <- Reduce("|", lapply(hi_points_list, function(hi_points_i){
+            if (is.numeric(hi_points_i)) {
+               seq_len(nrow(x)) %in% hi_points_i
+            } else {
+               rownames(x) %in% hi_points_i
+            }
+         }))
+      } else if (is.numeric(hi_points)) {
          hi_points <- seq_len(nrow(x)) %in% hi_points;
       } else {
          hi_points <- rownames(x) %in% hi_points;
@@ -540,6 +551,36 @@ volcano_plot <- function
    point_type[hits_up & hi_points] <- "hi_up";
    point_type[hits_dn & !hi_points] <- "down";
    point_type[hits_dn & hi_points] <- "hi_down";
+
+   ## Optionally handle hi_points_list
+   if (length(hi_points_list) > 0) {
+      mar_min[1] <- mar_min[1] + 2;
+      if (length(hi_colors) < length(hi_points_list)) {
+         hi_colors <- jamba::alpha2col(alpha=1,
+            colorjam::group2colors(names(hi_points_list),
+               Lrange=c(70, 88), Crange=c(80, 120)))
+      } else {
+         if (all(names(hi_colors) == names(hi_points_list))) {
+            hi_colors <- hi_colors[names(hi_points_list)];
+         } else {
+            hi_colors <- rep(hi_colors,
+               length.out=length(hi_points_list));
+            names(hi_colors) <- names(hi_points_list);
+         }
+      }
+      for (hi_points_name in names(hi_points_list)) {
+         hi_points_i <- hi_points_list[[hi_points_name]];
+         if (is.numeric(hi_points_i)) {
+            hi_points_i <- seq_len(nrow(x)) %in% hi_points_i
+         } else {
+            hi_points_i <- rownames(x) %in% hi_points_i
+         }
+         point_type[hi_points_i] <- hi_points_name;
+      }
+      color_set[names(hi_colors)] <- hi_colors;
+      border_set[names(hi_colors)] <- jamba::makeColorDarker(hi_colors, darkFactor=1.5, sFactor=1)
+   }
+
    if (verbose > 1) {
       print(table(point_type));
    }
@@ -1095,7 +1136,7 @@ volcano_plot <- function
          title(sub=caption,
             adj=0.99,
             cex.sub=caption_cex,
-            line=parMar[1]-1.5);
+            line=parMar[1] - 1.5 - 2 * (length(hi_points_list) > 0));
 
          ## Display the total points
          total_sub <- paste0("Total points: ",
@@ -1109,12 +1150,22 @@ volcano_plot <- function
          title(sub=total_sub,
             adj=0.01,
             cex.sub=caption_cex,
-            line=parMar[1] - 1.5);
+            line=parMar[1] - 1.5 - 2 * (length(hi_points_list) > 0));
       }
 
       ## Overall Title
       if (!tophist) {
          do_overall_title();
+      }
+
+      ## Optional color key for highlighted points
+      if (length(hi_points_list) > 0) {
+         outer_legend(x="bottom",
+            legend=names(hi_colors),
+            col=unname(unlist(hi_colors)),
+            pch=rep(21, length(hi_colors)),
+            pt.cex=rep(1.2, length(hi_colors)),
+            pt.bg=NULL);
       }
    }
 
