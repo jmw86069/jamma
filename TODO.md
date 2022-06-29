@@ -1,5 +1,17 @@
 # TODO for jamma
 
+## 28jun2022
+
+* `ggjammaplot()` issues:
+
+  * `bw_factor` was behaving exactly opposite as expected
+  * COMPLETE: color gradient by `ggplot2::stat_density_2d()` is inconsistent
+  between outlier and non-outlier point ranges.
+
+* `jammaplot()` and `ggjammaplot()` may need one argument to adjust
+detail of density plots overall. Let it handle passing `binpi` and `bwpi`
+to `jamba::plotSmoothScatter()`, or using ggplot2 geom arguments.
+
 ## 31may2022
 
 * COMPLETE: Related to indicating `controlSamples` below, some plot hook to add

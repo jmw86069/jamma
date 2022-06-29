@@ -92,6 +92,8 @@
 #'    matching the `names(assays(x))`.
 #'    * `list` output from `jammacalc()` or `jammaplot()`, where each
 #'    element in the list is a two-column `matrix` with colnames `c("x", "y")`.
+#' @param detail_factor `numeric` used to adjust the level
+#'    of detail, as a multiplier for `nbin_factor` and `bw_factor`.
 #' @param nbin_factor `numeric` value used to adjust the number of bins
 #'    used to display the MA-plots, where values higher than `1` increase
 #'    the resolution and level of detail, and values below `1` decrease
@@ -102,6 +104,11 @@
 #'    2-dimensional bandwidth calculation, where higher values create
 #'    more detailed density, and lower values create a smoother density
 #'    across the range of data.
+#'    In some cases, the `ggplot` panel aspect ratio diverges from 1:1,
+#'    in which case `bw_factor` can be used to expand the bandwidth by
+#'    y-axis, or y-axis, respectively. For example, if the density
+#'    appears short-wide, try `bw_factor=c(1.2, 1)`, if the density
+#'    appears tall-skinny, try `bw_factor=c(1, 1.2)`.
 #' @param assay_name relevant only when `x` is `SummarizedExperiment`,
 #'    one of these input types:
 #'    * `character` string that matches `names(assays(x))`
@@ -193,6 +200,7 @@
 #' @export
 ggjammaplot <- function
 (x,
+   detail_factor=1,
    nbin_factor=1,
    bw_factor=1,
    assay_name=1,
@@ -217,13 +225,14 @@ ggjammaplot <- function
    whichSamples=NULL,
    useRank=FALSE,
    titleBoxColor="lightgoldenrod1",
+   titleCex=1,
    outlierColor="lemonchiffon",
    fillBackground=TRUE,
    maintitle=NULL,
    subtitle=NULL,
    summary="mean",
    difference="difference",
-   transFactor=0.2,
+   transFactor=0.25,
    doPlot=TRUE,
    highlightPoints=NULL,
    highlightPch=21,
@@ -461,10 +470,12 @@ ggjammaplot <- function
    # h values for MASS::kde2()
    bw_factor <- rep(bw_factor,
       length.out=2);
-   hx <- diff(range(xlim, na.rm=TRUE)) / 30 * bw_factor[1];
-   hy <- diff(range(ylim, na.rm=TRUE)) / 30 * bw_factor[2];
+   hx <- diff(range(xlim, na.rm=TRUE)) / (30 * bw_factor[1] * detail_factor);
+   hy <- diff(range(ylim, na.rm=TRUE)) / (30 * bw_factor[2] * detail_factor);
+   # hx <- max(c(hx, hy));
+   # hy <- hx;
 
-   nbin <- nbin_factor * 400 / sqrt(length(jp2));
+   nbin <- detail_factor * nbin_factor * 400 / sqrt(length(jp2)) * 2;
    if (verbose > 1) {
       jamba::printDebug("ggjammaplot(): ",
          "kde2d() argument hx: ", format(hx, digits=2),
@@ -473,6 +484,7 @@ ggjammaplot <- function
    }
 
    # ggplot MA-plot
+   nrow_x <- nrow(x);
    p <- ggplot2::ggplot(
       jp2tall,
       ggplot2::aes(x=mean,
@@ -481,7 +493,7 @@ ggjammaplot <- function
          x=xlim,
          y=ylim) +
       ggplot2::xlab(summary) +
-      ggplot2::xlab(difference);
+      ggplot2::ylab(difference);
       # ggplot2::scale_y_continuous(name=summary)
    if (fillBackground) {
       p <- p +
@@ -495,23 +507,40 @@ ggjammaplot <- function
             ymax=y_exp[2])
    }
    p <- p +
-      ggplot2::stat_density_2d(geom="raster",
-         stat="density_2d",
+      ggplot2::stat_density_2d(
+         geom="raster",
+         # stat="density_2d",
          data=subset(jp2tall, !outlier),
-         ggplot2::aes(fill=(..density..)^transFactor),
+         ggplot2::aes(fill=(after_stat(count) / nrow_x)^transFactor),
          n=nbin,
          show.legend=FALSE,
          h=c(hx, hy),
          contour=FALSE) +
-      ggplot2::scale_fill_gradientn(colours=smooth_colors1) +
       ggplot2::facet_wrap(~name,
          drop=FALSE,
          nrow=nrow,
          ncol=ncol) +
       colorjam::theme_jam(strip.background.fill=strip_bg,
+         strip.text.size=ggplot2::rel(0.6 * titleCex),
          panel.grid.major.colour=panel.grid.major.colour,
          panel.grid.minor.colour=panel.grid.minor.colour,
          base_size=base_size);
+
+   # attempt to detect the gradient density range used thus far
+   if (length(mad_outliers) > 0) {
+      layer_data_2 <- ggplot2::layer_data(p, 2);
+      gradient_range_1 <- (range(layer_data_2$count, na.rm=TRUE) / nrow_x) ^ transFactor;
+      if (verbose > 1) {
+         jamba::printDebug("range(gradient_range_1): ",
+            gradient_range_1);
+      }
+      p <- p +
+         ggplot2::scale_fill_gradientn(colours=smooth_colors1,
+            limits=gradient_range_1);
+   } else {
+      p <- p +
+         ggplot2::scale_fill_gradientn(colours=smooth_colors1);
+   }
 
    # optionally mark outliers separately
    if (length(mad_outliers) > 0) {
@@ -533,15 +562,17 @@ ggjammaplot <- function
       }
       p <- p +
          ggnewscale::new_scale_fill() +
-         ggplot2::stat_density_2d(geom="raster",
-            stat="density_2d",
+         ggplot2::stat_density_2d(
+            geom="raster",
+            # stat="density_2d",
             data=subset(jp2tall, outlier),
-            ggplot2::aes(fill=(..density..)^transFactor),
+            ggplot2::aes(fill=(after_stat(count) / nrow_x)^transFactor),
             n=nbin,
             show.legend=FALSE,
             h=c(hx, hy),
             contour=FALSE) +
-         ggplot2::scale_fill_gradientn(colours=smooth_colors2)
+         ggplot2::scale_fill_gradientn(colours=smooth_colors2,
+            limits=gradient_range_1);
    }
 
    # optionally display MAD factors

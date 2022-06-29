@@ -16,6 +16,7 @@
 \usage{
 ggjammaplot(
   x,
+  detail_factor = 1,
   nbin_factor = 1,
   bw_factor = 1,
   assay_name = 1,
@@ -35,13 +36,14 @@ ggjammaplot(
   whichSamples = NULL,
   useRank = FALSE,
   titleBoxColor = "lightgoldenrod1",
+  titleCex = 1,
   outlierColor = "lemonchiffon",
   fillBackground = TRUE,
   maintitle = NULL,
   subtitle = NULL,
   summary = "mean",
   difference = "difference",
-  transFactor = 0.2,
+  transFactor = 0.25,
   doPlot = TRUE,
   highlightPoints = NULL,
   highlightPch = 21,
@@ -149,6 +151,9 @@ represented in rows, and obtained samples are represented
 in columns. Alternatively \code{x} can be \code{SummarizedExperiment}
 object, used alongside argument \code{assay_name}.}
 
+\item{detail_factor}{\code{numeric} used to adjust the level
+of detail, as a multiplier for \code{nbin_factor} and \code{bw_factor}.}
+
 \item{nbin_factor}{\code{numeric} value used to adjust the number of bins
 used to display the MA-plots, where values higher than \code{1} increase
 the resolution and level of detail, and values below \code{1} decrease
@@ -159,7 +164,12 @@ applied to that value.}
 \item{bw_factor}{\code{numeric} used to adjust the resolution of the
 2-dimensional bandwidth calculation, where higher values create
 more detailed density, and lower values create a smoother density
-across the range of data.}
+across the range of data.
+In some cases, the \code{ggplot} panel aspect ratio diverges from 1:1,
+in which case \code{bw_factor} can be used to expand the bandwidth by
+y-axis, or y-axis, respectively. For example, if the density
+appears short-wide, try \code{bw_factor=c(1.2, 1)}, if the density
+appears tall-skinny, try \code{bw_factor=c(1, 1.2)}.}
 
 \item{assay_name}{\code{character} used when \code{x} is a
 \code{SummarizedExperiment} object, to determine which assay

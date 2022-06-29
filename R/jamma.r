@@ -2031,7 +2031,12 @@ jammacalc <- function
 
    ## apply useRank
    if (useRank) {
-      x1 <- apply(x, 2, rank, na.last=FALSE);
+      x1 <- apply(x, 2, function(xi){
+         rank(
+            jamba::rmNA(xi,
+               naValue=min(xi, na.rm=TRUE) - 1),
+            na.last=FALSE);
+      })
       if (any(is.na(x))) {
          x1[is.na(x)] <- NA;
       }

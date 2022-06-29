@@ -1,4 +1,30 @@
-# jamma 0.0.25.900
+# jamma 0.0.27.900
+
+## updates to existing functions
+
+* `ggjammaplot()` was updated:
+
+   * Point density now shares the same range for all panels,
+   including outlier panels. Previously, outlier panels generated
+   their own color gradient, due to their specific numeric range
+   of point density values calculated by ggplot on the fly.
+   The new code will define the numeric range using non-outlier
+   samples, then re-uses the same numeric range for outlier panels
+   when there are outlier panels. This step appears to add some lag
+   to rendering, although there is already more lag than with
+   base R graphics.
+   * New argument `detail_factor` is a single argument to adjust the
+   level of detail in the point density per facet panel.
+
+* `jammacalc()`
+
+   * The calculation of rank data using `rank(..., na.last=FALSE)` was
+   assigning ties to repeated `numeric` values, but was assigning
+   unique (arbitrary, by order they occur) ranks to `NA` values.
+   The new code secretly converts `NA` to the lowest `numeric` value
+   so they are assigned tied rank values.
+
+# jamma 0.0.26.900
 
 * `volcano_plot()` updates:
 
