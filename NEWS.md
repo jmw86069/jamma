@@ -1,3 +1,36 @@
+# jamma 0.0.28.900
+
+## updates to existing functions
+
+* `centerGeneData()`
+
+   * Note that default behavior is unchanged.
+   * New options to handle `NA` values in `controlSamples`.
+   * Currently when all `controlSamples` contain NA values, all other
+   "centered" values versus these `controlSamples` become `NA`.
+   * It is sometimes preferred to keep non-NA values, even when centering
+   is not possible versus specified control samples.
+   * New argument `naControlAction`:
+   
+      1. `naControlAction="na"`: leave values NA (current behavior, default)
+      2. `naControlAction="row"`: center versus row non-NA values
+      3. `naControlAction="floor"`: center versus numeric floor
+      4. `naControlAction="min"`: center versus the minimum observed value
+   
+   * New argument `naControlFloor=0` used only when `naControlAction="floor"`.
+   When zero, values are effectively un-centered. However, sometimes
+   the range of signal is 20-35, in which case it may be practically more
+   useful to use `naControlFloor=20` so data is centered relative to
+   the minimum range of detection.
+
+* Added proper prefix to `ggplot2::after_stat()` for `ggjammaplot()`.
+
+## testthis unit tests
+
+* Began the process of covering package functions with unit tests.
+Currently: `centerGeneData()`.
+
+
 # jamma 0.0.27.900
 
 ## updates to existing functions

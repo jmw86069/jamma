@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.25.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.28.900</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -114,6 +114,7 @@
   tophist_fraction <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fl">3</span>,
   tophist_by <span class="op">=</span> <span class="fl">0.2</span>,
   hi_points <span class="op">=</span> <span class="cn">NULL</span>,
+  hi_colors <span class="op">=</span> <span class="cn">NULL</span>,
   hi_hits <span class="op">=</span> <span class="cn">FALSE</span>,
   hi_cex <span class="op">=</span> <span class="fl">1</span>,
   do_both <span class="op">=</span> <span class="cn">FALSE</span>,
@@ -405,15 +406,15 @@ scatter plot when <code>smooth=TRUE</code>.</p>
 <span class="r-in">   check.names<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span>;</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="fu">volcano_plot</span><span class="op">(</span><span class="va">x</span><span class="op">)</span>;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">17:50:17</span>) 01Jun2022:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">sig_colname: </span><span style="color: #FF8700;">P.Value Group-Control</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">17:50:17</span>) 01Jun2022:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">lfc_colname: </span><span style="color: #FF8700;">log2fold Group-Control</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">22:25:38</span>) 12Mar2023:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">sig_colname: </span><span style="color: #FF8700;">P.Value Group-Control</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">22:25:38</span>) 12Mar2023:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">lfc_colname: </span><span style="color: #FF8700;">log2fold Group-Control</span> </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>coercing argument of type 'double' to logical</span>
 <span class="r-plt img"><img src="volcano_plot-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span class="fu">volcano_plot</span><span class="op">(</span><span class="va">x</span>, expr_cutoff<span class="op">=</span><span class="fl">3</span><span class="op">)</span>;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">17:50:17</span>) 01Jun2022:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">sig_colname: </span><span style="color: #FF8700;">P.Value Group-Control</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">17:50:17</span>) 01Jun2022:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">lfc_colname: </span><span style="color: #FF8700;">log2fold Group-Control</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">17:50:17</span>) 01Jun2022:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">expr_colname: </span><span style="color: #FF8700;">mgm Group-Contol</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">17:50:17</span>) 01Jun2022:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">13160</span><span style="color: #FF8700;"> values of </span><span style="color: #00AFFF;">15000</span><span style="color: #FF8700;"> met the threshold.</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">22:25:38</span>) 12Mar2023:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">sig_colname: </span><span style="color: #FF8700;">P.Value Group-Control</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">22:25:38</span>) 12Mar2023:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">lfc_colname: </span><span style="color: #FF8700;">log2fold Group-Control</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">22:25:38</span>) 12Mar2023:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">expr_colname: </span><span style="color: #FF8700;">mgm Group-Contol</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">22:25:38</span>) 12Mar2023:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">13160</span><span style="color: #FF8700;"> values of </span><span style="color: #00AFFF;">15000</span><span style="color: #FF8700;"> met the threshold.</span> </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>coercing argument of type 'double' to logical</span>
 <span class="r-plt img"><img src="volcano_plot-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span class="co"># volcano_plot(x, mar_min=c(7, 6, 6, 5), blockarrow_cex=1);</span></span>
@@ -427,8 +428,8 @@ scatter plot when <code>smooth=TRUE</code>.</p>
 <span class="r-in"><span class="va">x</span><span class="op">[[</span><span class="st">"adj.P.Val Group-Control"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[[</span><span class="st">"P.Value Group-Control"</span><span class="op">]</span><span class="op">]</span>;</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="fu">volcano_plot</span><span class="op">(</span><span class="va">x</span>, hi_hits<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">17:50:17</span>) 01Jun2022:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">sig_colname: </span><span style="color: #FF8700;">adj.P.Val Group-Control</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">17:50:17</span>) 01Jun2022:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">lfc_colname: </span><span style="color: #FF8700;">log2fold Group-Control</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">22:25:38</span>) 12Mar2023:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">sig_colname: </span><span style="color: #FF8700;">adj.P.Val Group-Control</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">22:25:38</span>) 12Mar2023:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">lfc_colname: </span><span style="color: #FF8700;">log2fold Group-Control</span> </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>coercing argument of type 'double' to logical</span>
 <span class="r-plt img"><img src="volcano_plot-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"></span>
@@ -446,7 +447,8 @@ scatter plot when <code>smooth=TRUE</code>.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.9000.9000.9000.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+1.9000.9000.9000.</p>
 </div>
 
       </footer></div>

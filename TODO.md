@@ -1,5 +1,29 @@
 # TODO for jamma
 
+## 12mar2023
+
+* `centerGeneData()`
+
+   * situation occurs when centering versus `controlSamples` results in
+   rows where all `controlSamples` have `NA` values, thereby causing
+   all centered values to become `NA`.
+   * goal is to offer alternatives where appropriate:
+   
+      1. `"na"`: leave values NA (current behavior, default)
+      2. `"row"`: center versus row non-NA values
+      3. `"floor"`: center versus numeric floor
+      4. `"min"`: center versus the minimum observed value
+
+
+## 22nov2022
+
+* `jammaplot_se()` - customized `jammaplot()` for SummarizedExperiment input
+
+   * analogous to `jamses::heatmap_se()` so it should share argument style
+   * `normgroup` default uses column(s): `colData(SE)[[normgroup]]
+   * `centerby_colname` default uses column(s): `colData(SE)[[centerGroups]]
+   * `sample_color_list` optional input for colorization
+
 ## 28jun2022
 
 * `ggjammaplot()` issues:

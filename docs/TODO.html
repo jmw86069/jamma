@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.25.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.28.900</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -59,28 +59,106 @@
 <div id="todo-for-jamma" class="section level1">
 
 <div class="section level2">
+<h2 id="12mar2023">12mar2023<a class="anchor" aria-label="anchor" href="#12mar2023"></a></h2>
+<ul><li>
+<p><code><a href="reference/centerGeneData.html">centerGeneData()</a></code></p>
+<ul><li><p>situation occurs when centering versus
+<code>controlSamples</code> results in rows where all
+<code>controlSamples</code> have <code>NA</code> values, thereby causing
+all centered values to become <code>NA</code>.</p></li>
+<li>
+<p>goal is to offer alternatives where appropriate:</p>
+<ol style="list-style-type: decimal"><li>
+<code>"na"</code>: leave values NA (current behavior, default)</li>
+<li>
+<code>"row"</code>: center versus row non-NA values</li>
+<li>
+<code>"floor"</code>: center versus numeric floor</li>
+<li>
+<code>"min"</code>: center versus the minimum observed value</li>
+</ol></li>
+</ul></li>
+</ul></div>
+<div class="section level2">
+<h2 id="22nov2022">22nov2022<a class="anchor" aria-label="anchor" href="#22nov2022"></a></h2>
+<ul><li>
+<p><code>jammaplot_se()</code> - customized <code><a href="reference/jammaplot.html">jammaplot()</a></code>
+for SummarizedExperiment input</p>
+<ul><li>analogous to <code><a href="https://rdrr.io/pkg/jamses/man/heatmap_se.html" class="external-link">jamses::heatmap_se()</a></code> so it should share
+argument style</li>
+<li>
+<code>normgroup</code> default uses column(s):
+`colData(SE)[[normgroup]]</li>
+<li>
+<code>centerby_colname</code> default uses column(s):
+`colData(SE)[[centerGroups]]</li>
+<li>
+<code>sample_color_list</code> optional input for colorization</li>
+</ul></li>
+</ul></div>
+<div class="section level2">
+<h2 id="28jun2022">28jun2022<a class="anchor" aria-label="anchor" href="#28jun2022"></a></h2>
+<ul><li>
+<p><code><a href="reference/jammaplot.html">ggjammaplot()</a></code> issues:</p>
+<ul><li>
+<code>bw_factor</code> was behaving exactly opposite as
+expected</li>
+<li>COMPLETE: color gradient by <code><a href="https://ggplot2.tidyverse.org/reference/geom_density_2d.html" class="external-link">ggplot2::stat_density_2d()</a></code>
+is inconsistent between outlier and non-outlier point ranges.</li>
+</ul></li>
+<li><p><code><a href="reference/jammaplot.html">jammaplot()</a></code> and <code><a href="reference/jammaplot.html">ggjammaplot()</a></code> may need
+one argument to adjust detail of density plots overall. Let it handle
+passing <code>binpi</code> and <code>bwpi</code> to
+<code><a href="https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html" class="external-link">jamba::plotSmoothScatter()</a></code>, or using ggplot2 geom
+arguments.</p></li>
+</ul></div>
+<div class="section level2">
 <h2 id="31may2022">31may2022<a class="anchor" aria-label="anchor" href="#31may2022"></a></h2>
 <ul><li>
-<p>COMPLETE: Related to indicating <code>controlSamples</code> below, some plot hook to add annotations to each panel while plotting for R base graphics. This feature is likely already possible with <code><a href="reference/jammaplot.html">ggjammaplot()</a></code> with custom ggplot2 layers.</p>
-<ul><li>COMPLETE: new argument <code>plot_hook_function</code> allows full customization after each panel is rendered, for <code><a href="reference/jammaplot.html">jammaplot()</a></code> in base R graphics.</li>
-<li>Note: <code><a href="reference/jammaplot.html">ggjammaplot()</a></code> is fairly slow for this purpose, rendering may overall be slower than base R graphics, though this difference could be from lack of particular optimizations.</li>
+<p>COMPLETE: Related to indicating <code>controlSamples</code>
+below, some plot hook to add annotations to each panel while plotting
+for R base graphics. This feature is likely already possible with
+<code><a href="reference/jammaplot.html">ggjammaplot()</a></code> with custom ggplot2 layers.</p>
+<ul><li>COMPLETE: new argument <code>plot_hook_function</code> allows full
+customization after each panel is rendered, for <code><a href="reference/jammaplot.html">jammaplot()</a></code>
+in base R graphics.</li>
+<li>Note: <code><a href="reference/jammaplot.html">ggjammaplot()</a></code> is fairly slow for this purpose,
+rendering may overall be slower than base R graphics, though this
+difference could be from lack of particular optimizations.</li>
 </ul></li>
-<li><p>Visual differences in <code><a href="reference/jammaplot.html">jammaplot()</a></code> and <code><a href="reference/jammaplot.html">ggjammaplot()</a></code> assignment of colors to point density. Unclear whether this difference is due to cropping of points outside the visual range, as happens with base R graphics <code>plotSmoothScatter()</code> and <code>applyRangeCeiling=TRUE</code>.</p></li>
-<li><p><code><a href="reference/jammaplot.html">ggjammaplot()</a></code> does not honor the order of samples when applying <code>facet_wrap()</code>, it should convert the facet column to factor with levels equal to the order of columns to be plotted.</p></li>
+<li><p>Visual differences in <code><a href="reference/jammaplot.html">jammaplot()</a></code> and
+<code><a href="reference/jammaplot.html">ggjammaplot()</a></code> assignment of colors to point density.
+Unclear whether this difference is due to cropping of points outside the
+visual range, as happens with base R graphics
+<code>plotSmoothScatter()</code> and
+<code>applyRangeCeiling=TRUE</code>.</p></li>
+<li><p><code><a href="reference/jammaplot.html">ggjammaplot()</a></code> does not honor the order of samples
+when applying <code>facet_wrap()</code>, it should convert the facet
+column to factor with levels equal to the order of columns to be
+plotted.</p></li>
 <li>
-<p>Consider <code>subtitle</code> being able to use one or more <code>colnames</code> in <code>colData(se)</code> when the input data is <code>SummarizedExperiment</code>.</p>
-<ul><li>When multiple columns are provided, include them as multiple lines, each colored using <code>colorSub</code>?</li>
+<p>Consider <code>subtitle</code> being able to use one or more
+<code>colnames</code> in <code>colData(se)</code> when the input data is
+<code>SummarizedExperiment</code>.</p>
+<ul><li>When multiple columns are provided, include them as multiple lines,
+each colored using <code>colorSub</code>?</li>
 </ul></li>
-<li><p>Consider using <code>shadowText()</code> to display the MAD values, otherwise it is not visible in some panels.</p></li>
+<li><p>Consider using <code>shadowText()</code> to display the MAD
+values, otherwise it is not visible in some panels.</p></li>
 </ul></div>
 <div class="section level2">
 <h2 id="26may2022">26may2022<a class="anchor" aria-label="anchor" href="#26may2022"></a></h2>
 <ul><li>
-<p>COMPLETE: There should be some indication for samples that are <code>controlSamples</code> during centering.</p>
-<ul><li>Perhaps an asterisk in the topleft corner inside each plot panel?</li>
+<p>COMPLETE: There should be some indication for samples that are
+<code>controlSamples</code> during centering.</p>
+<ul><li>Perhaps an asterisk in the topleft corner inside each plot
+panel?</li>
 </ul></li>
-<li><p>Allow <code>sample_color_list</code> input as alternative to <code>colorSub</code>? Or auto-detect <code>list</code> input and try to match values in the <code>list</code>.</p></li>
-<li><p>COMPLETE: Update the usage of <code>drawLabel()</code> to size the title box at least the width of each plot panel.</p></li>
+<li><p>Allow <code>sample_color_list</code> input as alternative to
+<code>colorSub</code>? Or auto-detect <code>list</code> input and try to
+match values in the <code>list</code>.</p></li>
+<li><p>COMPLETE: Update the usage of <code>drawLabel()</code> to size
+the title box at least the width of each plot panel.</p></li>
 <li>
 <p>FIXED: <code><a href="reference/volcano_plot.html">volcano_plot()</a></code> throwing an error:</p>
 <ul><li><code>"Error in utils::modifyList(default_params, new_values):  is.list(x) is not TRUE</code></li>
@@ -89,48 +167,76 @@
 </ul></div>
 <div class="section level2">
 <h2 id="11may2022">11may2022<a class="anchor" aria-label="anchor" href="#11may2022"></a></h2>
-<ul><li>COMPLETE: <code><a href="reference/jammaplot.html">jammaplot()</a></code> should have some ability to provide column labels, in place of using <code>colnames(x)</code> which may be a super-long text string.</li>
+<ul><li>COMPLETE: <code><a href="reference/jammaplot.html">jammaplot()</a></code> should have some ability to
+provide column labels, in place of using <code>colnames(x)</code> which
+may be a super-long text string.</li>
 <li>
-<code><a href="reference/jammaplot.html">jammaplot()</a></code> consider using <code><a href="https://rdrr.io/pkg/jamba/man/adjustAxisLabelMargins.html" class="external-link">jamba::adjustAxisLabelMargins()</a></code> for panel margins by default, making <code>margins</code> optional for custom use. This change would ensure each margin fully displays text labels, closer to how ggplot2 works.</li>
+<code><a href="reference/jammaplot.html">jammaplot()</a></code> consider using
+<code><a href="https://rdrr.io/pkg/jamba/man/adjustAxisLabelMargins.html" class="external-link">jamba::adjustAxisLabelMargins()</a></code> for panel margins by
+default, making <code>margins</code> optional for custom use. This
+change would ensure each margin fully displays text labels, closer to
+how ggplot2 works.</li>
 </ul><p>Potential bugs:</p>
-<ul><li><p>COMPLETE: <code><a href="reference/jammaplot.html">jammaplot()</a></code> highlightPch point shapes are not honored in the legend.</p></li>
+<ul><li><p>COMPLETE: <code><a href="reference/jammaplot.html">jammaplot()</a></code> highlightPch point shapes are
+not honored in the legend.</p></li>
 <li>
-<p>COMPLETE: <code><a href="reference/jammaplot.html">jammaplot()</a></code> draws plot labels after <code>highlightPoints</code>, which can obscure the <code>highlightPoints</code>. Ideally, draw the labels then the highlighted points. This bug may not be evident with <code><a href="reference/jammaplot.html">ggjammaplot()</a></code>.</p>
-<ul><li>Partially completed by moving title box labels outside the plot. It is still possible with subtitle box labels, but will leave as-is for now.</li>
+<p>COMPLETE: <code><a href="reference/jammaplot.html">jammaplot()</a></code> draws plot labels after
+<code>highlightPoints</code>, which can obscure the
+<code>highlightPoints</code>. Ideally, draw the labels then the
+highlighted points. This bug may not be evident with
+<code><a href="reference/jammaplot.html">ggjammaplot()</a></code>.</p>
+<ul><li>Partially completed by moving title box labels outside the plot. It
+is still possible with subtitle box labels, but will leave as-is for
+now.</li>
 </ul></li>
-<li><p><code><a href="reference/jammaplot.html">ggjammaplot()</a></code> does not display <code>subtitle</code> box in the bottom-left. Consider using <code>ggtext</code> or <code><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">ggplot2::geom_label()</a></code>.</p></li>
-<li><p><code><a href="reference/jammaplot.html">jammaplot()</a></code> and <code><a href="reference/jammaplot.html">ggjammaplot()</a></code> should somehow indicate which samples were used as controlSamples. Perhaps asterisk “*” in the title?</p></li>
-<li><p>The MAD factor label is difficult to read when it overlaps points, particularly highlight points.</p></li>
-<li><p>When only one sample per centerGroups, hide MAD factor <code>"NaN"</code>.</p></li>
+<li><p><code><a href="reference/jammaplot.html">ggjammaplot()</a></code> does not display <code>subtitle</code>
+box in the bottom-left. Consider using <code>ggtext</code> or
+<code><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">ggplot2::geom_label()</a></code>.</p></li>
+<li><p><code><a href="reference/jammaplot.html">jammaplot()</a></code> and <code><a href="reference/jammaplot.html">ggjammaplot()</a></code> should
+somehow indicate which samples were used as controlSamples. Perhaps
+asterisk “*” in the title?</p></li>
+<li><p>The MAD factor label is difficult to read when it overlaps
+points, particularly highlight points.</p></li>
+<li><p>When only one sample per centerGroups, hide MAD factor
+<code>"NaN"</code>.</p></li>
 </ul></div>
 <div class="section level2">
 <h2 id="outlier-detection-in-jammaplot-by-leave-one-out">outlier detection in jammaplot by leave-one-out<a class="anchor" aria-label="anchor" href="#outlier-detection-in-jammaplot-by-leave-one-out"></a></h2>
 <p>Basic workflow:</p>
 <ul><li>within each <code>centerGroups</code> grouping</li>
 <li>iterate each sample to leave one sample out</li>
-<li>call <code><a href="reference/jammacalc.html">jammacalc()</a></code> to calculate MADfactors for all replicates, focusing on the omitted sample.</li>
+<li>call <code><a href="reference/jammacalc.html">jammacalc()</a></code> to calculate MADfactors for all
+replicates, focusing on the omitted sample.</li>
 <li>determine if there are robust sample outliers</li>
 </ul></div>
 <div class="section level2">
 <h2 id="volcano_plot">volcano_plot()<a class="anchor" aria-label="anchor" href="#volcano_plot"></a></h2>
 <ul><li>COMPLETE. Add new function.</li>
 <li>Add ggplot2 variation on this function.</li>
-<li>Add <code>volcano_sestats()</code> that takes <code>sestats</code> input from <code><a href="https://rdrr.io/pkg/jamses/man/se_contrast_stats.html" class="external-link">jamses::se_contrast_stats()</a></code>.</li>
+<li>Add <code>volcano_sestats()</code> that takes <code>sestats</code>
+input from <code><a href="https://rdrr.io/pkg/jamses/man/se_contrast_stats.html" class="external-link">jamses::se_contrast_stats()</a></code>.</li>
 </ul></div>
 <div class="section level2">
 <h2 id="ggjammaplot">ggjammaplot()<a class="anchor" aria-label="anchor" href="#ggjammaplot"></a></h2>
-<ul><li><p>make empty plot panels completely blank, relevant when using <code>blankPlotPos</code></p></li>
-<li><p>set <code>xlab</code>, <code>ylab</code> using summary, difference labels</p></li>
+<ul><li><p>make empty plot panels completely blank, relevant when using
+<code>blankPlotPos</code></p></li>
+<li><p>set <code>xlab</code>, <code>ylab</code> using summary,
+difference labels</p></li>
 <li><p>add subtitleBox to bottomleft corner</p></li>
-<li><p>investigate using <code>element_text()</code> instead of <code><a href="https://wilkelab.org/ggtext/reference/element_textbox.html" class="external-link">ggtext::element_textbox()</a></code></p></li>
-<li><p>allow <code>geom_text_repel()</code> to label highlighted points</p></li>
-<li><p>consider selectable x- and y-ranges, to highlight a box and points within it</p></li>
+<li><p>investigate using <code>element_text()</code> instead of
+<code><a href="https://wilkelab.org/ggtext/reference/element_textbox.html" class="external-link">ggtext::element_textbox()</a></code></p></li>
+<li><p>allow <code>geom_text_repel()</code> to label highlighted
+points</p></li>
+<li><p>consider selectable x- and y-ranges, to highlight a box and
+points within it</p></li>
 <li><p>Needed a workaround to build pkgdown site, see: <a href="https://github.com/r-lib/pkgdown/issues/1157" class="external-link uri">https://github.com/r-lib/pkgdown/issues/1157</a></p></li>
 </ul></div>
 <div class="section level2">
 <h2 id="new-functions">New functions<a class="anchor" aria-label="anchor" href="#new-functions"></a></h2>
 <ul><li>
-<code>jammaplotDispEsts()</code> wrapper for <code><a href="https://rdrr.io/pkg/DESeq2/man/plotDispEsts.html" class="external-link">DESeq2::plotDispEsts()</a></code>, although this function needs the newer colorized <code>plotSmoothScatterG2()</code>.</li>
+<code>jammaplotDispEsts()</code> wrapper for
+<code><a href="https://rdrr.io/pkg/DESeq2/man/plotDispEsts.html" class="external-link">DESeq2::plotDispEsts()</a></code>, although this function needs the
+newer colorized <code>plotSmoothScatterG2()</code>.</li>
 </ul></div>
 <div class="section level2">
 <h2 id="compatibility-with-summarizedexperiment">compatibility with SummarizedExperiment<a class="anchor" aria-label="anchor" href="#compatibility-with-summarizedexperiment"></a></h2>
@@ -138,16 +244,19 @@
 <div class="section level2">
 <h2 id="bug-fixes">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes"></a></h2>
 <ul><li>
-<code><a href="reference/jammaplot.html">jammaplot()</a></code> argument <code>ablineV</code> is not functioning properly.</li>
+<code><a href="reference/jammaplot.html">jammaplot()</a></code> argument <code>ablineV</code> is not
+functioning properly.</li>
 <li>
-<code><a href="reference/jammaplot.html">jammaplot()</a></code> highlight legend is not using <code>highlightPch</code>.</li>
+<code><a href="reference/jammaplot.html">jammaplot()</a></code> highlight legend is not using
+<code>highlightPch</code>.</li>
 </ul></div>
 <div class="section level2">
 <h2 id="vignettes">Vignettes<a class="anchor" aria-label="anchor" href="#vignettes"></a></h2>
 <ol style="list-style-type: decimal"><li>Guides for MA-plots.</li>
 </ol><ul><li>
 <p>Basic guide to MA-plots for gene expression data.</p>
-<ul><li><p>check data normality, apply appropriate transform, normalize data</p></li>
+<ul><li><p>check data normality, apply appropriate transform, normalize
+data</p></li>
 <li><p>check within-group variability</p></li>
 <li><p>highlight points</p></li>
 <li>
@@ -161,18 +270,28 @@
 </ul></li>
 <li><p>non-parametric (rank-based) MA-plot</p></li>
 </ul></li>
-<li><p>When to do use <code>centerGroups</code>, <code>controlSamples</code>.</p></li>
-<li><p>How to interpret global-, group-, and technical replicate-centered data.</p></li>
-<li><p>How to detect sample outliers using a MAD factor threshold.</p></li>
+<li><p>When to do use <code>centerGroups</code>,
+<code>controlSamples</code>.</p></li>
+<li><p>How to interpret global-, group-, and technical
+replicate-centered data.</p></li>
+<li><p>How to detect sample outliers using a MAD factor
+threshold.</p></li>
 <li><p>How to guide data normalization by MA-plot review.</p></li>
 </ul></div>
 <div class="section level2">
 <h2 id="useful-functions">useful functions<a class="anchor" aria-label="anchor" href="#useful-functions"></a></h2>
 <ul><li>
-<p><code><a href="reference/log2fold_to_fold.html">log2fold_to_fold()</a></code> and <code><a href="reference/fold_to_log2fold.html">fold_to_log2fold()</a></code> - to interconvert:</p>
-<ul><li>normal space fold changes, which could be represented as positive and negative values (e.g. 2-fold and -2-fold) or as ratios (e.g. 2-fold and 0.5-fold); and</li>
+<p><code><a href="reference/log2fold_to_fold.html">log2fold_to_fold()</a></code> and
+<code><a href="reference/fold_to_log2fold.html">fold_to_log2fold()</a></code> - to interconvert:</p>
+<ul><li>normal space fold changes, which could be represented as positive
+and negative values (e.g. 2-fold and -2-fold) or as ratios (e.g. 2-fold
+and 0.5-fold); and</li>
 <li>log2 fold change values</li>
-<li>Consider <code>fold_sign()</code> function that takes either as input and returns either <code>1</code> or <code>-1</code>, and by default never returns <code>0</code> since 1-fold change cannot easily be multiplied by its <code>fold_sign()</code> without causing it to become zero. More thought to be had as to the workflow.</li>
+<li>Consider <code>fold_sign()</code> function that takes either as
+input and returns either <code>1</code> or <code>-1</code>, and by
+default never returns <code>0</code> since 1-fold change cannot easily
+be multiplied by its <code>fold_sign()</code> without causing it to
+become zero. More thought to be had as to the workflow.</li>
 </ul></li>
 </ul></div>
 <div class="section level2">
@@ -180,37 +299,67 @@
 <div class="section level3">
 <h3 id="deseq2">DESeq2<a class="anchor" aria-label="anchor" href="#deseq2"></a></h3>
 <ul><li>
-<code>plotMA()</code> is used for the <code><a href="https://rdrr.io/pkg/DESeq2/man/DESeqResults.html" class="external-link">DESeq2::DESeqResults</a></code> object, highlighting points that meet <code>alpha &lt; 0.1</code> by default.</li>
-<li>Add new method to run <code><a href="reference/jammaplot.html">jammaplot()</a></code> on the count data, optionally transformed using their recommended approach, or use <code>useRank=TRUE</code>.</li>
+<code>plotMA()</code> is used for the
+<code><a href="https://rdrr.io/pkg/DESeq2/man/DESeqResults.html" class="external-link">DESeq2::DESeqResults</a></code> object, highlighting points that meet
+<code>alpha &lt; 0.1</code> by default.</li>
+<li>Add new method to run <code><a href="reference/jammaplot.html">jammaplot()</a></code> on the count data,
+optionally transformed using their recommended approach, or use
+<code>useRank=TRUE</code>.</li>
 </ul></div>
 </div>
 <div class="section level2">
 <h2 id="bug-fixes-1">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-1"></a></h2>
 <ul><li>
-<p>Version 0.0.10.900 fixed a bug where rowGroupMeans() was used to center values, but used default <code>na.rm=FALSE</code>, which caused groups with missing values not to display a centered value for other non-NA samples. The new version should provide two options:</p>
-<ol style="list-style-type: decimal"><li>Hide or display values where groups with n&gt;1 members have only one non-NA value. The reasoning is that the MA-plot is intended to show “difference from mean” and has far less utility when a fraction of rows has only one non-NA value in the group, thus emphasizing the display of “zero difference” in those samples. Hiding these values therefore helps display the variability where data is available to judge the difference from mean.</li>
+<p>Version 0.0.10.900 fixed a bug where rowGroupMeans() was used to
+center values, but used default <code>na.rm=FALSE</code>, which caused
+groups with missing values not to display a centered value for other
+non-NA samples. The new version should provide two options:</p>
+<ol style="list-style-type: decimal"><li>Hide or display values where groups with n&gt;1 members have only
+one non-NA value. The reasoning is that the MA-plot is intended to show
+“difference from mean” and has far less utility when a fraction of rows
+has only one non-NA value in the group, thus emphasizing the display of
+“zero difference” in those samples. Hiding these values therefore helps
+display the variability where data is available to judge the difference
+from mean.</li>
 <li>Hide groups with any NA values.</li>
 </ol></li>
 </ul></div>
 <div class="section level2">
 <h2 id="refactoring-ideas">Refactoring ideas<a class="anchor" aria-label="anchor" href="#refactoring-ideas"></a></h2>
-<ul><li>Consider using <code><a href="https://rdrr.io/pkg/jamba/man/rowGroupMeans.html" class="external-link">jamba::rowGroupMeans()</a></code> within <code><a href="reference/centerGeneData.html">centerGeneData()</a></code> which would allow optional outlier detection, which could substantially improve the quality of MA-plot panels.</li>
+<ul><li>Consider using <code><a href="https://rdrr.io/pkg/jamba/man/rowGroupMeans.html" class="external-link">jamba::rowGroupMeans()</a></code> within
+<code><a href="reference/centerGeneData.html">centerGeneData()</a></code> which would allow optional outlier
+detection, which could substantially improve the quality of MA-plot
+panels.</li>
 <li>
-<code>jammagg()</code> or something similarly named, to produce a ggplot2 object.</li>
-<li>One goal for ggplot2 output is to produce interactive visualizations with plotly; however, if that is not sufficient for the desired properties, e.g. useful hover text over the smooth scatter density, then a custom interactive plot function may be needed, for example direct calls to plotly instead of using the ggplotly wrapper function.</li>
+<code>jammagg()</code> or something similarly named, to produce a
+ggplot2 object.</li>
+<li>One goal for ggplot2 output is to produce interactive visualizations
+with plotly; however, if that is not sufficient for the desired
+properties, e.g. useful hover text over the smooth scatter density, then
+a custom interactive plot function may be needed, for example direct
+calls to plotly instead of using the ggplotly wrapper function.</li>
 </ul><div class="section level3">
 <h3 id="update-to-handle-summarizedexperiment-objects">Update to handle SummarizedExperiment objects<a class="anchor" aria-label="anchor" href="#update-to-handle-summarizedexperiment-objects"></a></h3>
-<ul><li>centerGroups should be able to take colnames from colData(x) to define groupings.</li>
+<ul><li>centerGroups should be able to take colnames from colData(x) to
+define groupings.</li>
 <li>
-<code>jammaplot.SE()</code> could be specific to SummarizedExperiment objects. It would require the names(assays(SE)) to define the data matrix to use. It could even recognize sample groups from <code>colData(SE)</code>, or from internal design matrix used for statistical testing.</li>
+<code>jammaplot.SE()</code> could be specific to
+SummarizedExperiment objects. It would require the names(assays(SE)) to
+define the data matrix to use. It could even recognize sample groups
+from <code>colData(SE)</code>, or from internal design matrix used for
+statistical testing.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="highlighted-points">Highlighted points<a class="anchor" aria-label="anchor" href="#highlighted-points"></a></h3>
-<ul><li>Consider allowing highlighted points per panel, for example, showing gene hits only in the panels relevant to that comparison. However, there is a workaround, using <code>whichSamples</code> which will create the MA-plot data, but only display the samples of interest.</li>
+<ul><li>Consider allowing highlighted points per panel, for example, showing
+gene hits only in the panels relevant to that comparison. However, there
+is a workaround, using <code>whichSamples</code> which will create the
+MA-plot data, but only display the samples of interest.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="color-legend-for-highlighted-points">Color legend for highlighted points<a class="anchor" aria-label="anchor" href="#color-legend-for-highlighted-points"></a></h3>
-<ul><li>Add optional color legend at bottom of the figure labeling the colors highlighted on the plot.</li>
+<ul><li>Add optional color legend at bottom of the figure labeling the
+colors highlighted on the plot.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="enhance-the-returned-data">Enhance the returned data<a class="anchor" aria-label="anchor" href="#enhance-the-returned-data"></a></h3>
@@ -222,18 +371,27 @@
 <li>highlight label, highlight point color</li>
 <li>title box color</li>
 </ul></li>
-</ul><p>User should be able to take the returned data.frame list, and make a tall data.frame sufficient for ggplot2, or sufficient to answer the question “What is that outlier datapoint?”</p>
+</ul><p>User should be able to take the returned data.frame list, and make a
+tall data.frame sufficient for ggplot2, or sufficient to answer the
+question “What is that outlier datapoint?”</p>
 </div>
 <div class="section level3">
 <h3 id="interactive-plots-using-plotly">Interactive plots using plotly<a class="anchor" aria-label="anchor" href="#interactive-plots-using-plotly"></a></h3>
 <p>Future idea:</p>
-<ul><li>Convert plotSmoothScatter to generate a heatmap-ready density plot for each panel.</li>
-<li>For each cell in the panel, optionally update the label so it lists the point label(s) represented in that cell; alternatively simply label with the number of points represented.</li>
+<ul><li>Convert plotSmoothScatter to generate a heatmap-ready density plot
+for each panel.</li>
+<li>For each cell in the panel, optionally update the label so it lists
+the point label(s) represented in that cell; alternatively simply label
+with the number of points represented.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="accessory-function-to-select-points">Accessory function to select points<a class="anchor" aria-label="anchor" href="#accessory-function-to-select-points"></a></h3>
-<ul><li>A common workflow request stems from the question “What are those points?” A wrapper function was written to allow clicking twice inside an active plot device to define a rectangle, then returning the rownames of the corresponding points.</li>
-<li>The steps above could be used to supply coordinates from something like R-shiny, to request the rownames of the points specified.</li>
+<ul><li>A common workflow request stems from the question “What are those
+points?” A wrapper function was written to allow clicking twice inside
+an active plot device to define a rectangle, then returning the rownames
+of the corresponding points.</li>
+<li>The steps above could be used to supply coordinates from something
+like R-shiny, to request the rownames of the points specified.</li>
 </ul></div>
 </div>
 </div>
@@ -253,7 +411,8 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.9000.9000.9000.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+1.9000.9000.9000.</p>
 </div>
 
       </footer></div>

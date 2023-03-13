@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.25.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.28.900</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -135,19 +135,19 @@ preferentially match <code>"P.Value"</code> and not <code>"adj.P.Val"</code>.</p
 <span class="r-in"></span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span>;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Gene log2fold Group-Control P.Value Group-Control fold Group-Control</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 geneA              0.2283695             0.4355504           1.171510</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 geneB             -1.3343937             0.0373030          -2.521695</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 geneC              3.7677529             0.9380260          13.620927</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 geneD              4.1582607             0.4297487          17.855055</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 geneE             -4.2141852             0.2404251         -18.560777</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 geneF              2.1577620             0.8498439           4.462221</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 geneA              1.5674429            0.21561555           2.963789</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 geneB             -1.1595266            0.33512993          -2.233841</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 geneC              1.4454429            0.99230386           2.723464</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 geneD              0.4008917            0.04736680           1.320324</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 geneE             -1.2280223            0.51161028          -2.342456</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 geneF             -0.5087412            0.03021352          -1.422808</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   adj.P.Val Group-Control</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1               0.4355504</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2               0.0373030</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3               0.9380260</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4               0.4297487</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5               0.2404251</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6               0.8498439</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1              0.21561555</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2              0.33512993</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3              0.99230386</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4              0.04736680</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5              0.51161028</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6              0.03021352</span>
 <span class="r-in"><span class="fu">find_colname</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"p.val"</span>, <span class="st">"pval"</span><span class="op">)</span>, <span class="va">x</span><span class="op">)</span>;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "P.Value Group-Control"</span>
 <span class="r-in"><span class="fu">find_colname</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fold"</span>, <span class="st">"fc"</span>, <span class="st">"ratio"</span><span class="op">)</span>, <span class="va">x</span><span class="op">)</span>;</span>
@@ -160,12 +160,12 @@ preferentially match <code>"P.Value"</code> and not <code>"adj.P.Val"</code>.</p
 <span class="r-in"><span class="va">y</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">4</span>,<span class="fl">5</span><span class="op">)</span><span class="op">]</span>;</span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span>;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Gene log2fold Group-Control fold Group-Control adj.P.Val Group-Control</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 geneA              0.2283695           1.171510               0.4355504</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 geneB             -1.3343937          -2.521695               0.0373030</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 geneC              3.7677529          13.620927               0.9380260</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 geneD              4.1582607          17.855055               0.4297487</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 geneE             -4.2141852         -18.560777               0.2404251</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 geneF              2.1577620           4.462221               0.8498439</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 geneA              1.5674429           2.963789              0.21561555</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 geneB             -1.1595266          -2.233841              0.33512993</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 geneC              1.4454429           2.723464              0.99230386</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 geneD              0.4008917           1.320324              0.04736680</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 geneE             -1.2280223          -2.342456              0.51161028</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 geneF             -0.5087412          -1.422808              0.03021352</span>
 <span class="r-in"><span class="fu">find_colname</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"p.val"</span><span class="op">)</span>, <span class="va">y</span>, exclude_pattern<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"adj"</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
 <span class="r-in"></span>
@@ -183,7 +183,8 @@ preferentially match <code>"P.Value"</code> and not <code>"adj.P.Val"</code>.</p
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.9000.9000.9000.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+1.9000.9000.9000.</p>
 </div>
 
       </footer></div>

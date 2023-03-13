@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.25.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.28.900</span>
       </span>
     </div>
 
@@ -43,7 +43,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -79,9 +79,10 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Introduction to jamma</h1>
-                        <h4 data-toc-skip class="author">James M. Ward</h4>
+                        <h4 data-toc-skip class="author">James M.
+Ward</h4>
             
-            <h4 data-toc-skip class="date">2022-06-01</h4>
+            <h4 data-toc-skip class="date">2023-03-12</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jmw86069/jamma/blob/HEAD/vignettes/jamma-vignette.Rmd" class="external-link"><code>vignettes/jamma-vignette.Rmd</code></a></small>
       <div class="hidden name"><code>jamma-vignette.Rmd</code></div>
@@ -93,19 +94,48 @@
 <div class="section level1">
 <h1 id="introduction-to-jamma">Introduction to jamma<a class="anchor" aria-label="anchor" href="#introduction-to-jamma"></a>
 </h1>
-<p>The jamma package is primarily intended to produce MA-plots, a special form of Bland-Altman plot applied to genomics or omics data, typically representing log2-transformed expression measurements form DNA or RNA microarrays, RNA-seq counts, or other expression measurements.</p>
-<p>MA-plots have great utility as a data quality control (QC) methodology, as they effectively depict several aspects of data directly related to common downstream statistical assumptions. They can make it easy to recognize an obvious sample failure, or similarly to identify when one or more samples are not properly normalized, relative to downstream analysis steps.</p>
-<p>That said, MA-plots often suffer from ineffective display of tens of thousands of datapoints, and so this package was motivated initially simply by the desire to display the density of datapoints rather than each individual point. It evolved to provide specific benefits, driven by a large number of analysis projects across several different platform technologies.</p>
-<p>The jamma package also contains helper functions used to create and manipulate MA-plots which have been quite useful. This vignette demonstrates MA-plots, the various alternate ways of displaying MA-plot data, and the usefulness or the helper functions.</p>
+<p>The jamma package is primarily intended to produce MA-plots, a
+special form of Bland-Altman plot applied to genomics or omics data,
+typically representing log2-transformed expression measurements form DNA
+or RNA microarrays, RNA-seq counts, or other expression
+measurements.</p>
+<p>MA-plots have great utility as a data quality control (QC)
+methodology, as they effectively depict several aspects of data directly
+related to common downstream statistical assumptions. They can make it
+easy to recognize an obvious sample failure, or similarly to identify
+when one or more samples are not properly normalized, relative to
+downstream analysis steps.</p>
+<p>That said, MA-plots often suffer from ineffective display of tens of
+thousands of datapoints, and so this package was motivated initially
+simply by the desire to display the density of datapoints rather than
+each individual point. It evolved to provide specific benefits, driven
+by a large number of analysis projects across several different platform
+technologies.</p>
+<p>The jamma package also contains helper functions used to create and
+manipulate MA-plots which have been quite useful. This vignette
+demonstrates MA-plots, the various alternate ways of displaying MA-plot
+data, and the usefulness or the helper functions.</p>
 <div class="section level2">
 <h2 id="ma-plot-content">MA-plot content<a class="anchor" aria-label="anchor" href="#ma-plot-content"></a>
 </h2>
-<p>MA-plots show difference in log2 signal from average, as a function of average log2 signal. Typically one creates MA-plots to compare multiple samples, but one can compare sample groups using group mean values. The typical MA-plot for our purpose will display an individual sample in each panel.</p>
-<p>The visual distribution of points is intended to show the spread of points from low to high expression along the x-axis, and the deviation from mean along the y-axis. The relationship of signal (x-axis) to noise (y-axis) is a visual indicator of several characteristics of the data, and impacts the choice and effectiveness of numerous downstream statistical tests. The review of numerous panels of MA-plots can also be an effective way to judge the consistency of data from the samples and sample groups.</p>
+<p>MA-plots show difference in log2 signal from average, as a function
+of average log2 signal. Typically one creates MA-plots to compare
+multiple samples, but one can compare sample groups using group mean
+values. The typical MA-plot for our purpose will display an individual
+sample in each panel.</p>
+<p>The visual distribution of points is intended to show the spread of
+points from low to high expression along the x-axis, and the deviation
+from mean along the y-axis. The relationship of signal (x-axis) to noise
+(y-axis) is a visual indicator of several characteristics of the data,
+and impacts the choice and effectiveness of numerous downstream
+statistical tests. The review of numerous panels of MA-plots can also be
+an effective way to judge the consistency of data from the samples and
+sample groups.</p>
 <div class="section level3">
 <h3 id="example-ma-plot">Example MA-plot<a class="anchor" aria-label="anchor" href="#example-ma-plot"></a>
 </h3>
-<p>A reasonable example MA-plot can be created using data from the affydata package.</p>
+<p>A reasonable example MA-plot can be created using data from the
+affydata package.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va">affydata</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
    <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">Dilution</span><span class="op">)</span>;
@@ -120,8 +150,13 @@
 <div class="section level2">
 <h2 id="interpretation-of-ma-plots">Interpretation of MA-plots<a class="anchor" aria-label="anchor" href="#interpretation-of-ma-plots"></a>
 </h2>
-<p>MA-plots display several really useful features which tie directly into many of the assumptions of downstream statistical tools. Often, when something appears puzzling in downstream analysis results, MA-plots are a great place to look into what might be causing the issues.</p>
-<p>For example, in the MA plots above, it is clear the data has not been normalized. The evidence is that the points are not horizontal, centered with y-axis value of zero.</p>
+<p>MA-plots display several really useful features which tie directly
+into many of the assumptions of downstream statistical tools. Often,
+when something appears puzzling in downstream analysis results, MA-plots
+are a great place to look into what might be causing the issues.</p>
+<p>For example, in the MA plots above, it is clear the data has not been
+normalized. The evidence is that the points are not horizontal, centered
+with y-axis value of zero.</p>
 </div>
 </div>
   </div>
@@ -143,7 +178,8 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.9000.9000.9000.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+1.9000.9000.9000.</p>
 </div>
 
       </footer>

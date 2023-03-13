@@ -18,7 +18,7 @@ ggjammaplot() uses ggplot2 graphics."><!-- mathjax --><script src="https://cdnjs
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.25.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.28.900</span>
       </span>
     </div>
 
@@ -27,7 +27,7 @@ ggjammaplot() uses ggplot2 graphics."><!-- mathjax --><script src="https://cdnjs
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -66,6 +66,7 @@ ggjammaplot() uses ggplot2 graphics."><!-- mathjax --><script src="https://cdnjs
 
     <div class="ref-usage sourceCode"><pre class="sourceCode r"><code><span class="fu">ggjammaplot</span><span class="op">(</span>
   <span class="va">x</span>,
+  detail_factor <span class="op">=</span> <span class="fl">1</span>,
   nbin_factor <span class="op">=</span> <span class="fl">1</span>,
   bw_factor <span class="op">=</span> <span class="fl">1</span>,
   assay_name <span class="op">=</span> <span class="fl">1</span>,
@@ -85,13 +86,14 @@ ggjammaplot() uses ggplot2 graphics."><!-- mathjax --><script src="https://cdnjs
   whichSamples <span class="op">=</span> <span class="cn">NULL</span>,
   useRank <span class="op">=</span> <span class="cn">FALSE</span>,
   titleBoxColor <span class="op">=</span> <span class="st">"lightgoldenrod1"</span>,
+  titleCex <span class="op">=</span> <span class="fl">1</span>,
   outlierColor <span class="op">=</span> <span class="st">"lemonchiffon"</span>,
   fillBackground <span class="op">=</span> <span class="cn">TRUE</span>,
   maintitle <span class="op">=</span> <span class="cn">NULL</span>,
   subtitle <span class="op">=</span> <span class="cn">NULL</span>,
   summary <span class="op">=</span> <span class="st">"mean"</span>,
   difference <span class="op">=</span> <span class="st">"difference"</span>,
-  transFactor <span class="op">=</span> <span class="fl">0.2</span>,
+  transFactor <span class="op">=</span> <span class="fl">0.25</span>,
   doPlot <span class="op">=</span> <span class="cn">TRUE</span>,
   highlightPoints <span class="op">=</span> <span class="cn">NULL</span>,
   highlightPch <span class="op">=</span> <span class="fl">21</span>,
@@ -201,6 +203,9 @@ or proteins (or the assays of genes or proteins) are
 represented in rows, and obtained samples are represented
 in columns. Alternatively <code>x</code> can be <code>SummarizedExperiment</code>
 object, used alongside argument <code>assay_name</code>.</p></dd>
+<dt>detail_factor</dt>
+<dd><p><code>numeric</code> used to adjust the level
+of detail, as a multiplier for <code>nbin_factor</code> and <code>bw_factor</code>.</p></dd>
 <dt>nbin_factor</dt>
 <dd><p><code>numeric</code> value used to adjust the number of bins
 used to display the MA-plots, where values higher than <code>1</code> increase
@@ -212,7 +217,12 @@ applied to that value.</p></dd>
 <dd><p><code>numeric</code> used to adjust the resolution of the
 2-dimensional bandwidth calculation, where higher values create
 more detailed density, and lower values create a smoother density
-across the range of data.</p></dd>
+across the range of data.
+In some cases, the <code>ggplot</code> panel aspect ratio diverges from 1:1,
+in which case <code>bw_factor</code> can be used to expand the bandwidth by
+y-axis, or y-axis, respectively. For example, if the density
+appears short-wide, try <code>bw_factor=c(1.2, 1)</code>, if the density
+appears tall-skinny, try <code>bw_factor=c(1, 1.2)</code>.</p></dd>
 <dt>assay_name</dt>
 <dd><p><code>character</code> used when <code>x</code> is a
 <code>SummarizedExperiment</code> object, to determine which assay
@@ -919,21 +929,17 @@ used. For example indicate <code>'sampleID vs groupA'</code> instead of
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>package ‘GenomeInfoDb’ was built under R version 3.6.3</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>package ‘DelayedArray’ was built under R version 3.6.3</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>package ‘BiocParallel’ was built under R version 3.6.2</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Ignoring unknown parameters: stat</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 534 rows containing non-finite values (stat_density2d).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 7776 rows containing missing values (geom_raster).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Ignoring unknown parameters: stat</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 15648 rows containing missing values (geom_raster).</span>
 <span class="r-plt img"><img src="jammaplot-1.png" alt="" width="700" height="433"></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 140 rows containing non-finite values (stat_density2d).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 7776 rows containing missing values (geom_raster).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Ignoring unknown parameters: stat</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 15648 rows containing missing values (geom_raster).</span>
 <span class="r-plt img"><img src="jammaplot-2.png" alt="" width="700" height="433"></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 322 rows containing non-finite values (stat_density2d).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 7776 rows containing missing values (geom_raster).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Ignoring unknown parameters: stat</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 15648 rows containing missing values (geom_raster).</span>
 <span class="r-plt img"><img src="jammaplot-3.png" alt="" width="700" height="433"></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 317 rows containing non-finite values (stat_density2d).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 7636 rows containing missing values (geom_raster).</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 15272 rows containing missing values (geom_raster).</span>
 <span class="r-plt img"><img src="jammaplot-4.png" alt="" width="700" height="433"></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Note the example data requires the affydata Bioconductor package</span></span>
@@ -983,7 +989,8 @@ used. For example indicate <code>'sampleID vs groupA'</code> instead of
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.9000.9000.9000.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+1.9000.9000.9000.</p>
 </div>
 
       </footer></div>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.25.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.28.900</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -58,32 +58,144 @@
     </div>
 
     <div class="section level2">
+<h2 class="page-header" data-toc-text="0.0.28.900" id="jamma-0028900">jamma 0.0.28.900<a class="anchor" aria-label="anchor" href="#jamma-0028900"></a></h2>
+<div class="section level3">
+<h3 id="updates-to-existing-functions-0-0-28-900">updates to existing functions<a class="anchor" aria-label="anchor" href="#updates-to-existing-functions-0-0-28-900"></a></h3>
+<ul><li>
+<p><code><a href="../reference/centerGeneData.html">centerGeneData()</a></code></p>
+<ul><li><p>Note that default behavior is unchanged.</p></li>
+<li><p>New options to handle <code>NA</code> values in
+<code>controlSamples</code>.</p></li>
+<li><p>Currently when all <code>controlSamples</code> contain NA values,
+all other “centered” values versus these <code>controlSamples</code>
+become <code>NA</code>.</p></li>
+<li><p>It is sometimes preferred to keep non-NA values, even when
+centering is not possible versus specified control samples.</p></li>
+<li>
+<p>New argument <code>naControlAction</code>:</p>
+<ol style="list-style-type: decimal"><li>
+<code>naControlAction="na"</code>: leave values NA (current
+behavior, default)</li>
+<li>
+<code>naControlAction="row"</code>: center versus row non-NA
+values</li>
+<li>
+<code>naControlAction="floor"</code>: center versus numeric
+floor</li>
+<li>
+<code>naControlAction="min"</code>: center versus the minimum
+observed value</li>
+</ol></li>
+<li><p>New argument <code>naControlFloor=0</code> used only when
+<code>naControlAction="floor"</code>. When zero, values are effectively
+un-centered. However, sometimes the range of signal is 20-35, in which
+case it may be practically more useful to use
+<code>naControlFloor=20</code> so data is centered relative to the
+minimum range of detection.</p></li>
+</ul></li>
+<li><p>Added proper prefix to <code><a href="https://ggplot2.tidyverse.org/reference/aes_eval.html" class="external-link">ggplot2::after_stat()</a></code> for
+<code><a href="../reference/jammaplot.html">ggjammaplot()</a></code>.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="testthis-unit-tests-0-0-28-900">testthis unit tests<a class="anchor" aria-label="anchor" href="#testthis-unit-tests-0-0-28-900"></a></h3>
+<ul><li>Began the process of covering package functions with unit tests.
+Currently: <code><a href="../reference/centerGeneData.html">centerGeneData()</a></code>.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.0.27.900" id="jamma-0027900">jamma 0.0.27.900<a class="anchor" aria-label="anchor" href="#jamma-0027900"></a></h2>
+<div class="section level3">
+<h3 id="updates-to-existing-functions-0-0-27-900">updates to existing functions<a class="anchor" aria-label="anchor" href="#updates-to-existing-functions-0-0-27-900"></a></h3>
+<ul><li>
+<p><code><a href="../reference/jammaplot.html">ggjammaplot()</a></code> was updated:</p>
+<ul><li>Point density now shares the same range for all panels, including
+outlier panels. Previously, outlier panels generated their own color
+gradient, due to their specific numeric range of point density values
+calculated by ggplot on the fly. The new code will define the numeric
+range using non-outlier samples, then re-uses the same numeric range for
+outlier panels when there are outlier panels. This step appears to add
+some lag to rendering, although there is already more lag than with base
+R graphics.</li>
+<li>New argument <code>detail_factor</code> is a single argument to
+adjust the level of detail in the point density per facet panel.</li>
+</ul></li>
+<li>
+<p><code><a href="../reference/jammacalc.html">jammacalc()</a></code></p>
+<ul><li>The calculation of rank data using
+<code>rank(..., na.last=FALSE)</code> was assigning ties to repeated
+<code>numeric</code> values, but was assigning unique (arbitrary, by
+order they occur) ranks to <code>NA</code> values. The new code secretly
+converts <code>NA</code> to the lowest <code>numeric</code> value so
+they are assigned tied rank values.</li>
+</ul></li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.0.26.900" id="jamma-0026900">jamma 0.0.26.900<a class="anchor" aria-label="anchor" href="#jamma-0026900"></a></h2>
+<ul><li>
+<p><code><a href="../reference/volcano_plot.html">volcano_plot()</a></code> updates:</p>
+<ul><li>Fixed bug where <code>lfc_colname</code> was used even when only
+<code>fold_colname</code> was appropriate for the data. It now properly
+uses the <code>lfc_values</code> internal vector for relevant
+steps.</li>
+<li>
+<code>hi_points</code> now accepts a <code>list</code> input, to
+color code different subsets of points different colors</li>
+<li>new argument <code>hi_colors</code> coincident with
+<code>hi_points</code> having <code>list</code> input:
+<code>length(hi_colors)</code> should match
+<code>length(hi_points)</code> so colors will be applied to each vector
+in the <code>list</code>. If no colors are assigned, then bright
+categorical colors will be defined by
+<code><a href="https://rdrr.io/pkg/colorjam/man/group2colors.html" class="external-link">colorjam::group2colors()</a></code>.</li>
+<li>when <code>hi_points</code> is a <code>list</code>, a color key is
+placed at the bottom of the plot, making the bottom margin 2 lines
+taller, and shifting other captions up by 2 lines.</li>
+</ul></li>
+</ul></div>
+    <div class="section level2">
 <h2 class="page-header" data-toc-text="0.0.25.900" id="jamma-0025900">jamma 0.0.25.900<a class="anchor" aria-label="anchor" href="#jamma-0025900"></a></h2>
 <p>Main change: this version:</p>
-<ol style="list-style-type: decimal"><li>Automatic indication of <code>controlSamples</code> in each MA-plot panel.</li>
+<ol style="list-style-type: decimal"><li>Automatic indication of <code>controlSamples</code> in each MA-plot
+panel.</li>
 <li>Ability to supply custom names for each MA-plot panel.</li>
 </ol><div class="section level3">
 <h3 id="updates-to-existing-functions-0-0-25-900">updates to existing functions<a class="anchor" aria-label="anchor" href="#updates-to-existing-functions-0-0-25-900"></a></h3>
 <ul><li>
 <p><code><a href="../reference/jammaplot.html">jammaplot()</a></code></p>
-<ul><li><p><code>whichSamples</code> accepts <code>character</code> or <code>numeric</code> and will subset itself to match available <code>names(x)</code> or <code>nsamples</code> accordingly.</p></li>
-<li><p>New argument <code>sample_labels</code> to provide custom labels for each sample without having to rename <code>colnames(x)</code> in the process. An example has been added.</p></li>
+<ul><li><p><code>whichSamples</code> accepts <code>character</code> or
+<code>numeric</code> and will subset itself to match available
+<code>names(x)</code> or <code>nsamples</code> accordingly.</p></li>
+<li><p>New argument <code>sample_labels</code> to provide custom labels
+for each sample without having to rename <code>colnames(x)</code> in the
+process. An example has been added.</p></li>
 <li>
 <p>New argument <code>controlIndicator</code>:</p>
 <ul><li>
-<code>"titlestar"</code> - asterisk appended to the title of each plot</li>
+<code>"titlestar"</code> - asterisk appended to the title of each
+plot</li>
 <li>
-<code>"labelstar"</code> - asterisk labeled inside the top corner of each plot</li>
+<code>"labelstar"</code> - asterisk labeled inside the top corner of
+each plot</li>
 <li>
 <code>"none"</code> - no indicator is drawn</li>
 </ul></li>
-<li><p><code>par("mar")</code> is now only updated when <code>doPar=TRUE</code>.</p></li>
-<li><p>New argument <code>panel_hook_function</code> to supply a custom function to be run after drawing each plot panel. An example has been added, showing how to draw a box around each figure.</p></li>
-<li><p>y-axis labels are drawn using <code>format(..., big.mark=",")</code> as an improvement for <code>useRank=TRUE</code>.</p></li>
-<li><p>Margins have been adjusted so the title box default above each plot has more room when there is no <code>maintitle</code> that would otherwise have added space to the top of each overall figure.</p></li>
+<li><p><code>par("mar")</code> is now only updated when
+<code>doPar=TRUE</code>.</p></li>
+<li><p>New argument <code>panel_hook_function</code> to supply a custom
+function to be run after drawing each plot panel. An example has been
+added, showing how to draw a box around each figure.</p></li>
+<li><p>y-axis labels are drawn using
+<code>format(..., big.mark=",")</code> as an improvement for
+<code>useRank=TRUE</code>.</p></li>
+<li><p>Margins have been adjusted so the title box default above each
+plot has more room when there is no <code>maintitle</code> that would
+otherwise have added space to the top of each overall figure.</p></li>
 </ul></li>
 <li><p><code><a href="../reference/find_colname.html">find_colname()</a></code> is now exported.</p></li>
-<li><p>added <code><a href="../reference/log2fold_to_fold.html">log2fold_to_fold()</a></code> and <code><a href="../reference/fold_to_log2fold.html">fold_to_log2fold()</a></code> functions as required by <code><a href="../reference/volcano_plot.html">volcano_plot()</a></code>.</p></li>
+<li><p>added <code><a href="../reference/log2fold_to_fold.html">log2fold_to_fold()</a></code> and
+<code><a href="../reference/fold_to_log2fold.html">fold_to_log2fold()</a></code> functions as required by
+<code><a href="../reference/volcano_plot.html">volcano_plot()</a></code>.</p></li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -91,9 +203,16 @@
 <div class="section level3">
 <h3 id="bug-fixes-0-0-24-900">bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-0-24-900"></a></h3>
 <ul><li>
-<code><a href="../reference/volcano_plot.html">volcano_plot()</a></code> was throwing an error due to the new use of <code><a href="https://rdrr.io/r/utils/modifyList.html" class="external-link">utils::modifyList()</a></code>, ultimately caused by <code><a href="../reference/update_function_params.html">update_function_params()</a></code>. That function was updated, resolving the error.</li>
+<code><a href="../reference/volcano_plot.html">volcano_plot()</a></code> was throwing an error due to the new use
+of <code><a href="https://rdrr.io/r/utils/modifyList.html" class="external-link">utils::modifyList()</a></code>, ultimately caused by
+<code><a href="../reference/update_function_params.html">update_function_params()</a></code>. That function was updated,
+resolving the error.</li>
 <li>
-<code><a href="../reference/jammaplot.html">jammaplot()</a></code> was updated to pass <code>panelWidth="minimum"</code> to <code><a href="https://rdrr.io/pkg/jamba/man/drawLabels.html" class="external-link">jamba::drawLabels()</a></code> for the title box when using base R graphics plots. This change ensures the box is at least the plot panel width, and will be larger if the label is wider than each panel.</li>
+<code><a href="../reference/jammaplot.html">jammaplot()</a></code> was updated to pass
+<code>panelWidth="minimum"</code> to <code><a href="https://rdrr.io/pkg/jamba/man/drawLabels.html" class="external-link">jamba::drawLabels()</a></code>
+for the title box when using base R graphics plots. This change ensures
+the box is at least the plot panel width, and will be larger if the
+label is wider than each panel.</li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -101,52 +220,96 @@
 <div class="section level3">
 <h3 id="changes-to-existing-functions-0-0-23-900">changes to existing functions<a class="anchor" aria-label="anchor" href="#changes-to-existing-functions-0-0-23-900"></a></h3>
 <ul><li>
-<p><code><a href="../reference/jammaplot.html">jammaplot()</a></code> title box labels are now placed <em>above</em> plot panels!</p>
-<ul><li>This changes is being tested, but it seems like a sensible default not to obscure points in each plot panel.</li>
-<li>two new arguments: <code>titleAdjPreset</code>, <code>subtitleAdjPreset</code>
+<p><code><a href="../reference/jammaplot.html">jammaplot()</a></code> title box labels are now placed
+<em>above</em> plot panels!</p>
+<ul><li>This changes is being tested, but it seems like a sensible default
+not to obscure points in each plot panel.</li>
+<li>two new arguments: <code>titleAdjPreset</code>,
+<code>subtitleAdjPreset</code>
 </li>
-<li>passed to <code><a href="https://rdrr.io/pkg/jamba/man/coordPresets.html" class="external-link">jamba::coordPresets()</a></code> which defines coordinate positions in base R graphics context. The two main arguments are <code>preset</code> and <code>adjPreset</code>, where <code>preset</code> defines the coordinate “edge” or “corner” position, typically something like “top” or “bottomleft”; and <code>adjPreset</code> defines relative placement of the label. By default, <code>adjPreset</code> chooses the opposite orientation, to keep labels inside the plot panel. However <code>preset="top"</code> defines the top edge of the plot, and <code>adjPreset="top"</code> places the label above the top edge of the plot panel.</li>
-<li>The calculation of top outer margin is dependent upon the number of text lines in <code>maintitle</code>, and was increased to accomodate the new default placement of title box labels above the top panel. It does not account for multi-line title box labels, in that case, supply <code>maintitle</code> with empty extra lines at the end to add spacing.</li>
+<li>passed to <code><a href="https://rdrr.io/pkg/jamba/man/coordPresets.html" class="external-link">jamba::coordPresets()</a></code> which defines
+coordinate positions in base R graphics context. The two main arguments
+are <code>preset</code> and <code>adjPreset</code>, where
+<code>preset</code> defines the coordinate “edge” or “corner” position,
+typically something like “top” or “bottomleft”; and
+<code>adjPreset</code> defines relative placement of the label. By
+default, <code>adjPreset</code> chooses the opposite orientation, to
+keep labels inside the plot panel. However <code>preset="top"</code>
+defines the top edge of the plot, and <code>adjPreset="top"</code>
+places the label above the top edge of the plot panel.</li>
+<li>The calculation of top outer margin is dependent upon the number of
+text lines in <code>maintitle</code>, and was increased to accomodate
+the new default placement of title box labels above the top panel. It
+does not account for multi-line title box labels, in that case, supply
+<code>maintitle</code> with empty extra lines at the end to add
+spacing.</li>
 </ul></li>
-<li><p><code><a href="../reference/jammaplot.html">jammaplot()</a></code> argument <code>margins=c(3.5, 2, 0.3, 0.2)</code> is typically good for non-ranked MA-plots. When <code>useRank=TRUE</code> the numbers typically have 4 or more digits, and need more space. In this case by default, <code>margins + c(0, 1, 0, 0)</code> is used.</p></li>
+<li><p><code><a href="../reference/jammaplot.html">jammaplot()</a></code> argument
+<code>margins=c(3.5, 2, 0.3, 0.2)</code> is typically good for
+non-ranked MA-plots. When <code>useRank=TRUE</code> the numbers
+typically have 4 or more digits, and need more space. In this case by
+default, <code>margins + c(0, 1, 0, 0)</code> is used.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes--improvements-0-0-23-900">bug fixes / improvements<a class="anchor" aria-label="anchor" href="#bug-fixes--improvements-0-0-23-900"></a></h3>
 <ul><li>
-<code><a href="../reference/jammaplot.html">jammaplot()</a></code> correctly represents <code>highlightPch</code> point shapes in the highlight point legend at the bottom, via <code><a href="../reference/outer_legend.html">outer_legend()</a></code>.</li>
+<code><a href="../reference/jammaplot.html">jammaplot()</a></code> correctly represents
+<code>highlightPch</code> point shapes in the highlight point legend at
+the bottom, via <code><a href="../reference/outer_legend.html">outer_legend()</a></code>.</li>
 <li>
-<code><a href="../reference/outer_legend.html">outer_legend()</a></code> when <code>pt.bg=NULL</code> it will adjust <code>col</code> slightly darker for point shapes ranging from 21 to 25, and will assign <code>pt.bg=col</code> so the fill color is correct.</li>
+<code><a href="../reference/outer_legend.html">outer_legend()</a></code> when <code>pt.bg=NULL</code> it will
+adjust <code>col</code> slightly darker for point shapes ranging from 21
+to 25, and will assign <code>pt.bg=col</code> so the fill color is
+correct.</li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.0.22.900" id="jamma-0022900">jamma 0.0.22.900<a class="anchor" aria-label="anchor" href="#jamma-0022900"></a></h2>
 <div class="section level3">
 <h3 id="new-functions-volcano_plot-0-0-22-900">new functions: volcano_plot()<a class="anchor" aria-label="anchor" href="#new-functions-volcano_plot-0-0-22-900"></a></h3>
-<p>The <code><a href="../reference/volcano_plot.html">volcano_plot()</a></code> function has been in use for a long time, but not in R package form. The sticking point has been the block arrows drawn in plot margins (outside the plot panel) which describe the number of points that exceed statistical thresholds. Colleagues seem to like having these block arrows with summary numbers, and they’ve appeared in some published papers. That said, sizing block arrows consistently for all plot aspect ratios has been tricky, and migrating everything to ggplot2 is on the short to-do list. Unclear how block arrows would work in ggplot2.</p>
+<p>The <code><a href="../reference/volcano_plot.html">volcano_plot()</a></code> function has been in use for a long
+time, but not in R package form. The sticking point has been the block
+arrows drawn in plot margins (outside the plot panel) which describe the
+number of points that exceed statistical thresholds. Colleagues seem to
+like having these block arrows with summary numbers, and they’ve
+appeared in some published papers. That said, sizing block arrows
+consistently for all plot aspect ratios has been tricky, and migrating
+everything to ggplot2 is on the short to-do list. Unclear how block
+arrows would work in ggplot2.</p>
 <ul><li>
-<code><a href="../reference/volcano_plot.html">volcano_plot()</a></code> - Draw volcano plot, work in progress</li>
+<code><a href="../reference/volcano_plot.html">volcano_plot()</a></code> - Draw volcano plot, work in
+progress</li>
 <li>
-<code><a href="../reference/blockArrowMargin.html">blockArrowMargin()</a></code> - draws block arrows in plot margins</li>
+<code><a href="../reference/blockArrowMargin.html">blockArrowMargin()</a></code> - draws block arrows in plot
+margins</li>
 <li>
-<code><a href="../reference/gradient_rect.html">gradient_rect()</a></code> - draw rectangle with gradient color fill</li>
+<code><a href="../reference/gradient_rect.html">gradient_rect()</a></code> - draw rectangle with gradient color
+fill</li>
 <li>
-<code><a href="../reference/logAxis.html">logAxis()</a></code> - draw log-transformed <code>-log10(pvalue)</code> axis labels</li>
+<code><a href="../reference/logAxis.html">logAxis()</a></code> - draw log-transformed
+<code>-log10(pvalue)</code> axis labels</li>
 <li>
-<code><a href="../reference/find_colname.html">find_colname()</a></code> - find colname matching a character string</li>
+<code><a href="../reference/find_colname.html">find_colname()</a></code> - find colname matching a character
+string</li>
 <li>
-<code><a href="../reference/update_function_params.html">update_function_params()</a></code> - update function arguments in place</li>
+<code><a href="../reference/update_function_params.html">update_function_params()</a></code> - update function arguments in
+place</li>
 <li>
-<code><a href="../reference/update_list_elements.html">update_list_elements()</a></code> - utility called by <code><a href="../reference/update_function_params.html">update_function_params()</a></code>.</li>
+<code><a href="../reference/update_list_elements.html">update_list_elements()</a></code> - utility called by
+<code><a href="../reference/update_function_params.html">update_function_params()</a></code>.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="immediate-change-to-existing-functions-0-0-22-900">immediate change to existing functions<a class="anchor" aria-label="anchor" href="#immediate-change-to-existing-functions-0-0-22-900"></a></h3>
 <ul><li>
-<p><code><a href="../reference/update_list_elements.html">update_list_elements()</a></code> appears to have identical purpose and functionality as <code><a href="https://rdrr.io/r/utils/modifyList.html" class="external-link">utils::modifyList()</a></code></p>
+<p><code><a href="../reference/update_list_elements.html">update_list_elements()</a></code> appears to have identical
+purpose and functionality as <code><a href="https://rdrr.io/r/utils/modifyList.html" class="external-link">utils::modifyList()</a></code></p>
 <ul><li>
-<code><a href="../reference/update_function_params.html">update_function_params()</a></code> was updated to call <code><a href="https://rdrr.io/r/utils/modifyList.html" class="external-link">utils::modifyList()</a></code>
+<code><a href="../reference/update_function_params.html">update_function_params()</a></code> was updated to call
+<code><a href="https://rdrr.io/r/utils/modifyList.html" class="external-link">utils::modifyList()</a></code>
 </li>
 <li>
-<code><a href="../reference/update_list_elements.html">update_list_elements()</a></code> is deprecated while this change is tested.</li>
+<code><a href="../reference/update_list_elements.html">update_list_elements()</a></code> is deprecated while this change
+is tested.</li>
 </ul></li>
 </ul></div>
 </div>
@@ -154,52 +317,114 @@
 <h2 class="page-header" data-toc-text="0.0.21.900" id="jamma-0021900">jamma 0.0.21.900<a class="anchor" aria-label="anchor" href="#jamma-0021900"></a></h2>
 <div class="section level3">
 <h3 id="notable-changes-to-default-values-0-0-21-900">notable changes to default values<a class="anchor" aria-label="anchor" href="#notable-changes-to-default-values-0-0-21-900"></a></h3>
-<p><code><a href="../reference/jammaplot.html">jammaplot()</a></code> argument default <code>filterFloorReplacement=NA</code>:</p>
-<ul><li><p>This change corrects an issue where the row mean was calculated using values that may contain a large proportion of zero <code>0</code>, therefore pushing the x-axis position toward zero. The effect often also pushed the y-axis difference-from-mean to slightly larger magnitude, since the baseline value was typically closer to zero.</p></li>
-<li><p>The effect of the change in argument defaults is that the x-axis position of points displayed will reflect the mean/median of values above zero, and y-axis will reflect the difference from mean/median of values above zero, thus displaying mean and variation of those measurements that detected a signal, without being influenced by the proportion of those points that detected a signal.</p></li>
+<p><code><a href="../reference/jammaplot.html">jammaplot()</a></code> argument default
+<code>filterFloorReplacement=NA</code>:</p>
+<ul><li><p>This change corrects an issue where the row mean was calculated
+using values that may contain a large proportion of zero <code>0</code>,
+therefore pushing the x-axis position toward zero. The effect often also
+pushed the y-axis difference-from-mean to slightly larger magnitude,
+since the baseline value was typically closer to zero.</p></li>
+<li><p>The effect of the change in argument defaults is that the x-axis
+position of points displayed will reflect the mean/median of values
+above zero, and y-axis will reflect the difference from mean/median of
+values above zero, thus displaying mean and variation of those
+measurements that detected a signal, without being influenced by the
+proportion of those points that detected a signal.</p></li>
 <li>
 <p>Specifics:</p>
 <ul><li>
-<code>noise_floor</code> and <code>noise_floor_value</code> will replace deprecated arguments <code>filterFloor</code> and <code>filterFloorReplacement</code>, respectively. But the main change is to the default values.</li>
-<li>previous default: <code>filterFloor=0</code> and <code>filterFloorReplacement=filterFloor</code> set any value at or below <code>0</code> to <code>0</code>.</li>
-<li>new default: <code>noise_floor=0</code> and <code>noise_floor_value=NA</code> sets any value at or below <code>0</code> to <code>NA</code>.</li>
-<li>The change mostly affects data with large number of zero <code>0</code> values.</li>
-<li>Points below <code>noise_floor</code> will no longer contribute toward the sample MAD factor, which should be correct as the default.</li>
-<li>The x-axis summary value, by default is the mean unless <code>useMedian=TRUE</code> in which case it uses the median, is calculated using the remaining measurements, above the <code>noise_floor</code>, so by default values above zero will be displayed in each plot panel.</li>
-<li>The assumption is that a measurement <code>0</code> is an absence of measurement, and therefore should not contribute to the mean for that row of data, nor to the variability (or absence of variability) for the sample column.</li>
-<li>The same assumption should hold true for values below zero, where upstream processing should in theory have generated negative values as a result of background subtraction/adjustment by appropriate methods. Negative values are therefore also considered “absence of measurement” and the specific numeric value has no quantitative meaning in this function.</li>
+<code>noise_floor</code> and <code>noise_floor_value</code> will
+replace deprecated arguments <code>filterFloor</code> and
+<code>filterFloorReplacement</code>, respectively. But the main change
+is to the default values.</li>
+<li>previous default: <code>filterFloor=0</code> and
+<code>filterFloorReplacement=filterFloor</code> set any value at or
+below <code>0</code> to <code>0</code>.</li>
+<li>new default: <code>noise_floor=0</code> and
+<code>noise_floor_value=NA</code> sets any value at or below
+<code>0</code> to <code>NA</code>.</li>
+<li>The change mostly affects data with large number of zero
+<code>0</code> values.</li>
+<li>Points below <code>noise_floor</code> will no longer contribute
+toward the sample MAD factor, which should be correct as the
+default.</li>
+<li>The x-axis summary value, by default is the mean unless
+<code>useMedian=TRUE</code> in which case it uses the median, is
+calculated using the remaining measurements, above the
+<code>noise_floor</code>, so by default values above zero will be
+displayed in each plot panel.</li>
+<li>The assumption is that a measurement <code>0</code> is an absence of
+measurement, and therefore should not contribute to the mean for that
+row of data, nor to the variability (or absence of variability) for the
+sample column.</li>
+<li>The same assumption should hold true for values below zero, where
+upstream processing should in theory have generated negative values as a
+result of background subtraction/adjustment by appropriate methods.
+Negative values are therefore also considered “absence of measurement”
+and the specific numeric value has no quantitative meaning in this
+function.</li>
 </ul></li>
-<li><p>All that said, the previous behavior can be used with argument <code>noise_floor_value=noise_floor</code>.</p></li>
+<li><p>All that said, the previous behavior can be used with argument
+<code>noise_floor_value=noise_floor</code>.</p></li>
 <li>
-<p>Finally, some case can be made that the points filtered may optionally be displayed, in order to indicate their presence in the data. This option may be enabled in future if it seems necessary.</p>
+<p>Finally, some case can be made that the points filtered may
+optionally be displayed, in order to indicate their presence in the
+data. This option may be enabled in future if it seems necessary.</p>
 <ul><li>It is unclear how to plot points whose values were zero.</li>
-<li>If for example the non-zero mean x-axis position for a row is 12, does it imply the points at for this row would use x=12 and y=-12? Or should these points use x=0 and y=0?</li>
-<li>It seems more sensible not to display points whose measurements have been filtered from analysis - at least for now.</li>
+<li>If for example the non-zero mean x-axis position for a row is 12,
+does it imply the points at for this row would use x=12 and y=-12? Or
+should these points use x=0 and y=0?</li>
+<li>It seems more sensible not to display points whose measurements have
+been filtered from analysis - at least for now.</li>
 </ul></li>
 </ul></div>
 <div class="section level3">
-<h3 id="changes-to-make-jammaplot-and-ggjammaplot-consistent-0-0-21-900">changes to make <code>jammaplot()</code> and <code>ggjammaplot()</code> consistent:<a class="anchor" aria-label="anchor" href="#changes-to-make-jammaplot-and-ggjammaplot-consistent-0-0-21-900"></a></h3>
+<h3 id="changes-to-make-jammaplot-and-ggjammaplot-consistent-0-0-21-900">changes to make <code>jammaplot()</code> and
+<code>ggjammaplot()</code> consistent:<a class="anchor" aria-label="anchor" href="#changes-to-make-jammaplot-and-ggjammaplot-consistent-0-0-21-900"></a></h3>
 <ul><li>
-<p><code><a href="../reference/jammaplot.html">ggjammaplot()</a></code> was modified for consistency with <code><a href="../reference/jammaplot.html">jammaplot()</a></code>:</p>
+<p><code><a href="../reference/jammaplot.html">ggjammaplot()</a></code> was modified for consistency with
+<code><a href="../reference/jammaplot.html">jammaplot()</a></code>:</p>
 <ul><li>
 <code>colramp</code> argument added</li>
 <li>
-<code>outlierColor</code> can be a color function, for example <code>colramp="inferno"</code> and <code>outlierColor="inferno_r"</code> will use the reverse color ramp for a nice visual effect.</li>
-<li>new argument <code>fillBackground=TRUE</code> optionally fills each plot panel with the first color ramp color, affecting outlier panels. Previously each plot panel has a small region around the outside that was not filled, due to ggplot2 axis range expansion slightly beyond the 2d density coordinates.</li>
-<li>MAD outlier panels were not properly recognized, the MAD values were displayed but the background was not highlighted with <code>outlierColor</code>. Issue has been resolved.</li>
+<code>outlierColor</code> can be a color function, for example
+<code>colramp="inferno"</code> and <code>outlierColor="inferno_r"</code>
+will use the reverse color ramp for a nice visual effect.</li>
+<li>new argument <code>fillBackground=TRUE</code> optionally fills each
+plot panel with the first color ramp color, affecting outlier panels.
+Previously each plot panel has a small region around the outside that
+was not filled, due to ggplot2 axis range expansion slightly beyond the
+2d density coordinates.</li>
+<li>MAD outlier panels were not properly recognized, the MAD values were
+displayed but the background was not highlighted with
+<code>outlierColor</code>. Issue has been resolved.</li>
 <li>
-<code>noise_floor=0</code> is the new default value, consistent with <code><a href="../reference/jammaplot.html">jammaplot()</a></code>. Any value <strong>at or below</strong> is set to <code>noise_floor_value</code> which by default is NA, but can be changed to <code>noise_floor</code>.</li>
-<li>The MAD factor text color uses a color that contrasts with the base color gradient used in each plot panel, using white text versus dark background for example. It calls <code><a href="https://rdrr.io/pkg/jamba/man/setTextContrastColor.html" class="external-link">jamba::setTextContrastColor()</a></code>. Outlier text is either red or gold, as appropriate.</li>
+<code>noise_floor=0</code> is the new default value, consistent with
+<code><a href="../reference/jammaplot.html">jammaplot()</a></code>. Any value <strong>at or below</strong> is set
+to <code>noise_floor_value</code> which by default is NA, but can be
+changed to <code>noise_floor</code>.</li>
+<li>The MAD factor text color uses a color that contrasts with the base
+color gradient used in each plot panel, using white text versus dark
+background for example. It calls
+<code><a href="https://rdrr.io/pkg/jamba/man/setTextContrastColor.html" class="external-link">jamba::setTextContrastColor()</a></code>. Outlier text is either red
+or gold, as appropriate.</li>
 </ul></li>
 <li>
-<p><code><a href="../reference/jammaplot.html">jammaplot()</a></code> was modified for consistency with <code><a href="../reference/jammaplot.html">ggjammaplot()</a></code>:</p>
-<ul><li>New arguments <code>noise_floor</code> and <code>noise_floor_value</code>, which replace</li>
-<li>Deprecated arguments <code>filterFloor</code> and <code>filterFloorValue</code>.</li>
+<p><code><a href="../reference/jammaplot.html">jammaplot()</a></code> was modified for consistency with
+<code><a href="../reference/jammaplot.html">ggjammaplot()</a></code>:</p>
+<ul><li>New arguments <code>noise_floor</code> and
+<code>noise_floor_value</code>, which replace</li>
+<li>Deprecated arguments <code>filterFloor</code> and
+<code>filterFloorValue</code>.</li>
 <li>
-<code>filterFloorReplacement=NA</code> is the new default value, which may be a substantial change for data that contains a large proportion of missing values.</li>
-<li>The MAD factor text color uses a contrasting color, as with <code><a href="../reference/jammaplot.html">ggjammaplot()</a></code>.</li>
+<code>filterFloorReplacement=NA</code> is the new default value,
+which may be a substantial change for data that contains a large
+proportion of missing values.</li>
+<li>The MAD factor text color uses a contrasting color, as with
+<code><a href="../reference/jammaplot.html">ggjammaplot()</a></code>.</li>
 <li>
-<code>outlierColor="lemonchiffon"</code> default, consistent with <code><a href="../reference/jammaplot.html">ggjammaplot()</a></code>. It sounds yummy.</li>
+<code>outlierColor="lemonchiffon"</code> default, consistent with
+<code><a href="../reference/jammaplot.html">ggjammaplot()</a></code>. It sounds yummy.</li>
 </ul></li>
 </ul></div>
 </div>
@@ -208,43 +433,80 @@
 <div class="section level3">
 <h3 id="bug-fixes-0-0-20-900">bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-0-20-900"></a></h3>
 <ul><li>
-<code><a href="../reference/jammaplot.html">jammaplot()</a></code> was not properly passing argument <code>assay_name</code> to downstream function <code><a href="../reference/get_se_assaydata.html">get_se_assaydata()</a></code> when the input was <code>SummarizedExperiment</code>. It was by default always using the first assay stored in the SE object.</li>
+<code><a href="../reference/jammaplot.html">jammaplot()</a></code> was not properly passing argument
+<code>assay_name</code> to downstream function
+<code><a href="../reference/get_se_assaydata.html">get_se_assaydata()</a></code> when the input was
+<code>SummarizedExperiment</code>. It was by default always using the
+first assay stored in the SE object.</li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.0.19.900" id="jamma-0019900">jamma 0.0.19.900<a class="anchor" aria-label="anchor" href="#jamma-0019900"></a></h2>
 <div class="section level3">
 <h3 id="updates-to-package-dependencies-0-0-19-900">updates to package dependencies<a class="anchor" aria-label="anchor" href="#updates-to-package-dependencies-0-0-19-900"></a></h3>
-<p>Unfortunately the <code>gridtext</code> R package issue <a href="https://github.com/wilkelab/gridtext/issues/22" class="external-link uri">https://github.com/wilkelab/gridtext/issues/22</a> results in removing this package and <code>ggtext</code> as dependencies from <code>jamma</code>. The installation requires specific recent versions of GCC compiler that I have trouble resolving on my own linux servers. As a result, they are moved to <code>Suggests</code> and the corresponding <code>jamma</code> functions will handle them as optional.</p>
+<p>Unfortunately the <code>gridtext</code> R package issue <a href="https://github.com/wilkelab/gridtext/issues/22" class="external-link uri">https://github.com/wilkelab/gridtext/issues/22</a> results
+in removing this package and <code>ggtext</code> as dependencies from
+<code>jamma</code>. The installation requires specific recent versions
+of GCC compiler that I have trouble resolving on my own linux servers.
+As a result, they are moved to <code>Suggests</code> and the
+corresponding <code>jamma</code> functions will handle them as
+optional.</p>
 </div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.0.18.900" id="jamma-0018900">jamma 0.0.18.900<a class="anchor" aria-label="anchor" href="#jamma-0018900"></a></h2>
-<p>Bumped dependency on <code>jamba</code> to version <code>0.0.66.900</code> to avoid error with <code><a href="https://rdrr.io/pkg/Biobase/man/rowMedians.html" class="external-link">rowMedians()</a></code> that should use <code><a href="https://rdrr.io/pkg/matrixStats/man/rowMedians.html" class="external-link">matrixStats::rowMedians()</a></code>.</p>
-<p>Note: The <code><a href="https://pkgdown.r-lib.org/reference/build_site.html" class="external-link">pkgdown::build_site()</a></code> failed due to SSL certificate expiration, apparently from the crandb.r-pkg.org site. The workaround is to set this option beforehand, which prevents <code><a href="https://pkgdown.r-lib.org/reference/build_news.html" class="external-link">pkgdown::build_news()</a></code> from trying to access that URL. <code>options("pkgdown.internet"=FALSE)</code></p>
+<p>Bumped dependency on <code>jamba</code> to version
+<code>0.0.66.900</code> to avoid error with <code><a href="https://rdrr.io/pkg/Biobase/man/rowMedians.html" class="external-link">rowMedians()</a></code>
+that should use <code><a href="https://rdrr.io/pkg/matrixStats/man/rowMedians.html" class="external-link">matrixStats::rowMedians()</a></code>.</p>
+<p>Note: The <code><a href="https://pkgdown.r-lib.org/reference/build_site.html" class="external-link">pkgdown::build_site()</a></code> failed due to SSL
+certificate expiration, apparently from the crandb.r-pkg.org site. The
+workaround is to set this option beforehand, which prevents
+<code><a href="https://pkgdown.r-lib.org/reference/build_news.html" class="external-link">pkgdown::build_news()</a></code> from trying to access that URL.
+<code>options("pkgdown.internet"=FALSE)</code></p>
 <div class="section level3">
 <h3 id="new-functions-0-0-18-900">new functions<a class="anchor" aria-label="anchor" href="#new-functions-0-0-18-900"></a></h3>
 <ul><li>
-<p><code><a href="../reference/jammaplot.html">ggjammaplot()</a></code> - the ggplot2 equivalent to <code><a href="../reference/jammaplot.html">jammaplot()</a></code>. See examples, there are a variety of example figures, using straight MA-plots, raw and normalized data, using subset of samples, and optionally highlighted points.</p>
+<p><code><a href="../reference/jammaplot.html">ggjammaplot()</a></code> - the ggplot2 equivalent to
+<code><a href="../reference/jammaplot.html">jammaplot()</a></code>. See examples, there are a variety of example
+figures, using straight MA-plots, raw and normalized data, using subset
+of samples, and optionally highlighted points.</p>
 <p>Still to-do:</p>
-<ul><li>when <code>blankPlotPos</code> is used, the plot itself should be empty, without grid lines</li>
-<li>add <code>subtitle</code> to the bottom-left corner of each plot panel</li>
-<li>use <code>geom_text_repel()</code> to label <code>highlightPoints</code> - should probably be optional.</li>
-<li>more testing for large number of plot panels, for example test the aspect ratio for density and pixel size calculations</li>
+<ul><li>when <code>blankPlotPos</code> is used, the plot itself should be
+empty, without grid lines</li>
+<li>add <code>subtitle</code> to the bottom-left corner of each plot
+panel</li>
+<li>use <code>geom_text_repel()</code> to label
+<code>highlightPoints</code> - should probably be optional.</li>
+<li>more testing for large number of plot panels, for example test the
+aspect ratio for density and pixel size calculations</li>
 </ul></li>
 <li>
-<p><code><a href="../reference/element_textbox_colorsub.html">element_textbox_colorsub()</a></code> - a custom ggplot2 element that enables colored facet strip background colors using name-value pairs.</p>
-<ul><li>The technique was based upon a post by Claus O. Wilke, and is the closest to a “true ggplot2” methodology that I found. Other alternatives involved using the <code>gtable</code> package, and modifying <code>grob</code> grid graphical objects directly. See stackoverflow questions/60332202/conditionally-fill-ggtext-text-boxes-in-facet-wrap</li>
-<li>Note that this function very likely will move into the <code>colorjam</code> package to become the default of <code><a href="https://rdrr.io/pkg/colorjam/man/theme_jam.html" class="external-link">colorjam::theme_jam()</a></code>
+<p><code><a href="../reference/element_textbox_colorsub.html">element_textbox_colorsub()</a></code> - a custom ggplot2
+element that enables colored facet strip background colors using
+name-value pairs.</p>
+<ul><li>The technique was based upon a post by Claus O. Wilke, and is the
+closest to a “true ggplot2” methodology that I found. Other alternatives
+involved using the <code>gtable</code> package, and modifying
+<code>grob</code> grid graphical objects directly. See stackoverflow
+questions/60332202/conditionally-fill-ggtext-text-boxes-in-facet-wrap</li>
+<li>Note that this function very likely will move into the
+<code>colorjam</code> package to become the default of
+<code><a href="https://rdrr.io/pkg/colorjam/man/theme_jam.html" class="external-link">colorjam::theme_jam()</a></code>
 </li>
-<li>This function has not been tested with <code>facet_grid()</code> but in principle it should work.</li>
+<li>This function has not been tested with <code>facet_grid()</code> but
+in principle it should work.</li>
 </ul></li>
-<li><p><code><a href="../reference/element_grob.element_textbox_colorsub.html">element_grob.element_textbox_colorsub()</a></code> - required for the ggplot2 workaround with facet strip label background colors.</p></li>
+<li><p><code><a href="../reference/element_grob.element_textbox_colorsub.html">element_grob.element_textbox_colorsub()</a></code> - required
+for the ggplot2 workaround with facet strip label background
+colors.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="new-dependency-0-0-18-900">new dependency<a class="anchor" aria-label="anchor" href="#new-dependency-0-0-18-900"></a></h3>
 <ul><li>
-<code>ggtext</code> package is a dependency for <code><a href="../reference/jammaplot.html">ggjammaplot()</a></code>, however it is a lightweight and useful package, whose dependencies are largely also in common with <code>ggplot2</code>.</li>
+<code>ggtext</code> package is a dependency for
+<code><a href="../reference/jammaplot.html">ggjammaplot()</a></code>, however it is a lightweight and useful
+package, whose dependencies are largely also in common with
+<code>ggplot2</code>.</li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -252,7 +514,10 @@
 <div class="section level3">
 <h3 id="changes-to-existing-functions-0-0-17-900">changes to existing functions<a class="anchor" aria-label="anchor" href="#changes-to-existing-functions-0-0-17-900"></a></h3>
 <ul><li>
-<code><a href="../reference/jammaplot.html">jammaplot()</a></code>, <code><a href="../reference/jammanorm.html">jammanorm()</a></code> and <code><a href="../reference/jammacalc.html">jammacalc()</a></code> were updated to handle <code>useMedian</code> by default, but to accept <code>useMean</code> for backward compatibility.</li>
+<code><a href="../reference/jammaplot.html">jammaplot()</a></code>, <code><a href="../reference/jammanorm.html">jammanorm()</a></code> and
+<code><a href="../reference/jammacalc.html">jammacalc()</a></code> were updated to handle <code>useMedian</code>
+by default, but to accept <code>useMean</code> for backward
+compatibility.</li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -260,11 +525,23 @@
 <div class="section level3">
 <h3 id="changes-to-existing-functions-0-0-16-900">changes to existing functions<a class="anchor" aria-label="anchor" href="#changes-to-existing-functions-0-0-16-900"></a></h3>
 <ul><li>
-<code><a href="../reference/centerGeneData.html">centerGeneData()</a></code> has been changed to what was previously <code>centerGeneData_new()</code>, and the old function was renamed to <code><a href="../reference/centerGeneData_v1.html">centerGeneData_v1()</a></code>. The new function is designed to be backward compatible.</li>
+<code><a href="../reference/centerGeneData.html">centerGeneData()</a></code> has been changed to what was
+previously <code>centerGeneData_new()</code>, and the old function was
+renamed to <code><a href="../reference/centerGeneData_v1.html">centerGeneData_v1()</a></code>. The new function is
+designed to be backward compatible.</li>
 <li>
-<code><a href="../reference/jammaplot.html">jammaplot()</a></code> now accepts <code>SummarizedExperiment</code> objects as input, used alongside new argument <code>assay_name</code> which determines the matrix to use for MA-plots. The <code>assay_name</code> input can be an integer index, or by default it will use the first assay matrix in <code>x</code>. Alternatively to use the last assay matrix (if normalized data is stored in the last assay position for example) supply <code>assay_name=Inf</code> and the default will use the last assay in the list.</li>
+<code><a href="../reference/jammaplot.html">jammaplot()</a></code> now accepts
+<code>SummarizedExperiment</code> objects as input, used alongside new
+argument <code>assay_name</code> which determines the matrix to use for
+MA-plots. The <code>assay_name</code> input can be an integer index, or
+by default it will use the first assay matrix in <code>x</code>.
+Alternatively to use the last assay matrix (if normalized data is stored
+in the last assay position for example) supply
+<code>assay_name=Inf</code> and the default will use the last assay in
+the list.</li>
 <li>
-<code><a href="../reference/jammacalc.html">jammacalc()</a></code> now calls <code><a href="../reference/centerGeneData.html">centerGeneData()</a></code>.</li>
+<code><a href="../reference/jammacalc.html">jammacalc()</a></code> now calls
+<code><a href="../reference/centerGeneData.html">centerGeneData()</a></code>.</li>
 <li>
 <code><a href="../reference/jammanorm.html">jammanorm()</a></code> help text was expanded.</li>
 </ul><p>Added various entries to <code>TODO.md</code> for future work.</p>
@@ -275,23 +552,38 @@
 <div class="section level3">
 <h3 id="bug-fixes-0-0-15-900">bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-0-15-900"></a></h3>
 <ul><li>
-<code><a href="../reference/jammaplot.html">jammaplot()</a></code> fixed issue when applying <code>filterFloor</code> and <code>useRank=TRUE</code>, it was converting to rank before applying filter floor. An edge case but important for count data, where using <code>filterFloor=0</code> and <code>filterFloorReplacement=NA</code> is useful, and using <code>useRank=TRUE</code> is informative especially when using methods like DESeq2/edgeR downstream with count data.</li>
+<code><a href="../reference/jammaplot.html">jammaplot()</a></code> fixed issue when applying
+<code>filterFloor</code> and <code>useRank=TRUE</code>, it was
+converting to rank before applying filter floor. An edge case but
+important for count data, where using <code>filterFloor=0</code> and
+<code>filterFloorReplacement=NA</code> is useful, and using
+<code>useRank=TRUE</code> is informative especially when using methods
+like DESeq2/edgeR downstream with count data.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="minor-updates-0-0-15-900">minor updates<a class="anchor" aria-label="anchor" href="#minor-updates-0-0-15-900"></a></h3>
 <ul><li>
-<code><a href="../reference/jammacalc.html">jammacalc()</a></code> new argument <code>useRank</code> so the conversion to rank happens inside this function, as it should.</li>
-<li>Added some package prefix to functions such as <code><a href="https://rdrr.io/pkg/jamba/man/nameVector.html" class="external-link">jamba::nameVector()</a></code>, `jamba::rmNA().</li>
-<li>Removed <code><a href="http://github.com/jmw86069/jamba" class="external-link">require(jamba)</a></code> and <code><a href="https://github.com/HenrikBengtsson/matrixStats" class="external-link">require(matrixStats)</a></code> in favor of using proper package prefixing, and check for <code>matrixStats</code> using <code>rownames(installed.packages())</code>.</li>
+<code><a href="../reference/jammacalc.html">jammacalc()</a></code> new argument <code>useRank</code> so the
+conversion to rank happens inside this function, as it should.</li>
+<li>Added some package prefix to functions such as
+<code><a href="https://rdrr.io/pkg/jamba/man/nameVector.html" class="external-link">jamba::nameVector()</a></code>, `jamba::rmNA().</li>
+<li>Removed <code><a href="http://github.com/jmw86069/jamba" class="external-link">require(jamba)</a></code> and
+<code><a href="https://github.com/HenrikBengtsson/matrixStats" class="external-link">require(matrixStats)</a></code> in favor of using proper package
+prefixing, and check for <code>matrixStats</code> using
+<code>rownames(installed.packages())</code>.</li>
 <li>Cleaned up some R code, removing sections that were deprecated.</li>
-<li>Edited the wording for <code><a href="../reference/jammaplot.html">jammaplot()</a></code> function parameters.</li>
+<li>Edited the wording for <code><a href="../reference/jammaplot.html">jammaplot()</a></code> function
+parameters.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="changes-to-existing-functions-0-0-15-900">changes to existing functions<a class="anchor" aria-label="anchor" href="#changes-to-existing-functions-0-0-15-900"></a></h3>
 <ul><li>
-<code><a href="../reference/jammaplot.html">jammaplot()</a></code> cleaned up logic on handling <code>colramp</code> and <code>colrampOutlier</code> arguments.</li>
+<code><a href="../reference/jammaplot.html">jammaplot()</a></code> cleaned up logic on handling
+<code>colramp</code> and <code>colrampOutlier</code> arguments.</li>
 <li>
-<code><a href="../reference/jammaplot.html">jammaplot()</a></code> default <code>ma_method="jammacalc"</code> which is equivalent but slightly streamlines the internal calculations.</li>
+<code><a href="../reference/jammaplot.html">jammaplot()</a></code> default <code>ma_method="jammacalc"</code>
+which is equivalent but slightly streamlines the internal
+calculations.</li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -299,7 +591,13 @@
 <div class="section level3">
 <h3 id="new-function-0-0-14-900">new function<a class="anchor" aria-label="anchor" href="#new-function-0-0-14-900"></a></h3>
 <ul><li>
-<code><a href="../reference/jammanorm.html">jammanorm()</a></code> a basic normalization method that uses the output of <code><a href="../reference/jammaplot.html">jammaplot()</a></code> or <code><a href="../reference/jammacalc.html">jammacalc()</a></code>, and normalizes data such that the controlGenes are centered at y=0. In words, it makes the controlGenes have mean zero change from average across samples. It optionally takes pre-defined controlGenes (housekeeper genes), and optionally applies an expression minimum threshold, to ensure genes are expressed above noise.</li>
+<code><a href="../reference/jammanorm.html">jammanorm()</a></code> a basic normalization method that uses the
+output of <code><a href="../reference/jammaplot.html">jammaplot()</a></code> or <code><a href="../reference/jammacalc.html">jammacalc()</a></code>, and
+normalizes data such that the controlGenes are centered at y=0. In
+words, it makes the controlGenes have mean zero change from average
+across samples. It optionally takes pre-defined controlGenes
+(housekeeper genes), and optionally applies an expression minimum
+threshold, to ensure genes are expressed above noise.</li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -307,7 +605,9 @@
 <div class="section level3">
 <h3 id="changes-0-0-13-900">changes<a class="anchor" aria-label="anchor" href="#changes-0-0-13-900"></a></h3>
 <ul><li>
-<code><a href="../reference/jammaplot.html">jammaplot()</a></code> argument default changed to <code>useMean=TRUE</code> to plot the mean centered value, instead of the median.</li>
+<code><a href="../reference/jammaplot.html">jammaplot()</a></code> argument default changed to
+<code>useMean=TRUE</code> to plot the mean centered value, instead of
+the median.</li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -315,7 +615,10 @@
 <div class="section level3">
 <h3 id="changes-0-0-12-900">changes<a class="anchor" aria-label="anchor" href="#changes-0-0-12-900"></a></h3>
 <ul><li>
-<code><a href="../reference/jammaplot.html">jammaplot()</a></code> argument <code>useRank=TRUE</code> will produce the rough equivalent of a non-parametric MA-plot, where the y-axis unit is either the actual change in rank, or the fractional change in rank adjusted by the number of rows.</li>
+<code><a href="../reference/jammaplot.html">jammaplot()</a></code> argument <code>useRank=TRUE</code> will
+produce the rough equivalent of a non-parametric MA-plot, where the
+y-axis unit is either the actual change in rank, or the fractional
+change in rank adjusted by the number of rows.</li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -323,16 +626,28 @@
 <div class="section level3">
 <h3 id="new-functions-0-0-11-900">new functions<a class="anchor" aria-label="anchor" href="#new-functions-0-0-11-900"></a></h3>
 <ul><li>
-<code><a href="../reference/outer_legend.html">outer_legend()</a></code> is used to place a color legend outside multi-panel base R graphics, for example when using <code>par("mfrow"=c(2,2))</code>. By default it places the legend at the bottom, centered in the plot device. It of course may move to <code>jamba</code> but that package is already getting overloaded.</li>
+<code><a href="../reference/outer_legend.html">outer_legend()</a></code> is used to place a color legend outside
+multi-panel base R graphics, for example when using
+<code>par("mfrow"=c(2,2))</code>. By default it places the legend at the
+bottom, centered in the plot device. It of course may move to
+<code>jamba</code> but that package is already getting overloaded.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="changes-0-0-11-900">changes<a class="anchor" aria-label="anchor" href="#changes-0-0-11-900"></a></h3>
 <ul><li>
-<code><a href="../reference/jammaplot.html">jammaplot()</a></code> has transitioned from using <code>groupSuffix</code> to add a text suffix to each panel title, to using <code>subtitle</code> to display text in the bottom-left corner of each panel. In most cases, this change results in better use of whitespace on each plot, and helps keep the title label smaller.</li>
+<code><a href="../reference/jammaplot.html">jammaplot()</a></code> has transitioned from using
+<code>groupSuffix</code> to add a text suffix to each panel title, to
+using <code>subtitle</code> to display text in the bottom-left corner of
+each panel. In most cases, this change results in better use of
+whitespace on each plot, and helps keep the title label smaller.</li>
 <li>
-<code><a href="../reference/jammaplot.html">jammaplot()</a></code> allows a list color ramps in the argument <code>colramp</code>, which applies a different color ramp in each panel.</li>
+<code><a href="../reference/jammaplot.html">jammaplot()</a></code> allows a list color ramps in the argument
+<code>colramp</code>, which applies a different color ramp in each
+panel.</li>
 <li>
-<code><a href="../reference/jammaplot.html">jammaplot()</a></code> changed how highlightPoints are handled, making it more robust to different types of input, vector or list. Fix error when highlightPoints had no list name.</li>
+<code><a href="../reference/jammaplot.html">jammaplot()</a></code> changed how highlightPoints are handled,
+making it more robust to different types of input, vector or list. Fix
+error when highlightPoints had no list name.</li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -340,44 +655,118 @@
 <div class="section level3">
 <h3 id="new-functions-0-0-10-900">new functions<a class="anchor" aria-label="anchor" href="#new-functions-0-0-10-900"></a></h3>
 <ul><li>
-<code><a href="../reference/jammacalc.html">jammacalc()</a></code> is used to calculate data ready for MA-plots, to separate this logic from the <code><a href="../reference/jammaplot.html">jammaplot()</a></code> function used for visualization.</li>
-<li>The <code><a href="../reference/jammacalc.html">jammacalc()</a></code> function slightly improves upon the <code><a href="../reference/jammaplot.html">jammaplot()</a></code> calculations by simplifying the centering by calling <code>centerGeneData_new()</code> (or <code><a href="../reference/centerGeneData.html">centerGeneData()</a></code>) instead of performing similar calculations itself. The results should be notably faster especially for larger data matrices.</li>
-<li>The <code><a href="../reference/jammacalc.html">jammacalc()</a></code> function also changes the result of <code>groupedX=TRUE</code>, which now correctly uses each group median value instead of a median across the group medians. It allows each group of MA-plot panels defined by <code>centerGroups</code> to be completely independent of other groups, which has benefits and discrepancies that depend upon how the <code>centerGroups</code> values are defined relative to the intended downstream statistical comparisons. For example, we recommend centerGroups broadly include the sample groups that will eventually be compared, specifically so the distributions are directly compared in the MA-plot visualization. However, certain per-group QC checks are ideally performed by using <code>centerGroups</code> for each sample group. Overall, be aware of the effects of each scenario, and adjust the expectations and assumptions accordingly.</li>
+<code><a href="../reference/jammacalc.html">jammacalc()</a></code> is used to calculate data ready for
+MA-plots, to separate this logic from the <code><a href="../reference/jammaplot.html">jammaplot()</a></code>
+function used for visualization.</li>
+<li>The <code><a href="../reference/jammacalc.html">jammacalc()</a></code> function slightly improves upon the
+<code><a href="../reference/jammaplot.html">jammaplot()</a></code> calculations by simplifying the centering by
+calling <code>centerGeneData_new()</code> (or
+<code><a href="../reference/centerGeneData.html">centerGeneData()</a></code>) instead of performing similar
+calculations itself. The results should be notably faster especially for
+larger data matrices.</li>
+<li>The <code><a href="../reference/jammacalc.html">jammacalc()</a></code> function also changes the result of
+<code>groupedX=TRUE</code>, which now correctly uses each group median
+value instead of a median across the group medians. It allows each group
+of MA-plot panels defined by <code>centerGroups</code> to be completely
+independent of other groups, which has benefits and discrepancies that
+depend upon how the <code>centerGroups</code> values are defined
+relative to the intended downstream statistical comparisons. For
+example, we recommend centerGroups broadly include the sample groups
+that will eventually be compared, specifically so the distributions are
+directly compared in the MA-plot visualization. However, certain
+per-group QC checks are ideally performed by using
+<code>centerGroups</code> for each sample group. Overall, be aware of
+the effects of each scenario, and adjust the expectations and
+assumptions accordingly.</li>
 <li>
-<code><a href="../reference/jammaplot.html">jammaplot()</a></code> new argument <code>ma_method</code> where <code>ma_method="old"</code> calls the previous code for MA-plot calculations, and <code>ma_method="jammacalc"</code> calls <code><a href="../reference/jammacalc.html">jammacalc()</a></code> with the newer equivalent calculations.</li>
+<code><a href="../reference/jammaplot.html">jammaplot()</a></code> new argument <code>ma_method</code> where
+<code>ma_method="old"</code> calls the previous code for MA-plot
+calculations, and <code>ma_method="jammacalc"</code> calls
+<code><a href="../reference/jammacalc.html">jammacalc()</a></code> with the newer equivalent calculations.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="changes-0-0-10-900">changes<a class="anchor" aria-label="anchor" href="#changes-0-0-10-900"></a></h3>
 <ul><li>Added <code>"colorjam"</code> to R package dependencies.</li>
-<li>Removed R package dependencies on <code>"rgeos"</code> and <code>"sp"</code>.</li>
+<li>Removed R package dependencies on <code>"rgeos"</code> and
+<code>"sp"</code>.</li>
 <li>
-<code><a href="../reference/points2polygonHull.html">points2polygonHull()</a></code> now uses <code><a href="https://rdrr.io/r/grDevices/chull.html" class="external-link">grDevices::chull()</a></code> instead of <code><a href="https://rdrr.io/pkg/rgeos/man/topo-unary-gConvexHull.html" class="external-link">rgeos::gConvexHull()</a></code>. The function accepts numeric <code>matrix</code>, <code>data.frame</code>, <code>tibble</code>, <code>tbl</code>, and <code>SpatialPoints</code> input, and can output either a two-column numeric <code>matrix</code>, or <code>SpatialPolygons</code> as output.</li>
-<li>the default argument to <code><a href="../reference/centerGeneData.html">centerGeneData()</a></code> was changed from <code>"indata"</code> to <code>"x"</code> to be consistent with Tidyverse syntax.</li>
+<code><a href="../reference/points2polygonHull.html">points2polygonHull()</a></code> now uses
+<code><a href="https://rdrr.io/r/grDevices/chull.html" class="external-link">grDevices::chull()</a></code> instead of
+<code><a href="https://rdrr.io/pkg/rgeos/man/topo-unary-gConvexHull.html" class="external-link">rgeos::gConvexHull()</a></code>. The function accepts numeric
+<code>matrix</code>, <code>data.frame</code>, <code>tibble</code>,
+<code>tbl</code>, and <code>SpatialPoints</code> input, and can output
+either a two-column numeric <code>matrix</code>, or
+<code>SpatialPolygons</code> as output.</li>
+<li>the default argument to <code><a href="../reference/centerGeneData.html">centerGeneData()</a></code> was changed
+from <code>"indata"</code> to <code>"x"</code> to be consistent with
+Tidyverse syntax.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="future-changes-to-centergenedata-0-0-10-900">future changes to centerGeneData()<a class="anchor" aria-label="anchor" href="#future-changes-to-centergenedata-0-0-10-900"></a></h3>
-<ul><li><p><code><a href="../reference/centerGeneData.html">centerGeneData()</a></code> will soon be replaced by <code>centerGeneData_new()</code> after a period of testing. The functions should be equivalent. The new function uses <code><a href="https://rdrr.io/pkg/jamba/man/rowGroupMeans.html" class="external-link">jamba::rowGroupMeans()</a></code> to produce the summary values used for centering. The change will consolidate the logic of calculating row group values into <code><a href="https://rdrr.io/pkg/jamba/man/rowGroupMeans.html" class="external-link">jamba::rowGroupMeans()</a></code>, as opposed to duplicating only certain parts of that functionality inside <code><a href="../reference/centerGeneData.html">centerGeneData()</a></code>. The new function also surfaces outlier detection and removal during centering in one step. The potential downside, and need for a period of testing, is that the full input matrix is centered versus the expanded row group matrix in one step. Briefly there will be two matrices with identical dimensions, which will produce a higher memory profile. For extremely large matrices, this change may become problematic, and may require an alternative strategy during the centering step.</p></li>
-<li><p><code><a href="../reference/jammaplot.html">jammaplot()</a></code> will be refactored to streamline certain calculations using the newer <code>centerGeneData_new()</code>.</p></li>
+<ul><li><p><code><a href="../reference/centerGeneData.html">centerGeneData()</a></code> will soon be replaced by
+<code>centerGeneData_new()</code> after a period of testing. The
+functions should be equivalent. The new function uses
+<code><a href="https://rdrr.io/pkg/jamba/man/rowGroupMeans.html" class="external-link">jamba::rowGroupMeans()</a></code> to produce the summary values used
+for centering. The change will consolidate the logic of calculating row
+group values into <code><a href="https://rdrr.io/pkg/jamba/man/rowGroupMeans.html" class="external-link">jamba::rowGroupMeans()</a></code>, as opposed to
+duplicating only certain parts of that functionality inside
+<code><a href="../reference/centerGeneData.html">centerGeneData()</a></code>. The new function also surfaces outlier
+detection and removal during centering in one step. The potential
+downside, and need for a period of testing, is that the full input
+matrix is centered versus the expanded row group matrix in one step.
+Briefly there will be two matrices with identical dimensions, which will
+produce a higher memory profile. For extremely large matrices, this
+change may become problematic, and may require an alternative strategy
+during the centering step.</p></li>
+<li><p><code><a href="../reference/jammaplot.html">jammaplot()</a></code> will be refactored to streamline certain
+calculations using the newer <code>centerGeneData_new()</code>.</p></li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.0.9.900" id="jamma-009900">jamma 0.0.9.900<a class="anchor" aria-label="anchor" href="#jamma-009900"></a></h2>
 <div class="section level3">
 <h3 id="changes-to-jammaplot-0-0-9-900">changes to jammaplot()<a class="anchor" aria-label="anchor" href="#changes-to-jammaplot-0-0-9-900"></a></h3>
-<ul><li>now creates a default <code>groupSuffix</code> based upon the <code>centerGroups</code> if any, the goal is to ensure the center groups are by default included in each panel label.</li>
-<li>Columns with missing data (e.g. all NA values) are now handled by plotting a blank plot panel with background color <code>outlierColor</code>. The MAD value is assigned <code>Inf</code>.</li>
-<li>now uses <code>maintitle</code> as the title for the overall set of plots, displayed in the top outer margin of each page. New argument <code>maintitleCex</code> controls title text size.</li>
-<li>the default input argument is changed from <code>"object"</code> to <code>"x"</code>, to be consistent with other tidyverse-friendly workflows.</li>
-<li>attribute names are changed from “mvaMADs”, “mvaMADoutliers”, “mvaMADfactors” to “MADs”, “MADoutliers”, “MADfactors”. The names using “mva” are deprecated and will be retired in a future version of jamma.</li>
-<li>outlier MAD label cex is now <code>0.9*titleCex</code>, making the MAD label slightly smaller than the panel label.</li>
-<li>Outlier plot panels are now highlighted using <code>&gt;= outlierMAD</code>, consistent with the formal outlier detection. Previously it was erroneously using <code>&gt; outlierMAD</code>.</li>
-<li>new argument <code>subtitleBoxColor</code> which defines the background color for optional subtitles printed at the bottom of each plot panel. Used to color-code <code>centerGroups</code>, if <code>groupSuffix=""</code> and subtitle contains <code>centerGroups</code> as labels.</li>
+<ul><li>now creates a default <code>groupSuffix</code> based upon the
+<code>centerGroups</code> if any, the goal is to ensure the center
+groups are by default included in each panel label.</li>
+<li>Columns with missing data (e.g. all NA values) are now handled by
+plotting a blank plot panel with background color
+<code>outlierColor</code>. The MAD value is assigned
+<code>Inf</code>.</li>
+<li>now uses <code>maintitle</code> as the title for the overall set of
+plots, displayed in the top outer margin of each page. New argument
+<code>maintitleCex</code> controls title text size.</li>
+<li>the default input argument is changed from <code>"object"</code> to
+<code>"x"</code>, to be consistent with other tidyverse-friendly
+workflows.</li>
+<li>attribute names are changed from “mvaMADs”, “mvaMADoutliers”,
+“mvaMADfactors” to “MADs”, “MADoutliers”, “MADfactors”. The names using
+“mva” are deprecated and will be retired in a future version of
+jamma.</li>
+<li>outlier MAD label cex is now <code>0.9*titleCex</code>, making the
+MAD label slightly smaller than the panel label.</li>
+<li>Outlier plot panels are now highlighted using
+<code>&gt;= outlierMAD</code>, consistent with the formal outlier
+detection. Previously it was erroneously using
+<code>&gt; outlierMAD</code>.</li>
+<li>new argument <code>subtitleBoxColor</code> which defines the
+background color for optional subtitles printed at the bottom of each
+plot panel. Used to color-code <code>centerGroups</code>, if
+<code>groupSuffix=""</code> and subtitle contains
+<code>centerGroups</code> as labels.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="notes-0-0-9-900">Notes<a class="anchor" aria-label="anchor" href="#notes-0-0-9-900"></a></h3>
-<ul><li><p>Very likely, the base R plotting may be replaced or augmented by using ggplot2. Past reason for using base R were due to panel layout, and wanting detailed control over smoothScatter per-panel density plotting.</p></li>
-<li><p>In future, the <code>centerGroups</code> value may be displayed inside the <code>subtitle</code> label box at the bottom-left corner of each panel, color-coded to help indicate the centering group.</p></li>
-<li><p>In future, <code>controlSamples</code> may be indicated by appending an asterisk “*” at the end of the main label for each panel.</p></li>
+<ul><li><p>Very likely, the base R plotting may be replaced or augmented by
+using ggplot2. Past reason for using base R were due to panel layout,
+and wanting detailed control over smoothScatter per-panel density
+plotting.</p></li>
+<li><p>In future, the <code>centerGroups</code> value may be displayed
+inside the <code>subtitle</code> label box at the bottom-left corner of
+each panel, color-coded to help indicate the centering group.</p></li>
+<li><p>In future, <code>controlSamples</code> may be indicated by
+appending an asterisk “*” at the end of the main label for each
+panel.</p></li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -385,17 +774,30 @@
 <div class="section level3">
 <h3 id="changes-0-0-8-900">changes<a class="anchor" aria-label="anchor" href="#changes-0-0-8-900"></a></h3>
 <ul><li>
-<code><a href="https://rdrr.io/pkg/jamba/man/drawLabels.html" class="external-link">drawLabels()</a></code> and <code><a href="https://rdrr.io/pkg/jamba/man/coordPresets.html" class="external-link">coordPresets()</a></code> were moved to the <code>jamba</code> package, consistent with the need for wider re-use among Jam packages.</li>
-<li>Added dependency on the version of jamba that includes <code><a href="https://rdrr.io/pkg/jamba/man/drawLabels.html" class="external-link">drawLabels()</a></code>.</li>
+<code><a href="https://rdrr.io/pkg/jamba/man/drawLabels.html" class="external-link">drawLabels()</a></code> and <code><a href="https://rdrr.io/pkg/jamba/man/coordPresets.html" class="external-link">coordPresets()</a></code> were moved
+to the <code>jamba</code> package, consistent with the need for wider
+re-use among Jam packages.</li>
+<li>Added dependency on the version of jamba that includes
+<code><a href="https://rdrr.io/pkg/jamba/man/drawLabels.html" class="external-link">drawLabels()</a></code>.</li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.0.7.900" id="jamma-007900">jamma 0.0.7.900<a class="anchor" aria-label="anchor" href="#jamma-007900"></a></h2>
 <div class="section level3">
 <h3 id="changes-0-0-7-900">changes<a class="anchor" aria-label="anchor" href="#changes-0-0-7-900"></a></h3>
-<ul><li>Based upon feedback regarding difficulty installing the “rgeos” package, changed <code><a href="../reference/jammaplot.html">jammaplot()</a></code> to use <code><a href="https://rdrr.io/r/grDevices/chull.html" class="external-link">grDevices::chull()</a></code> when <code>doHighlightPolygon=TRUE</code>. The output should be identical, without the need to install the rgeos package.</li>
-<li>changed <code><a href="https://rdrr.io/pkg/jamba/man/drawLabels.html" class="external-link">drawLabels()</a></code> now uses label height to define the effects of <code>boxCexAdjust</code> on the label box size, making the x- and y-adjustment more consistent when using long labels; it also uses <code><a href="https://rdrr.io/pkg/jamba/man/getPlotAspect.html" class="external-link">jamba::getPlotAspect()</a></code> to correct for aspect ratio. Note it is probably far less useful to supply x and y values for <code>boxCexAdjust</code>.</li>
-<li>made adjustments based upon the single-line height and not the total string height, affecting multi-line labels.</li>
+<ul><li>Based upon feedback regarding difficulty installing the “rgeos”
+package, changed <code><a href="../reference/jammaplot.html">jammaplot()</a></code> to use
+<code><a href="https://rdrr.io/r/grDevices/chull.html" class="external-link">grDevices::chull()</a></code> when
+<code>doHighlightPolygon=TRUE</code>. The output should be identical,
+without the need to install the rgeos package.</li>
+<li>changed <code><a href="https://rdrr.io/pkg/jamba/man/drawLabels.html" class="external-link">drawLabels()</a></code> now uses label height to define
+the effects of <code>boxCexAdjust</code> on the label box size, making
+the x- and y-adjustment more consistent when using long labels; it also
+uses <code><a href="https://rdrr.io/pkg/jamba/man/getPlotAspect.html" class="external-link">jamba::getPlotAspect()</a></code> to correct for aspect ratio.
+Note it is probably far less useful to supply x and y values for
+<code>boxCexAdjust</code>.</li>
+<li>made adjustments based upon the single-line height and not the total
+string height, affecting multi-line labels.</li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -403,12 +805,19 @@
 <div class="section level3">
 <h3 id="new-functions-0-0-6-900">new functions<a class="anchor" aria-label="anchor" href="#new-functions-0-0-6-900"></a></h3>
 <ul><li>
-<code><a href="https://rdrr.io/pkg/jamba/man/drawLabels.html" class="external-link">drawLabels()</a></code> which draws a colored box with label inside, positioned by default at the center of the x and y coordinates provided. This function will be tested then moved to the “jamba” package.</li>
+<code><a href="https://rdrr.io/pkg/jamba/man/drawLabels.html" class="external-link">drawLabels()</a></code> which draws a colored box with label
+inside, positioned by default at the center of the x and y coordinates
+provided. This function will be tested then moved to the “jamba”
+package.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="changes-to-existing-functions-0-0-6-900">changes to existing functions<a class="anchor" aria-label="anchor" href="#changes-to-existing-functions-0-0-6-900"></a></h3>
 <ul><li>
-<code><a href="../reference/jammaplot.html">jammaplot()</a></code> by default will use <code><a href="https://rdrr.io/pkg/jamba/man/drawLabels.html" class="external-link">drawLabels()</a></code> to print a label in each panel, instead of the previous method which used <code><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend()</a></code> and was not properly centered. In future, labels may detect whether to enforce word-wrap in order to keep labels from overlapping adjacent panels.</li>
+<code><a href="../reference/jammaplot.html">jammaplot()</a></code> by default will use
+<code><a href="https://rdrr.io/pkg/jamba/man/drawLabels.html" class="external-link">drawLabels()</a></code> to print a label in each panel, instead of the
+previous method which used <code><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend()</a></code> and was not properly
+centered. In future, labels may detect whether to enforce word-wrap in
+order to keep labels from overlapping adjacent panels.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="other-changes-0-0-6-900">other changes<a class="anchor" aria-label="anchor" href="#other-changes-0-0-6-900"></a></h3>
@@ -420,7 +829,18 @@
 <div class="section level3">
 <h3 id="changes-to-existing-functions-0-0-5-900">changes to existing functions<a class="anchor" aria-label="anchor" href="#changes-to-existing-functions-0-0-5-900"></a></h3>
 <ul><li>
-<code><a href="../reference/jammaplot.html">jammaplot()</a></code> had a fairly substantial shift in default behavior, concerning the x-axis coordinate when using <code>centerGroups</code> to center a subset of samples. Previous default was to use one global x-axis coordinate across all samples, regardless of the <code>centerGroups</code>. New default behavior is to calculate an x-axis value for each <code>centerGroups</code> so within each group the data is self-contained. This behavior can be controlled with <code>groupX=TRUE</code> which applies grouping to the x-axis, and <code>groupX=FALSE</code> for the previous behavior. I admit, this change has pros and cons. On the one hand, there is inherent benefit for keeping each subset grouping independent, with the possible downside that comparisons across groupings may not be visible.</li>
+<code><a href="../reference/jammaplot.html">jammaplot()</a></code> had a fairly substantial shift in default
+behavior, concerning the x-axis coordinate when using
+<code>centerGroups</code> to center a subset of samples. Previous
+default was to use one global x-axis coordinate across all samples,
+regardless of the <code>centerGroups</code>. New default behavior is to
+calculate an x-axis value for each <code>centerGroups</code> so within
+each group the data is self-contained. This behavior can be controlled
+with <code>groupX=TRUE</code> which applies grouping to the x-axis, and
+<code>groupX=FALSE</code> for the previous behavior. I admit, this
+change has pros and cons. On the one hand, there is inherent benefit for
+keeping each subset grouping independent, with the possible downside
+that comparisons across groupings may not be visible.</li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -435,7 +855,17 @@
 <div class="section level3">
 <h3 id="enhancements-0-0-3-900">enhancements<a class="anchor" aria-label="anchor" href="#enhancements-0-0-3-900"></a></h3>
 <ul><li>
-<code><a href="../reference/jammaplot.html">jammaplot()</a></code> now more consistently handles highlight point parameters, where each are expected in list form: <code>highlightPoints</code>, <code>highlightPch</code>, <code>highlightCex</code>, and <code>highlightCex</code>. If <code>highlightPoints</code> is sent as a vector, it is converted to a one-vector list. If <code>highlightPoints</code> is a list, then the other parameters are converted to list as needed (<code><a href="https://rdrr.io/r/base/list.html" class="external-link">as.list()</a></code>) and expanded to <code>length(highlightPoints)</code>. This way, each highlight set of points can have custom color, size, and shape, to help visually discern them.</li>
+<code><a href="../reference/jammaplot.html">jammaplot()</a></code> now more consistently handles highlight
+point parameters, where each are expected in list form:
+<code>highlightPoints</code>, <code>highlightPch</code>,
+<code>highlightCex</code>, and <code>highlightCex</code>. If
+<code>highlightPoints</code> is sent as a vector, it is converted to a
+one-vector list. If <code>highlightPoints</code> is a list, then the
+other parameters are converted to list as needed
+(<code><a href="https://rdrr.io/r/base/list.html" class="external-link">as.list()</a></code>) and expanded to
+<code>length(highlightPoints)</code>. This way, each highlight set of
+points can have custom color, size, and shape, to help visually discern
+them.</li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -443,15 +873,24 @@
 <div class="section level3">
 <h3 id="new-functions-0-0-2-900">new functions<a class="anchor" aria-label="anchor" href="#new-functions-0-0-2-900"></a></h3>
 <ul><li>
-<code><a href="../reference/centerGeneData.html">centerGeneData()</a></code> the main tool for calculations by <code><a href="../reference/jammaplot.html">jammaplot()</a></code>, centers data by subtracting the row mean or median; optionally within groups of columns; optionally with specified control columns per group.</li>
+<code><a href="../reference/centerGeneData.html">centerGeneData()</a></code> the main tool for calculations by
+<code><a href="../reference/jammaplot.html">jammaplot()</a></code>, centers data by subtracting the row mean or
+median; optionally within groups of columns; optionally with specified
+control columns per group.</li>
 <li>
 <code><a href="../reference/jammaplot.html">jammaplot()</a></code> the main MA-plot function.</li>
 <li>
-<code><a href="../reference/points2polygonHull.html">points2polygonHull()</a></code> takes a set of points and draws a polygon hull encompassing them. It calls <code><a href="https://rdrr.io/pkg/rgeos/man/topo-unary-gConvexHull.html" class="external-link">rgeos::gConvexHull()</a></code>. The function is intended to indicate the location of highlighted points on each MA-plot panel.</li>
+<code><a href="../reference/points2polygonHull.html">points2polygonHull()</a></code> takes a set of points and draws a
+polygon hull encompassing them. It calls
+<code><a href="https://rdrr.io/pkg/rgeos/man/topo-unary-gConvexHull.html" class="external-link">rgeos::gConvexHull()</a></code>. The function is intended to indicate
+the location of highlighted points on each MA-plot panel.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="modifications-0-0-2-900">modifications<a class="anchor" aria-label="anchor" href="#modifications-0-0-2-900"></a></h3>
-<ul><li>several default settings were changed for <code><a href="../reference/jammaplot.html">jammaplot()</a></code>: larger <code>titleCex</code>; outlierColramp is NULL, in favor of using outlierColor to change only the first color from <code>colramp</code>.</li>
+<ul><li>several default settings were changed for <code><a href="../reference/jammaplot.html">jammaplot()</a></code>:
+larger <code>titleCex</code>; outlierColramp is NULL, in favor of using
+outlierColor to change only the first color from
+<code>colramp</code>.</li>
 </ul></div>
 </div>
   </div>
@@ -468,7 +907,8 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.9000.9000.9000.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+1.9000.9000.9000.</p>
 </div>
 
       </footer></div>

@@ -35,7 +35,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.25.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.28.900</span>
       </span>
     </div>
 
@@ -45,7 +45,7 @@
   <a href="reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -82,17 +82,25 @@
 <div class="section level1">
 <div class="page-header"><h1 id="jamma">jamma<a class="anchor" aria-label="anchor" href="#jamma"></a>
 </h1></div>
-<p>The goal of jamma is to create MA-plots with several useful and powerful capabilities that are intended to provide a more thorough understanding of the data.</p>
-<p>The main function provided is <code><a href="reference/jammaplot.html">jammaplot()</a></code>. It is distinct from similar MA-plot functions in that it uses smooth scatter by default, and in fact inspired the creation of a custom smooth scatter function provided by <code><a href="https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html" class="external-link">jamba::plotSmoothScatter()</a></code>.</p>
+<p>The goal of jamma is to create MA-plots with several useful and
+powerful capabilities that are intended to provide a more thorough
+understanding of the data.</p>
+<p>The main function provided is <code><a href="reference/jammaplot.html">jammaplot()</a></code>. It is
+distinct from similar MA-plot functions in that it uses smooth scatter
+by default, and in fact inspired the creation of a custom smooth scatter
+function provided by <code><a href="https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html" class="external-link">jamba::plotSmoothScatter()</a></code>.</p>
 <div class="section level2">
 <h2 id="package-reference">Package Reference<a class="anchor" aria-label="anchor" href="#package-reference"></a>
 </h2>
-<p>A full online function reference is available via the pkgdown documentation:</p>
-<p><a href="https://jmw86069.github.io/jamma" class="external-link">Full jamma command reference</a></p>
+<p>A full online function reference is available via the pkgdown
+documentation:</p>
+<p><a href="https://jmw86069.github.io/jamma" class="external-link">Full jamma command
+reference</a></p>
 <div class="section level3">
 <h3 id="example-ma-plot">Example MA-plot<a class="anchor" aria-label="anchor" href="#example-ma-plot"></a>
 </h3>
-<p>A reasonable example MA-plot can be created using data from the <code>affydata</code> package, if installed.</p>
+<p>A reasonable example MA-plot can be created using data from the
+<code>affydata</code> package, if installed.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jmw86069/jamma" class="external-link">jamma</a></span><span class="op">)</span>;
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://github.com/jmw86069/jamba" class="external-link">jamba</a></span><span class="op">)</span>;
@@ -104,10 +112,21 @@
 <p><img src="reference/figures/README-Dilution-1.png"><!-- --></p>
 </div>
 <div class="section level3">
-<h3 id="what-is-a-smooth-scatter-plot-and-why-is-it-important-for-ma-plots">What is a smooth scatter plot, and why is it important for MA-plots?<a class="anchor" aria-label="anchor" href="#what-is-a-smooth-scatter-plot-and-why-is-it-important-for-ma-plots"></a>
+<h3 id="what-is-a-smooth-scatter-plot-and-why-is-it-important-for-ma-plots">What is a smooth scatter plot, and why is it important for
+MA-plots?<a class="anchor" aria-label="anchor" href="#what-is-a-smooth-scatter-plot-and-why-is-it-important-for-ma-plots"></a>
 </h3>
-<p>MA-plots are typically created for gene expression data, historically used for microarray data, which contains tens of thousands of rows. Most MA-plot tools combat the number of points either by displaying single pixel points (pch=“.” in R base plotting), or adding transparency.</p>
-<p>A secondary issue is that these plots take a while to render when drawing individual points. This effect is amplified when running on a remote server, since each individual point is transmitted over the network for rendering. Also when saving a figure, certain file types save each point as an object, making the file size surprisingly large. If the file is printed to paper (ha!) the printer can take a long time to prepare the image for printing. And the volume of data is not currently getting smaller with new technologies.</p>
+<p>MA-plots are typically created for gene expression data, historically
+used for microarray data, which contains tens of thousands of rows. Most
+MA-plot tools combat the number of points either by displaying single
+pixel points (pch=“.” in R base plotting), or adding transparency.</p>
+<p>A secondary issue is that these plots take a while to render when
+drawing individual points. This effect is amplified when running on a
+remote server, since each individual point is transmitted over the
+network for rendering. Also when saving a figure, certain file types
+save each point as an object, making the file size surprisingly large.
+If the file is printed to paper (ha!) the printer can take a long time
+to prepare the image for printing. And the volume of data is not
+currently getting smaller with new technologies.</p>
 <p>First, we show the same MA-plot using single pixel points:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/exists.html" class="external-link">exists</a></span><span class="op">(</span><span class="st">"edata"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
@@ -116,7 +135,9 @@
       maintitle<span class="op">=</span><span class="st">"plot(pch='.')"</span><span class="op">)</span>;
 <span class="op">}</span></code></pre></div>
 <p><img src="reference/figures/README-pch1-1.png"><!-- --></p>
-<p>The overall range of points is clearly shown, but the density of points is not clear from that plot. Adding alpha transparency helps somewhat:</p>
+<p>The overall range of points is clearly shown, but the density of
+points is not clear from that plot. Adding alpha transparency helps
+somewhat:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/exists.html" class="external-link">exists</a></span><span class="op">(</span><span class="st">"edata"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
    <span class="fu"><a href="reference/jammaplot.html">jammaplot</a></span><span class="op">(</span><span class="va">edata</span><span class="op">[</span>,<span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>, ylim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1.5</span>,<span class="fl">1.5</span><span class="op">)</span>, titleCexFactor<span class="op">=</span><span class="fl">0.8</span>,
@@ -124,7 +145,10 @@
       maintitle<span class="op">=</span><span class="st">"plot(pch='.', alpha=0.07)"</span><span class="op">)</span>;
 <span class="op">}</span></code></pre></div>
 <p><img src="reference/figures/README-pchAlpha-1.png"><!-- --></p>
-<p>The transparency helps visualize the massive number of points in the middle, but now has made all the fun outlier points almost invisible. The typical next step in R is to use smoothScatter(), shown below using its default color ramp:</p>
+<p>The transparency helps visualize the massive number of points in the
+middle, but now has made all the fun outlier points almost invisible.
+The typical next step in R is to use smoothScatter(), shown below using
+its default color ramp:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/exists.html" class="external-link">exists</a></span><span class="op">(</span><span class="st">"edata"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
    <span class="fu"><a href="reference/jammaplot.html">jammaplot</a></span><span class="op">(</span><span class="va">edata</span><span class="op">[</span>,<span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>,
@@ -137,7 +161,9 @@
       maintitle<span class="op">=</span><span class="st">"smoothScatter()"</span><span class="op">)</span>;
 <span class="op">}</span></code></pre></div>
 <p><img src="reference/figures/README-Smooth-1.png"><!-- --></p>
-<p>Again, the visualization is improved, but the default “Blues” color ramp (credit Brewer colors from RColorBrewer) could perhaps be improved.</p>
+<p>Again, the visualization is improved, but the default “Blues” color
+ramp (credit Brewer colors from RColorBrewer) could perhaps be
+improved.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/exists.html" class="external-link">exists</a></span><span class="op">(</span><span class="st">"edata"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
    <span class="fu"><a href="reference/jammaplot.html">jammaplot</a></span><span class="op">(</span><span class="va">edata</span><span class="op">[</span>,<span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>,
@@ -149,10 +175,24 @@
       maintitle<span class="op">=</span><span class="st">"smoothScatter()"</span><span class="op">)</span>;
 <span class="op">}</span></code></pre></div>
 <p><img src="reference/figures/README-Smoove-1.png"><!-- --></p>
-<p>Now the figure depicts the full range of data, while also conveying the truly massive number of points in the central region. Only two smaller issues remain.</p>
-<p>First, not visible here, the underyling data is plotted using tiny rectangles. For the reasons described above, a large number of rectangles can be problematic when saving as a vector image (PDF, SVG), when printing on paper, or when rendering the figure across a remote network connection. The solution is to use a rasterized image, instead of individual rectangles, which can be compressed and resized.</p>
-<p>Second, the pixel size used for the point density is flattened horizontally, because the default density function uses the range of data, and not the plot visible range. When the density function is applied to plot coordinates, there is often some distortion. Visually small effect, but when there are 20 panels onscreen, the inconsistency becomes much more obvious.</p>
-<p>The plotSmoothScatter function resolves both the issues described, with some enhancements. It uses a density function based upon plot space, but also adds detail, so smaller features are less blurry.</p>
+<p>Now the figure depicts the full range of data, while also conveying
+the truly massive number of points in the central region. Only two
+smaller issues remain.</p>
+<p>First, not visible here, the underyling data is plotted using tiny
+rectangles. For the reasons described above, a large number of
+rectangles can be problematic when saving as a vector image (PDF, SVG),
+when printing on paper, or when rendering the figure across a remote
+network connection. The solution is to use a rasterized image, instead
+of individual rectangles, which can be compressed and resized.</p>
+<p>Second, the pixel size used for the point density is flattened
+horizontally, because the default density function uses the range of
+data, and not the plot visible range. When the density function is
+applied to plot coordinates, there is often some distortion. Visually
+small effect, but when there are 20 panels onscreen, the inconsistency
+becomes much more obvious.</p>
+<p>The plotSmoothScatter function resolves both the issues described,
+with some enhancements. It uses a density function based upon plot
+space, but also adds detail, so smaller features are less blurry.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/exists.html" class="external-link">exists</a></span><span class="op">(</span><span class="st">"edata"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
    <span class="fu"><a href="reference/jammaplot.html">jammaplot</a></span><span class="op">(</span><span class="va">edata</span><span class="op">[</span>,<span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>,
@@ -161,8 +201,13 @@
       maintitle<span class="op">=</span><span class="st">"plotSmoothScatter()"</span><span class="op">)</span>;
 <span class="op">}</span></code></pre></div>
 <p><img src="reference/figures/README-plotSmoove-1.png"><!-- --></p>
-<p>It looks like a small effect here, but the density around single points is now circular. When rendering a density map of plotted data points, it should represent the true density of points as accurately as possible.</p>
-<p>To demonstrate some other color effects, the plotSmoothScatter function also fills the complete plot panel with the correct background color, which is not done by smoothScatter().</p>
+<p>It looks like a small effect here, but the density around single
+points is now circular. When rendering a density map of plotted data
+points, it should represent the true density of points as accurately as
+possible.</p>
+<p>To demonstrate some other color effects, the plotSmoothScatter
+function also fills the complete plot panel with the correct background
+color, which is not done by smoothScatter().</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/exists.html" class="external-link">exists</a></span><span class="op">(</span><span class="st">"edata"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
    <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"mfrow"</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span>;
@@ -222,7 +267,8 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.9000.9000.9000.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+1.9000.9000.9000.</p>
 </div>
 
       </footer>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.25.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.28.900</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -70,6 +70,8 @@
   useMedian <span class="op">=</span> <span class="cn">TRUE</span>,
   rmOutliers <span class="op">=</span> <span class="cn">FALSE</span>,
   madFactor <span class="op">=</span> <span class="fl">5</span>,
+  naControlAction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"na"</span>, <span class="st">"row"</span>, <span class="st">"floor"</span>, <span class="st">"min"</span><span class="op">)</span>,
+  naControlFloor <span class="op">=</span> <span class="fl">0</span>,
   rowStatsFunc <span class="op">=</span> <span class="cn">NULL</span>,
   returnGroupedValues <span class="op">=</span> <span class="cn">FALSE</span>,
   returnGroups <span class="op">=</span> <span class="cn">FALSE</span>,
@@ -117,6 +119,25 @@ MAD is used to define 1x MAD factor, and any MAD more than
 <code>madFactor</code> times the group median MAD is considered an outlier
 and is removed. The remaining data is used to compute row
 group values.</p></dd>
+<dt>naControlAction</dt>
+<dd><p><code>character</code> string indicating how to handle the specific
+scenario when the control group summary value is <code>NA</code> for a particular
+centering operation.</p><ul><li><p><code>"na"</code>: default is to return <code>NA</code> since 15 - NA = NA.</p></li>
+<li><p><code>"row"</code>: use the summary value across all relevant samples,
+so the centering is against all non-NA values within the center group.</p></li>
+<li><p><code>"floor"</code>: use the numeric value defined by <code>naControlFloor</code>,
+to indicate a practical noise floor for the centering operation.
+When <code>naControlFloor=0</code> (default) this option effectively keeps
+non-NA values without centering these values.</p></li>
+<li><p><code>"min"</code>: use the minimum control value as the floor, which effectively
+defines the floor by the lowest observed summary value across all
+rows. It assumes rows are generally on the same range of detection,
+even if not all rows have the same observed range. For example,
+microarray probes have reasonably similar theoretical range of
+detection, even if some probes to highly-expressed genes are
+commonly observed with higher signal. The lowest observed signal
+effectively sets the minimum detected value.</p></li>
+</ul></dd>
 <dt>rowStatsFunc</dt>
 <dd><p><code>optional</code> function used to calculate row group
 summary values. This function should take a numeric matrix as
@@ -164,14 +185,46 @@ to meet reasonable parametric assumption of normality,</p></li>
 <li><p>rank-transformed data which results in difference in rank</p></li>
 <li><p>generally speaking, any data where the difference between 5 and 7 (2)
 is reasonably similar to the difference between 15 and 17 (2).</p></li>
-</ul><p>The data requirement is not true for:</p><ul><li><p>most gene expression data in normal space (hint: if any value is above 100)</p></li>
+<li><p>it may be feasible to perform background subtraction on straight
+count data, for example sequence coverage at a particular location
+in a genome.</p></li>
+</ul><p>The data requirement is not true for:</p><ul><li><p>most gene expression data in normal space
+(hint: if any value is above 100, it is generally not log-transformed)</p></li>
 <li><p>numeric data that is strongly skewed</p></li>
 <li><p>generally speaking, any data where the difference between 5 and 7
 is not reasonably similar to the difference between 15 and 17. If
 the percent difference is more likely to be the interesting measure,
 data may be log-transformed for analysis.</p></li>
 </ul><p>For special cases, <code>rowStatsFunc</code> can be supplied to perform
-specific group summary calculations per row.</p>
+specific group summary calculations per row.</p><div class="section">
+<h3 id="control-groups-with-na-values-since-version-">Control groups with NA values (since version 0.0.28.900)<a class="anchor" aria-label="anchor" href="#control-groups-with-na-values-since-version-"></a></h3>
+
+
+<p>When <code>controlSamples</code> is supplied, and contains all <code>NA</code> values
+for a given row of data, within relevant <code>centerGroups</code> subsets,
+the default behavior is defined by <code>naControlAction="NA"</code> below:</p><ol><li><p><code>naControlAction="na"</code>: values are centered versus <code>NA</code> which
+results in all values <code>NA</code> (current behavior, default).</p></li>
+<li><p><code>naControlAction="row"</code>: values are centered versus the row,
+using all samples in the same center group. This action effectively
+"centers to what we have".</p></li>
+<li><p><code>naControlAction="floor"</code>: values are centered versus a <code>numeric</code>
+floor defined by argument <code>naControlFloor</code>. When <code>naControlFloor=0</code>
+then values are effectively not centered. However, <code>naControlFloor=10</code>
+could for example be used to center values versus a practical noise
+floor, if the range of detection for a particular experiment starts
+at 10 as a low value.</p></li>
+<li><p><code>naControlAction="min"</code>: values are centered versus the minimum
+observed summary value in the data, which effectively uses the data
+to define a value for <code>naControlFloor</code>.</p></li>
+</ol><p>The motivation to center versus something other than <code>controlSamples</code>
+when all measurements for <code>controlSamples</code> are <code>NA</code> is to have
+a <code>numeric</code> value to indicate that a measurement was detected in
+non-control columns. This situation occurs in technologies when
+control samples have very low signal, and in some cases report
+<code>NA</code> when no measurement is detected within the instrument range
+of detection.</p>
+</div>
+
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -277,7 +330,8 @@ specific group summary calculations per row.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.9000.9000.9000.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+1.9000.9000.9000.</p>
 </div>
 
       </footer></div>

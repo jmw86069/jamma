@@ -401,10 +401,14 @@ centerGeneData_v1 <- function
 #' * rank-transformed data which results in difference in rank
 #' * generally speaking, any data where the difference between 5 and 7 (2)
 #' is reasonably similar to the difference between 15 and 17 (2).
+#' * it may be feasible to perform background subtraction on straight
+#' count data, for example sequence coverage at a particular location
+#' in a genome.
 #'
 #' The data requirement is not true for:
 #'
-#'  * most gene expression data in normal space (hint: if any value is above 100)
+#'  * most gene expression data in normal space
+#'  (hint: if any value is above 100, it is generally not log-transformed)
 #'  * numeric data that is strongly skewed
 #'  * generally speaking, any data where the difference between 5 and 7
 #'  is not reasonably similar to the difference between 15 and 17. If
@@ -413,6 +417,35 @@ centerGeneData_v1 <- function
 #'
 #'  For special cases, `rowStatsFunc` can be supplied to perform
 #'  specific group summary calculations per row.
+#'
+#'  ## Control groups with NA values (since version 0.0.28.900)
+#'
+#'  When `controlSamples` is supplied, and contains all `NA` values
+#'  for a given row of data, within relevant `centerGroups` subsets,
+#'  the default behavior is defined by `naControlAction="NA"` below:
+#'
+#'  1. `naControlAction="na"`: values are centered versus `NA` which
+#'  results in all values `NA` (current behavior, default).
+#'  2. `naControlAction="row"`: values are centered versus the row,
+#'  using all samples in the same center group. This action effectively
+#'  "centers to what we have".
+#'  3. `naControlAction="floor"`: values are centered versus a `numeric`
+#'  floor defined by argument `naControlFloor`. When `naControlFloor=0`
+#'  then values are effectively not centered. However, `naControlFloor=10`
+#'  could for example be used to center values versus a practical noise
+#'  floor, if the range of detection for a particular experiment starts
+#'  at 10 as a low value.
+#'  4. `naControlAction="min"`: values are centered versus the minimum
+#'  observed summary value in the data, which effectively uses the data
+#'  to define a value for `naControlFloor`.
+#'
+#'  The motivation to center versus something other than `controlSamples`
+#'  when all measurements for `controlSamples` are `NA` is to have
+#'  a `numeric` value to indicate that a measurement was detected in
+#'  non-control columns. This situation occurs in technologies when
+#'  control samples have very low signal, and in some cases report
+#'  `NA` when no measurement is detected within the instrument range
+#'  of detection.
 #'
 #' @param x `numeric` matrix of input data. See assumptions,
 #'    that data is assumed to be log2-transformed, or otherwise
@@ -443,6 +476,24 @@ centerGeneData_v1 <- function
 #'    `madFactor` times the group median MAD is considered an outlier
 #'    and is removed. The remaining data is used to compute row
 #'    group values.
+#' @param naControlAction `character` string indicating how to handle the specific
+#'    scenario when the control group summary value is `NA` for a particular
+#'    centering operation.
+#'    * `"na"`: default is to return `NA` since 15 - NA = NA.
+#'    * `"row"`: use the summary value across all relevant samples,
+#'    so the centering is against all non-NA values within the center group.
+#'    * `"floor"`: use the numeric value defined by `naControlFloor`,
+#'    to indicate a practical noise floor for the centering operation.
+#'    When `naControlFloor=0` (default) this option effectively keeps
+#'    non-NA values without centering these values.
+#'    * `"min"`: use the minimum control value as the floor, which effectively
+#'    defines the floor by the lowest observed summary value across all
+#'    rows. It assumes rows are generally on the same range of detection,
+#'    even if not all rows have the same observed range. For example,
+#'    microarray probes have reasonably similar theoretical range of
+#'    detection, even if some probes to highly-expressed genes are
+#'    commonly observed with higher signal. The lowest observed signal
+#'    effectively sets the minimum detected value.
 #' @param rowStatsFunc `optional` function used to calculate row group
 #'    summary values. This function should take a numeric matrix as
 #'    input, and return a one-column numeric matrix as output, or
@@ -493,6 +544,11 @@ centerGeneData <- function
  useMedian=TRUE,
  rmOutliers=FALSE,
  madFactor=5,
+ naControlAction=c("na",
+    "row",
+    "floor",
+    "min"),
+ naControlFloor=0,
  rowStatsFunc=NULL,
  returnGroupedValues=FALSE,
  returnGroups=FALSE,
@@ -505,6 +561,8 @@ centerGeneData <- function
    if (length(x) == 0 || ncol(x) == 0 || nrow(x) == 0) {
       return(x);
    }
+
+   naControlAction <- match.arg(naControlAction)
 
    if (length(mean) > 0 && is.logical(mean)) {
       useMedian <- !mean;
@@ -520,7 +578,8 @@ centerGeneData <- function
       ## Numeric controlSamples are used to subset colnames(x)
       if (!"integer" %in% class(controlSamples) &&
             !all(controlSamples == as.integer(controlSamples))) {
-         stop("controlSamples must be integer or numeric integer values, decimal values were detected.");
+         stop(paste0("controlSamples must be integer or numeric integer",
+            " values, decimal values were detected."));
       }
       controlSamples <- colnames(x)[seq_len(ncol(x)) %in% controlSamples];
    } else {
@@ -566,7 +625,8 @@ centerGeneData <- function
       controlSamples=colnames(x) %in% controls_v);
 
    ## Calculate row summary values
-   x_group <- jamba::rowGroupMeans(x[,controls_v, drop=FALSE],
+   x_group <- jamba::rowGroupMeans(
+      x=x[,controls_v, drop=FALSE],
       na.rm=na.rm,
       groups=centerGroups[controls_v],
       useMedian=useMedian,
@@ -575,6 +635,34 @@ centerGeneData <- function
       rowStatsFunc=rowStatsFunc,
       verbose=verbose,
       ...);
+
+   # optionally apply naControlAction if any rows contain NA
+   if (length(controls_v) < ncol(x) &&
+         any(is.na(x_group)) &&
+         !"na" %in% naControlAction) {
+      if ("floor" %in% naControlAction) {
+         x_group[is.na(x_group)] <- naControlFloor;
+      } else if ("min" %in% naControlAction) {
+         # calculate min for each center group
+         x_group_mins <- apply(x_group, 2, min, na.rm=TRUE);
+         for (i1 in seq_along(x_group_mins)) {
+            x_group[is.na(x_group[,i1]), i1] <- x_group_mins[[i1]];
+         }
+      } else if ("row" %in% naControlAction) {
+         # calculate summary values by centerGroup across all columns
+         x_group_full <- jamba::rowGroupMeans(
+            x=x,
+            na.rm=na.rm,
+            groups=centerGroups[colnames(x)],
+            useMedian=useMedian,
+            rmOutliers=rmOutliers,
+            madFactor=madFactor,
+            rowStatsFunc=rowStatsFunc,
+            verbose=verbose,
+            ...);
+         x_group[is.na(x_group)] <- x_group_full[is.na(x_group)]
+      }
+   }
 
    ## Now produce centered values by subtracting the group summary values
    x_centered <- (x - x_group[,centerGroups[colnames(x)], drop=FALSE]);
