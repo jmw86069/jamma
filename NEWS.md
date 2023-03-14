@@ -5,15 +5,14 @@
 * `centerGeneData()`
 
    * Note that default behavior is unchanged.
-   * New options to handle `NA` values in `controlSamples`.
-   * Currently when all `controlSamples` contain NA values, all other
-   "centered" values versus these `controlSamples` become `NA`.
-   * It is sometimes preferred to keep non-NA values, even when centering
-   is not possible versus specified control samples.
-   * New argument `naControlAction`:
+   * New argument `controlFloor` to impose a minimum control summary value
+   when the summary value is below `controlFloor`.
+   * New argument `naControlAction` used when all control sample values
+   are `NA`:
    
-      1. `naControlAction="na"`: leave values NA (current behavior, default)
-      2. `naControlAction="row"`: center versus row non-NA values
+      1. `naControlAction="na"`: leave values centered values as `NA`
+      (default behavior)
+      2. `naControlAction="row"`: center versus remaining non-NA row values
       3. `naControlAction="floor"`: center versus numeric floor
       4. `naControlAction="min"`: center versus the minimum observed value
    

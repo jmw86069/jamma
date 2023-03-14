@@ -12,6 +12,7 @@ centerGeneData(
   useMedian = TRUE,
   rmOutliers = FALSE,
   madFactor = 5,
+  controlFloor = NA,
   naControlAction = c("na", "row", "floor", "min"),
   naControlFloor = 0,
   rowStatsFunc = NULL,
@@ -58,6 +59,25 @@ MAD is used to define 1x MAD factor, and any MAD more than
 \code{madFactor} times the group median MAD is considered an outlier
 and is removed. The remaining data is used to compute row
 group values.}
+
+\item{controlFloor}{\code{numeric} value used as a minimum for any control
+summary value during centering.
+Use \code{NA} to skip this behavior.
+When defined, all control group summary values are calculated,
+then any values below \code{controlFloor} are set to the \code{controlFloor}
+for the purpose of data centering.
+By default \code{controlFloor=NA} which imposes no such floor value.
+However, \code{controlFloor=0} would be appropriate when zero is defined
+as effective noise floor after something like background subtraction
+during the upstream processing or upstream normalization.
+Using a value above zero would be appropriate when the effective
+noise floor of a platform is above zero, so that values are not
+centered relative to noise. For example, if the effective noise
+floor is 5, then centering should not "amplify" differences from
+any value less than 5, since in this scenario a value of 5 or less
+is effectively the same as a value of 5. It has the effect of returning
+fold changes relative to the effective platform minimum detectable
+signal.}
 
 \item{naControlAction}{\code{character} string indicating how to handle the specific
 scenario when the control group summary value is \code{NA} for a particular

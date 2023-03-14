@@ -476,6 +476,24 @@ centerGeneData_v1 <- function
 #'    `madFactor` times the group median MAD is considered an outlier
 #'    and is removed. The remaining data is used to compute row
 #'    group values.
+#' @param controlFloor `numeric` value used as a minimum for any control
+#'    summary value during centering.
+#'    Use `NA` to skip this behavior.
+#'    When defined, all control group summary values are calculated,
+#'    then any values below `controlFloor` are set to the `controlFloor`
+#'    for the purpose of data centering.
+#'    By default `controlFloor=NA` which imposes no such floor value.
+#'    However, `controlFloor=0` would be appropriate when zero is defined
+#'    as effective noise floor after something like background subtraction
+#'    during the upstream processing or upstream normalization.
+#'    Using a value above zero would be appropriate when the effective
+#'    noise floor of a platform is above zero, so that values are not
+#'    centered relative to noise. For example, if the effective noise
+#'    floor is 5, then centering should not "amplify" differences from
+#'    any value less than 5, since in this scenario a value of 5 or less
+#'    is effectively the same as a value of 5. It has the effect of returning
+#'    fold changes relative to the effective platform minimum detectable
+#'    signal.
 #' @param naControlAction `character` string indicating how to handle the specific
 #'    scenario when the control group summary value is `NA` for a particular
 #'    centering operation.
@@ -544,6 +562,7 @@ centerGeneData <- function
  useMedian=TRUE,
  rmOutliers=FALSE,
  madFactor=5,
+ controlFloor=NA,
  naControlAction=c("na",
     "row",
     "floor",
@@ -636,11 +655,31 @@ centerGeneData <- function
       verbose=verbose,
       ...);
 
+   # impose controlFloor if relevant
+   if (length(controlFloor) == 1 && !is.na(controlFloor)) {
+      x_below_floor <- (!is.na(x_group) & x_group < controlFloor);
+      if (any(x_below_floor)) {
+         if (verbose) {
+            jamba::printDebug("centerGeneData(): ",
+               "Applying controlFloor ", controlFloor,
+               " on ",
+               jamba::formatInt(sum(x_below_floor)),
+               " control values.");
+         }
+         x_group[x_below_floor] <- controlFloor;
+      }
+   }
+
    # optionally apply naControlAction if any rows contain NA
    if (length(controls_v) < ncol(x) &&
          any(is.na(x_group)) &&
          !"na" %in% naControlAction) {
       if ("floor" %in% naControlAction) {
+         if (verbose) {
+            jamba::printDebug("centerGeneData(): ",
+               "naControlAction: ", naControlAction,
+               ", naControlFloor: ", naControlFloor);
+         }
          x_group[is.na(x_group)] <- naControlFloor;
       } else if ("min" %in% naControlAction) {
          # calculate min for each center group
