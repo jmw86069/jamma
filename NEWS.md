@@ -1,5 +1,22 @@
 # jamma 0.0.28.900
 
+## new functions
+
+* `matrix_to_column_rank()`
+
+   * converts `numeric` matrix to column rank data, as used when
+   `useRank=TRUE`.
+   * This function becomes its own standalone function so it can be
+   called when necessary in other areas.
+
+## updates to existing functions
+
+* `jammacalc()`
+
+   * calls `matrix_to_column_rank()` instead of calculating internally.
+
+# jamma 0.0.28.900
+
 ## updates to existing functions
 
 * `centerGeneData()`
