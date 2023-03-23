@@ -235,6 +235,7 @@ attr(x_ctr, "center_df");
 \seealso{
 Other jam matrix functions: 
 \code{\link{jammacalc}()},
-\code{\link{jammanorm}()}
+\code{\link{jammanorm}()},
+\code{\link{matrix_to_column_rank}()}
 }
 \concept{jam matrix functions}

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.28.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.29.900</span>
       </span>
     </div>
 
@@ -70,6 +70,7 @@
   useMedian <span class="op">=</span> <span class="cn">TRUE</span>,
   rmOutliers <span class="op">=</span> <span class="cn">FALSE</span>,
   madFactor <span class="op">=</span> <span class="fl">5</span>,
+  controlFloor <span class="op">=</span> <span class="cn">NA</span>,
   naControlAction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"na"</span>, <span class="st">"row"</span>, <span class="st">"floor"</span>, <span class="st">"min"</span><span class="op">)</span>,
   naControlFloor <span class="op">=</span> <span class="fl">0</span>,
   rowStatsFunc <span class="op">=</span> <span class="cn">NULL</span>,
@@ -119,6 +120,25 @@ MAD is used to define 1x MAD factor, and any MAD more than
 <code>madFactor</code> times the group median MAD is considered an outlier
 and is removed. The remaining data is used to compute row
 group values.</p></dd>
+<dt>controlFloor</dt>
+<dd><p><code>numeric</code> value used as a minimum for any control
+summary value during centering.
+Use <code>NA</code> to skip this behavior.
+When defined, all control group summary values are calculated,
+then any values below <code>controlFloor</code> are set to the <code>controlFloor</code>
+for the purpose of data centering.
+By default <code>controlFloor=NA</code> which imposes no such floor value.
+However, <code>controlFloor=0</code> would be appropriate when zero is defined
+as effective noise floor after something like background subtraction
+during the upstream processing or upstream normalization.
+Using a value above zero would be appropriate when the effective
+noise floor of a platform is above zero, so that values are not
+centered relative to noise. For example, if the effective noise
+floor is 5, then centering should not "amplify" differences from
+any value less than 5, since in this scenario a value of 5 or less
+is effectively the same as a value of 5. It has the effect of returning
+fold changes relative to the effective platform minimum detectable
+signal.</p></dd>
 <dt>naControlAction</dt>
 <dd><p><code>character</code> string indicating how to handle the specific
 scenario when the control group summary value is <code>NA</code> for a particular
@@ -230,7 +250,8 @@ of detection.</p>
     <h2>See also</h2>
     <div class="dont-index"><p>Other jam matrix functions: 
 <code><a href="jammacalc.html">jammacalc</a>()</code>,
-<code><a href="jammanorm.html">jammanorm</a>()</code></p></div>
+<code><a href="jammanorm.html">jammanorm</a>()</code>,
+<code><a href="matrix_to_column_rank.html">matrix_to_column_rank</a>()</code></p></div>
     </div>
     </div>
 

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.28.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.29.900</span>
       </span>
     </div>
 
@@ -58,27 +58,66 @@
     </div>
 
     <div class="section level2">
+<h2 class="page-header" data-toc-text="0.0.30.900" id="jamma-0030900">jamma 0.0.30.900<a class="anchor" aria-label="anchor" href="#jamma-0030900"></a></h2>
+<div class="section level3">
+<h3 id="changes-to-existing-functions-0-0-30-900">changes to existing functions<a class="anchor" aria-label="anchor" href="#changes-to-existing-functions-0-0-30-900"></a></h3>
+<ul><li>
+<p><code><a href="../reference/jammacalc.html">jammacalc()</a></code></p>
+<ul><li>now inherits arguments <code>controlFloor</code>,
+<code>naControlAction</code>, <code>naControlFloor</code> consistent
+with <code><a href="../reference/centerGeneData.html">centerGeneData()</a></code>.</li>
+<li>now calls <code><a href="../reference/matrix_to_column_rank.html">matrix_to_column_rank()</a></code> instead of
+calculating internally.</li>
+</ul></li>
+<li>
+<p><code><a href="../reference/jammaplot.html">jammaplot()</a></code> and <code><a href="../reference/jammaplot.html">ggjammaplot()</a></code></p>
+<ul><li>gained arguments <code>controlFloor</code>,
+<code>naControlAction</code>, <code>naControlFloor</code> consistent
+with <code><a href="../reference/centerGeneData.html">centerGeneData()</a></code>. These arguments are passed to
+<code><a href="../reference/jammacalc.html">jammacalc()</a></code>.</li>
+</ul></li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.0.29.900" id="jamma-0029900">jamma 0.0.29.900<a class="anchor" aria-label="anchor" href="#jamma-0029900"></a></h2>
+<div class="section level3">
+<h3 id="new-functions-0-0-29-900">new functions<a class="anchor" aria-label="anchor" href="#new-functions-0-0-29-900"></a></h3>
+<ul><li>
+<p><code><a href="../reference/matrix_to_column_rank.html">matrix_to_column_rank()</a></code></p>
+<ul><li>converts <code>numeric</code> matrix to column rank data, as used
+when <code>useRank=TRUE</code>.</li>
+<li>This function becomes its own standalone function so it can be
+called when necessary in other areas.</li>
+</ul></li>
+</ul></div>
+<div class="section level3">
+<h3 id="updates-to-existing-functions-0-0-29-900">updates to existing functions<a class="anchor" aria-label="anchor" href="#updates-to-existing-functions-0-0-29-900"></a></h3>
+<ul><li>
+<p><code><a href="../reference/jammacalc.html">jammacalc()</a></code></p>
+<ul><li>calls <code><a href="../reference/matrix_to_column_rank.html">matrix_to_column_rank()</a></code> instead of calculating
+internally.</li>
+</ul></li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="page-header" data-toc-text="0.0.28.900" id="jamma-0028900">jamma 0.0.28.900<a class="anchor" aria-label="anchor" href="#jamma-0028900"></a></h2>
 <div class="section level3">
 <h3 id="updates-to-existing-functions-0-0-28-900">updates to existing functions<a class="anchor" aria-label="anchor" href="#updates-to-existing-functions-0-0-28-900"></a></h3>
 <ul><li>
 <p><code><a href="../reference/centerGeneData.html">centerGeneData()</a></code></p>
 <ul><li><p>Note that default behavior is unchanged.</p></li>
-<li><p>New options to handle <code>NA</code> values in
-<code>controlSamples</code>.</p></li>
-<li><p>Currently when all <code>controlSamples</code> contain NA values,
-all other “centered” values versus these <code>controlSamples</code>
-become <code>NA</code>.</p></li>
-<li><p>It is sometimes preferred to keep non-NA values, even when
-centering is not possible versus specified control samples.</p></li>
+<li><p>New argument <code>controlFloor</code> to impose a minimum
+control summary value when the summary value is below
+<code>controlFloor</code>.</p></li>
 <li>
-<p>New argument <code>naControlAction</code>:</p>
+<p>New argument <code>naControlAction</code> used when all control
+sample values are <code>NA</code>:</p>
 <ol style="list-style-type: decimal"><li>
-<code>naControlAction="na"</code>: leave values NA (current
-behavior, default)</li>
+<code>naControlAction="na"</code>: leave values centered values as
+<code>NA</code> (default behavior)</li>
 <li>
-<code>naControlAction="row"</code>: center versus row non-NA
-values</li>
+<code>naControlAction="row"</code>: center versus remaining non-NA
+row values</li>
 <li>
 <code>naControlAction="floor"</code>: center versus numeric
 floor</li>

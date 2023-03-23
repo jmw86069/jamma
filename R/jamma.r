@@ -19,11 +19,21 @@
 #' important options to handle specific experiment designs and
 #' strategies for data quality control.
 #'
-#' MA-plots can be calculated using the mean or median signal,
-#' and data can be centered using a subset of reference samples.
-#' Further, data can be centered within groups of samples,
-#' in order to generate MA-plots within each sample group as
-#' needed.
+#' ## Overview of features:
+#'
+#' * MA-plots can be calculated using the mean or median signal.
+#' * Data can be centered using a subset of reference samples.
+#' * Data can be centered within groups of samples, useful to
+#' assess within-group variability, or within-batch variability.
+#' * Ranked MA-plots can be generated to show rank-difference,
+#' useful to assess consistency of the rank ordered signal across
+#' samples.
+#' * Putative technical outliers can be defined using a MAD factor
+#' threshold derived from the data itself, to highlight individual
+#' samples with much higher variability than expected from biological
+#' sources, which often highlight technical failures in upstream protocol.
+#'
+#' ## Data centering
 #'
 #' For example, it can be useful to generate MA-plots within
 #' biological sample replicates, or even among technical replicates.
@@ -38,23 +48,50 @@
 #' samples can be centered independently of kidney or liver
 #' samples. This approach is especially useful when statistical
 #' comparisons are not intended to be applied across brain
-#' and kidney for example. In general, it is recommended to use
+#' and kidney for example.
+#'
+#' In general, it is recommended to use
 #' `centerGroups` to center data within meaningful experimental
-#' subsets where there are not expected to be statistical
-#' comparisons across these subsets. We find it useful
-#' to generate MA-plots across all samples even when there
-#' are distinct experimental subsets, because it provides
-#' context to the signal profiles obtained overall. For example
-#' it may be informative to recognize that signal from one
-#' experimental subset is lower and noisier than signal
-#' from another subset. It could be of biological, or technical
+#' subsets where there are no intended statistical
+#' comparisons across these subsets.
+#' We find it useful to generate MA-plots across all samples
+#' even when there are distinct experimental subsets, because it provides
+#' context to the signal profiles obtained overall.
+#' For example it may be informative to recognize that signal from one
+#' experimental subset is lower and/or more variable than signal
+#' from another subset. It could be of biological or technical
 #' importance.
 #'
-#' Lastly, the MA-plot approach has been so effective, a normalization
-#' method is available via `jammanorm()` which mimics the effect
-#' of normalizing data by the data displayed on MA-plots, effectively
-#' shifting data so the mean or median signal is at y=0.
+#' ## Data Normalization
 #'
+#' Lastly, the MA-plot approach is often effective at visualizing
+#' the need for data normalization, which is equivalent to methods
+#' such as log-ratio normalization. The underlying assumption is that
+#' the median or mean log ratio (y-axis difference shown on MA-plots)
+#' is zero.
+#'
+#' A normalization method `jammanorm()` provides this normalization.
+#' Note that it also abides by the `centerGroups` and `controlSamples`
+#' arguments. Additional argument `controlGenes` optionally defines
+#' a specific subset of genes as normalizers, equivalent to using
+#' housekeeper genes for normalization. Note that housekeeper normalization
+#' in this case is defined by housekeeper genes having log ratio of zero,
+#' and does not directly use the geometric mean expression of housekeepers,
+#' although the result is very often nearly identical.
+#'
+#' ## Volcano plots
+#'
+#' Volcano plots are similar to MA-plots, with some useful distinctions:
+#' * Volcano plots display **group** log fold change results versus P-value,
+#' based upon a statistical test.
+#' * MA-plots display **per-sample** log differences
+#' from control, versus the mean signal. Often the P-value is related to
+#' the mean signal, therefore these plots have some resemblance.
+#' * It is possible to show **group** MA-plots, notably `DESeq2::plotMA()`,
+#' although its purpose is to display grouped summary to indicate
+#' the effect of signal on the fold change threshold for statistical
+#' significance. It is not intended to assess consistent signal across
+#' individual samples.
 #'
 #' @family jamma package
 #'
@@ -64,6 +101,7 @@
 #' * `centerGeneData()`
 #' * `jammanorm()`
 #' * `jammacalc()`
+#' * `volcano_plot()`
 #'
 #' ## Additional plot functions:
 #' * `points2polygonHull()`
@@ -644,6 +682,9 @@ jammaplot <- function
  subtitleBoxColor=titleBoxColor,
  centerGroups=NULL,
  controlSamples=colnames(x),
+ controlFloor=NA,
+ naControlAction=c("row", "floor", "min", "na"),
+ naControlFloor=0,
  controlIndicator=c(
     "labelstar",
     "titlestar",
@@ -795,6 +836,8 @@ jammaplot <- function
    }
    ma_method <- match.arg(ma_method);
    controlIndicator <- match.arg(controlIndicator);
+   naControlAction <- match.arg(naControlAction);
+
    if (doTxtplot) {
       blankPlotPos <- NULL;
       smoothScatterFunc <- function(...){
@@ -1191,6 +1234,9 @@ jammaplot <- function
          useMedian=useMedian,
          controlSamples=controlSamples,
          centerGroups=centerGroups,
+         controlFloor=controlFloor,
+         naControlAction=naControlAction,
+         naControlFloor=naControlFloor,
          groupedX=groupedX,
          grouped_mad=groupedMAD,
          whichSamples=whichSamples,

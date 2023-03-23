@@ -207,6 +207,9 @@ ggjammaplot <- function
    useMedian=FALSE,
    controlSamples=NULL,
    centerGroups=NULL,
+   controlFloor=NA,
+   naControlAction=c("row", "floor", "min", "na"),
+   naControlFloor=0,
    colramp=c("transparent",
       "lightblue",
       "blue",
@@ -267,6 +270,7 @@ ggjammaplot <- function
             colnames(x));
       }
    }
+   naControlAction <- match.arg(naControlAction);
 
    # newer method of calling jammacalc()
    if (is.list(x) &&
@@ -287,6 +291,9 @@ ggjammaplot <- function
          useMedian=useMedian,
          controlSamples=controlSamples,
          centerGroups=centerGroups,
+         controlFloor=controlFloor,
+         naControlAction=naControlAction,
+         naControlFloor=naControlFloor,
          groupedX=groupedX,
          grouped_mad=grouped_mad,
          whichSamples=whichSamples,

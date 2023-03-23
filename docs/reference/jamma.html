@@ -19,7 +19,7 @@ strategies for data quality control."><!-- mathjax --><script src="https://cdnjs
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.28.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.29.900</span>
       </span>
     </div>
 
@@ -70,11 +70,27 @@ strategies for data quality control.</p>
     <div id="ref-sections">
     <div id="details">
     <h2>Details</h2>
-    <p>MA-plots can be calculated using the mean or median signal,
-and data can be centered using a subset of reference samples.
-Further, data can be centered within groups of samples,
-in order to generate MA-plots within each sample group as
-needed.</p>
+    
+<div class="section">
+<h3 id="overview-of-features-">Overview of features:<a class="anchor" aria-label="anchor" href="#overview-of-features-"></a></h3>
+
+<ul><li><p>MA-plots can be calculated using the mean or median signal.</p></li>
+<li><p>Data can be centered using a subset of reference samples.</p></li>
+<li><p>Data can be centered within groups of samples, useful to
+assess within-group variability, or within-batch variability.</p></li>
+<li><p>Ranked MA-plots can be generated to show rank-difference,
+useful to assess consistency of the rank ordered signal across
+samples.</p></li>
+<li><p>Putative technical outliers can be defined using a MAD factor
+threshold derived from the data itself, to highlight individual
+samples with much higher variability than expected from biological
+sources, which often highlight technical failures in upstream protocol.</p></li>
+</ul></div>
+
+<div class="section">
+<h3 id="data-centering">Data centering<a class="anchor" aria-label="anchor" href="#data-centering"></a></h3>
+
+
 <p>For example, it can be useful to generate MA-plots within
 biological sample replicates, or even among technical replicates.
 By this approach, MA-plots can effectively highlight technical
@@ -87,21 +103,55 @@ samples.</p>
 samples can be centered independently of kidney or liver
 samples. This approach is especially useful when statistical
 comparisons are not intended to be applied across brain
-and kidney for example. In general, it is recommended to use
+and kidney for example.</p>
+<p>In general, it is recommended to use
 <code>centerGroups</code> to center data within meaningful experimental
-subsets where there are not expected to be statistical
-comparisons across these subsets. We find it useful
-to generate MA-plots across all samples even when there
-are distinct experimental subsets, because it provides
-context to the signal profiles obtained overall. For example
-it may be informative to recognize that signal from one
-experimental subset is lower and noisier than signal
-from another subset. It could be of biological, or technical
+subsets where there are no intended statistical
+comparisons across these subsets.
+We find it useful to generate MA-plots across all samples
+even when there are distinct experimental subsets, because it provides
+context to the signal profiles obtained overall.
+For example it may be informative to recognize that signal from one
+experimental subset is lower and/or more variable than signal
+from another subset. It could be of biological or technical
 importance.</p>
-<p>Lastly, the MA-plot approach has been so effective, a normalization
-method is available via <code><a href="jammanorm.html">jammanorm()</a></code> which mimics the effect
-of normalizing data by the data displayed on MA-plots, effectively
-shifting data so the mean or median signal is at y=0.</p>
+</div>
+
+<div class="section">
+<h3 id="data-normalization">Data Normalization<a class="anchor" aria-label="anchor" href="#data-normalization"></a></h3>
+
+
+<p>Lastly, the MA-plot approach is often effective at visualizing
+the need for data normalization, which is equivalent to methods
+such as log-ratio normalization. The underlying assumption is that
+the median or mean log ratio (y-axis difference shown on MA-plots)
+is zero.</p>
+<p>A normalization method <code><a href="jammanorm.html">jammanorm()</a></code> provides this normalization.
+Note that it also abides by the <code>centerGroups</code> and <code>controlSamples</code>
+arguments. Additional argument <code>controlGenes</code> optionally defines
+a specific subset of genes as normalizers, equivalent to using
+housekeeper genes for normalization. Note that housekeeper normalization
+in this case is defined by housekeeper genes having log ratio of zero,
+and does not directly use the geometric mean expression of housekeepers,
+although the result is very often nearly identical.</p>
+</div>
+
+<div class="section">
+<h3 id="volcano-plots">Volcano plots<a class="anchor" aria-label="anchor" href="#volcano-plots"></a></h3>
+
+
+<p>Volcano plots are similar to MA-plots, with some useful distinctions:</p><ul><li><p>Volcano plots display <strong>group</strong> log fold change results versus P-value,
+based upon a statistical test.</p></li>
+<li><p>MA-plots display <strong>per-sample</strong> log differences
+from control, versus the mean signal. Often the P-value is related to
+the mean signal, therefore these plots have some resemblance.</p></li>
+<li><p>It is possible to show <strong>group</strong> MA-plots, notably <code><a href="https://rdrr.io/pkg/DESeq2/man/plotMA.html" class="external-link">DESeq2::plotMA()</a></code>,
+although its purpose is to display grouped summary to indicate
+the effect of signal on the fold change threshold for statistical
+significance. It is not intended to assess consistent signal across
+individual samples.</p></li>
+</ul></div>
+
     </div>
     </div>
 

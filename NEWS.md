@@ -1,4 +1,20 @@
-# jamma 0.0.28.900
+# jamma 0.0.30.900
+
+## changes to existing functions
+
+* `jammacalc()`
+
+   * now inherits arguments `controlFloor`, `naControlAction`, `naControlFloor`
+   consistent with `centerGeneData()`.
+   * now calls `matrix_to_column_rank()` instead of calculating internally.
+
+* `jammaplot()` and `ggjammaplot()`
+
+   * gained arguments `controlFloor`, `naControlAction`, `naControlFloor`
+   consistent with `centerGeneData()`. These arguments are passed
+   to `jammacalc()`.
+
+# jamma 0.0.29.900
 
 ## new functions
 

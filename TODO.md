@@ -1,5 +1,16 @@
 # TODO for jamma
 
+## 22mar2023
+
+* Empty control group updates
+
+   * Date centering by `centerGeneData()` should be mirrored in MA-plots
+   for the same situation where control samples are entirely NA,
+   causing remaining values to become `NA` and therefore not be visible
+   on MA-plot panels.
+   
+
+
 ## 12mar2023
 
 * `centerGeneData()`

@@ -97,6 +97,25 @@
 #'    one of the functions `centerGeneData()` or `centerGeneData_v1()`.
 #'    This argument will be removed in the near future and is mainly
 #'    intended to allow testing the two centering functions.
+#'    The following arguments are passed to this function:
+#'    * x: the input `numeric` data matrix
+#'    * na.rm: `logical` whether to ignore NA value. Always use `na.rm=TRUE`.
+#'    * controlSamples: `character` optional subset of `colnames(x)` to
+#'    use as reference controls during centering
+#'    * centerGroups: `character` vector of groups for `colnames(x)`
+#'    * controlFloor: `numeric` optional minimum allowed value for control
+#'    summary prior to centering
+#'    * naControlAction: `character` string for how to handle entirely NA
+#'    control groups during centering
+#'    * naControlFloor: `numeric` used when `naControlAction="floor"` and
+#'    all control values are `NA`. One `numeric` value is inserted into
+#'    the control group.
+#'    * useMedian: `logical` whether to use median (TRUE) or mean (FALSE)
+#'    * returnGroups: `logical` whether to return summary of group assignment
+#'    in attribute `"center_df"`
+#'    * returnGroupedValues: `logical` whether to return group summary values
+#'    in attribute `"x_group"`
+#'    * ...: other arguments are passed along via `...`.
 #' @param returnType `character` string indicating the format of data
 #'    to return: `"ma_list"` is a list of MA-plot two-column
 #'    numeric matrices with colnames `c("x","y")`; "tidy"
@@ -111,6 +130,9 @@ jammacalc <- function
  na.rm=TRUE,
  controlSamples=NULL,
  centerGroups=NULL,
+ controlFloor=NA,
+ naControlAction=c("row", "floor", "min", "na"),
+ naControlFloor=0,
  groupedX=TRUE,
  useMedian=TRUE,
  useMean=NULL,
@@ -128,10 +150,12 @@ jammacalc <- function
 {
    ## Purpose is to separate jammaplot() from the underlying
    ## math that produces the data for MA-plots.
-   if (length(x) == 0 || ncol(x) == 0) {
+   if (length(x) == 0 || ncol(x) == 0 || nrow(x) == 0) {
       return(NULL);
    }
    returnType <- match.arg(returnType);
+   naControlAction <- match.arg(naControlAction);
+
    if (length(useMean) > 0 && is.logical(useMean)) {
       useMedian <- !useMean;
       if (verbose) {
@@ -234,6 +258,9 @@ jammacalc <- function
       na.rm=na.rm,
       controlSamples=controlSamples,
       centerGroups=centerGroups,
+      controlFloor=controlFloor,
+      naControlAction=naControlAction,
+      naControlFloor=naControlFloor,
       useMedian=useMedian,
       returnGroups=TRUE,
       returnGroupedValues=TRUE,

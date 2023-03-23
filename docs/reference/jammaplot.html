@@ -18,7 +18,7 @@ ggjammaplot() uses ggplot2 graphics."><!-- mathjax --><script src="https://cdnjs
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.28.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.29.900</span>
       </span>
     </div>
 
@@ -73,6 +73,9 @@ ggjammaplot() uses ggplot2 graphics."><!-- mathjax --><script src="https://cdnjs
   useMedian <span class="op">=</span> <span class="cn">FALSE</span>,
   controlSamples <span class="op">=</span> <span class="cn">NULL</span>,
   centerGroups <span class="op">=</span> <span class="cn">NULL</span>,
+  controlFloor <span class="op">=</span> <span class="cn">NA</span>,
+  naControlAction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"row"</span>, <span class="st">"floor"</span>, <span class="st">"min"</span>, <span class="st">"na"</span><span class="op">)</span>,
+  naControlFloor <span class="op">=</span> <span class="fl">0</span>,
   colramp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"transparent"</span>, <span class="st">"lightblue"</span>, <span class="st">"blue"</span>, <span class="st">"navy"</span>, <span class="st">"orange"</span>, <span class="st">"orangered2"</span><span class="op">)</span>,
   groupedX <span class="op">=</span> <span class="cn">TRUE</span>,
   grouped_mad <span class="op">=</span> <span class="cn">TRUE</span>,
@@ -122,6 +125,9 @@ ggjammaplot() uses ggplot2 graphics."><!-- mathjax --><script src="https://cdnjs
   subtitleBoxColor <span class="op">=</span> <span class="va">titleBoxColor</span>,
   centerGroups <span class="op">=</span> <span class="cn">NULL</span>,
   controlSamples <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>,
+  controlFloor <span class="op">=</span> <span class="cn">NA</span>,
+  naControlAction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"row"</span>, <span class="st">"floor"</span>, <span class="st">"min"</span>, <span class="st">"na"</span><span class="op">)</span>,
+  naControlFloor <span class="op">=</span> <span class="fl">0</span>,
   controlIndicator <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"labelstar"</span>, <span class="st">"titlestar"</span>, <span class="st">"none"</span><span class="op">)</span>,
   sample_labels <span class="op">=</span> <span class="cn">NULL</span>,
   useMedian <span class="op">=</span> <span class="cn">FALSE</span>,
