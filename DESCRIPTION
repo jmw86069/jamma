@@ -1,6 +1,6 @@
 Package: jamma
 Title: MA-plots for omics data
-Version: 0.0.29.900
+Version: 0.0.31.900
 Authors@R: person("James", "Ward", email="jmw86069@gmail.com", role=c("aut", "cre"))
 Description: Create MA-plots with specific control samples,
     using sample groups. Volcano plots with hit filtering by gene.
@@ -26,7 +26,7 @@ Encoding: UTF-8
 LazyData: true
 URL: https://github.com/jmw86069/jamma
 BugReports: https://github.com/jmw86069/jamma/issues
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 VignetteBuilder: knitr
 Remotes: github::jmw86069/jamba,
     github::jmw86069/colorjam

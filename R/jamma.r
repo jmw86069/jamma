@@ -726,7 +726,8 @@ jammaplot <- function
  highlightPolygonAlpha=0.3,
  doHighlightLegend=TRUE,
  smoothPtCol="#00000055",
- margins=c(2.5, 2.5, 2.0, 0.2),
+ margins=c(2.5, 0.5, 2.0, 0.2),
+ outer_margins=c(0, 1.5, 0, 0.2),
  useRaster=TRUE,
  ncol=NULL,
  nrow=NULL,
@@ -1045,6 +1046,16 @@ jammaplot <- function
       } else if (is.null(nrow)) {
          nrow <- ceiling(nsamples / ncol);
       }
+      if (length(outer_margins) == 0) {
+         outer_margins <- 0;
+      }
+      outer_margins <- rep(outer_margins, length.out=4);
+      # if useRank=TRUE add minor margin to left
+      if (TRUE %in% useRank) {
+         # margins <- margins + c(0, 2, 0, 0);
+         outer_margins <- outer_margins + c(0, 2, 0, 0);
+      }
+      par("oma"=outer_margins)
       par(mfrow=c(nrow, ncol));
       if (length(maintitle) > 0) {
          maintitle_nlines <- length(unlist(strsplit(maintitle, "\n")));
@@ -1055,10 +1066,6 @@ jammaplot <- function
       if (length(highlightPoints) > 0 && doHighlightLegend) {
          par("oma"=pmax(par("oma"),
             c(3, 0, 0, 0)));
-      }
-      # if useRank=TRUE add minor margin to left
-      if (TRUE %in% useRank) {
-         margins <- margins + c(0, 2, 0, 0);
       }
    }
    if (length(titleCex) == 0) {
@@ -1526,13 +1533,19 @@ jammaplot <- function
                fillBackground=fillBackground,
                applyRangeCeiling=applyRangeCeiling,
                ...);
+            # display y-axis labels only first plot each row
             y_axis_at <- pretty(ylim);
+            if (TRUE %in% doPar && par("mfg")[2] != 1) {
+               y_axis_labels <- rep("", length.out=length(y_axis_at));
+            } else {
+               y_axis_labels <- format(y_axis_at,
+                  trim=TRUE,
+                  big.mark=",")
+            }
             axis(2,
                las=2,
                at=y_axis_at,
-               labels=format(y_axis_at,
-                  trim=TRUE,
-                  big.mark=","),
+               labels=y_axis_labels,
                ...)
          }
          ## Add axis labels

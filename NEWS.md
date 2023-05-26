@@ -1,3 +1,21 @@
+# jamma 0.0.31.900
+
+## changes to existing functions
+
+* `jammaplot()`
+
+   * New argument `outer_margins` to control the whitespace around
+   the outside of the MA-plot panels, only when `doPar=TRUE`.
+   * The y-axis labels are only shown on the first plot each row,
+   and plot panels are condensed side-by-side.
+   * The default `margins` has much smaller `left` value, so plots
+   can be placed closer side-by-side.
+   * Far very many MA-plot panels, the plot panels are much more visibly
+   condensed, especially when `useRank=TRUE`, which previously increased
+   each panel `left` margin by 2 lines; now it only increases the `left`
+   outer margin.
+
+
 # jamma 0.0.30.900
 
 ## changes to existing functions

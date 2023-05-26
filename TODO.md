@@ -1,5 +1,21 @@
 # TODO for jamma
 
+## 25may2023
+
+* Adjust outer margin for base plots
+
+   * display y-axis labels only on the first plot each row
+   * shrink the margin between plot panels
+
+## 16may2023
+
+* `volcano_plot()`
+
+   * allow `SummarizedExperiment` input
+   * allow optional labeling of genes
+   * allow optional `ggplot2` output, which would make labeling genes
+   much more feasible.
+
 ## 22mar2023
 
 * Empty control group updates

@@ -7,8 +7,7 @@
 volcano_plot(
   x,
   n = NULL,
-  lfc_colname = c("logfc", "log2fold", "log2fc", "lfc", "l2fc", "logratio",
-    "log2ratio"),
+  lfc_colname = c("logfc", "log2fold", "log2fc", "lfc", "l2fc", "logratio", "log2ratio"),
   fold_colname = c("fold", "fc", "ratio"),
   fold_cutoff = 1.5,
   fold_max_range = 16,
@@ -67,7 +66,9 @@ volcano_plot(
   cex.axis = 1.2,
   mar_min = c(6, 5, 6, 5),
   transFactor = 0.24,
-  transformation = function(x) {     x^transFactor },
+  transformation = function(x) {
+     x^transFactor
+ },
   nbin = 256,
   verbose = TRUE,
   ...

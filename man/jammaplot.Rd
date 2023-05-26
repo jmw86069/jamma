@@ -116,7 +116,8 @@ jammaplot(
   highlightPolygonAlpha = 0.3,
   doHighlightLegend = TRUE,
   smoothPtCol = "#00000055",
-  margins = c(2.5, 2.5, 2, 0.2),
+  margins = c(2.5, 0.5, 2, 0.2),
+  outer_margins = c(0, 1.5, 0, 0.2),
   useRaster = TRUE,
   ncol = NULL,
   nrow = NULL,
@@ -802,9 +803,9 @@ used. For example indicate \code{'sampleID vs groupA'} instead of
 }
 \section{Functions}{
 \itemize{
-\item \code{ggjammaplot}: 
-}}
+\item \code{ggjammaplot()}: 
 
+}}
 \examples{
 if (jamba::check_pkg_installed("SummarizedExperiment") &&
    jamba::check_pkg_installed("farrisdata")) {
