@@ -53,18 +53,18 @@ sample groups. See \code{centerGeneData()} for more specific examples.}
 
 \item{useMedian}{\code{logical} indicates whether to center data
 using the \code{median} value, where \code{useMedian=FALSE} by default.
-For consistency, this argument is preferred to \code{useMean} which
-is deprecated and will be removed in future. The median is
-preferred in cases where outliers should not influence the
-centering. The mean is preferred in cases where the data
-should visualize data consistent with downstream parametric
-statistical analysis. When a particular sample
-is a technical outlier, one option is to define
-\code{controlSamples} to exclude the outlier sample(s), so
-the data centering will be applied using the non-outlier
+The median is preferred in cases where outliers should not influence
+centering.
+The mean is preferred in cases where the data should visualize
+data in a manner consistent with downstream parametric
+statistical analysis.
+When a particular sample represents a technical outlier,
+one option to visualize data without being skewed by the outlier
+is to define \code{controlSamples} to exclude the outlier sample(s).
+In this way, data centering will be applied using the non-outlier
 samples as reference.}
 
-\item{useMean}{\code{logical} (deprecated), use \code{useMean}. This argument
+\item{useMean}{(deprecated) \code{logical}, use \code{useMedian}. This argument
 indicates whether to center data using the \code{mean} value.
 When \code{useMean=NULL} the argument \code{useMedian} is preferred.
 For backward compatibility, when \code{useMean} is not \code{NULL},
@@ -80,7 +80,7 @@ to \code{NA}.}
 \item{verbose}{logical indicating whether to print verbose output.}
 
 \item{...}{additional parameters sent to downstream functions,
-\code{\link{jamba::plotSmoothScatter}}, \code{\link{centerGeneData}}.}
+\code{jamba::plotSmoothScatter()}, \code{jammacalc()}, \code{centerGeneData()}.}
 }
 \value{
 \code{numeric} \code{matrix} whose columns have been normalized,

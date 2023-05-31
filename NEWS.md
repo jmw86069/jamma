@@ -1,3 +1,28 @@
+# jamma 0.0.32.900
+
+## bug fixes
+
+All instances of `if (class(x) %in% c("a", "b"))` were corrected to use
+format compatible with R version 4 which considers this syntax an error
+and not a warning. New format is `if (any(c("a", "b") %in% class(x)))`.
+
+* `jammaplot()`, `update_list_elements()`, `centerGeneData()`, `ggjammaplot()`
+
+   * Fixed `if` statement logic to remove length=2 error in all scenarios.
+
+## other changes
+
+* `jammaplot()`
+
+   * argument help docs were updated for clarity.
+   * change argument default to `filterNeg=FALSE`, although this argument
+   is deprecated and only used when `ma_method="old"`. The change was
+   made to reflect the current default behavior which uses `noise_floor=0`
+   and `noise_floor_value=NA`, which replaces all values at or below 0
+   with `NA`, causing these values not to contribute to the data
+   centering and MA-plot output.
+
+
 # jamma 0.0.31.900
 
 ## changes to existing functions

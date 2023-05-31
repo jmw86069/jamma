@@ -165,9 +165,11 @@ centerGeneData_v1 <- function
 
    ## Separate character columns from numeric columns
    hasCharColumns <- FALSE;
-   if (!any(class(indata) %in% c("matrix", "numeric"))) {
-      colClass <- sapply(1:ncol(indata), function(i){class(indata[,i])});
-      colClassChar <- which(!colClass %in% c("numeric", "integer"));
+   if (!any(c("matrix", "numeric") %in% class(indata))) {
+      colClass <- sapply(seq_len(ncol(indata)), function(i){class(indata[,i])});
+      colClassChar <- jamba::igrep("numeric|double|integer|bigint|float|^bigz",
+         colClass);
+      # colClassChar <- which(!colClass %in% c("numeric", "integer"));
       if (length(colClassChar) > 0) {
          hasCharColumns <- TRUE;
          indataChar <- indata[,colClassChar, drop=FALSE];
@@ -179,7 +181,7 @@ centerGeneData_v1 <- function
          all(is.na(controlSamples))) {
       controls <- rep(TRUE, ncol(indata));
    } else {
-      if (any(class(controlSamples) %in% c("integer", "numeric")) &&
+      if (any(c("integer", "numeric") %in% class(controlSamples)) &&
             any(controlSamples <= ncol(indata))) {
          controls <- (seq_len(ncol(indata)) %in% controlSamples);
       } else if (length(colnames(indata)) > 0 &&
@@ -593,7 +595,7 @@ centerGeneData <- function
    }
 
    ## Process controlSamples
-   if (any(class(controlSamples) %in% c("numeric", "integer"))) {
+   if (any(c("numeric", "integer") %in% class(controlSamples))) {
       ## Numeric controlSamples are used to subset colnames(x)
       if (!"integer" %in% class(controlSamples) &&
             !all(controlSamples == as.integer(controlSamples))) {

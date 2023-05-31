@@ -1,5 +1,35 @@
 # TODO for jamma
 
+## 30may2023
+
+* `volcano_plot()`
+
+   * method to highlight points (rows) and assign colors should
+   be consistent with `jammaplot()`, with similar color legend drawn.
+   * consider colorized smooth scatter in panels that match the
+   statistical thresholds used.
+   
+      * Idea is to render smooth scatter in panels, where color density
+      is restricted to points inside these regions, then render these
+      panels exactly at these borders. Effectively like running the plot
+      three times (red/blue/grey) then copy/pasting only the relevant
+      regions for use in the final plot. In fact, that could be one
+      potential implementation strategy. It could be faster and more
+      reliable than subsetting points, where density at the borders
+      might be mis-calculated.
+      * top-left: down-significant (blue)
+      * top-right: up-significant (red)
+      * top-center: no change, met significance (grey)
+      * bottom-left, bottom-center, bottom-right: no statistical change (grey)
+   
+   * Consider option to use scatter points instead of smooth scatter,
+   with colorized points in each relevant region.
+   
+      * Primary driver would be for volcano plots with many relatively
+      few points to display, the density plot would be too obscure.
+      E.g. NanoString, SomaLogic, with 100 to 1,000 points.
+
+
 ## 25may2023
 
 * Adjust outer margin for base plots
