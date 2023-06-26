@@ -474,13 +474,23 @@ NULL
 #'    the data content, so the data has some visual context.
 #'    The range `c(-4, 4)` should be adjusted
 #'    relative to the typical ranges expected for the data.
-#'    It is sometimes helpful to define `xlim` slightly above zero for
-#'    datasets that have an extremely large proportion of zeros, in order
-#'    to reduce the visual effect of having that much point density at
-#'    zero, for example with `xlim=c(0.001, 20)` and
-#'    `applyRangeCeiling=FALSE`, which hides points outside the visible
-#'    range.
-#'    Another alternative is to define `noise_floor` and `noise_floor_value`.
+#' @param xlim `numeric` or `NULL` to define a fixed numeric range for
+#'    x-axis values. When `xlim=NULL` the ranges are defined by the
+#'    numeric x-axis values in each `centerGroups` grouping, so that
+#'    each group can have its own independent x-axis ranges.
+#'    When there is a large proportion of values with x=0 (or near zero),
+#'    there are two options to reduce the point density near zero,
+#'    which can improve visibility of non-zero points:
+#'    1. Use `noise_floor=0` and `noise_floor_value=NA`, which replaces
+#'    values at or below zero with `NA`, thereby hiding these points
+#'    from each plot panel. Note the `NA` values are also not used during
+#'    data centering calculations.
+#'    2. Define `xlim=c(0.001, 20)` and `applyRangeCeiling=FALSE`, which
+#'    defines the x-axis minimum slightly above zero, and
+#'    `applyRangeCeiling=FALSE` does not display points outside the
+#'    x-axis range at the plot limits, thereby hiding those points.
+#'    This method does not replace values with `NA`, therefore all
+#'    non-NA values are used during data centering.
 #' @param useMedian `logical` indicates whether to center data
 #'    using the `median` value, where `useMedian=FALSE` by default.
 #'    The median is preferred in cases where outliers should not influence
@@ -507,10 +517,14 @@ NULL
 #' @param filterNeg (deprecated) `logical` argument, use `noise_floor`.
 #' @param filterNA,filterNAreplacement `logical` and `vector` respectively.
 #'    When `filterNA=TRUE`, all `NA` values are replaced with
-#'    `filterNAreplacement`, which can be helpful to handle `NA` values
-#'    as zero `0`, or an appropriate noise floor numeric value, for example.
-#'    In reality, `NA` values should probably
-#'    be left as-is, so subsequent data centering does not use these values,
+#'    `filterNAreplacement`.
+#'    This process is conceptually opposite of `noise_floor` which replaces
+#'    a `numeric` value with `NA` or another `numeric` value.
+#'    Instead, `filterNA` is intended to convert `NA` values into
+#'    a known `numeric` value, typically using an appropriate noise floor
+#'    value such as zero `0`.
+#'    Practically speaking, `NA` values should probably
+#'    be left as `NA` values, so that data centering does not use these values,
 #'    and so the MA-plot panel does not draw a point when no measurement
 #'    exists.
 #' @param noise_floor,noise_floor_value `numeric` to define a numeric
@@ -1539,11 +1553,22 @@ jammaplot <- function
             colrampUse <- colramp[[i]];
          }
 
+         # version 0.0.33.900: Define missing xlim when required
+         if (length(jamba::rmNA(xlim)) == 0) {
+            if (length(jamba::rmNA(mvaData[,"x"])) == 0) {
+               use_xlim <- NULL;
+            } else {
+               use_xlim <- range(mvaData[,"x"], na.rm=TRUE)
+            }
+         } else {
+            use_xlim <- xlim
+         }
+
          if (length(mvaData) == 0 ||
                nrow(mvaData) == 0 ||
                all(is.na(mvaData[,"y"]))) {
             jamba::nullPlot(doBoxes=FALSE,
-               xlim=xlim,
+               xlim=use_xlim,
                ylim=ylim
             );
             jamba::usrBox(fill=outlierColor)
@@ -1554,7 +1579,7 @@ jammaplot <- function
                xlab="",
                ylab="",
                las=las,
-               xlim=xlim,
+               xlim=use_xlim,
                ylim=ylim,
                yaxt="n",
                transformation=transformation,
@@ -1616,13 +1641,16 @@ jammaplot <- function
             } else {
                v <- unique(unlist(ablineV));
             }
-            v <- v[v >= min(xlim, na.rm=TRUE) & v <= max(xlim, na.rm=TRUE)];
-            if (length(v) > 0) {
-               abline(v=v,
-                  col="#44444488",
-                  lty="dashed",
-                  lwd=1,
-                  ...);
+            if (length(jamba::rmNA(use_xlim)) > 0) {
+               v <- v[v >= min(use_xlim, na.rm=TRUE) &
+                     v <= max(use_xlim, na.rm=TRUE)];
+               if (length(v) > 0) {
+                  abline(v=v,
+                     col="#44444488",
+                     lty="dashed",
+                     lwd=1,
+                     ...);
+               }
             }
          }
 

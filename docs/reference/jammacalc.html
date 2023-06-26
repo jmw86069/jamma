@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.29.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.33.900</span>
       </span>
     </div>
 
@@ -62,47 +62,56 @@
     <p>Calculate MA-plot data</p>
     </div>
 
-    <div class="ref-usage sourceCode"><pre class="sourceCode r"><code><span class="fu">jammacalc</span><span class="op">(</span>
-  <span class="va">x</span>,
-  na.rm <span class="op">=</span> <span class="cn">TRUE</span>,
-  controlSamples <span class="op">=</span> <span class="cn">NULL</span>,
-  centerGroups <span class="op">=</span> <span class="cn">NULL</span>,
-  controlFloor <span class="op">=</span> <span class="cn">NA</span>,
-  naControlAction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"row"</span>, <span class="st">"floor"</span>, <span class="st">"min"</span>, <span class="st">"na"</span><span class="op">)</span>,
-  naControlFloor <span class="op">=</span> <span class="fl">0</span>,
-  groupedX <span class="op">=</span> <span class="cn">TRUE</span>,
-  useMedian <span class="op">=</span> <span class="cn">TRUE</span>,
-  useMean <span class="op">=</span> <span class="cn">NULL</span>,
-  whichSamples <span class="op">=</span> <span class="cn">NULL</span>,
-  noise_floor <span class="op">=</span> <span class="op">-</span><span class="cn">Inf</span>,
-  noise_floor_value <span class="op">=</span> <span class="va">noise_floor</span>,
-  naValue <span class="op">=</span> <span class="cn">NA</span>,
-  mad_row_min <span class="op">=</span> <span class="fl">0</span>,
-  grouped_mad <span class="op">=</span> <span class="cn">TRUE</span>,
-  centerFunc <span class="op">=</span> <span class="va">centerGeneData</span>,
-  useRank <span class="op">=</span> <span class="cn">FALSE</span>,
-  returnType <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ma_list"</span>, <span class="st">"tidy"</span><span class="op">)</span>,
-  verbose <span class="op">=</span> <span class="cn">FALSE</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div id="ref-usage">
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">jammacalc</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  na.rm <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  controlSamples <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  centerGroups <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  controlFloor <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  naControlAction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"row"</span>, <span class="st">"floor"</span>, <span class="st">"min"</span>, <span class="st">"na"</span><span class="op">)</span>,</span>
+<span>  naControlFloor <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  groupedX <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  useMedian <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  useMean <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  whichSamples <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  noise_floor <span class="op">=</span> <span class="op">-</span><span class="cn">Inf</span>,</span>
+<span>  noise_floor_value <span class="op">=</span> <span class="va">noise_floor</span>,</span>
+<span>  naValue <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  mad_row_min <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  grouped_mad <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  centerFunc <span class="op">=</span> <span class="va">centerGeneData</span>,</span>
+<span>  useRank <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  returnType <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ma_list"</span>, <span class="st">"tidy"</span><span class="op">)</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+    </div>
 
-    <div id="ref-sections">
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p><code>numeric</code> matrix typically containing log-normal measurements,
 with measurement rows, and sample columns.</p></dd>
+
+
 <dt>na.rm</dt>
 <dd><p><code>logical</code> indicating whether to ignore NA values
 during <code>numeric</code> summary functions.</p></dd>
+
+
 <dt>controlSamples</dt>
 <dd><p><code>character</code> vector containing values in
 <code>colnames(x)</code> to define control samples used during centering.
 These values are passed to <code><a href="centerGeneData.html">centerGeneData()</a></code>.</p></dd>
+
+
 <dt>centerGroups</dt>
 <dd><p><code>character</code> vector with length equal to <code>ncol(x)</code>
 which defines the group for each column in <code>x</code>. Data will
 be centered within each group.</p></dd>
+
+
 <dt>groupedX</dt>
 <dd><p><code>logical</code> indicating how to calculate the x-axis
 value when <code>centerGroups</code> contains multiple groups. When
@@ -111,16 +120,22 @@ has the effect of representing each group equally. When
 groupedX=FALSE, the median across all columns is used, which
 can have the effect of preferring sample groups with a larger
 number of columns.</p></dd>
+
+
 <dt>useMedian</dt>
 <dd><p><code>logical</code> indicating whether to use the median
 values when calculating the x-axis and during data centering.
 The median naturally reduces the effect of outlier points on
 the resulting MA-plots., when compared to using the mean.
 When useMedian=FALSE, the mean value is used.</p></dd>
+
+
 <dt>useMean</dt>
 <dd><p>(deprecated) <code>logical</code> indicating whether to use the
 mean instead of the median value. This argument is being removed
 in order to improve consistency with other Jam package functions.</p></dd>
+
+
 <dt>whichSamples</dt>
 <dd><p><code>character</code> vector containing <code>colnames(x)</code>, or
 integer vector referencing column numbers in <code>x</code>. This argument
@@ -128,11 +143,15 @@ specifies which columns to return, but does not change the columns
 used to define the group centering values. For example, the
 group medians are calculated using all the data, but only the
 samples in <code>whichSamples</code> are centered to produce MA-plot data.</p></dd>
+
+
 <dt>noise_floor</dt>
 <dd><p><code>numeric</code> value indicating the minimum numeric value
 allowed in the input matrix <code>x</code>. When <code>NULL</code> or <code>-Inf</code> no noise
 floor is applied. It is common to set <code>noise_floor=0</code> to limit
 MA-plot data to use values zero and above.</p></dd>
+
+
 <dt>noise_floor_value</dt>
 <dd><p>single <code>numeric</code> value used to replace <code>numeric</code>
 values at or below <code>noise_floor</code> when <code>noise_floor</code> is not NULL.
@@ -144,10 +163,14 @@ from the MA-plot altogether. This option is recommended for sparse
 data matrices where the presence of values at or below zero are
 indicative of missing data (zero-inflated data) and does not
 automatically reflect an actual value of zero.</p></dd>
+
+
 <dt>naValue</dt>
 <dd><p>single <code>numeric</code> value used to replace any <code>NA</code> values in
 the input matrix <code>x</code>. This argument can be useful to replace
 <code>NA</code> values with something like zero.</p></dd>
+
+
 <dt>mad_row_min</dt>
 <dd><p><code>numeric</code> value defining the minimum group
 value, corresponding to the x-axis position on the MA-plot,
@@ -161,6 +184,8 @@ Remember that count data should already be log2-transformed,
 so the threshold should also be identically transformed,
 for example using <code>log2(1 + 8)</code> to set a minimum count
 threshold of at least 8.</p></dd>
+
+
 <dt>grouped_mad</dt>
 <dd><p><code>logical</code> indicating whether the MAD value
 should be calculated per group when <code>centerGroups</code> is
@@ -170,6 +195,8 @@ within each group using the variability in that group.
 When <code>FALSE</code> the overall MAD is calculated, and a
 particularly high variability group may have all its
 group members labeled with a high MAD factor.</p></dd>
+
+
 <dt>centerFunc</dt>
 <dd><p><code>function</code> used for centering data, by default
 one of the functions <code><a href="centerGeneData.html">centerGeneData()</a></code> or <code><a href="centerGeneData_v1.html">centerGeneData_v1()</a></code>.
@@ -194,15 +221,22 @@ in attribute <code>"center_df"</code></p></li>
 in attribute <code>"x_group"</code></p></li>
 <li><p>...: other arguments are passed along via <code>...</code>.</p></li>
 </ul></dd>
+
+
 <dt>returnType</dt>
 <dd><p><code>character</code> string indicating the format of data
 to return: <code>"ma_list"</code> is a list of MA-plot two-column
 numeric matrices with colnames <code>c("x","y")</code>; "tidy"
 returns a tall <code>data.frame</code> suitable for use in ggplot2.</p></dd>
+
+
 <dt>verbose</dt>
 <dd><p><code>logical</code> indicating whether to print verbose output.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>additional arguments are ignored.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -229,7 +263,6 @@ the control median within the centering group."</p>
 <code><a href="jammanorm.html">jammanorm</a>()</code>,
 <code><a href="matrix_to_column_rank.html">matrix_to_column_rank</a>()</code></p></div>
     </div>
-    </div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -243,8 +276,7 @@ the control median within the centering group."</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-1.9000.9000.9000.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

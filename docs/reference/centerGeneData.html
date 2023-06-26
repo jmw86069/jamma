@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.29.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.33.900</span>
       </span>
     </div>
 
@@ -62,56 +62,69 @@
     <p>Performs per-row centering on a numeric matrix</p>
     </div>
 
-    <div class="ref-usage sourceCode"><pre class="sourceCode r"><code><span class="fu">centerGeneData</span><span class="op">(</span>
-  <span class="va">x</span>,
-  centerGroups <span class="op">=</span> <span class="cn">NULL</span>,
-  na.rm <span class="op">=</span> <span class="cn">TRUE</span>,
-  controlSamples <span class="op">=</span> <span class="cn">NULL</span>,
-  useMedian <span class="op">=</span> <span class="cn">TRUE</span>,
-  rmOutliers <span class="op">=</span> <span class="cn">FALSE</span>,
-  madFactor <span class="op">=</span> <span class="fl">5</span>,
-  controlFloor <span class="op">=</span> <span class="cn">NA</span>,
-  naControlAction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"na"</span>, <span class="st">"row"</span>, <span class="st">"floor"</span>, <span class="st">"min"</span><span class="op">)</span>,
-  naControlFloor <span class="op">=</span> <span class="fl">0</span>,
-  rowStatsFunc <span class="op">=</span> <span class="cn">NULL</span>,
-  returnGroupedValues <span class="op">=</span> <span class="cn">FALSE</span>,
-  returnGroups <span class="op">=</span> <span class="cn">FALSE</span>,
-  mean <span class="op">=</span> <span class="cn">NULL</span>,
-  verbose <span class="op">=</span> <span class="cn">FALSE</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div id="ref-usage">
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">centerGeneData</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  centerGroups <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  na.rm <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  controlSamples <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  useMedian <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  rmOutliers <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  madFactor <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  controlFloor <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  naControlAction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"na"</span>, <span class="st">"row"</span>, <span class="st">"floor"</span>, <span class="st">"min"</span><span class="op">)</span>,</span>
+<span>  naControlFloor <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  rowStatsFunc <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  returnGroupedValues <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  returnGroups <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  mean <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+    </div>
 
-    <div id="ref-sections">
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p><code>numeric</code> matrix of input data. See assumptions,
 that data is assumed to be log2-transformed, or otherwise
 appropriately transformed.</p></dd>
+
+
 <dt>centerGroups</dt>
 <dd><p><code>character</code> vector of group names, or
 <code>NULL</code> if there are no groups.</p></dd>
+
+
 <dt>na.rm</dt>
 <dd><p><code>logical</code> indicating whether NA values should be
 ignored for summary statistics. This argument is passed
 to the corresponding row stats function. Frankly, this
 value should be <code>na.rm=TRUE</code> for all stat functions by default,
 for example <code>mean(..., na.rm=TRUE)</code> should be default.</p></dd>
+
+
 <dt>controlSamples</dt>
 <dd><p><code>character</code> vector of values in <code>colnames(x)</code>
 which defines the columns to use when calculating group
 summary values.</p></dd>
+
+
 <dt>useMedian</dt>
 <dd><p><code>logical</code> indicating whether to use group median
 values when calculating summary statistics <code>TRUE</code>, or
 group means <code>FALSE</code>. In either case, when <code>rowStatsFunc</code>
 is provided, it is used instead.</p></dd>
+
+
 <dt>rmOutliers</dt>
 <dd><p><code>logical</code> indicating whether to perform outlier
 detection and removal prior to row group stats. This
 argument is passed to <code><a href="https://rdrr.io/pkg/jamba/man/rowGroupMeans.html" class="external-link">jamba::rowGroupMeans()</a></code>. Note that
 outliers are only removed during the row group summary step,
 and not in the centered data.</p></dd>
+
+
 <dt>madFactor</dt>
 <dd><p><code>numeric</code> value passed to <code><a href="https://rdrr.io/pkg/jamba/man/rowGroupMeans.html" class="external-link">jamba::rowGroupMeans()</a></code>,
 indicating the MAD factor threshold to use when <code>rmOutliers=TRUE</code>.
@@ -120,6 +133,8 @@ MAD is used to define 1x MAD factor, and any MAD more than
 <code>madFactor</code> times the group median MAD is considered an outlier
 and is removed. The remaining data is used to compute row
 group values.</p></dd>
+
+
 <dt>controlFloor</dt>
 <dd><p><code>numeric</code> value used as a minimum for any control
 summary value during centering.
@@ -139,6 +154,8 @@ any value less than 5, since in this scenario a value of 5 or less
 is effectively the same as a value of 5. It has the effect of returning
 fold changes relative to the effective platform minimum detectable
 signal.</p></dd>
+
+
 <dt>naControlAction</dt>
 <dd><p><code>character</code> string indicating how to handle the specific
 scenario when the control group summary value is <code>NA</code> for a particular
@@ -158,23 +175,34 @@ detection, even if some probes to highly-expressed genes are
 commonly observed with higher signal. The lowest observed signal
 effectively sets the minimum detected value.</p></li>
 </ul></dd>
+
+
 <dt>rowStatsFunc</dt>
 <dd><p><code>optional</code> function used to calculate row group
 summary values. This function should take a numeric matrix as
 input, and return a one-column numeric matrix as output, or
 a numeric vector with length <code>nrow(x)</code>. The function should
 also accept <code>na.rm</code> as an argument.</p></dd>
+
+
 <dt>returnGroupedValues</dt>
 <dd><p><code>logical</code> indicating whether to include
 the numeric matrix of row group values used during centering,
 returned in the attributes with name <code>"x_group"</code>.</p></dd>
+
+
 <dt>returnGroups</dt>
 <dd><p><code>logical</code> indicating whether to return the
 centering summary data.frame in attributes with name "center_df".</p></dd>
+
+
 <dt>verbose</dt>
 <dd><p><code>logical</code> indicating whether to print verbose output.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>additional arguments are passed to <code><a href="https://rdrr.io/pkg/jamba/man/rowGroupMeans.html" class="external-link">jamba::rowGroupMeans()</a></code>.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -253,14 +281,13 @@ of detection.</p>
 <code><a href="jammanorm.html">jammanorm</a>()</code>,
 <code><a href="matrix_to_column_rank.html">matrix_to_column_rank</a>()</code></p></div>
     </div>
-    </div>
 
-    <div id="examples">
+    <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="ref-examples sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">100</span>, ncol<span class="op">=</span><span class="fl">10</span><span class="op">)</span>;</span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span>;</span>
-<span class="r-in"><span class="co"># basic centering</span></span>
-<span class="r-in"><span class="fu">centerGeneData</span><span class="op">(</span><span class="va">x</span><span class="op">)</span>;</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">100</span>, ncol<span class="op">=</span><span class="fl">10</span><span class="op">)</span>;</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span>;</span></span>
+<span class="r-in"><span><span class="co"># basic centering</span></span></span>
+<span class="r-in"><span><span class="fu">centerGeneData</span><span class="op">(</span><span class="va">x</span><span class="op">)</span>;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         a   b   c   d  e f  g  h  i  j</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1,] -45 -35 -25 -15 -5 5 15 25 35 45</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [2,] -45 -35 -25 -15 -5 5 15 25 35 45</span>
@@ -272,10 +299,10 @@ of detection.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [8,] -45 -35 -25 -15 -5 5 15 25 35 45</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [9,] -45 -35 -25 -15 -5 5 15 25 35 45</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [10,] -45 -35 -25 -15 -5 5 15 25 35 45</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># grouped centering</span></span>
-<span class="r-in"><span class="fu">centerGeneData</span><span class="op">(</span><span class="va">x</span>,</span>
-<span class="r-in">   centerGroups<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>,<span class="st">"B"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>;</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># grouped centering</span></span></span>
+<span class="r-in"><span><span class="fu">centerGeneData</span><span class="op">(</span><span class="va">x</span>,</span></span>
+<span class="r-in"><span>   centerGroups<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>,<span class="st">"B"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         a   b c  d  e   f   g h  i  j</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1,] -20 -10 0 10 20 -20 -10 0 10 20</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [2,] -20 -10 0 10 20 -20 -10 0 10 20</span>
@@ -287,10 +314,10 @@ of detection.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [8,] -20 -10 0 10 20 -20 -10 0 10 20</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [9,] -20 -10 0 10 20 -20 -10 0 10 20</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [10,] -20 -10 0 10 20 -20 -10 0 10 20</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># centering versus specific control columns</span></span>
-<span class="r-in"><span class="fu">centerGeneData</span><span class="op">(</span><span class="va">x</span>,</span>
-<span class="r-in">   controlSamples<span class="op">=</span><span class="va">letters</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>;</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># centering versus specific control columns</span></span></span>
+<span class="r-in"><span><span class="fu">centerGeneData</span><span class="op">(</span><span class="va">x</span>,</span></span>
+<span class="r-in"><span>   controlSamples<span class="op">=</span><span class="va">letters</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         a b  c  d  e  f  g  h  i  j</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1,] -10 0 10 20 30 40 50 60 70 80</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [2,] -10 0 10 20 30 40 50 60 70 80</span>
@@ -302,11 +329,11 @@ of detection.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [8,] -10 0 10 20 30 40 50 60 70 80</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [9,] -10 0 10 20 30 40 50 60 70 80</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [10,] -10 0 10 20 30 40 50 60 70 80</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># grouped centering versus specific control columns</span></span>
-<span class="r-in"><span class="fu">centerGeneData</span><span class="op">(</span><span class="va">x</span>,</span>
-<span class="r-in">   centerGroups<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>,<span class="st">"B"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span>,</span>
-<span class="r-in">   controlSamples<span class="op">=</span><span class="va">letters</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="fl">6</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>;</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># grouped centering versus specific control columns</span></span></span>
+<span class="r-in"><span><span class="fu">centerGeneData</span><span class="op">(</span><span class="va">x</span>,</span></span>
+<span class="r-in"><span>   centerGroups<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>,<span class="st">"B"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>   controlSamples<span class="op">=</span><span class="va">letters</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="fl">6</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         a b  c  d  e   f g  h  i  j</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1,] -10 0 10 20 30 -10 0 10 20 30</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [2,] -10 0 10 20 30 -10 0 10 20 30</span>
@@ -318,13 +345,13 @@ of detection.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [8,] -10 0 10 20 30 -10 0 10 20 30</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [9,] -10 0 10 20 30 -10 0 10 20 30</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [10,] -10 0 10 20 30 -10 0 10 20 30</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># confirm the centerGroups and controlSamples</span></span>
-<span class="r-in"><span class="va">x_ctr</span> <span class="op">&lt;-</span> <span class="fu">centerGeneData</span><span class="op">(</span><span class="va">x</span>,</span>
-<span class="r-in">   centerGroups<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>,<span class="st">"B"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span>,</span>
-<span class="r-in">   controlSamples<span class="op">=</span><span class="va">letters</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="fl">6</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span><span class="op">]</span>,</span>
-<span class="r-in">   returnGroups<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>;</span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">x_ctr</span>, <span class="st">"center_df"</span><span class="op">)</span>;</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># confirm the centerGroups and controlSamples</span></span></span>
+<span class="r-in"><span><span class="va">x_ctr</span> <span class="op">&lt;-</span> <span class="fu">centerGeneData</span><span class="op">(</span><span class="va">x</span>,</span></span>
+<span class="r-in"><span>   centerGroups<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>,<span class="st">"B"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>   controlSamples<span class="op">=</span><span class="va">letters</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="fl">6</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>   returnGroups<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>;</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">x_ctr</span>, <span class="st">"center_df"</span><span class="op">)</span>;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   sample centerGroups controlSamples</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> a      a            A           TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> b      b            A           TRUE</span>
@@ -336,7 +363,7 @@ of detection.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> h      h            B           TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> i      i            B          FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> j      j            B          FALSE</span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -351,8 +378,7 @@ of detection.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-1.9000.9000.9000.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

@@ -30,6 +30,8 @@
 #' by `limma::topTable()` for example, the pattern `c("p.val")` will
 #' preferentially match `"P.Value"` and not `"adj.P.Val"`.
 #'
+#' @family jam utility functions
+#'
 #' @param pattern `character` vector of text strings and/or regular
 #'    expression patterns.
 #' @param x `data.frame` or other object that contains `colnames(x)`.

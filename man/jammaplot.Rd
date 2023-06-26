@@ -409,6 +409,26 @@ Either argument can be supplied as a \code{list}, which will be applied
 to each plot panel in order, which allows specifying specific
 abline values in individual panels.}
 
+\item{xlim}{\code{numeric} or \code{NULL} to define a fixed numeric range for
+x-axis values. When \code{xlim=NULL} the ranges are defined by the
+numeric x-axis values in each \code{centerGroups} grouping, so that
+each group can have its own independent x-axis ranges.
+When there is a large proportion of values with x=0 (or near zero),
+there are two options to reduce the point density near zero,
+which can improve visibility of non-zero points:
+\enumerate{
+\item Use \code{noise_floor=0} and \code{noise_floor_value=NA}, which replaces
+values at or below zero with \code{NA}, thereby hiding these points
+from each plot panel. Note the \code{NA} values are also not used during
+data centering calculations.
+\item Define \code{xlim=c(0.001, 20)} and \code{applyRangeCeiling=FALSE}, which
+defines the x-axis minimum slightly above zero, and
+\code{applyRangeCeiling=FALSE} does not display points outside the
+x-axis range at the plot limits, thereby hiding those points.
+This method does not replace values with \code{NA}, therefore all
+non-NA values are used during data centering.
+}}
+
 \item{ylim, xlim}{\code{NULL} or \code{numeric} vector \code{length=2} indicating
 the y-axis and x-axis ranges, respectively. The values are useful
 to define consistent dimensions across all panels. The
@@ -420,14 +440,7 @@ most purposes. Even if numeric values are all between
 context of \code{c(-4, 4)}, or an appropriate and consistent range given
 the data content, so the data has some visual context.
 The range \code{c(-4, 4)} should be adjusted
-relative to the typical ranges expected for the data.
-It is sometimes helpful to define \code{xlim} slightly above zero for
-datasets that have an extremely large proportion of zeros, in order
-to reduce the visual effect of having that much point density at
-zero, for example with \code{xlim=c(0.001, 20)} and
-\code{applyRangeCeiling=FALSE}, which hides points outside the visible
-range.
-Another alternative is to define \code{noise_floor} and \code{noise_floor_value}.}
+relative to the typical ranges expected for the data.}
 
 \item{ncol, nrow}{\code{integer} number of MA-plot panel columns and rows
 passed to \code{graphics::par("mfrow")} when \code{doPar=TRUE}. When only one
@@ -594,10 +607,14 @@ for example geometric mean, or other row summary functions.}
 
 \item{filterNA, filterNAreplacement}{\code{logical} and \code{vector} respectively.
 When \code{filterNA=TRUE}, all \code{NA} values are replaced with
-\code{filterNAreplacement}, which can be helpful to handle \code{NA} values
-as zero \code{0}, or an appropriate noise floor numeric value, for example.
-In reality, \code{NA} values should probably
-be left as-is, so subsequent data centering does not use these values,
+\code{filterNAreplacement}.
+This process is conceptually opposite of \code{noise_floor} which replaces
+a \code{numeric} value with \code{NA} or another \code{numeric} value.
+Instead, \code{filterNA} is intended to convert \code{NA} values into
+a known \code{numeric} value, typically using an appropriate noise floor
+value such as zero \code{0}.
+Practically speaking, \code{NA} values should probably
+be left as \code{NA} values, so that data centering does not use these values,
 and so the MA-plot panel does not draw a point when no measurement
 exists.}
 
@@ -951,5 +968,11 @@ if (suppressPackageStartupMessages(require(affydata))) {
 }
 \seealso{
 \code{jamba::plotSmoothScatter()}
+
+Other jam plot functions: 
+\code{\link{volcano_plot}()}
+
+Other jam plot functions: 
+\code{\link{volcano_plot}()}
 }
 \concept{jam plot functions}

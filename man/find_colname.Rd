@@ -93,3 +93,18 @@ print(head(y));
 find_colname(c("p.val"), y, exclude_pattern=c("adj"))
 
 }
+\seealso{
+Other jam utility functions: 
+\code{\link{blockArrowMargin}()},
+\code{\link{fold_to_log2fold}()},
+\code{\link{get_se_assaydata}()},
+\code{\link{gradient_rect}()},
+\code{\link{handle_highlightPoints}()},
+\code{\link{log2fold_to_fold}()},
+\code{\link{logAxis}()},
+\code{\link{outer_legend}()},
+\code{\link{points2polygonHull}()},
+\code{\link{update_function_params}()},
+\code{\link{update_list_elements}()}
+}
+\concept{jam utility functions}

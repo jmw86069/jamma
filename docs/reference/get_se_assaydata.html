@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.29.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.33.900</span>
       </span>
     </div>
 
@@ -62,30 +62,43 @@
     <p>Get SummarizedExperiment assay matrix data</p>
     </div>
 
-    <div class="ref-usage sourceCode"><pre class="sourceCode r"><code><span class="fu">get_se_assaydata</span><span class="op">(</span><span class="va">x</span>, assay_name <span class="op">=</span> <span class="cn">NULL</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div id="ref-usage">
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_se_assaydata</span><span class="op">(</span><span class="va">x</span>, assay_name <span class="op">=</span> <span class="cn">NULL</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    </div>
 
-    <div id="ref-sections">
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p><code>SummarizedExperiment</code> object</p></dd>
+
+
 <dt>assay_name</dt>
 <dd><p><code>character</code> string that should match one entry
 in <code>names(assays(x))</code>.</p></dd>
+
+
 <dt>verbose</dt>
 <dd><p><code>logical</code> indicating whether to print verbose output.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>additional arguments are ignored.</p></dd>
+
 </dl></div>
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index"><p>Other jam utility functions: 
+<code><a href="blockArrowMargin.html">blockArrowMargin</a>()</code>,
+<code><a href="find_colname.html">find_colname</a>()</code>,
 <code><a href="fold_to_log2fold.html">fold_to_log2fold</a>()</code>,
+<code><a href="gradient_rect.html">gradient_rect</a>()</code>,
 <code><a href="handle_highlightPoints.html">handle_highlightPoints</a>()</code>,
 <code><a href="log2fold_to_fold.html">log2fold_to_fold</a>()</code>,
+<code><a href="logAxis.html">logAxis</a>()</code>,
 <code><a href="outer_legend.html">outer_legend</a>()</code>,
-<code><a href="points2polygonHull.html">points2polygonHull</a>()</code></p></div>
-    </div>
+<code><a href="points2polygonHull.html">points2polygonHull</a>()</code>,
+<code><a href="update_function_params.html">update_function_params</a>()</code>,
+<code><a href="update_list_elements.html">update_list_elements</a>()</code></p></div>
     </div>
 
   </div>
@@ -100,8 +113,7 @@ in <code>names(assays(x))</code>.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-1.9000.9000.9000.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

@@ -11,7 +11,7 @@
 #' required argument values, where the user calling the function
 #' may want to modify onyl a subset of those default values.
 #'
-#' @family jam utilities
+#' @family jam utility functions
 #'
 #' @param function_name `function` or `character` string referring to
 #'    the name of a function, passed to `formals()`.
@@ -100,14 +100,14 @@ update_function_params <- function
 #' widely used in the Lattice R package to update graphical
 #' parameters.
 #'
-#' @family jam utilities
-#'
 #' @param source_list `list` with input values
 #' @param update_list `list` with values to populate into `source_list`.
 #' @param list_layer_num `integer` used for internal use by this function,
 #'    which defines the list depth when traversing a nested list.
 #' @param verbose `logical` indicating whether to print verbose output.
 #' @param ... additional arguments are ignored.
+#'
+#' @family jam utility functions
 #'
 #' @examples
 #' # function starts with y formals, adds or updates new values

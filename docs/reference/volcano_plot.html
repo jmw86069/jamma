@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.29.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.33.900</span>
       </span>
     </div>
 
@@ -62,76 +62,78 @@
     <p>Draw a volcano plot using reasonable default arguments.</p>
     </div>
 
-    <div class="ref-usage sourceCode"><pre class="sourceCode r"><code><span class="fu">volcano_plot</span><span class="op">(</span>
-  <span class="va">x</span>,
-  n <span class="op">=</span> <span class="cn">NULL</span>,
-  lfc_colname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"logfc"</span>, <span class="st">"log2fold"</span>, <span class="st">"log2fc"</span>, <span class="st">"lfc"</span>, <span class="st">"l2fc"</span>, <span class="st">"logratio"</span>,
-    <span class="st">"log2ratio"</span><span class="op">)</span>,
-  fold_colname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fold"</span>, <span class="st">"fc"</span>, <span class="st">"ratio"</span><span class="op">)</span>,
-  fold_cutoff <span class="op">=</span> <span class="fl">1.5</span>,
-  fold_max_range <span class="op">=</span> <span class="fl">16</span>,
-  fold_min_range <span class="op">=</span> <span class="fl">4</span>,
-  sig_colname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"adj.P.Val"</span>, <span class="st">"padj"</span>, <span class="st">"adj.pval"</span>, <span class="st">"adjp"</span>, <span class="st">"P.Value"</span><span class="op">)</span>,
-  sig_cutoff <span class="op">=</span> <span class="fl">0.05</span>,
-  sig_max_range <span class="op">=</span> <span class="fl">1e-10</span>,
-  sig_min_range <span class="op">=</span> <span class="fl">1e-04</span>,
-  expr_colname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mgm"</span>, <span class="st">"groupmean"</span>, <span class="st">"mean"</span>, <span class="st">"AveExpr"</span>, <span class="st">"fkpm"</span>, <span class="st">"rpkm"</span>, <span class="st">"tpm"</span>, <span class="st">"cpm"</span><span class="op">)</span>,
-  expr_cutoff <span class="op">=</span> <span class="cn">NULL</span>,
-  label_colname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gene"</span>, <span class="st">"symbol"</span>, <span class="st">"protein"</span>, <span class="st">"probe"</span>, <span class="st">"assay"</span><span class="op">)</span>,
-  main <span class="op">=</span> <span class="st">"Volcano Plot"</span>,
-  submain <span class="op">=</span> <span class="cn">NULL</span>,
-  blockarrow <span class="op">=</span> <span class="cn">TRUE</span>,
-  blockarrow_colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>hit <span class="op">=</span> <span class="st">"#E67739FF"</span>, up <span class="op">=</span> <span class="st">"#990000FF"</span>, down <span class="op">=</span> <span class="st">"#000099FF"</span><span class="op">)</span>,
-  blockarrow_font <span class="op">=</span> <span class="fl">1</span>,
-  blockarrow_cex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.2</span>, <span class="fl">1.2</span><span class="op">)</span>,
-  blockarrow_label_cex <span class="op">=</span> <span class="fl">1</span>,
-  blockarrow_shadowtext <span class="op">=</span> <span class="cn">TRUE</span>,
-  symmetric_axes <span class="op">=</span> <span class="cn">TRUE</span>,
-  do_cutoff_caption <span class="op">=</span> <span class="cn">TRUE</span>,
-  caption_cex <span class="op">=</span> <span class="fl">0.8</span>,
-  include_axis_prefix <span class="op">=</span> <span class="cn">FALSE</span>,
-  n_x_labels <span class="op">=</span> <span class="fl">12</span>,
-  n_y_labels <span class="op">=</span> <span class="fl">7</span>,
-  xlim <span class="op">=</span> <span class="cn">NULL</span>,
-  ylim <span class="op">=</span> <span class="cn">NULL</span>,
-  pt_cex <span class="op">=</span> <span class="fl">0.9</span>,
-  pt_pch <span class="op">=</span> <span class="fl">21</span>,
-  hit_type <span class="op">=</span> <span class="st">"hits"</span>,
-  color_set <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>base <span class="op">=</span> <span class="st">"#77777777"</span>, up <span class="op">=</span> <span class="st">"#99000088"</span>, down <span class="op">=</span> <span class="st">"#00009988"</span>, hi <span class="op">=</span>
-    <span class="st">"#FFDD55FF"</span>, hi_up <span class="op">=</span> <span class="st">"#FFDD55FF"</span>, hi_down <span class="op">=</span> <span class="st">"#FFDD55FF"</span><span class="op">)</span>,
-  border_set <span class="op">=</span> <span class="cn">NULL</span>,
-  point_colors <span class="op">=</span> <span class="cn">NULL</span>,
-  border_colors <span class="op">=</span> <span class="cn">NULL</span>,
-  abline_color <span class="op">=</span> <span class="st">"#000000AA"</span>,
-  smooth <span class="op">=</span> <span class="cn">TRUE</span>,
-  smooth_func <span class="op">=</span> <span class="fu">jamba</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html" class="external-link">plotSmoothScatter</a></span>,
-  smooth_ramp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/colorRamp.html" class="external-link">colorRampPalette</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span>, <span class="st">"lightblue"</span>, <span class="st">"lightskyblue3"</span>, <span class="st">"royalblue"</span>,
-    <span class="st">"darkblue"</span>, <span class="st">"orange"</span>, <span class="st">"darkorange1"</span>, <span class="st">"orangered2"</span><span class="op">)</span><span class="op">)</span>,
-  tophist <span class="op">=</span> <span class="cn">FALSE</span>,
-  tophist_cutoffs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pvalue"</span>, <span class="st">"foldchange"</span><span class="op">)</span>,
-  tophist_breaks <span class="op">=</span> <span class="fl">100</span>,
-  tophist_color <span class="op">=</span> <span class="st">"#000099FF"</span>,
-  tophist_fraction <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fl">3</span>,
-  tophist_by <span class="op">=</span> <span class="fl">0.2</span>,
-  hi_points <span class="op">=</span> <span class="cn">NULL</span>,
-  hi_colors <span class="op">=</span> <span class="cn">NULL</span>,
-  hi_hits <span class="op">=</span> <span class="cn">FALSE</span>,
-  hi_cex <span class="op">=</span> <span class="fl">1</span>,
-  do_both <span class="op">=</span> <span class="cn">FALSE</span>,
-  label_hits <span class="op">=</span> <span class="cn">FALSE</span>,
-  add_plot <span class="op">=</span> <span class="cn">FALSE</span>,
-  xlab <span class="op">=</span> <span class="cn">NULL</span>,
-  ylab <span class="op">=</span> <span class="cn">NULL</span>,
-  cex.axis <span class="op">=</span> <span class="fl">1.2</span>,
-  mar_min <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">5</span>, <span class="fl">6</span>, <span class="fl">5</span><span class="op">)</span>,
-  transFactor <span class="op">=</span> <span class="fl">0.24</span>,
-  transformation <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span>     <span class="va">x</span><span class="op">^</span><span class="va">transFactor</span> <span class="op">}</span>,
-  nbin <span class="op">=</span> <span class="fl">256</span>,
-  verbose <span class="op">=</span> <span class="cn">TRUE</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div id="ref-usage">
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">volcano_plot</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  n <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  lfc_colname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"logfc"</span>, <span class="st">"log2fold"</span>, <span class="st">"log2fc"</span>, <span class="st">"lfc"</span>, <span class="st">"l2fc"</span>, <span class="st">"logratio"</span>, <span class="st">"log2ratio"</span><span class="op">)</span>,</span>
+<span>  fold_colname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fold"</span>, <span class="st">"fc"</span>, <span class="st">"ratio"</span><span class="op">)</span>,</span>
+<span>  fold_cutoff <span class="op">=</span> <span class="fl">1.5</span>,</span>
+<span>  fold_max_range <span class="op">=</span> <span class="fl">16</span>,</span>
+<span>  fold_min_range <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  sig_colname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"adj.P.Val"</span>, <span class="st">"padj"</span>, <span class="st">"adj.pval"</span>, <span class="st">"adjp"</span>, <span class="st">"P.Value"</span><span class="op">)</span>,</span>
+<span>  sig_cutoff <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  sig_max_range <span class="op">=</span> <span class="fl">1e-10</span>,</span>
+<span>  sig_min_range <span class="op">=</span> <span class="fl">1e-04</span>,</span>
+<span>  expr_colname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mgm"</span>, <span class="st">"groupmean"</span>, <span class="st">"mean"</span>, <span class="st">"AveExpr"</span>, <span class="st">"fkpm"</span>, <span class="st">"rpkm"</span>, <span class="st">"tpm"</span>, <span class="st">"cpm"</span><span class="op">)</span>,</span>
+<span>  expr_cutoff <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  label_colname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gene"</span>, <span class="st">"symbol"</span>, <span class="st">"protein"</span>, <span class="st">"probe"</span>, <span class="st">"assay"</span><span class="op">)</span>,</span>
+<span>  main <span class="op">=</span> <span class="st">"Volcano Plot"</span>,</span>
+<span>  submain <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  blockarrow <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  blockarrow_colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>hit <span class="op">=</span> <span class="st">"#E67739FF"</span>, up <span class="op">=</span> <span class="st">"#990000FF"</span>, down <span class="op">=</span> <span class="st">"#000099FF"</span><span class="op">)</span>,</span>
+<span>  blockarrow_font <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  blockarrow_cex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.2</span>, <span class="fl">1.2</span><span class="op">)</span>,</span>
+<span>  blockarrow_label_cex <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  blockarrow_shadowtext <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  symmetric_axes <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  do_cutoff_caption <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  caption_cex <span class="op">=</span> <span class="fl">0.8</span>,</span>
+<span>  include_axis_prefix <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  n_x_labels <span class="op">=</span> <span class="fl">12</span>,</span>
+<span>  n_y_labels <span class="op">=</span> <span class="fl">7</span>,</span>
+<span>  xlim <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  ylim <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  pt_cex <span class="op">=</span> <span class="fl">0.9</span>,</span>
+<span>  pt_pch <span class="op">=</span> <span class="fl">21</span>,</span>
+<span>  hit_type <span class="op">=</span> <span class="st">"hits"</span>,</span>
+<span>  color_set <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>base <span class="op">=</span> <span class="st">"#77777777"</span>, up <span class="op">=</span> <span class="st">"#99000088"</span>, down <span class="op">=</span> <span class="st">"#00009988"</span>, hi <span class="op">=</span></span>
+<span>    <span class="st">"#FFDD55FF"</span>, hi_up <span class="op">=</span> <span class="st">"#FFDD55FF"</span>, hi_down <span class="op">=</span> <span class="st">"#FFDD55FF"</span><span class="op">)</span>,</span>
+<span>  border_set <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  point_colors <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  border_colors <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  abline_color <span class="op">=</span> <span class="st">"#000000AA"</span>,</span>
+<span>  smooth <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  smooth_func <span class="op">=</span> <span class="fu">jamba</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html" class="external-link">plotSmoothScatter</a></span>,</span>
+<span>  smooth_ramp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/colorRamp.html" class="external-link">colorRampPalette</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span>, <span class="st">"lightblue"</span>, <span class="st">"lightskyblue3"</span>, <span class="st">"royalblue"</span>,</span>
+<span>    <span class="st">"darkblue"</span>, <span class="st">"orange"</span>, <span class="st">"darkorange1"</span>, <span class="st">"orangered2"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  tophist <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  tophist_cutoffs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pvalue"</span>, <span class="st">"foldchange"</span><span class="op">)</span>,</span>
+<span>  tophist_breaks <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  tophist_color <span class="op">=</span> <span class="st">"#000099FF"</span>,</span>
+<span>  tophist_fraction <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fl">3</span>,</span>
+<span>  tophist_by <span class="op">=</span> <span class="fl">0.2</span>,</span>
+<span>  hi_points <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  hi_colors <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  hi_hits <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  hi_cex <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  do_both <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  label_hits <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  add_plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  xlab <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  ylab <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cex.axis <span class="op">=</span> <span class="fl">1.2</span>,</span>
+<span>  mar_min <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">5</span>, <span class="fl">6</span>, <span class="fl">5</span><span class="op">)</span>,</span>
+<span>  transFactor <span class="op">=</span> <span class="fl">0.24</span>,</span>
+<span>  transformation <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>     <span class="va">x</span><span class="op">^</span><span class="va">transFactor</span></span>
+<span> <span class="op">}</span>,</span>
+<span>  nbin <span class="op">=</span> <span class="fl">256</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+    </div>
 
-    <div id="ref-sections">
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
@@ -139,9 +141,13 @@
 least a P-value, and fold change or log2 fold change. It is
 useful to contain a column with mean expression, and a column
 with a relevant label.</p></dd>
+
+
 <dt>n</dt>
 <dd><p><code>integer</code> indicating the number of subset points to plot
 for testing purposes.</p></dd>
+
+
 <dt>lfc_colname</dt>
 <dd><p><code>character</code> string or vector used to match
 <code>colnames(x)</code> whose values should be log2 fold changes.
@@ -151,28 +157,38 @@ regular expression patterns in order until the first
 matching colname is found. Note that <code>lfc_colname</code> is used
 in preference to <code>fold_colname</code>.
 The colname used will appear as the x-axis label.</p></dd>
+
+
 <dt>fold_colname</dt>
 <dd><p><code>character</code> string or vector used to match
 <code>colnames(x)</code> whose values should be fold changes. Note that
 if <code>lfc_colname</code> successfully finds a value, the <code>fold_colname</code>
 is not used.
 The colname if used will appear as the x-axis label.</p></dd>
+
+
 <dt>fold_cutoff</dt>
 <dd><p><code>numeric</code> threshold for values in <code>lfc_colname</code>
 or <code>fold_cutoff</code>, where normal fold change values at or above
 <code>fold_cutoff</code> can be considered statistically significant.
 Note that when <code>lfc_colname</code> is being used, its values are
 converted to normal fold change before applying this filter.</p></dd>
+
+
 <dt>fold_max_range</dt>
 <dd><p><code>numeric</code> indicating the maximum range to display
 on the x-axis fold change. This argument prevents extremely
 large fold changes from compressing the useful visible range
 of the figure.</p></dd>
+
+
 <dt>fold_min_range</dt>
 <dd><p><code>numeric</code> indicating the minimum range to display
 on the x-axis fold change. This argument is useful
 when fold changes are low and the x-axis range would otherwise
 be too small to be very useful.</p></dd>
+
+
 <dt>sig_colname</dt>
 <dd><p><code>character</code> string or vector used to match
 <code>colnames(x)</code> whose values should contain P-values of significance.
@@ -180,70 +196,106 @@ The P-values can be unadjusted (raw) P-values, or adjusted
 P-values. The P-values are expected not to be <code>-log10()</code>
 transformed.
 The colname used will appear as the y-axis label.</p></dd>
+
+
 <dt>sig_cutoff</dt>
 <dd><p><code>numeric</code> threshold for values in <code>sig_colname</code>,
 where values at or below <code>sig_cutoff</code> can be considered
 statistically significant.</p></dd>
+
+
 <dt>sig_max_range</dt>
 <dd><p><code>numeric</code> indicating the maximum range to display
 on the y-axis significance. This argument prevents extremely
 small P-values from compressing the useful visible range
 of the figure.</p></dd>
+
+
 <dt>sig_min_range</dt>
 <dd><p><code>numeric</code> indicating the minimum range to display
 on the y-axis significance. This argument is useful
 when P-values are not very significant, and you want to make
 sure the y-axis range shows a minimum amount of the significant
 region to be visually interpretable in that context.</p></dd>
+
+
 <dt>expr_colname</dt>
 <dd><p><code>character</code> string or vector used to match
 <code>colnames(x)</code> whose values should contain expression mean values.
 This column is only used when <code>expr_cutoff</code> is defined and
 is applied to the filter criteria for statistical hits.</p></dd>
+
+
 <dt>expr_cutoff</dt>
 <dd><p><code>numeric</code> threshold for values in <code>expr_colname</code>
 when <code>expr_colname</code> is defined, where values in <code>expr_colname</code>
 at or above <code>expr_cutoff</code> can be considered statistically
 significant. This threshold is useful to filter out potential
 statistical hits whose signal is below a noise signal threshold.</p></dd>
+
+
 <dt>label_colname</dt>
 <dd><p><code>character</code> string or vector used to match
 <code>colnames(x)</code> whose values should contain a useful label,
 for example gene symbol or assay identifier.</p></dd>
+
+
 <dt>main</dt>
 <dd><p><code>character</code> string used as the main title of the figure.</p></dd>
+
+
 <dt>submain</dt>
 <dd><p><code>character</code> string used as a sub-title of the figure.</p></dd>
+
+
 <dt>blockarrow</dt>
 <dd><p><code>logical</code> indicating whether block arrows should
 be displayed and used to indicate the number of statistical hits.</p></dd>
+
+
 <dt>blockarrow_colors, blockarrow_font, blockarrow_label, blockarrow_shadowtext</dt>
 <dd><p>arguments used when <code>blockarrow=TRUE</code>.</p></dd>
+
+
 <dt>symmetric_axes</dt>
 <dd><p><code>logical</code> indicating whether the x-axis
 log fold change range should be symmetric above and below zero.</p></dd>
+
+
 <dt>do_cutoff_caption</dt>
 <dd><p><code>logical</code> indicating whether to display
 text caption with the statistical cutoff values used, and the
 total number of points displayed.</p></dd>
+
+
 <dt>caption_cex</dt>
 <dd><p><code>numeric</code> caption font size adjustment.</p></dd>
+
+
 <dt>include_axis_prefix</dt>
 <dd><p><code>logical</code> indicating whether to include
 a prefix for the x-axis and y-axis labels: x-axis <code>"Change"</code>;
 y-axis <code>"Significance"</code>.</p></dd>
+
+
 <dt>n_x_labels, n_y_labels</dt>
 <dd><p><code>integer</code> used by <code><a href="https://rdrr.io/r/base/pretty.html" class="external-link">pretty()</a></code> to determine
 the approximate number of x-axis and y-axis labels to display,
 respectively.</p></dd>
+
+
 <dt>xlim, ylim</dt>
 <dd><p><code>numeric</code> used to define specific <code>xlim</code> and <code>ylim</code>
 axis ranges. When <code>NULL</code> the ranges are defined automatically,
 using <code>fold_min_range</code>,<code>fold_max_range</code> for the x-axis, and
 <code>sig_min_range</code>,<code>sig_max_range</code> for the y-axis.</p></dd>
+
+
 <dt>pt_cex, pt_pch</dt>
 <dd><p><code>numeric</code> used to define point size and shape,
 used only when individual points are displayed.</p></dd>
+
+
 <dt>hit_type</dt>
 <dd><p><code>character</code> string used to label points that meet
 the statistical cutoffs as <code>"hits"</code>, but where it may be useful
@@ -251,6 +303,8 @@ to indicate the type of entry being tested. For example:</p><ul><li><p><code>hit
 <li><p><code>hit_type="probes"</code> indicates each row represents a probe;</p></li>
 <li><p><code>hit_type="transcripts"</code> indicates each row represents a transcript.</p></li>
 </ul></dd>
+
+
 <dt>color_set</dt>
 <dd><p><code>character</code> vector of R colors, used only when individual
 points are display. The names override default values, and may include:</p><ul><li><p><code>"base"</code> - the base color of all points on the plot</p></li>
@@ -262,20 +316,28 @@ is defined.</p></li>
 <li><p><code>"hi_up"</code> - color for highlighted up-regulated points.</p></li>
 <li><p><code>"hi_down"</code> - color for highlighted down-regulated points.</p></li>
 </ul></dd>
+
+
 <dt>border_set</dt>
 <dd><p><code>NULL</code> or <code>character</code> vector of R colors, used to
 define point border colors such as <code>pch=21</code> which is a filled circle
 with border. When <code>border_set=NULL</code> then it is defined by
 <code>jamba::makeColorDarker(color_set)</code>.</p></dd>
+
+
 <dt>point_colors, border_colors</dt>
 <dd><p>optional <code>character</code> vector of R colors
 recycled to length <code>nrow(x)</code>, used to specify the exact color of each
 point in <code>x</code>. This argument is useful to colorize certain specific
 points that may otherwise not meet statistical criteria.</p></dd>
+
+
 <dt>abline_color</dt>
 <dd><p><code>character</code> string with R color used to color
 the abline that indicates the x-axis <code>fold_cutoff</code> value, and
 y-axis <code>sig_cutoff</code> value.</p></dd>
+
+
 <dt>smooth</dt>
 <dd><p><code>logical</code> indicating whether points should be drawn
 as a smooth scatter plot, using <code><a href="https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html" class="external-link">jamba::plotSmoothScatter()</a></code>.
@@ -283,68 +345,103 @@ When <code>smooth=FALSE</code> individual points are drawn, using
 <code>point_colors</code>, or when <code>point_colors</code> is not defined the
 default is to use <code>color_set</code> to colorize points based upon
 statistical cutoffs.</p></dd>
+
+
 <dt>smooth_func</dt>
 <dd><p><code>function</code> used to plot points when <code>smooth=TRUE</code>,
 by default <code><a href="https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html" class="external-link">jamba::plotSmoothScatter()</a></code> which has some benefits
 over default <code><a href="https://rdrr.io/r/graphics/smoothScatter.html" class="external-link">graphics::smoothScatter()</a></code>.</p></dd>
+
+
 <dt>smooth_ramp</dt>
 <dd><p><code>character</code> vector of R colors which defines
 the color gradient to use when <code>smooth=TRUE</code>.</p></dd>
+
+
 <dt>tophist</dt>
 <dd><p><code>logical</code> indicating whether to display a histogram
 at the top of the volcano plot figure.</p></dd>
+
+
 <dt>tophist_cutoffs, tophist_breaks, tophist_fraction, tophist_by</dt>
 <dd><p>arguments used when <code>tophist=TRUE</code>.</p></dd>
+
+
 <dt>hi_points</dt>
 <dd><p><code>character</code> vector indicating points to highlight
 in the volcano plot, where values should match <code>rownames(x)</code>.
 This argument is useful to highlight a specific subset of points of
 interest on the figure. Note that <code>hi_points</code> are always
 rendered as individual points even when <code>smooth=TRUE</code>.</p></dd>
+
+
 <dt>hi_hits</dt>
 <dd><p><code>logical</code> indicating whether rows that meet all
 statistical cutoffs and are considered "hits" should also be
 treated as <code>hi_points</code> for the purpose of rendering individual
 points.</p></dd>
+
+
 <dt>hi_cex</dt>
 <dd><p><code>numeric</code> size adjustment for highlight points,
 relative to the size of other points in the figure.</p></dd>
+
+
 <dt>do_both</dt>
 <dd><p><code>logical</code> indicating whether to draw both a smooth
 scatter and individual points on the same figure.</p></dd>
+
+
 <dt>label_hits</dt>
 <dd><p><code>logical</code> indicating whether to add a text label
 for points that are statistical hits.</p></dd>
+
+
 <dt>add_plot</dt>
 <dd><p><code>logical</code> indicating whether the plot should be
 added to an existing plot, or when <code>add_plot=FALSE</code> a new
 plot is created. This argument is useful to re-run the
 same volcano plot with alternate parameters, for example
 to display different subsets of highlighted points.</p></dd>
+
+
 <dt>xlab, ylab</dt>
 <dd><p><code>character</code> strings used to specify the exact
 x-axis label and y-axis label. When either value is <code>NULL</code>
 the default is to use the relevant colname: x-axis uses
 either <code>lfc_colname</code> or <code>fold_colname</code>; y-axis uses <code>sig_colname</code>.</p></dd>
+
+
 <dt>cex.axis</dt>
 <dd><p><code>numeric</code> adjustment for axis label font sizes.</p></dd>
+
+
 <dt>transformation</dt>
 <dd><p><code>function</code> passed to <code>smooth_func</code> used to
 adjust the visual contrast of the resulting density plot.</p></dd>
+
+
 <dt>nbin</dt>
 <dd><p><code>numeric</code> value passed to <code>smooth_func</code> and used
 by <code><a href="https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html" class="external-link">jamba::plotSmoothScatter()</a></code> to adjust the number of
 bins used to display the density of points, where a higher
 value shows more detail, and a lower value shows less detail.</p></dd>
+
+
 <dt>verbose</dt>
 <dd><p><code>logical</code> indicating whether to print verbose output.
 Note that <code>verbose=2</code> will enable much more verbose output.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>additional arguments are ignored.</p></dd>
+
+
 <dt>`numeric`</dt>
 <dd><p>vector used to ensure that each margin size is
 at least a minimum value, applied to <code>par("mar")</code> via
 the function <code><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmax()</a></code>.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -388,51 +485,55 @@ scatter plot when <code>smooth=TRUE</code>.</p>
 </div>
 
     </div>
+    <div id="see-also">
+    <h2>See also</h2>
+    <div class="dont-index"><p>Other jam plot functions: 
+<code><a href="jammaplot.html">ggjammaplot</a>()</code></p></div>
     </div>
 
-    <div id="examples">
+    <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="ref-examples sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">15000</span>;</span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">12</span><span class="op">)</span>;</span>
-<span class="r-in"><span class="va">x_lfc</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span> <span class="op">*</span> <span class="fl">1</span><span class="op">)</span>;</span>
-<span class="r-in"><span class="va">x_lfc</span> <span class="op">&lt;-</span> <span class="va">x_lfc</span><span class="op">^</span><span class="fl">2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/sign.html" class="external-link">sign</a></span><span class="op">(</span><span class="va">x_lfc</span><span class="op">)</span>;</span>
-<span class="r-in"><span class="va">x_lfc</span> <span class="op">&lt;-</span> <span class="va">x_lfc</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">x_lfc</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span><span class="op">)</span><span class="op">]</span>;</span>
-<span class="r-in"><span class="va">x_pv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="op">-</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">*</span><span class="fl">1.5</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>;</span>
-<span class="r-in"><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span class="r-in">   Gene<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"gene"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span>,</span>
-<span class="r-in">   `log2fold Group-Control`<span class="op">=</span><span class="va">x_lfc</span>,</span>
-<span class="r-in">   `P.Value Group-Control`<span class="op">=</span><span class="va">x_pv</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">x_lfc</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>,</span>
-<span class="r-in">   `mgm Group-Contol`<span class="op">=</span><span class="op">(</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1500</span><span class="op">)</span><span class="op">+</span><span class="fl">5</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">/</span><span class="fl">5</span>,</span>
-<span class="r-in">   check.names<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span>;</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu">volcano_plot</span><span class="op">(</span><span class="va">x</span><span class="op">)</span>;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">11:14:50</span>) 23Mar2023:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">sig_colname: </span><span style="color: #FF8700;">P.Value Group-Control</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">11:14:50</span>) 23Mar2023:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">lfc_colname: </span><span style="color: #FF8700;">log2fold Group-Control</span> </span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">15000</span>;</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">12</span><span class="op">)</span>;</span></span>
+<span class="r-in"><span><span class="va">x_lfc</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span> <span class="op">*</span> <span class="fl">1</span><span class="op">)</span>;</span></span>
+<span class="r-in"><span><span class="va">x_lfc</span> <span class="op">&lt;-</span> <span class="va">x_lfc</span><span class="op">^</span><span class="fl">2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/sign.html" class="external-link">sign</a></span><span class="op">(</span><span class="va">x_lfc</span><span class="op">)</span>;</span></span>
+<span class="r-in"><span><span class="va">x_lfc</span> <span class="op">&lt;-</span> <span class="va">x_lfc</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">x_lfc</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span><span class="op">)</span><span class="op">]</span>;</span></span>
+<span class="r-in"><span><span class="va">x_pv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="op">-</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">*</span><span class="fl">1.5</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>;</span></span>
+<span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>   Gene<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"gene"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>   `log2fold Group-Control`<span class="op">=</span><span class="va">x_lfc</span>,</span></span>
+<span class="r-in"><span>   `P.Value Group-Control`<span class="op">=</span><span class="va">x_pv</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">x_lfc</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>   `mgm Group-Contol`<span class="op">=</span><span class="op">(</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1500</span><span class="op">)</span><span class="op">+</span><span class="fl">5</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">/</span><span class="fl">5</span>,</span></span>
+<span class="r-in"><span>   check.names<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span>;</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">volcano_plot</span><span class="op">(</span><span class="va">x</span><span class="op">)</span>;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">12:00:13</span>) 26Jun2023:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">sig_colname: </span><span style="color: #FF8700;">P.Value Group-Control</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">12:00:13</span>) 26Jun2023:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">lfc_colname: </span><span style="color: #FF8700;">log2fold Group-Control</span> </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>coercing argument of type 'double' to logical</span>
 <span class="r-plt img"><img src="volcano_plot-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span class="fu">volcano_plot</span><span class="op">(</span><span class="va">x</span>, expr_cutoff<span class="op">=</span><span class="fl">3</span><span class="op">)</span>;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">11:14:50</span>) 23Mar2023:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">sig_colname: </span><span style="color: #FF8700;">P.Value Group-Control</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">11:14:50</span>) 23Mar2023:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">lfc_colname: </span><span style="color: #FF8700;">log2fold Group-Control</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">11:14:50</span>) 23Mar2023:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">expr_colname: </span><span style="color: #FF8700;">mgm Group-Contol</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">11:14:50</span>) 23Mar2023:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">13160</span><span style="color: #FF8700;"> values of </span><span style="color: #00AFFF;">15000</span><span style="color: #FF8700;"> met the threshold.</span> </span>
+<span class="r-in"><span><span class="fu">volcano_plot</span><span class="op">(</span><span class="va">x</span>, expr_cutoff<span class="op">=</span><span class="fl">3</span><span class="op">)</span>;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">12:00:13</span>) 26Jun2023:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">sig_colname: </span><span style="color: #FF8700;">P.Value Group-Control</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">12:00:13</span>) 26Jun2023:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">lfc_colname: </span><span style="color: #FF8700;">log2fold Group-Control</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">12:00:13</span>) 26Jun2023:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">expr_colname: </span><span style="color: #FF8700;">mgm Group-Contol</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">12:00:13</span>) 26Jun2023:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">13160</span><span style="color: #FF8700;"> values of </span><span style="color: #00AFFF;">15000</span><span style="color: #FF8700;"> met the threshold.</span> </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>coercing argument of type 'double' to logical</span>
 <span class="r-plt img"><img src="volcano_plot-2.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span class="co"># volcano_plot(x, mar_min=c(7, 6, 6, 5), blockarrow_cex=1);</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># par("mfrow"=c(2, 1));</span></span>
-<span class="r-in"><span class="co"># volcano_plot(x);</span></span>
-<span class="r-in"><span class="co"># volcano_plot(x);</span></span>
-<span class="r-in"><span class="co"># par("mfrow"=c(1, 1));</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">x</span><span class="op">[[</span><span class="st">"fold Group-Control"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="log2fold_to_fold.html">log2fold_to_fold</a></span><span class="op">(</span><span class="va">x</span><span class="op">[[</span><span class="st">"log2fold Group-Control"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>;</span>
-<span class="r-in"><span class="va">x</span><span class="op">[[</span><span class="st">"adj.P.Val Group-Control"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[[</span><span class="st">"P.Value Group-Control"</span><span class="op">]</span><span class="op">]</span>;</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu">volcano_plot</span><span class="op">(</span><span class="va">x</span>, hi_hits<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">11:14:50</span>) 23Mar2023:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">sig_colname: </span><span style="color: #FF8700;">adj.P.Val Group-Control</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">11:14:50</span>) 23Mar2023:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">lfc_colname: </span><span style="color: #FF8700;">log2fold Group-Control</span> </span>
+<span class="r-in"><span><span class="co"># volcano_plot(x, mar_min=c(7, 6, 6, 5), blockarrow_cex=1);</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># par("mfrow"=c(2, 1));</span></span></span>
+<span class="r-in"><span><span class="co"># volcano_plot(x);</span></span></span>
+<span class="r-in"><span><span class="co"># volcano_plot(x);</span></span></span>
+<span class="r-in"><span><span class="co"># par("mfrow"=c(1, 1));</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">x</span><span class="op">[[</span><span class="st">"fold Group-Control"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="log2fold_to_fold.html">log2fold_to_fold</a></span><span class="op">(</span><span class="va">x</span><span class="op">[[</span><span class="st">"log2fold Group-Control"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>;</span></span>
+<span class="r-in"><span><span class="va">x</span><span class="op">[[</span><span class="st">"adj.P.Val Group-Control"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[[</span><span class="st">"P.Value Group-Control"</span><span class="op">]</span><span class="op">]</span>;</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">volcano_plot</span><span class="op">(</span><span class="va">x</span>, hi_hits<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">12:00:13</span>) 26Jun2023:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">sig_colname: </span><span style="color: #FF8700;">adj.P.Val Group-Control</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ##  (<span style="color: #00FFFF; font-weight: bold;">12:00:13</span>) 26Jun2023:   <span style="color: #FF8700;">volcano_plot(): </span><span style="color: #00AFFF;">lfc_colname: </span><span style="color: #FF8700;">log2fold Group-Control</span> </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>coercing argument of type 'double' to logical</span>
 <span class="r-plt img"><img src="volcano_plot-3.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -447,8 +548,7 @@ scatter plot when <code>smooth=TRUE</code>.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-1.9000.9000.9000.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

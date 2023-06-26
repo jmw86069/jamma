@@ -59,7 +59,17 @@ test_function_2(y=list(b=5:6, d=1:5))
 
 }
 \seealso{
-Other jam utilities: 
+Other jam utility functions: 
+\code{\link{blockArrowMargin}()},
+\code{\link{find_colname}()},
+\code{\link{fold_to_log2fold}()},
+\code{\link{get_se_assaydata}()},
+\code{\link{gradient_rect}()},
+\code{\link{handle_highlightPoints}()},
+\code{\link{log2fold_to_fold}()},
+\code{\link{logAxis}()},
+\code{\link{outer_legend}()},
+\code{\link{points2polygonHull}()},
 \code{\link{update_list_elements}()}
 }
-\concept{jam utilities}
+\concept{jam utility functions}

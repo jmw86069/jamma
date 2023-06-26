@@ -1,3 +1,23 @@
+# jamma 0.0.33.900
+
+## changes to existing functions
+
+* `jammaplot()`
+
+   * A warning was shown `"Warning in min(x, na.rm = na.rm) :
+  no non-missing arguments to min; returning Inf"` which was caused by
+  `xlim` not being defined for each plot panel, thereby causing
+  `ablinesV` to throw an error because no values fit within the undefined
+  x-axis range. Now when `xlim` argument is not provided, it uses
+  the range of x-axis values from `jammacalc()` for each panel.
+  * This change makes panel x-axis ranges more consistent by default.
+  They should have been consistent already, but in some cases `NA` values
+  caused the range to differ slightly from panel to panel. In most cases,
+  it caused no visible effect in x-axis labels.
+  * This change also allows samples within `centerGroups` groupings to
+  have distinct x-axis ranges, since each individual group can represent
+  potentially very different values depending upon the experiment.
+
 # jamma 0.0.32.900
 
 ## bug fixes

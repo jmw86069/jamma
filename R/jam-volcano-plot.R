@@ -53,6 +53,7 @@
 #' hits as points, which will appear on top of the smooth
 #' scatter plot when `smooth=TRUE`.
 #'
+#' @family jam plot functions
 #'
 #' @param x `data.frame` that contains statistical results with at
 #'    least a P-value, and fold change or log2 fold change. It is
@@ -1199,6 +1200,8 @@ volcano_plot <- function
 #' Run `blockArrowMargin(doExample=TRUE)` to see a visual
 #' example.
 #'
+#' @family jam utility functions
+#'
 #' @examples
 #' blockArrowMargin(doExample=TRUE)
 #'
@@ -1710,6 +1713,8 @@ blockArrowMargin <- function
 #'    around the rectangle.
 #' @param ... additional arguments are ignored.
 #'
+#' @family jam utility functions
+#'
 #' @examples
 #' jamba::nullPlot(xlim=c(0,5), ylim=c(0,5), xaxt="s", yaxt="s");
 #' gradient_rect(xleft=1,
@@ -1803,6 +1808,8 @@ gradient_rect <- function
 
 
 #' Log-scaled axis including transformed P-values
+#'
+#' @family jam utility functions
 #'
 #' @export
 logAxis <- function

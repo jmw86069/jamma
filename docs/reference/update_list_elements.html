@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.29.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.33.900</span>
       </span>
     </div>
 
@@ -62,28 +62,38 @@
     <p>Update a subset of list elements (deprecated)</p>
     </div>
 
-    <div class="ref-usage sourceCode"><pre class="sourceCode r"><code><span class="fu">update_list_elements</span><span class="op">(</span>
-  <span class="va">source_list</span>,
-  <span class="va">update_list</span>,
-  list_layer_num <span class="op">=</span> <span class="fl">1</span>,
-  verbose <span class="op">=</span> <span class="cn">FALSE</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div id="ref-usage">
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">update_list_elements</span><span class="op">(</span></span>
+<span>  <span class="va">source_list</span>,</span>
+<span>  <span class="va">update_list</span>,</span>
+<span>  list_layer_num <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+    </div>
 
-    <div id="ref-sections">
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>source_list</dt>
 <dd><p><code>list</code> with input values</p></dd>
+
+
 <dt>update_list</dt>
 <dd><p><code>list</code> with values to populate into <code>source_list</code>.</p></dd>
+
+
 <dt>list_layer_num</dt>
 <dd><p><code>integer</code> used for internal use by this function,
 which defines the list depth when traversing a nested list.</p></dd>
+
+
 <dt>verbose</dt>
 <dd><p><code>logical</code> indicating whether to print verbose output.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>additional arguments are ignored.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -104,16 +114,25 @@ parameters.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
-    <div class="dont-index"><p>Other jam utilities: 
+    <div class="dont-index"><p>Other jam utility functions: 
+<code><a href="blockArrowMargin.html">blockArrowMargin</a>()</code>,
+<code><a href="find_colname.html">find_colname</a>()</code>,
+<code><a href="fold_to_log2fold.html">fold_to_log2fold</a>()</code>,
+<code><a href="get_se_assaydata.html">get_se_assaydata</a>()</code>,
+<code><a href="gradient_rect.html">gradient_rect</a>()</code>,
+<code><a href="handle_highlightPoints.html">handle_highlightPoints</a>()</code>,
+<code><a href="log2fold_to_fold.html">log2fold_to_fold</a>()</code>,
+<code><a href="logAxis.html">logAxis</a>()</code>,
+<code><a href="outer_legend.html">outer_legend</a>()</code>,
+<code><a href="points2polygonHull.html">points2polygonHull</a>()</code>,
 <code><a href="update_function_params.html">update_function_params</a>()</code></p></div>
     </div>
-    </div>
 
-    <div id="examples">
+    <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="ref-examples sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># function starts with y formals, adds or updates new values</span></span>
-<span class="r-in"><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>a<span class="op">=</span><span class="fl">1</span>, b<span class="op">=</span><span class="fl">4</span>, e<span class="op">=</span><span class="cn">NULL</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">update_list_elements</span><span class="op">(</span><span class="va">y</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>b<span class="op">=</span><span class="fl">5</span><span class="op">:</span><span class="fl">6</span>, d<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span>;</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># function starts with y formals, adds or updates new values</span></span></span>
+<span class="r-in"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>a<span class="op">=</span><span class="fl">1</span>, b<span class="op">=</span><span class="fl">4</span>, e<span class="op">=</span><span class="cn">NULL</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">update_list_elements</span><span class="op">(</span><span class="va">y</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>b<span class="op">=</span><span class="fl">5</span><span class="op">:</span><span class="fl">6</span>, d<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span>;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $a</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -126,9 +145,9 @@ parameters.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $d</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1 2 3 4 5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># also see the preferred function utils::modifyList below</span></span>
-<span class="r-in"><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/modifyList.html" class="external-link">modifyList</a></span><span class="op">(</span><span class="va">y</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>b<span class="op">=</span><span class="fl">5</span><span class="op">:</span><span class="fl">6</span>, d<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span>;</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># also see the preferred function utils::modifyList below</span></span></span>
+<span class="r-in"><span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/modifyList.html" class="external-link">modifyList</a></span><span class="op">(</span><span class="va">y</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>b<span class="op">=</span><span class="fl">5</span><span class="op">:</span><span class="fl">6</span>, d<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span>;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $a</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -141,7 +160,7 @@ parameters.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $d</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1 2 3 4 5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -156,8 +175,7 @@ parameters.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-1.9000.9000.9000.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

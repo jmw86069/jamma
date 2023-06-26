@@ -372,3 +372,8 @@ x[["adj.P.Val Group-Control"]] <- x[["P.Value Group-Control"]];
 volcano_plot(x, hi_hits=TRUE);
 
 }
+\seealso{
+Other jam plot functions: 
+\code{\link{ggjammaplot}()}
+}
+\concept{jam plot functions}

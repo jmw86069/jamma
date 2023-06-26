@@ -18,7 +18,7 @@ ggjammaplot() uses ggplot2 graphics."><!-- mathjax --><script src="https://cdnjs
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.29.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.33.900</span>
       </span>
     </div>
 
@@ -64,141 +64,143 @@ ggjammaplot() uses ggplot2 graphics."><!-- mathjax --><script src="https://cdnjs
 <code>ggjammaplot()</code> uses ggplot2 graphics.</p>
     </div>
 
-    <div class="ref-usage sourceCode"><pre class="sourceCode r"><code><span class="fu">ggjammaplot</span><span class="op">(</span>
-  <span class="va">x</span>,
-  detail_factor <span class="op">=</span> <span class="fl">1</span>,
-  nbin_factor <span class="op">=</span> <span class="fl">1</span>,
-  bw_factor <span class="op">=</span> <span class="fl">1</span>,
-  assay_name <span class="op">=</span> <span class="fl">1</span>,
-  useMedian <span class="op">=</span> <span class="cn">FALSE</span>,
-  controlSamples <span class="op">=</span> <span class="cn">NULL</span>,
-  centerGroups <span class="op">=</span> <span class="cn">NULL</span>,
-  controlFloor <span class="op">=</span> <span class="cn">NA</span>,
-  naControlAction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"row"</span>, <span class="st">"floor"</span>, <span class="st">"min"</span>, <span class="st">"na"</span><span class="op">)</span>,
-  naControlFloor <span class="op">=</span> <span class="fl">0</span>,
-  colramp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"transparent"</span>, <span class="st">"lightblue"</span>, <span class="st">"blue"</span>, <span class="st">"navy"</span>, <span class="st">"orange"</span>, <span class="st">"orangered2"</span><span class="op">)</span>,
-  groupedX <span class="op">=</span> <span class="cn">TRUE</span>,
-  grouped_mad <span class="op">=</span> <span class="cn">TRUE</span>,
-  outlierMAD <span class="op">=</span> <span class="fl">5</span>,
-  mad_row_min <span class="op">=</span> <span class="fl">4</span>,
-  displayMAD <span class="op">=</span> <span class="cn">FALSE</span>,
-  noise_floor <span class="op">=</span> <span class="fl">0</span>,
-  noise_floor_value <span class="op">=</span> <span class="cn">NA</span>,
-  naValue <span class="op">=</span> <span class="cn">NA</span>,
-  centerFunc <span class="op">=</span> <span class="va">centerGeneData</span>,
-  whichSamples <span class="op">=</span> <span class="cn">NULL</span>,
-  useRank <span class="op">=</span> <span class="cn">FALSE</span>,
-  titleBoxColor <span class="op">=</span> <span class="st">"lightgoldenrod1"</span>,
-  titleCex <span class="op">=</span> <span class="fl">1</span>,
-  outlierColor <span class="op">=</span> <span class="st">"lemonchiffon"</span>,
-  fillBackground <span class="op">=</span> <span class="cn">TRUE</span>,
-  maintitle <span class="op">=</span> <span class="cn">NULL</span>,
-  subtitle <span class="op">=</span> <span class="cn">NULL</span>,
-  summary <span class="op">=</span> <span class="st">"mean"</span>,
-  difference <span class="op">=</span> <span class="st">"difference"</span>,
-  transFactor <span class="op">=</span> <span class="fl">0.25</span>,
-  doPlot <span class="op">=</span> <span class="cn">TRUE</span>,
-  highlightPoints <span class="op">=</span> <span class="cn">NULL</span>,
-  highlightPch <span class="op">=</span> <span class="fl">21</span>,
-  highlightCex <span class="op">=</span> <span class="fl">1.5</span>,
-  highlightColor <span class="op">=</span> <span class="cn">NULL</span>,
-  doHighlightLegend <span class="op">=</span> <span class="cn">TRUE</span>,
-  ablineH <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span>,
-  base_size <span class="op">=</span> <span class="fl">12</span>,
-  panel.grid.major.colour <span class="op">=</span> <span class="st">"grey90"</span>,
-  panel.grid.minor.colour <span class="op">=</span> <span class="st">"grey95"</span>,
-  return_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ggplot"</span>, <span class="st">"data"</span><span class="op">)</span>,
-  xlim <span class="op">=</span> <span class="cn">NULL</span>,
-  ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">6</span>, <span class="fl">6</span><span class="op">)</span>,
-  ncol <span class="op">=</span> <span class="cn">NULL</span>,
-  nrow <span class="op">=</span> <span class="cn">NULL</span>,
-  blankPlotPos <span class="op">=</span> <span class="cn">NULL</span>,
-  verbose <span class="op">=</span> <span class="cn">FALSE</span>,
-  <span class="va">...</span>
-<span class="op">)</span>
+    <div id="ref-usage">
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ggjammaplot</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  detail_factor <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  nbin_factor <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  bw_factor <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  assay_name <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  useMedian <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  controlSamples <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  centerGroups <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  controlFloor <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  naControlAction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"row"</span>, <span class="st">"floor"</span>, <span class="st">"min"</span>, <span class="st">"na"</span><span class="op">)</span>,</span>
+<span>  naControlFloor <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  colramp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"transparent"</span>, <span class="st">"lightblue"</span>, <span class="st">"blue"</span>, <span class="st">"navy"</span>, <span class="st">"orange"</span>, <span class="st">"orangered2"</span><span class="op">)</span>,</span>
+<span>  groupedX <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  grouped_mad <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  outlierMAD <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  mad_row_min <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  displayMAD <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  noise_floor <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  noise_floor_value <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  naValue <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  centerFunc <span class="op">=</span> <span class="va">centerGeneData</span>,</span>
+<span>  whichSamples <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  useRank <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  titleBoxColor <span class="op">=</span> <span class="st">"lightgoldenrod1"</span>,</span>
+<span>  titleCex <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  outlierColor <span class="op">=</span> <span class="st">"lemonchiffon"</span>,</span>
+<span>  fillBackground <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  maintitle <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  subtitle <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  summary <span class="op">=</span> <span class="st">"mean"</span>,</span>
+<span>  difference <span class="op">=</span> <span class="st">"difference"</span>,</span>
+<span>  transFactor <span class="op">=</span> <span class="fl">0.25</span>,</span>
+<span>  doPlot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  highlightPoints <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  highlightPch <span class="op">=</span> <span class="fl">21</span>,</span>
+<span>  highlightCex <span class="op">=</span> <span class="fl">1.5</span>,</span>
+<span>  highlightColor <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  doHighlightLegend <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  ablineH <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span>,</span>
+<span>  base_size <span class="op">=</span> <span class="fl">12</span>,</span>
+<span>  panel.grid.major.colour <span class="op">=</span> <span class="st">"grey90"</span>,</span>
+<span>  panel.grid.minor.colour <span class="op">=</span> <span class="st">"grey95"</span>,</span>
+<span>  return_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ggplot"</span>, <span class="st">"data"</span><span class="op">)</span>,</span>
+<span>  xlim <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">6</span>, <span class="fl">6</span><span class="op">)</span>,</span>
+<span>  ncol <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  nrow <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  blankPlotPos <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">jammaplot</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  assay_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  maintitle <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  titleBoxColor <span class="op">=</span> <span class="st">"#DDBB9977"</span>,</span>
+<span>  subtitleBoxColor <span class="op">=</span> <span class="va">titleBoxColor</span>,</span>
+<span>  centerGroups <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  controlSamples <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>,</span>
+<span>  controlFloor <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  naControlAction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"row"</span>, <span class="st">"floor"</span>, <span class="st">"min"</span>, <span class="st">"na"</span><span class="op">)</span>,</span>
+<span>  naControlFloor <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  controlIndicator <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"labelstar"</span>, <span class="st">"titlestar"</span>, <span class="st">"none"</span><span class="op">)</span>,</span>
+<span>  sample_labels <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  useMedian <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  useMean <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">4</span>, <span class="fl">4</span><span class="op">)</span>,</span>
+<span>  xlim <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  highlightPoints <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  outlierMAD <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  outlierRowMin <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  displayMAD <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  groupedMAD <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  colramp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span>, <span class="st">"lightblue"</span>, <span class="st">"blue"</span>, <span class="st">"navy"</span>, <span class="st">"orange"</span>, <span class="st">"orangered2"</span><span class="op">)</span>,</span>
+<span>  colrampOutlier <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  outlierColor <span class="op">=</span> <span class="st">"lemonchiffon"</span>,</span>
+<span>  whichSamples <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  maintitleCex <span class="op">=</span> <span class="fl">1.8</span>,</span>
+<span>  subtitle <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  subtitlePreset <span class="op">=</span> <span class="st">"bottomleft"</span>,</span>
+<span>  subtitleAdjPreset <span class="op">=</span> <span class="st">"topright"</span>,</span>
+<span>  titleCexFactor <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  titleCex <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  doTitleBox <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  titleColor <span class="op">=</span> <span class="st">"black"</span>,</span>
+<span>  titleFont <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  titlePreset <span class="op">=</span> <span class="st">"top"</span>,</span>
+<span>  titleAdjPreset <span class="op">=</span> <span class="st">"top"</span>,</span>
+<span>  xlab <span class="op">=</span> <span class="st">""</span>,</span>
+<span>  xlabline <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  ylab <span class="op">=</span> <span class="st">""</span>,</span>
+<span>  ylabline <span class="op">=</span> <span class="fl">1.5</span>,</span>
+<span>  groupSuffix <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  highlightPch <span class="op">=</span> <span class="fl">21</span>,</span>
+<span>  highlightCex <span class="op">=</span> <span class="fl">1.5</span>,</span>
+<span>  highlightColor <span class="op">=</span> <span class="st">"#00AAAA66"</span>,</span>
+<span>  doHighlightPolygon <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  highlightPolygonAlpha <span class="op">=</span> <span class="fl">0.3</span>,</span>
+<span>  doHighlightLegend <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  smoothPtCol <span class="op">=</span> <span class="st">"#00000055"</span>,</span>
+<span>  margins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2.5</span>, <span class="fl">0.5</span>, <span class="fl">2</span>, <span class="fl">0.2</span><span class="op">)</span>,</span>
+<span>  outer_margins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1.5</span>, <span class="fl">0</span>, <span class="fl">0.2</span><span class="op">)</span>,</span>
+<span>  useRaster <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  ncol <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  nrow <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  doPar <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  las <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  groupedX <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  customFunc <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  filterNA <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  filterNAreplacement <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  filterNeg <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  noise_floor <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  noise_floor_value <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  filterFloor <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  filterFloorReplacement <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  transFactor <span class="op">=</span> <span class="fl">0.18</span>,</span>
+<span>  nrpoints <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  smoothScatterFunc <span class="op">=</span> <span class="fu">jamba</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html" class="external-link">plotSmoothScatter</a></span>,</span>
+<span>  applyRangeCeiling <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  doTxtplot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  ablineV <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  ablineH <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span>,</span>
+<span>  blankPlotPos <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  fillBackground <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  useRank <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  ma_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"jammacalc"</span>, <span class="st">"old"</span><span class="op">)</span>,</span>
+<span>  panel_hook_function <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  doPlot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+    </div>
 
-<span class="fu">jammaplot</span><span class="op">(</span>
-  <span class="va">x</span>,
-  assay_name <span class="op">=</span> <span class="cn">NULL</span>,
-  maintitle <span class="op">=</span> <span class="cn">NULL</span>,
-  titleBoxColor <span class="op">=</span> <span class="st">"#DDBB9977"</span>,
-  subtitleBoxColor <span class="op">=</span> <span class="va">titleBoxColor</span>,
-  centerGroups <span class="op">=</span> <span class="cn">NULL</span>,
-  controlSamples <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>,
-  controlFloor <span class="op">=</span> <span class="cn">NA</span>,
-  naControlAction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"row"</span>, <span class="st">"floor"</span>, <span class="st">"min"</span>, <span class="st">"na"</span><span class="op">)</span>,
-  naControlFloor <span class="op">=</span> <span class="fl">0</span>,
-  controlIndicator <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"labelstar"</span>, <span class="st">"titlestar"</span>, <span class="st">"none"</span><span class="op">)</span>,
-  sample_labels <span class="op">=</span> <span class="cn">NULL</span>,
-  useMedian <span class="op">=</span> <span class="cn">FALSE</span>,
-  useMean <span class="op">=</span> <span class="cn">NULL</span>,
-  ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">4</span>, <span class="fl">4</span><span class="op">)</span>,
-  xlim <span class="op">=</span> <span class="cn">NULL</span>,
-  highlightPoints <span class="op">=</span> <span class="cn">NULL</span>,
-  outlierMAD <span class="op">=</span> <span class="fl">5</span>,
-  outlierRowMin <span class="op">=</span> <span class="fl">5</span>,
-  displayMAD <span class="op">=</span> <span class="cn">FALSE</span>,
-  groupedMAD <span class="op">=</span> <span class="cn">TRUE</span>,
-  colramp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span>, <span class="st">"lightblue"</span>, <span class="st">"blue"</span>, <span class="st">"navy"</span>, <span class="st">"orange"</span>, <span class="st">"orangered2"</span><span class="op">)</span>,
-  colrampOutlier <span class="op">=</span> <span class="cn">NULL</span>,
-  outlierColor <span class="op">=</span> <span class="st">"lemonchiffon"</span>,
-  whichSamples <span class="op">=</span> <span class="cn">NULL</span>,
-  maintitleCex <span class="op">=</span> <span class="fl">1.8</span>,
-  subtitle <span class="op">=</span> <span class="cn">NULL</span>,
-  subtitlePreset <span class="op">=</span> <span class="st">"bottomleft"</span>,
-  subtitleAdjPreset <span class="op">=</span> <span class="st">"topright"</span>,
-  titleCexFactor <span class="op">=</span> <span class="fl">1</span>,
-  titleCex <span class="op">=</span> <span class="cn">NULL</span>,
-  doTitleBox <span class="op">=</span> <span class="cn">TRUE</span>,
-  titleColor <span class="op">=</span> <span class="st">"black"</span>,
-  titleFont <span class="op">=</span> <span class="fl">2</span>,
-  titlePreset <span class="op">=</span> <span class="st">"top"</span>,
-  titleAdjPreset <span class="op">=</span> <span class="st">"top"</span>,
-  xlab <span class="op">=</span> <span class="st">""</span>,
-  xlabline <span class="op">=</span> <span class="fl">2</span>,
-  ylab <span class="op">=</span> <span class="st">""</span>,
-  ylabline <span class="op">=</span> <span class="fl">1.5</span>,
-  groupSuffix <span class="op">=</span> <span class="cn">NULL</span>,
-  highlightPch <span class="op">=</span> <span class="fl">21</span>,
-  highlightCex <span class="op">=</span> <span class="fl">1.5</span>,
-  highlightColor <span class="op">=</span> <span class="st">"#00AAAA66"</span>,
-  doHighlightPolygon <span class="op">=</span> <span class="cn">FALSE</span>,
-  highlightPolygonAlpha <span class="op">=</span> <span class="fl">0.3</span>,
-  doHighlightLegend <span class="op">=</span> <span class="cn">TRUE</span>,
-  smoothPtCol <span class="op">=</span> <span class="st">"#00000055"</span>,
-  margins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2.5</span>, <span class="fl">2.5</span>, <span class="fl">2</span>, <span class="fl">0.2</span><span class="op">)</span>,
-  useRaster <span class="op">=</span> <span class="cn">TRUE</span>,
-  ncol <span class="op">=</span> <span class="cn">NULL</span>,
-  nrow <span class="op">=</span> <span class="cn">NULL</span>,
-  doPar <span class="op">=</span> <span class="cn">TRUE</span>,
-  las <span class="op">=</span> <span class="fl">2</span>,
-  groupedX <span class="op">=</span> <span class="cn">TRUE</span>,
-  customFunc <span class="op">=</span> <span class="cn">NULL</span>,
-  filterNA <span class="op">=</span> <span class="cn">TRUE</span>,
-  filterNAreplacement <span class="op">=</span> <span class="cn">NA</span>,
-  filterNeg <span class="op">=</span> <span class="cn">TRUE</span>,
-  noise_floor <span class="op">=</span> <span class="fl">0</span>,
-  noise_floor_value <span class="op">=</span> <span class="cn">NA</span>,
-  filterFloor <span class="op">=</span> <span class="cn">NULL</span>,
-  filterFloorReplacement <span class="op">=</span> <span class="cn">NULL</span>,
-  transFactor <span class="op">=</span> <span class="fl">0.18</span>,
-  nrpoints <span class="op">=</span> <span class="fl">0</span>,
-  smoothScatterFunc <span class="op">=</span> <span class="fu">jamba</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html" class="external-link">plotSmoothScatter</a></span>,
-  applyRangeCeiling <span class="op">=</span> <span class="cn">TRUE</span>,
-  doTxtplot <span class="op">=</span> <span class="cn">FALSE</span>,
-  ablineV <span class="op">=</span> <span class="fl">0</span>,
-  ablineH <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span>,
-  blankPlotPos <span class="op">=</span> <span class="cn">NULL</span>,
-  fillBackground <span class="op">=</span> <span class="cn">TRUE</span>,
-  useRank <span class="op">=</span> <span class="cn">FALSE</span>,
-  ma_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"jammacalc"</span>, <span class="st">"old"</span><span class="op">)</span>,
-  panel_hook_function <span class="op">=</span> <span class="cn">NULL</span>,
-  doPlot <span class="op">=</span> <span class="cn">TRUE</span>,
-  verbose <span class="op">=</span> <span class="cn">FALSE</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
-
-    <div id="ref-sections">
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
@@ -209,9 +211,13 @@ or proteins (or the assays of genes or proteins) are
 represented in rows, and obtained samples are represented
 in columns. Alternatively <code>x</code> can be <code>SummarizedExperiment</code>
 object, used alongside argument <code>assay_name</code>.</p></dd>
+
+
 <dt>detail_factor</dt>
 <dd><p><code>numeric</code> used to adjust the level
 of detail, as a multiplier for <code>nbin_factor</code> and <code>bw_factor</code>.</p></dd>
+
+
 <dt>nbin_factor</dt>
 <dd><p><code>numeric</code> value used to adjust the number of bins
 used to display the MA-plots, where values higher than <code>1</code> increase
@@ -219,6 +225,8 @@ the resolution and level of detail, and values below <code>1</code> decrease
 the resolution. Note the number of bins are already adjusted based
 upon the square root of the number of plot panels, and <code>nbin_factor</code>
 applied to that value.</p></dd>
+
+
 <dt>bw_factor</dt>
 <dd><p><code>numeric</code> used to adjust the resolution of the
 2-dimensional bandwidth calculation, where higher values create
@@ -229,24 +237,30 @@ in which case <code>bw_factor</code> can be used to expand the bandwidth by
 y-axis, or y-axis, respectively. For example, if the density
 appears short-wide, try <code>bw_factor=c(1.2, 1)</code>, if the density
 appears tall-skinny, try <code>bw_factor=c(1, 1.2)</code>.</p></dd>
+
+
 <dt>assay_name</dt>
 <dd><p><code>character</code> used when <code>x</code> is a
 <code>SummarizedExperiment</code> object, to determine which assay
 <code>matrix</code> to use for the MA plots. When <code>assay_name=NULL</code>
 the first assay entry is used, for example <code>assays(x)[[1]]</code>.</p></dd>
+
+
 <dt>useMedian</dt>
 <dd><p><code>logical</code> indicates whether to center data
 using the <code>median</code> value, where <code>useMedian=FALSE</code> by default.
-For consistency, this argument is preferred to <code>useMean</code> which
-is deprecated and will be removed in future. The median is
-preferred in cases where outliers should not influence the
-centering. The mean is preferred in cases where the data
-should visualize data consistent with downstream parametric
-statistical analysis. When a particular sample
-is a technical outlier, one option is to define
-<code>controlSamples</code> to exclude the outlier sample(s), so
-the data centering will be applied using the non-outlier
+The median is preferred in cases where outliers should not influence
+centering.
+The mean is preferred in cases where the data should visualize
+data in a manner consistent with downstream parametric
+statistical analysis.
+When a particular sample represents a technical outlier,
+one option to visualize data without being skewed by the outlier
+is to define <code>controlSamples</code> to exclude the outlier sample(s).
+In this way, data centering will be applied using the non-outlier
 samples as reference.</p></dd>
+
+
 <dt>controlSamples</dt>
 <dd><p><code>character</code> vector of <code>colnames(x)</code> passed
 to <code><a href="centerGeneData.html">centerGeneData()</a></code> which defines the control samples during
@@ -257,6 +271,8 @@ calculated across all samples, which effectively uses all
 However, it is quite useful sometimes to provide a subset of
 samples especially if there are known quality samples, to which
 new samples of unknown quality are being compared.</p></dd>
+
+
 <dt>centerGroups</dt>
 <dd><p><code>character</code> vector of groups passed to
 <code><a href="centerGeneData.html">jamma::centerGeneData()</a></code> which determines how data is centered.
@@ -269,6 +285,8 @@ Another useful alternative is to center by each sample
 group in order to view the variability among group
 replicates, which should be much lower than variability across
 sample groups. See <code><a href="centerGeneData.html">centerGeneData()</a></code> for more specific examples.</p></dd>
+
+
 <dt>colramp</dt>
 <dd><p>one of several inputs recognized by
 <code><a href="https://rdrr.io/pkg/jamba/man/getColorRamp.html" class="external-link">jamba::getColorRamp()</a></code>. It typically recognizes either the name of
@@ -277,12 +295,16 @@ a color ramp from RColorBrewer, the name of functions from the
 a vector of R colors. When a single color is supplied, a gradient
 is created from white to that color, where the default base color
 can be customized with <code>defaultBaseColor="black"</code> for example.</p></dd>
+
+
 <dt>groupedX</dt>
 <dd><p><code>logical</code> indicating whether the x-axis value, which
 represents the median or mean value, should be calculated independently
 for each group when <code>centerGroups</code> is used with multiple groups.
 Typically <code>groupedX=TRUE</code> is recommended, however it can be beneficial
 to share an overall x-axis value in specific circumstances.</p></dd>
+
+
 <dt>grouped_mad</dt>
 <dd><p><code>logical</code> indicating whether the MAD factor calculation
 of variability among samples should be performed independently
@@ -290,12 +312,16 @@ for each group when <code>centerGroups</code> is used with multiple groups.
 Typically <code>grouped_max=TRUE</code> is recommended, however it can be beneficial
 to share an overall MAD factor threshold across all samples
 in specific circumstances.</p></dd>
+
+
 <dt>outlierMAD</dt>
 <dd><p><code>numeric</code> threshold above which a MA-plot panel
 MAD factor is considered an outlier. When a MA-plot panel is
 considered an outlier, the <code>outlierColramp</code> or <code>outlierColor</code>
 is applied to the panel color ramp to display a visual
 indication.</p></dd>
+
+
 <dt>mad_row_min</dt>
 <dd><p><code>numeric</code> value indicating the minimum x-axis
 value, calculated using either median or mean as defined by
@@ -303,6 +329,8 @@ argument <code>useMedian</code>, at or above which a measurement is used in the
 MAD factor calculation. This threshold is useful to restrict the
 MAD variability calculation to measurements (rows in <code>x</code>) with
 signal that meets a minimum noise threshold.</p></dd>
+
+
 <dt>displayMAD</dt>
 <dd><p><code>logical</code> indicating whether to display each
 MA-plot panel MAD factor (median absolute deviation). A MAD
@@ -327,6 +355,8 @@ gene expression data that include brain and liver samples would
 probably use <code>centerGroups</code> for brain and liver to be centered
 separately, therefore the MAD factors should be separately
 calculated for brain and for liver.</p></dd>
+
+
 <dt>noise_floor, noise_floor_value</dt>
 <dd><p><code>numeric</code> to define a numeric
 floor, or <code>NULL</code> for no numeric floor. Values <strong>at or below</strong>
@@ -353,13 +383,19 @@ log2-transformed for analysis. In this case, to apply a <code>noise_floor</code>
 effective for CT=35, one would use <code>noise_floor=5</code>.</p></li>
 </ul></li>
 </ol></dd>
+
+
 <dt>naValue</dt>
 <dd><p><code>character</code> string used to convert values of <code>NA</code> to
 something else. This argument is useful when a numeric matrix may
 contain <code>NA</code> values but would prefer them to be, for example, <code>0</code>.</p></dd>
+
+
 <dt>centerFunc</dt>
 <dd><p><code>function</code> used to supply a custom data centering
 function. In practice this argument should rarely be changed.</p></dd>
+
+
 <dt>whichSamples</dt>
 <dd><p><code>NULL</code> or <code>integer</code> vector, representing
 an index subset of samples to include in the MA-plots. When
@@ -368,6 +404,8 @@ MA-plot calculations are performed on all samples, then only
 samples in <code>whichSamples</code> are displayed. This argument keeps
 the MA-plot calculations consistent even when viewing only
 one or a subset of samples in more detail.</p></dd>
+
+
 <dt>useRank</dt>
 <dd><p><code>logical</code> indicating whether to create column-wide
 ranks, then create MA-plots using the rank data. When <code>useRank=TRUE</code>
@@ -375,34 +413,48 @@ the y-axis represents the rank difference from mean, and the
 x-axis represents the mean rank. Using <code>useRank=TRUE</code> is a good
 method to evaluate whether data can be normalized, or whether
 data across samples is inherently noisy.</p></dd>
+
+
 <dt>titleBoxColor</dt>
 <dd><p><code>character</code> vector of R colors, where
 <code>titleBoxColor</code> is equal to <code>ncol(x)</code>, or where
 <code>names(titleBoxColor)</code> matches <code>colnames(x)</code>. When supplied, each
 plot panel strip background will be colored accordingly.</p></dd>
+
+
 <dt>outlierColor</dt>
 <dd><p><code>character</code> string representing one R color,
 used when <code>colrampOutlier</code> is <code>NULL</code> and when <code>outlierMAD</code> is
 defined. This color is used for MA-plot outlier panels by
 substituting the first color from the <code>colramp</code> color ramp,
 to act as a visual cue that the panel represents an outlier.</p></dd>
+
+
 <dt>fillBackground</dt>
 <dd><p><code>logical</code> currently used for base R graphics
 output, and passed to <code><a href="https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html" class="external-link">jamba::plotSmoothScatter()</a></code>,
 indicating whether to fill the plot panel using the
 first color in the color ramp for each MA-plot panel, or when
 a plot panel is an outlier, it uses <code>outlierColor</code>.
-This argument is mainly useful to highlight outlier panels,
-although it is also useful when the color ramp has non-white
-base color, for example <code><a href="https://sjmgarnier.github.io/viridisLite/reference/viridis.html" class="external-link">viridis::viridis()</a></code>.</p></dd>
+This argument is useful for all plot panels especially when the
+<code>colramp</code> base color is not white (or otherwise does not match
+the background of the plot device, for example <code>colramp="viridis"</code>).
+This argument is also used with <code>outlierColor</code> to add visual emphasis
+to plot panels where the MAD factor exceeds <code>outlierMAD</code>.</p></dd>
+
+
 <dt>maintitle</dt>
 <dd><p><code>character</code> string with the title displayed above
 all individual MA-plot panels. It will appear in the top outer
 margin.</p></dd>
+
+
 <dt>subtitle</dt>
 <dd><p><code>NULL</code> or <code>character</code> vector to be drawn at
 the bottom left corner of each plot panel, the location
 is defined by <code>subtitlePreset</code>.</p></dd>
+
+
 <dt>transFactor</dt>
 <dd><p><code>numeric</code> adjustment to the visual density of
 smooth scatter points. For base R graphics, this argument is
@@ -412,52 +464,96 @@ default <code>function(x)x^0.25</code>. The <code>transFactor</code> is equivale
 exponential in the form: <code>function(x)x^transFactor</code>. Lower values
 make the point density more visually intense, higher values make the
 point density less visually intense.</p></dd>
+
+
 <dt>doPlot</dt>
 <dd><p><code>logical</code> indicating whether to create plots. When
 <code>doPlot=FALSE</code> only the MA-plot panel data is returned.</p></dd>
+
+
 <dt>highlightPoints</dt>
-<dd><p><code>NULL</code>, or <code>character</code> vector, or a
-<code>list</code> of <code>character</code> vectors indicating <code>rownames(x)</code> to
-highlight in each MA-plot panel. When <code>NULL</code>, no points are
-highlighted; when <code>character</code> vector, points are highlighted in
-all MA-plot panels; when <code>list</code> of <code>character</code> vectors, each
-<code>character</code> vector in the list is highlighted using a unique
-color in <code>highlightColor</code>. Points are drawn using
-<code><a href="https://rdrr.io/r/graphics/points.html" class="external-link">graphics::points()</a></code> and colored using <code>highlightColor</code>,
-which can be time-consuming for a large number of highlight
-points.</p></dd>
+<dd><p>optional set of rows to highlight on each
+MA-plot panel, drawn as a set of points on top of the in one of the following forms:</p><ul><li><p><code>character</code> vector matching <code>rownames(x)</code>, indicating a single
+set of points to highlight in one color defined in <code>highlightColor</code>.
+Internally, it is converted to a <code>list</code> containing one vector.</p></li>
+<li><p><code>list</code> of <code>character</code> vectors, each containing <code>rownames(x)</code>.
+Each vector is highlighted as a set, using colors defined in
+<code>highlightColor</code> which ideally should have length equal to
+<code>length(highlightPoints)</code>.</p></li>
+<li><p><code>NULL</code> no points are highlighted.</p></li>
+</ul></dd>
+
+
 <dt>highlightCex</dt>
-<dd><p><code>numeric</code> value recycled to <code>length(highlightPoints)</code>
-indicating the highlight point size.</p></dd>
+<dd><p><code>numeric</code> vector used when <code>highlightPoints</code>
+is defined. It is recycled to <code>length(highlightPoints)</code> after
+<code>highlightPoints</code> is converted to a <code>list</code> if necessary.
+Values are therefore applied to each set of points in the <code>list</code>.
+It can be supplied as a <code>list</code>, which will be recycled to
+<code>length(highlightPoints)</code> and applied in order to each <code>vector</code>
+of points highlighted.</p></dd>
+
+
 <dt>highlightColor</dt>
 <dd><p><code>character</code> vector used when <code>highlightPoints</code>
-is defined. It is recycled to <code>length(highlightPoints)</code> and
-is applied either to</p></dd>
+is defined. It is recycled to <code>length(highlightPoints)</code> after
+<code>highlightPoints</code> is converted to a <code>list</code> if necessary.
+Colors are therefore applied to each set of points in the <code>list</code>.</p></dd>
+
+
 <dt>doHighlightLegend</dt>
 <dd><p><code>logical</code> indicating whether to print a
 color legend when <code>highlightPoints</code> is defined. The legend is
 displayed in the bottom outer margin of the page using
 <code><a href="outer_legend.html">outer_legend()</a></code>, and the page is adjusted to add bottom
-outer margin.</p></dd>
+outer margin. When the legend is particularly large, it may
+be preferable to hide the color legend and display the legend
+another way, for example <code><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend()</a></code>.</p></dd>
+
+
 <dt>ablineH, ablineV</dt>
 <dd><p><code>numeric</code> vector indicating position of
-horizontal and vertical lines in each MA-plot panel.</p></dd>
+horizontal and vertical lines in each MA-plot panel.
+Either argument can be supplied as a <code>list</code>, which will be applied
+to each plot panel in order, which allows specifying specific
+abline values in individual panels.</p></dd>
+
+
+<dt>xlim</dt>
+<dd><p><code>numeric</code> or <code>NULL</code> to define a fixed numeric range for
+x-axis values. When <code>xlim=NULL</code> the ranges are defined by the
+numeric x-axis values in each <code>centerGroups</code> grouping, so that
+each group can have its own independent x-axis ranges.
+When there is a large proportion of values with x=0 (or near zero),
+there are two options to reduce the point density near zero,
+which can improve visibility of non-zero points:</p><ol><li><p>Use <code>noise_floor=0</code> and <code>noise_floor_value=NA</code>, which replaces
+values at or below zero with <code>NA</code>, thereby hiding these points
+from each plot panel. Note the <code>NA</code> values are also not used during
+data centering calculations.</p></li>
+<li><p>Define <code>xlim=c(0.001, 20)</code> and <code>applyRangeCeiling=FALSE</code>, which
+defines the x-axis minimum slightly above zero, and
+<code>applyRangeCeiling=FALSE</code> does not display points outside the
+x-axis range at the plot limits, thereby hiding those points.
+This method does not replace values with <code>NA</code>, therefore all
+non-NA values are used during data centering.</p></li>
+</ol></dd>
+
+
 <dt>ylim, xlim</dt>
 <dd><p><code>NULL</code> or <code>numeric</code> vector <code>length=2</code> indicating
 the y-axis and x-axis ranges, respectively. The values are useful
 to define consistent dimensions across all panels. The
-default <code>ylim=c(-4,4)</code> represents 16-fold up and down range in
-normal space, and is typically a reasonable starting point for
+default <code>ylim=c(-4, 4)</code> represents 16-fold up and down range in
+normal space, assuming the data content has already been log2
+transformed, and is typically a reasonable starting point for
 most purposes. Even if numeric values are all between
 <code>-1.5</code> and <code>1.5</code>, it is still recommended to keep a range in
-context of <code>c(-4, 4)</code>, to indicate that the observed values
-are lower than typically observed. The <code>c(-4, 4)</code> may be adjusted
-relative to the typical ranges expected for the data.
-It is sometimes helpful to define <code>xlim</code> slightly above zero for
-datasets that have an extremely large proportion of zeros, in order
-to reduce the visual effect of having that much point density at
-zero, for example with <code>xlim=c(0.001, 20)</code> and
-<code>applyRangeCeiling=FALSE</code>.</p></dd>
+context of <code>c(-4, 4)</code>, or an appropriate and consistent range given
+the data content, so the data has some visual context.
+The range <code>c(-4, 4)</code> should be adjusted
+relative to the typical ranges expected for the data.</p></dd>
+
+
 <dt>ncol, nrow</dt>
 <dd><p><code>integer</code> number of MA-plot panel columns and rows
 passed to <code>graphics::par("mfrow")</code> when <code>doPar=TRUE</code>. When only one
@@ -465,26 +561,42 @@ value is supplied, <code>nrow</code> or <code>ncol</code>, the other value is de
 by <code>ncol(x)</code> and <code>blankPlotPos</code> so all panels can be contained on
 one page. When <code>nrow</code> and <code>ncol</code> are defined such that multiple
 pages are produced, each page will be annotated with <code>maintitle</code>
-and <code>doHighlightLegend</code> as relevant.</p></dd>
+and <code>doHighlightLegend</code> if relevant.</p></dd>
+
+
 <dt>blankPlotPos</dt>
 <dd><p><code>NULL</code> or <code>integer</code> vector indicating
 plot panel positions to be drawn blank, and therefore skipped.
-Plot panels are drawn in the exact order of <code>colnames(x)</code> received.
+This argument is intended to allow manual placement of plot panels
+with spacing that reinforces a logical layout.
+Plot panels are drawn in the exact order of <code>colnames(x)</code> received,
+with panels placed into a number of columns and rows defined
+with <code>ncol</code>, <code>nrow</code> or <code><a href="https://rdrr.io/pkg/jamba/man/decideMfrow.html" class="external-link">jamba::decideMfrow()</a></code> when <code>doPar=TRUE</code>.
 Blank panel positions are intended to help customize the visual
 alignment of MA-plot panels. The mechanism is similar to
 <code><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">ggplot2::facet_wrap()</a></code> except that blank positions can be manually
-defined by what makes sense for the experiment design.</p></dd>
+defined by what makes sense for the experiment design.
+This method is not particularly user-friendly, but allows fine
+control over plot panel spacing.</p></dd>
+
+
 <dt>verbose</dt>
 <dd><p>logical indicating whether to print verbose output.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>additional parameters sent to downstream functions,
-<code><a href="https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html" class="external-link">jamba::plotSmoothScatter</a></code>, <code><a href="centerGeneData.html">centerGeneData</a></code>.</p></dd>
+<code><a href="https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html" class="external-link">jamba::plotSmoothScatter()</a></code>, <code><a href="jammacalc.html">jammacalc()</a></code>, <code><a href="centerGeneData.html">centerGeneData()</a></code>.</p></dd>
+
+
 <dt>useMean</dt>
-<dd><p><code>logical</code> (deprecated), use <code>useMean</code>. This argument
+<dd><p>(deprecated) <code>logical</code>, use <code>useMedian</code>. This argument
 indicates whether to center data using the <code>mean</code> value.
 When <code>useMean=NULL</code> the argument <code>useMedian</code> is preferred.
 For backward compatibility, when <code>useMean</code> is not <code>NULL</code>,
 then <code>useMedian</code> is defined by <code>useMedian &lt;- !useMean</code>.</p></dd>
+
+
 <dt>outlierRowMin</dt>
 <dd><p><code>numeric</code> value indicating the minimum mean
 value as displayed on the MA-plot panel x-axis, in order for
@@ -493,30 +605,44 @@ intended to prevent measurements whose mean value is below
 a noise threshold from being included, therefore only including
 points whose mean measurement is above noise and represents
 "typical" variability.</p></dd>
+
+
 <dt>groupedMAD</dt>
 <dd><p><code>logical</code> indicating how the MAD calculation
-should be performed: <code>groupedMAD=TRUE</code> will calculate the
-median MAD and corresponsing MAD factor within each
-<code>centerGroups</code> grouping; <code>groupedMAD=FALSE</code> will calculate
-one overall median MAD, and corresponding MAD factor values
-will be performed across all samples.</p></dd>
+should be performed: <code>groupedMAD=TRUE</code> (default) calculates the
+median absolute deviation (MAD) from y=0 for each sample per <code>centerGroups</code>
+value, then the median MAD value for all samples in each group.
+The corresponding MAD factor is defined within each group.
+When <code>groupedMAD=FALSE</code>, the median MAD value is calculated
+across all samples, regardless of <code>centerGroups</code> value,
+from which the MAD factor is defined.</p></dd>
+
+
 <dt>colrampOutlier</dt>
 <dd><p>one of several inputs recognized by
 <code><a href="https://rdrr.io/pkg/jamba/man/getColorRamp.html" class="external-link">jamba::getColorRamp()</a></code> to define a specific color ramp for
 MA-plot outlier panels, used when <code>outlierMAD</code> is defined.
 When <code>colrampOutlier</code> is <code>NULL</code> the <code>outlierColor</code> is used.</p></dd>
+
+
 <dt>maintitleCex</dt>
 <dd><p><code>numeric</code> cex character expansion used to
 resize the <code>maintitle</code>.</p></dd>
+
+
 <dt>subtitlePreset</dt>
 <dd><p><code>character</code> string passed to <code><a href="https://rdrr.io/pkg/jamba/man/coordPresets.html" class="external-link">jamba::coordPresets()</a></code>.
 The default <code>subtitlePreset="bottomleft"</code> defines the bottom-left
 corner of each panel.</p></dd>
+
+
 <dt>subtitleAdjPreset</dt>
 <dd><p><code>character</code> string passed to <code><a href="https://rdrr.io/pkg/jamba/man/coordPresets.html" class="external-link">jamba::coordPresets()</a></code>.
 The default <code>subtitleAdjPreset="topright"</code> places labels to the
 top-right of the subtitle position, which by default is the bottom-left
 corner of each panel.</p></dd>
+
+
 <dt>doTitleBox</dt>
 <dd><p><code>logical</code> indicating whether to draw plot
 titles using a colored box. When <code>doTitleBox=TRUE</code> the
@@ -524,45 +650,69 @@ titles using a colored box. When <code>doTitleBox=TRUE</code> the
 the top of each plot panel, with <code>drawBox=TRUE</code>. When
 <code>doTitleBox=FALSE</code>, <code><a href="https://rdrr.io/pkg/jamba/man/drawLabels.html" class="external-link">jamba::drawLabels()</a></code> is called with
 <code>drawBox=FALSE</code>.</p></dd>
+
+
 <dt>titleColor</dt>
 <dd><p><code>character</code> vector of colors applied to title text
 in each MA-plot panel. When <code>doTitleBox=TRUE</code> and <code>titleColor</code>
 contains only one or no value, the title color is defined by
 <code><a href="https://rdrr.io/pkg/jamba/man/setTextContrastColor.html" class="external-link">jamba::setTextContrastColor()</a></code> along with <code>titleBoxColor</code>.</p></dd>
+
+
 <dt>titleFont</dt>
 <dd><p><code>integer</code> font compatible with <code>par("font")</code>.
 Values are recycled across panels, so each panel can use a custom
 value if needed.</p></dd>
+
+
 <dt>titlePreset</dt>
 <dd><p><code>character</code> string passed to <code><a href="https://rdrr.io/pkg/jamba/man/coordPresets.html" class="external-link">jamba::coordPresets()</a></code>.
-The default <code>titlePreset="top"</code> defines the top edge of each panel.</p></dd>
+The default <code>titlePreset="top"</code> defines the top edge of each panel,
+and default <code>titleAdjPreset="top"</code> places the title at the top
+edge of this position.</p></dd>
+
+
 <dt>titleAdjPreset</dt>
 <dd><p><code>character</code> string passed to <code><a href="https://rdrr.io/pkg/jamba/man/coordPresets.html" class="external-link">jamba::coordPresets()</a></code>.
 The default <code>titleAdjPreset="top"</code> places labels above the <code>titlePreset</code>
-location, by default above the top edge of each panel.</p></dd>
+location, by default above the top edge of each panel.
+To place the title inside (below) the top edge of the plot panel,
+use <code>titlePreset="top", titleAdjPreset="bottom"</code>, however the
+title box may overlap and hide data points in the plot panel.</p></dd>
+
+
 <dt>xlab, ylab</dt>
 <dd><p><code>character</code> x- and y-axis labels, respectively.
 The default values are blank <code>""</code> because there are a wide variety
 of possible labels, and the labels take up more space
 than is often useful for most MA-plots.</p></dd>
+
+
 <dt>xlabline, ylabline</dt>
 <dd><p><code>numeric</code> number indicating the text line
 distance from the edge of plot border to place <code>xlab</code> and <code>ylab</code>
 text, as used by <code><a href="https://rdrr.io/r/graphics/title.html" class="external-link">graphics::title()</a></code>.</p></dd>
+
+
 <dt>groupSuffix</dt>
-<dd><p><code>character</code> text appended to each MA-plot
-panel title. This argument is deprecated in favor of
-using <code>subtitle</code> to place additional text at the bottom left
-corner of each MA-plot panel.</p></dd>
+<dd><p>(deprecated) <code>character</code> text appended to each MA-plot
+panel title. Use argment <code>subtitle</code> as the preferred alternative.</p></dd>
+
+
 <dt>doHighlightPolygon</dt>
 <dd><p><code>logical</code> indicating whether to draw
-a shaded polygon encompassing <code>highlightPoints</code>, using
+a shaded polygon encompassing <code>highlightPoints</code>, using each
 <code>highlightColor</code>.The polygon is defined by <code><a href="https://rdrr.io/r/grDevices/chull.html" class="external-link">grDevices::chull()</a></code>
 via the function <code><a href="points2polygonHull.html">points2polygonHull()</a></code>.</p></dd>
+
+
 <dt>highlightPolygonAlpha</dt>
 <dd><p><code>numeric</code> value indicating alpha
-transparency, where <code>0</code> is fully transparent, and <code>1</code> is completely
-not transparent.</p></dd>
+transparency used for the highlight polygon when
+<code>doHighlightPolygon=TRUE</code>, where <code>0</code> is fully transparent,
+and <code>1</code> is completely not transparent (opaque).</p></dd>
+
+
 <dt>smoothPtCol</dt>
 <dd><p><code>color</code> used to draw points when <code>nrpoints</code> is
 non-zero, which draws points in the extremities of the
@@ -570,67 +720,99 @@ smooth scatter plot. See <code><a href="https://rdrr.io/pkg/jamba/man/plotSmooth
 The effect can also be achieved by adjusting <code>transFactor</code> to
 a lower value, which increases the visual contrast of individual
 points in the point density.</p></dd>
+
+
 <dt>margins</dt>
 <dd><p><code>numeric</code> vector of margins compatible with
-<code>graphics::par("mar")</code>. Default values
-are applied, but provided here for convenience.</p></dd>
+<code>graphics::par("mar")</code>.
+Default values are provided here for convenience.
+Since version <code>0.0.31.900</code> the <code>outer_margins</code> are used to control
+y-axis label whitespace, and and y-axis labels are not displayed
+on every plot panel when <code>doPar=TRUE</code>.</p></dd>
+
+
+<dt>outer_margins</dt>
+<dd><p><code>numeric</code> vector of margins compatible with
+<code>graphics::par("oma")</code>.
+Default values are provided here for convenience.
+The left outer marging is used to allow whitespace to display
+y-axis labels.
+Note when <code>useRank=TRUE</code> the y-axis whitespace is increased
+to accomodate larger integer label values.</p></dd>
+
+
 <dt>useRaster</dt>
 <dd><p><code>logical</code> indicating whether to draw the
 smooth scatter plot using raster logic, <code>useRaster=TRUE</code> is
 passed to <code><a href="https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html" class="external-link">jamba::plotSmoothScatter()</a></code>. The default <code>TRUE</code>
 creates a much smaller plot object by rendering each plot
 panel as a single raster image instead of rendering individual
-colored rectangles.</p></dd>
+colored rectangles. There is no driving reason to use <code>useRaster=FALSE</code>
+except if the rasterization process itself is problematic.</p></dd>
+
+
 <dt>doPar</dt>
 <dd><p><code>logical</code> indicating whether to apply
 <code>graphics::par("mfrow")</code> to define MA-plot panel rows and columns.
-When <code>doPar=FALSE</code> each plot panel is
-rendered without adjusting the <code>graphics::par("mfrow")</code> setting.</p></dd>
+When <code>doPar=FALSE</code> each plot panel is rendered without
+adjusting the <code>graphics::par("mfrow")</code> setting, which is appropriate
+for displaying each plot panel individually.</p></dd>
+
+
 <dt>las</dt>
 <dd><p><code>integer</code> value <code>1</code> or <code>2</code> indicating whether axis labels
 should be parallel or perpendicular to the axes, respectively.</p></dd>
+
+
 <dt>customFunc</dt>
-<dd><p><code>NULL</code> or <code>function</code> used instead of <code>mean</code> or
-<code>median</code> during the data centering step to generate a row summary
-statistic. It should take <code>matrix</code> input, and return a <code>numeric</code> vector
-output summarizing each row in <code>x</code>, to be subtracted from each
-<code>numeric</code> value by row in <code>x</code>. It is intended to
-provide custom row statistics, for example geometric mean, or other
-row summary function.</p></dd>
+<dd><p>optional <code>function</code> used instead of the summary
+function defined by <code>useMedian</code> during the data centering step.
+This function should take a <code>matrix</code> of <code>numeric</code> values as input,
+and must return a <code>numeric</code> vector length equal to <code>nrow(x)</code>.
+This option is intended to allow custom row statistics,
+for example geometric mean, or other row summary functions.</p></dd>
+
+
 <dt>filterNA, filterNAreplacement</dt>
 <dd><p><code>logical</code> and <code>vector</code> respectively.
 When <code>filterNA=TRUE</code>, all <code>NA</code> values are replaced with
-<code>filterNAreplacement</code>, which can be helpful to handle <code>NA</code> values
-as zero <code>0</code> for example. In reality, <code>NA</code> values should probably
-be left as-is, so subsequent data centering does not use these values,
+<code>filterNAreplacement</code>.
+This process is conceptually opposite of <code>noise_floor</code> which replaces
+a <code>numeric</code> value with <code>NA</code> or another <code>numeric</code> value.
+Instead, <code>filterNA</code> is intended to convert <code>NA</code> values into
+a known <code>numeric</code> value, typically using an appropriate noise floor
+value such as zero <code>0</code>.
+Practically speaking, <code>NA</code> values should probably
+be left as <code>NA</code> values, so that data centering does not use these values,
 and so the MA-plot panel does not draw a point when no measurement
 exists.</p></dd>
+
+
 <dt>filterNeg</dt>
-<dd><p><code>logical</code> deprecated argument, use <code>filterFloor</code>
-instead. The <code>filterNeg</code> indicates whether to change all negative
-values to zero <code>0</code> before proceeding with data centering.
-Negative values are often the result of measurements
-being below a noise threshold in upstream data processing,
-and therefore the magnitude of negative value is usually
-either not informative, or not on similar scale as positive
-values.
-When <code>filterNeg=TRUE</code>, negative values are set to zero, and
-can result in a characteristic 45 degree angle line originating at
-<code>x=0</code> extending to the right.</p></dd>
+<dd><p>(deprecated) <code>logical</code> argument, use <code>noise_floor</code>.</p></dd>
+
+
 <dt>filterFloor, filterFloorReplacement</dt>
 <dd><p>(deprecated) in favor of
 <code>noise_floor</code>, and <code>noise_floor_replacement</code> respectively.</p></dd>
+
+
 <dt>nrpoints</dt>
 <dd><p><code>integer</code> or <code>NULL</code> indicating the number of points
 to display on the extremity of the smooth scatter density,
 passed to <code><a href="https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html" class="external-link">jamba::plotSmoothScatter()</a></code>.</p></dd>
+
+
 <dt>smoothScatterFunc</dt>
 <dd><p><code>function</code> used to produce a smooth scatter plot
 in base R graphics. The default <code><a href="https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html" class="external-link">jamba::plotSmoothScatter()</a></code> controls
 the level of detail in the density calculation, and in the graphical
 resolution of that density in each plot panel. The custom function
 should accept argument <code>transformation</code> as described in <code>transFactor</code>,
-even if the argument is not used.</p></dd>
+even if the argument is not used. This argument could be useful to
+specify customizations not convenient to apply otherwise.</p></dd>
+
+
 <dt>applyRangeCeiling</dt>
 <dd><p><code>logical</code> passed to
 <code><a href="https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html" class="external-link">jamba::plotSmoothScatter()</a></code> which determines how to handle points
@@ -643,42 +825,57 @@ number of points are at zero and overwhelm the point density.
 When there are a large proportion of values at zero, it
 can be helpful to apply <code>xlim=c(0.01, 20)</code> and
 <code>applyRangeCeiling=FALSE</code>.</p></dd>
+
+
 <dt>doTxtplot</dt>
 <dd><p><code>logical</code> (not yet implemented in <code>jamma</code>),
 indicating to produce colored ANSI text plot output, for example
 to a text terminal.</p></dd>
+
+
 <dt>ma_method</dt>
-<dd><p>character string indicating whether to perform
-MA-plot calculations using the old method <code>"old"</code>; or <code>"jammacalc"</code>
-which uses the function <code><a href="jammacalc.html">jammacalc()</a></code>.</p></dd>
+<dd><p>(deprecated) <code>character</code> string indicating the
+internal method used for MA-plot calculations:</p><ul><li><p><code>"old"</code> to use the previous (older) calculation method, which
+is deprecated and will be removed in future.</p></li>
+<li><p><code>"jammacalc"</code> which uses the independent function <code><a href="jammacalc.html">jammacalc()</a></code>.</p></li>
+</ul></dd>
+
+
 <dt>panel_hook_function</dt>
-<dd><p><code>function</code> or <code>NULL</code>, with custom function
-to be called as a "hook" after each MA-plot panel has been drawn.
-This <code>panel_hook_function</code> is recycled to the number of samples,
-defined internally as <code>nsamples</code>, although the same function can
-be called on all panels. If <code>panel_hook_function</code> is supplied as
-a <code>list</code>, it is recycled to the number of samples <code>nsamples</code>,
-and any element in the list which has <code>length==0</code> or is <code>NA</code> will
-not be called as a function.
-This function should accept at least two arguments:</p><ul><li><p><code>i</code> - an <code>integer</code> indicating the sample to be plotted in order,
+<dd><p>optional custom <code>function</code> called
+as a "hook" after each MA-plot panel has been drawn. This function
+can be used to display custom axis labels, add plot panel visual
+accents, lines, labels, etc.
+This <code>panel_hook_function</code> is recycled as a <code>list</code> to the
+number of samples <code>ncol(x)</code>, which can be used to supply a unique
+function for each panel. Any element in the <code>list</code> with <code>length=0</code>
+or <code>NA</code> is skipped for the corresponding MA-plot panel.
+This function should accept at least two arguments, even if ignored:</p><ul><li><p><code>i</code> - an <code>integer</code> indicating the sample to be plotted in order,
 as defined by <code>colnames(x)</code>, and <code>whichSamples</code> in the event samples
 are subsetted or re-ordered with <code>whichSamples</code>.</p></li>
-<li><p><code>...</code> additional arguments passed by <code>...</code> in this function.</p></li>
+<li><p><code>...</code> additional arguments passed by <code>...</code> into this custom function.</p></li>
 <li><p>Any arguments of <code>jammaplot()</code> are available inside the panel
 hook function as a by-product of calling this function within
 the environment of the active <code>jammaplot()</code>, therefore any
 argument values will be available for use inside that function.</p></li>
 </ul></dd>
+
+
 <dt>titleBoxColor, subtitleBoxColor</dt>
 <dd><p><code>character</code> vector of
 R colors used as background color for each panel title text,
 or subtitle text respectively. The subtitle appears in the
 bottom-left corner, and usually indicates the center groups
 as defined by <code>centerGroups</code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p><code>list</code> of <code>numeric</code><code>matrix</code> objects, one for each MA-plot,
+    
+
+<p><code>list</code> of <code>numeric</code></p>
+<p></p>
+<p><code>matrix</code> objects, one for each MA-plot,
 with colnames <code>"x"</code> and <code>"y"</code>. This <code>list</code> is sufficient input
 to <code>jammaplot()</code> to re-create the full set of MA-plots.</p>
     </div>
@@ -839,140 +1036,135 @@ used. For example indicate <code>'sampleID vs groupA'</code> instead of
     <div id="functions">
     <h2>Functions</h2>
     
-<ul><li><p><code>ggjammaplot</code>:</p></li>
+<ul><li><p><code>ggjammaplot()</code>:</p></li>
 </ul></div>
     <div id="see-also">
     <h2>See also</h2>
-    <div class="dont-index"><p><code><a href="https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html" class="external-link">jamba::plotSmoothScatter()</a></code> for enhanced
-<code><a href="https://rdrr.io/r/graphics/smoothScatter.html" class="external-link">graphics::smoothScatter()</a></code>, <code><a href="centerGeneData.html">centerGeneData()</a></code>,
-<code><a href="https://rdrr.io/pkg/jamba/man/imageDefault.html" class="external-link">jamba::imageDefault()</a></code>, <code><a href="https://rdrr.io/pkg/jamba/man/nullPlot.html" class="external-link">jamba::nullPlot()</a></code></p></div>
-    </div>
+    <div class="dont-index"><p><code><a href="https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html" class="external-link">jamba::plotSmoothScatter()</a></code></p>
+<p>Other jam plot functions: 
+<code><a href="volcano_plot.html">volcano_plot</a>()</code></p>
+<p>Other jam plot functions: 
+<code><a href="volcano_plot.html">volcano_plot</a>()</code></p></div>
     </div>
 
-    <div id="examples">
+    <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="ref-examples sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="fu">jamba</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/jamba/man/check_pkg_installed.html" class="external-link">check_pkg_installed</a></span><span class="op">(</span><span class="st">"SummarizedExperiment"</span><span class="op">)</span> <span class="op">&amp;&amp;</span></span>
-<span class="r-in">   <span class="fu">jamba</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/jamba/man/check_pkg_installed.html" class="external-link">check_pkg_installed</a></span><span class="op">(</span><span class="st">"farrisdata"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">   <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va">SummarizedExperiment</span><span class="op">)</span><span class="op">)</span>;</span>
-<span class="r-in"></span>
-<span class="r-in">   <span class="va">GeneSE</span> <span class="op">&lt;-</span> <span class="fu">farrisdata</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/farrisdata/man/farrisGeneSE.html" class="external-link">farrisGeneSE</a></span>;</span>
-<span class="r-in"></span>
-<span class="r-in">   <span class="va">titleBoxColor</span> <span class="op">&lt;-</span> <span class="fu">jamba</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/jamba/man/nameVector.html" class="external-link">nameVector</a></span><span class="op">(</span></span>
-<span class="r-in">      <span class="fu">farrisdata</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/farrisdata/man/colorSub.html" class="external-link">colorSub</a></span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">GeneSE</span><span class="op">)</span><span class="op">$</span><span class="va">groupName</span><span class="op">)</span><span class="op">]</span>,</span>
-<span class="r-in">      <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">GeneSE</span><span class="op">)</span><span class="op">)</span>;</span>
-<span class="r-in">   <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="st">"warn"</span><span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span>;</span>
-<span class="r-in"></span>
-<span class="r-in">   <span class="va">gg</span> <span class="op">&lt;-</span> <span class="fu">ggjammaplot</span><span class="op">(</span><span class="va">GeneSE</span>,</span>
-<span class="r-in">      ncol<span class="op">=</span><span class="fl">6</span>,</span>
-<span class="r-in">      base_size<span class="op">=</span><span class="fl">12</span>,</span>
-<span class="r-in">      assay_name<span class="op">=</span><span class="st">"raw_counts"</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">   <span class="va">gg</span> <span class="op">&lt;-</span> <span class="fu">ggjammaplot</span><span class="op">(</span><span class="va">GeneSE</span>,</span>
-<span class="r-in">      ncol<span class="op">=</span><span class="fl">6</span>,</span>
-<span class="r-in">      assay_name<span class="op">=</span><span class="st">"counts"</span>,</span>
-<span class="r-in">      useRank<span class="op">=</span><span class="cn">TRUE</span>,</span>
-<span class="r-in">      ylim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">11000</span>, <span class="fl">11000</span><span class="op">)</span>,</span>
-<span class="r-in">      maintitle<span class="op">=</span><span class="st">"MA-plots by rank and rank difference"</span>,</span>
-<span class="r-in">      titleBoxColor<span class="op">=</span><span class="va">titleBoxColor</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">   <span class="va">gg</span> <span class="op">&lt;-</span> <span class="fu">ggjammaplot</span><span class="op">(</span><span class="va">GeneSE</span>,</span>
-<span class="r-in">      ncol<span class="op">=</span><span class="fl">6</span>,</span>
-<span class="r-in">      assay_name<span class="op">=</span><span class="st">"counts"</span>,</span>
-<span class="r-in">      titleBoxColor<span class="op">=</span><span class="va">titleBoxColor</span>,</span>
-<span class="r-in">      base_size<span class="op">=</span><span class="fl">10</span>,</span>
-<span class="r-in">      maintitle<span class="op">=</span><span class="st">"MA-plots showing MAD factor"</span>,</span>
-<span class="r-in">      displayMAD<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">   <span class="va">gg</span> <span class="op">&lt;-</span> <span class="fu">ggjammaplot</span><span class="op">(</span><span class="va">GeneSE</span>,</span>
-<span class="r-in">      ncol<span class="op">=</span><span class="fl">6</span>,</span>
-<span class="r-in">      assay_name<span class="op">=</span><span class="st">"counts"</span>,</span>
-<span class="r-in">      titleBoxColor<span class="op">=</span><span class="va">titleBoxColor</span>,</span>
-<span class="r-in">      maintitle<span class="op">=</span><span class="st">"MA-plot omitting one panel, then using blankPlotPos"</span>,</span>
-<span class="r-in">      whichSamples<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">GeneSE</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">21</span>, <span class="fl">23</span><span class="op">:</span><span class="fl">24</span><span class="op">)</span><span class="op">]</span>,</span>
-<span class="r-in">      blankPlotPos<span class="op">=</span><span class="fl">22</span>,</span>
-<span class="r-in">      displayMAD<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">   <span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">   <span class="va">ggdf</span> <span class="op">&lt;-</span> <span class="fu">ggjammaplot</span><span class="op">(</span><span class="va">GeneSE</span>,</span>
-<span class="r-in">      assay_name<span class="op">=</span><span class="st">"counts"</span>,</span>
-<span class="r-in">      whichSamples<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="fl">7</span><span class="op">:</span><span class="fl">9</span><span class="op">)</span>,</span>
-<span class="r-in">      return_type<span class="op">=</span><span class="st">"data"</span>,</span>
-<span class="r-in">      titleBoxColor<span class="op">=</span><span class="va">titleBoxColor</span><span class="op">)</span></span>
-<span class="r-in">   <span class="va">highlightPoints1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu">jamba</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/jamba/man/tcount.html" class="external-link">tcount</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">ggdf</span>, <span class="va">mean</span> <span class="op">&gt;</span> <span class="fl">15</span> <span class="op">&amp;</span> <span class="va">difference</span> <span class="op">&lt;</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">$</span><span class="va">item</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">   <span class="va">highlightPoints2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">ggdf</span>, <span class="va">name</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="st">"CA1CB492"</span> <span class="op">&amp;</span></span>
-<span class="r-in">      <span class="va">difference</span> <span class="op">&lt;</span> <span class="op">-</span><span class="fl">4.5</span><span class="op">)</span><span class="op">$</span><span class="va">item</span>;</span>
-<span class="r-in">   <span class="va">highlightPoints</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span class="r-in">      divergent<span class="op">=</span><span class="va">highlightPoints1</span>,</span>
-<span class="r-in">      low_CA1CB492<span class="op">=</span><span class="va">highlightPoints2</span><span class="op">)</span>;</span>
-<span class="r-in"></span>
-<span class="r-in">   <span class="va">ggdf_h</span> <span class="op">&lt;-</span> <span class="fu">ggjammaplot</span><span class="op">(</span><span class="va">GeneSE</span>,</span>
-<span class="r-in">      assay_name<span class="op">=</span><span class="st">"counts"</span>,</span>
-<span class="r-in">      highlightPoints<span class="op">=</span><span class="va">highlightPoints</span>,</span>
-<span class="r-in">      whichSamples<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="fl">7</span><span class="op">:</span><span class="fl">9</span><span class="op">)</span>,</span>
-<span class="r-in">      return_type<span class="op">=</span><span class="st">"data"</span>,</span>
-<span class="r-in">      titleBoxColor<span class="op">=</span><span class="va">titleBoxColor</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">   <span class="co"># you can use output from `jammaplot()` as input to `ggjammaplot()`:</span></span>
-<span class="r-in">   <span class="va">jp2</span> <span class="op">&lt;-</span> <span class="fu">jammaplot</span><span class="op">(</span><span class="va">GeneSE</span>,</span>
-<span class="r-in">      outlierMAD<span class="op">=</span><span class="fl">2</span>,</span>
-<span class="r-in">      doPlot<span class="op">=</span><span class="cn">FALSE</span>,</span>
-<span class="r-in">      assay_name<span class="op">=</span><span class="st">"raw_counts"</span>,</span>
-<span class="r-in">      filterFloor<span class="op">=</span><span class="fl">1e-10</span>,</span>
-<span class="r-in">      filterFloorReplacement<span class="op">=</span><span class="cn">NA</span>,</span>
-<span class="r-in">      centerGroups<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">GeneSE</span><span class="op">)</span><span class="op">$</span><span class="va">Compartment</span>,</span>
-<span class="r-in">      subtitleBoxColor<span class="op">=</span><span class="fu">farrisdata</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/farrisdata/man/colorSub.html" class="external-link">colorSub</a></span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">GeneSE</span><span class="op">)</span><span class="op">$</span><span class="va">Compartment</span><span class="op">)</span><span class="op">]</span>,</span>
-<span class="r-in">      useRank<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span>;</span>
-<span class="r-in"></span>
-<span class="r-in">   <span class="va">gg1</span> <span class="op">&lt;-</span> <span class="fu">ggjammaplot</span><span class="op">(</span><span class="va">jp2</span>,</span>
-<span class="r-in">      ncol<span class="op">=</span><span class="fl">6</span>,</span>
-<span class="r-in">      titleBoxColor<span class="op">=</span><span class="va">titleBoxColor</span><span class="op">)</span>;</span>
-<span class="r-in">   <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">gg1</span><span class="op">)</span>;</span>
-<span class="r-in">   <span class="op">}</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>package ‘SummarizedExperiment’ was built under R version 3.6.2</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>package ‘S4Vectors’ was built under R version 3.6.3</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>package ‘IRanges’ was built under R version 3.6.2</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>package ‘GenomeInfoDb’ was built under R version 3.6.3</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>package ‘DelayedArray’ was built under R version 3.6.3</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>package ‘BiocParallel’ was built under R version 3.6.2</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 534 rows containing non-finite values (stat_density2d).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 15648 rows containing missing values (geom_raster).</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu">jamba</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/jamba/man/check_pkg_installed.html" class="external-link">check_pkg_installed</a></span><span class="op">(</span><span class="st">"SummarizedExperiment"</span><span class="op">)</span> <span class="op">&amp;&amp;</span></span></span>
+<span class="r-in"><span>   <span class="fu">jamba</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/jamba/man/check_pkg_installed.html" class="external-link">check_pkg_installed</a></span><span class="op">(</span><span class="st">"farrisdata"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>   <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://bioconductor.org/packages/SummarizedExperiment" class="external-link">SummarizedExperiment</a></span><span class="op">)</span><span class="op">)</span>;</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>   <span class="va">GeneSE</span> <span class="op">&lt;-</span> <span class="fu">farrisdata</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/farrisdata/man/farrisGeneSE.html" class="external-link">farrisGeneSE</a></span>;</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>   <span class="va">titleBoxColor</span> <span class="op">&lt;-</span> <span class="fu">jamba</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/jamba/man/nameVector.html" class="external-link">nameVector</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>      <span class="fu">farrisdata</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/farrisdata/man/colorSub.html" class="external-link">colorSub</a></span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">GeneSE</span><span class="op">)</span><span class="op">$</span><span class="va">groupName</span><span class="op">)</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>      <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">GeneSE</span><span class="op">)</span><span class="op">)</span>;</span></span>
+<span class="r-in"><span>   <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="st">"warn"</span><span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span>;</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>   <span class="va">gg</span> <span class="op">&lt;-</span> <span class="fu">ggjammaplot</span><span class="op">(</span><span class="va">GeneSE</span>,</span></span>
+<span class="r-in"><span>      ncol<span class="op">=</span><span class="fl">6</span>,</span></span>
+<span class="r-in"><span>      base_size<span class="op">=</span><span class="fl">12</span>,</span></span>
+<span class="r-in"><span>      assay_name<span class="op">=</span><span class="st">"raw_counts"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>   <span class="va">gg</span> <span class="op">&lt;-</span> <span class="fu">ggjammaplot</span><span class="op">(</span><span class="va">GeneSE</span>,</span></span>
+<span class="r-in"><span>      ncol<span class="op">=</span><span class="fl">6</span>,</span></span>
+<span class="r-in"><span>      assay_name<span class="op">=</span><span class="st">"counts"</span>,</span></span>
+<span class="r-in"><span>      useRank<span class="op">=</span><span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>      ylim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">11000</span>, <span class="fl">11000</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>      maintitle<span class="op">=</span><span class="st">"MA-plots by rank and rank difference"</span>,</span></span>
+<span class="r-in"><span>      titleBoxColor<span class="op">=</span><span class="va">titleBoxColor</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>   <span class="va">gg</span> <span class="op">&lt;-</span> <span class="fu">ggjammaplot</span><span class="op">(</span><span class="va">GeneSE</span>,</span></span>
+<span class="r-in"><span>      ncol<span class="op">=</span><span class="fl">6</span>,</span></span>
+<span class="r-in"><span>      assay_name<span class="op">=</span><span class="st">"counts"</span>,</span></span>
+<span class="r-in"><span>      titleBoxColor<span class="op">=</span><span class="va">titleBoxColor</span>,</span></span>
+<span class="r-in"><span>      base_size<span class="op">=</span><span class="fl">10</span>,</span></span>
+<span class="r-in"><span>      maintitle<span class="op">=</span><span class="st">"MA-plots showing MAD factor"</span>,</span></span>
+<span class="r-in"><span>      displayMAD<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>   <span class="va">gg</span> <span class="op">&lt;-</span> <span class="fu">ggjammaplot</span><span class="op">(</span><span class="va">GeneSE</span>,</span></span>
+<span class="r-in"><span>      ncol<span class="op">=</span><span class="fl">6</span>,</span></span>
+<span class="r-in"><span>      assay_name<span class="op">=</span><span class="st">"counts"</span>,</span></span>
+<span class="r-in"><span>      titleBoxColor<span class="op">=</span><span class="va">titleBoxColor</span>,</span></span>
+<span class="r-in"><span>      maintitle<span class="op">=</span><span class="st">"MA-plot omitting one panel, then using blankPlotPos"</span>,</span></span>
+<span class="r-in"><span>      whichSamples<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">GeneSE</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">21</span>, <span class="fl">23</span><span class="op">:</span><span class="fl">24</span><span class="op">)</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>      blankPlotPos<span class="op">=</span><span class="fl">22</span>,</span></span>
+<span class="r-in"><span>      displayMAD<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>   <span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>   <span class="va">ggdf</span> <span class="op">&lt;-</span> <span class="fu">ggjammaplot</span><span class="op">(</span><span class="va">GeneSE</span>,</span></span>
+<span class="r-in"><span>      assay_name<span class="op">=</span><span class="st">"counts"</span>,</span></span>
+<span class="r-in"><span>      whichSamples<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="fl">7</span><span class="op">:</span><span class="fl">9</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>      return_type<span class="op">=</span><span class="st">"data"</span>,</span></span>
+<span class="r-in"><span>      titleBoxColor<span class="op">=</span><span class="va">titleBoxColor</span><span class="op">)</span></span></span>
+<span class="r-in"><span>   <span class="va">highlightPoints1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu">jamba</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/jamba/man/tcount.html" class="external-link">tcount</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">ggdf</span>, <span class="va">mean</span> <span class="op">&gt;</span> <span class="fl">15</span> <span class="op">&amp;</span> <span class="va">difference</span> <span class="op">&lt;</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">$</span><span class="va">item</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>   <span class="va">highlightPoints2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">ggdf</span>, <span class="va">name</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="st">"CA1CB492"</span> <span class="op">&amp;</span></span></span>
+<span class="r-in"><span>      <span class="va">difference</span> <span class="op">&lt;</span> <span class="op">-</span><span class="fl">4.5</span><span class="op">)</span><span class="op">$</span><span class="va">item</span>;</span></span>
+<span class="r-in"><span>   <span class="va">highlightPoints</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>      divergent<span class="op">=</span><span class="va">highlightPoints1</span>,</span></span>
+<span class="r-in"><span>      low_CA1CB492<span class="op">=</span><span class="va">highlightPoints2</span><span class="op">)</span>;</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>   <span class="va">ggdf_h</span> <span class="op">&lt;-</span> <span class="fu">ggjammaplot</span><span class="op">(</span><span class="va">GeneSE</span>,</span></span>
+<span class="r-in"><span>      assay_name<span class="op">=</span><span class="st">"counts"</span>,</span></span>
+<span class="r-in"><span>      highlightPoints<span class="op">=</span><span class="va">highlightPoints</span>,</span></span>
+<span class="r-in"><span>      whichSamples<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="fl">7</span><span class="op">:</span><span class="fl">9</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>      return_type<span class="op">=</span><span class="st">"data"</span>,</span></span>
+<span class="r-in"><span>      titleBoxColor<span class="op">=</span><span class="va">titleBoxColor</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>   <span class="co"># you can use output from `jammaplot()` as input to `ggjammaplot()`:</span></span></span>
+<span class="r-in"><span>   <span class="va">jp2</span> <span class="op">&lt;-</span> <span class="fu">jammaplot</span><span class="op">(</span><span class="va">GeneSE</span>,</span></span>
+<span class="r-in"><span>      outlierMAD<span class="op">=</span><span class="fl">2</span>,</span></span>
+<span class="r-in"><span>      doPlot<span class="op">=</span><span class="cn">FALSE</span>,</span></span>
+<span class="r-in"><span>      assay_name<span class="op">=</span><span class="st">"raw_counts"</span>,</span></span>
+<span class="r-in"><span>      filterFloor<span class="op">=</span><span class="fl">1e-10</span>,</span></span>
+<span class="r-in"><span>      filterFloorReplacement<span class="op">=</span><span class="cn">NA</span>,</span></span>
+<span class="r-in"><span>      centerGroups<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">GeneSE</span><span class="op">)</span><span class="op">$</span><span class="va">Compartment</span>,</span></span>
+<span class="r-in"><span>      subtitleBoxColor<span class="op">=</span><span class="fu">farrisdata</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/farrisdata/man/colorSub.html" class="external-link">colorSub</a></span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">GeneSE</span><span class="op">)</span><span class="op">$</span><span class="va">Compartment</span><span class="op">)</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>      useRank<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span>;</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>   <span class="va">gg1</span> <span class="op">&lt;-</span> <span class="fu">ggjammaplot</span><span class="op">(</span><span class="va">jp2</span>,</span></span>
+<span class="r-in"><span>      ncol<span class="op">=</span><span class="fl">6</span>,</span></span>
+<span class="r-in"><span>      titleBoxColor<span class="op">=</span><span class="va">titleBoxColor</span><span class="op">)</span>;</span></span>
+<span class="r-in"><span>   <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">gg1</span><span class="op">)</span>;</span></span>
+<span class="r-in"><span>   <span class="op">}</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 534 rows containing non-finite values (`stat_density2d()`).</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 15648 rows containing missing values (`geom_raster()`).</span>
 <span class="r-plt img"><img src="jammaplot-1.png" alt="" width="700" height="433"></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 140 rows containing non-finite values (stat_density2d).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 15648 rows containing missing values (geom_raster).</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 140 rows containing non-finite values (`stat_density2d()`).</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 15648 rows containing missing values (`geom_raster()`).</span>
 <span class="r-plt img"><img src="jammaplot-2.png" alt="" width="700" height="433"></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 322 rows containing non-finite values (stat_density2d).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 15648 rows containing missing values (geom_raster).</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 322 rows containing non-finite values (`stat_density2d()`).</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 15648 rows containing missing values (`geom_raster()`).</span>
 <span class="r-plt img"><img src="jammaplot-3.png" alt="" width="700" height="433"></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 317 rows containing non-finite values (stat_density2d).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 15272 rows containing missing values (geom_raster).</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 317 rows containing non-finite values (`stat_density2d()`).</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 15272 rows containing missing values (`geom_raster()`).</span>
 <span class="r-plt img"><img src="jammaplot-4.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Note the example data requires the affydata Bioconductor package</span></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va">affydata</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">   <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">Dilution</span><span class="op">)</span>;</span>
-<span class="r-in">   <span class="va">edata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log2</a></span><span class="op">(</span><span class="fl">1</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html" class="external-link">exprs</a></span><span class="op">(</span><span class="va">Dilution</span><span class="op">)</span><span class="op">)</span>;</span>
-<span class="r-in">   <span class="fu">jammaplot</span><span class="op">(</span><span class="va">edata</span><span class="op">)</span>;</span>
-<span class="r-in"></span>
-<span class="r-in">   <span class="fu">jammaplot</span><span class="op">(</span><span class="va">edata</span>,</span>
-<span class="r-in">      whichSamples<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>;</span>
-<span class="r-in"></span>
-<span class="r-in">   <span class="fu">jammaplot</span><span class="op">(</span><span class="va">edata</span>,</span>
-<span class="r-in">      sample_labels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">edata</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>;</span>
-<span class="r-in"></span>
-<span class="r-in">   <span class="fu">jammaplot</span><span class="op">(</span><span class="va">edata</span>,</span>
-<span class="r-in">      controlIndicator<span class="op">=</span><span class="st">"titlestar"</span><span class="op">)</span>;</span>
-<span class="r-in"></span>
-<span class="r-in">   <span class="fu">jammaplot</span><span class="op">(</span><span class="va">edata</span>,</span>
-<span class="r-in">      controlIndicator<span class="op">=</span><span class="st">"none"</span><span class="op">)</span>;</span>
-<span class="r-in"></span>
-<span class="r-in">   <span class="fu">jammaplot</span><span class="op">(</span><span class="va">edata</span>,</span>
-<span class="r-in">      panel_hook_function<span class="op">=</span><span class="kw">function</span><span class="op">(</span><span class="va">i</span>,<span class="va">...</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/graphics/box.html" class="external-link">box</a></span><span class="op">(</span><span class="st">"figure"</span><span class="op">)</span><span class="op">}</span><span class="op">)</span>;</span>
-<span class="r-in"></span>
-<span class="r-in">   <span class="fu">jammaplot</span><span class="op">(</span><span class="va">edata</span>,</span>
-<span class="r-in">      useRank<span class="op">=</span><span class="cn">TRUE</span>,</span>
-<span class="r-in">      maintitle<span class="op">=</span><span class="st">"Rank MA-plots"</span><span class="op">)</span>;</span>
-<span class="r-in"><span class="op">}</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Note the example data requires the affydata Bioconductor package</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va">affydata</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>   <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">Dilution</span><span class="op">)</span>;</span></span>
+<span class="r-in"><span>   <span class="va">edata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log2</a></span><span class="op">(</span><span class="fl">1</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html" class="external-link">exprs</a></span><span class="op">(</span><span class="va">Dilution</span><span class="op">)</span><span class="op">)</span>;</span></span>
+<span class="r-in"><span>   <span class="fu">jammaplot</span><span class="op">(</span><span class="va">edata</span><span class="op">)</span>;</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>   <span class="fu">jammaplot</span><span class="op">(</span><span class="va">edata</span>,</span></span>
+<span class="r-in"><span>      whichSamples<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>;</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>   <span class="fu">jammaplot</span><span class="op">(</span><span class="va">edata</span>,</span></span>
+<span class="r-in"><span>      sample_labels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">edata</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>;</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>   <span class="fu">jammaplot</span><span class="op">(</span><span class="va">edata</span>,</span></span>
+<span class="r-in"><span>      controlIndicator<span class="op">=</span><span class="st">"titlestar"</span><span class="op">)</span>;</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>   <span class="fu">jammaplot</span><span class="op">(</span><span class="va">edata</span>,</span></span>
+<span class="r-in"><span>      controlIndicator<span class="op">=</span><span class="st">"none"</span><span class="op">)</span>;</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>   <span class="fu">jammaplot</span><span class="op">(</span><span class="va">edata</span>,</span></span>
+<span class="r-in"><span>      panel_hook_function<span class="op">=</span><span class="kw">function</span><span class="op">(</span><span class="va">i</span>,<span class="va">...</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/graphics/box.html" class="external-link">box</a></span><span class="op">(</span><span class="st">"figure"</span><span class="op">)</span><span class="op">}</span><span class="op">)</span>;</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>   <span class="fu">jammaplot</span><span class="op">(</span><span class="va">edata</span>,</span></span>
+<span class="r-in"><span>      useRank<span class="op">=</span><span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>      maintitle<span class="op">=</span><span class="st">"Rank MA-plots"</span><span class="op">)</span>;</span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-plt img"><img src="jammaplot-5.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="jammaplot-6.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="jammaplot-7.png" alt="" width="700" height="433"></span>
@@ -980,7 +1172,7 @@ used. For example indicate <code>'sampleID vs groupA'</code> instead of
 <span class="r-plt img"><img src="jammaplot-9.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="jammaplot-10.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="jammaplot-11.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -995,8 +1187,7 @@ used. For example indicate <code>'sampleID vs groupA'</code> instead of
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-1.9000.9000.9000.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

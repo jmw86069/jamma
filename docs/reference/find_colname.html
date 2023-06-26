@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.29.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.33.900</span>
       </span>
     </div>
 
@@ -62,43 +62,59 @@
     <p>Find colname by string or pattern, with option to require non-NA values.</p>
     </div>
 
-    <div class="ref-usage sourceCode"><pre class="sourceCode r"><code><span class="fu">find_colname</span><span class="op">(</span>
-  <span class="va">pattern</span>,
-  <span class="va">x</span>,
-  max <span class="op">=</span> <span class="fl">1</span>,
-  index <span class="op">=</span> <span class="cn">FALSE</span>,
-  require_non_na <span class="op">=</span> <span class="cn">TRUE</span>,
-  col_types <span class="op">=</span> <span class="cn">NULL</span>,
-  exclude_pattern <span class="op">=</span> <span class="cn">NULL</span>,
-  verbose <span class="op">=</span> <span class="cn">FALSE</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div id="ref-usage">
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">find_colname</span><span class="op">(</span></span>
+<span>  <span class="va">pattern</span>,</span>
+<span>  <span class="va">x</span>,</span>
+<span>  max <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  index <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  require_non_na <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  col_types <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  exclude_pattern <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+    </div>
 
-    <div id="ref-sections">
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>pattern</dt>
 <dd><p><code>character</code> vector of text strings and/or regular
 expression patterns.</p></dd>
+
+
 <dt>x</dt>
 <dd><p><code>data.frame</code> or other object that contains <code>colnames(x)</code>.</p></dd>
+
+
 <dt>max</dt>
 <dd><p><code>integer</code> maximum number of entries to return.</p></dd>
+
+
 <dt>index</dt>
 <dd><p><code>logical</code> indicating whether to return the column index,
 that is the column number.</p></dd>
+
+
 <dt>require_non_na</dt>
 <dd><p><code>logical</code> indicating whether to require at
 least one non-<code>NA</code> value in the matching colname. When
 <code>require_non_na=TRUE</code> and all values in a column are <code>NA</code>,
 that colname is not returned by this function.</p></dd>
+
+
 <dt>exclude_pattern</dt>
 <dd><p><code>character</code> vector of colnames or patterns
 to exclude from returned results.</p></dd>
+
+
 <dt>verbose</dt>
 <dd><p><code>logical</code> indicating whether to print verbose output.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>additional arguments are ignored.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -121,54 +137,68 @@ and be able to find colnames with these variations:</p><ul><li><p><code>P.Value<
 by <code><a href="https://rdrr.io/pkg/limma/man/toptable.html" class="external-link">limma::topTable()</a></code> for example, the pattern <code>c("p.val")</code> will
 preferentially match <code>"P.Value"</code> and not <code>"adj.P.Val"</code>.</p>
     </div>
+    <div id="see-also">
+    <h2>See also</h2>
+    <div class="dont-index"><p>Other jam utility functions: 
+<code><a href="blockArrowMargin.html">blockArrowMargin</a>()</code>,
+<code><a href="fold_to_log2fold.html">fold_to_log2fold</a>()</code>,
+<code><a href="get_se_assaydata.html">get_se_assaydata</a>()</code>,
+<code><a href="gradient_rect.html">gradient_rect</a>()</code>,
+<code><a href="handle_highlightPoints.html">handle_highlightPoints</a>()</code>,
+<code><a href="log2fold_to_fold.html">log2fold_to_fold</a>()</code>,
+<code><a href="logAxis.html">logAxis</a>()</code>,
+<code><a href="outer_legend.html">outer_legend</a>()</code>,
+<code><a href="points2polygonHull.html">points2polygonHull</a>()</code>,
+<code><a href="update_function_params.html">update_function_params</a>()</code>,
+<code><a href="update_list_elements.html">update_list_elements</a>()</code></p></div>
     </div>
 
-    <div id="examples">
+    <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="ref-examples sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span class="r-in">   `Gene`<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"gene"</span>, <span class="va">LETTERS</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">25</span><span class="op">]</span><span class="op">)</span>,</span>
-<span class="r-in">   `log2fold Group-Control`<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">25</span><span class="op">)</span><span class="op">*</span><span class="fl">2</span>,</span>
-<span class="r-in">   `P.Value Group-Control`<span class="op">=</span><span class="fl">10</span><span class="op">^</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">25</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span>,</span>
-<span class="r-in">   check.names<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span>;</span>
-<span class="r-in"><span class="va">x</span><span class="op">[[</span><span class="st">"fold Group-Control"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="log2fold_to_fold.html">log2fold_to_fold</a></span><span class="op">(</span><span class="va">x</span><span class="op">[[</span><span class="st">"log2fold Group-Control"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>;</span>
-<span class="r-in"><span class="va">x</span><span class="op">[[</span><span class="st">"adj.P.Val Group-Control"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[[</span><span class="st">"P.Value Group-Control"</span><span class="op">]</span><span class="op">]</span>;</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span>;</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>   `Gene`<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"gene"</span>, <span class="va">LETTERS</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">25</span><span class="op">]</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>   `log2fold Group-Control`<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">25</span><span class="op">)</span><span class="op">*</span><span class="fl">2</span>,</span></span>
+<span class="r-in"><span>   `P.Value Group-Control`<span class="op">=</span><span class="fl">10</span><span class="op">^</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">25</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span>,</span></span>
+<span class="r-in"><span>   check.names<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span>;</span></span>
+<span class="r-in"><span><span class="va">x</span><span class="op">[[</span><span class="st">"fold Group-Control"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="log2fold_to_fold.html">log2fold_to_fold</a></span><span class="op">(</span><span class="va">x</span><span class="op">[[</span><span class="st">"log2fold Group-Control"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>;</span></span>
+<span class="r-in"><span><span class="va">x</span><span class="op">[[</span><span class="st">"adj.P.Val Group-Control"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[[</span><span class="st">"P.Value Group-Control"</span><span class="op">]</span><span class="op">]</span>;</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span>;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Gene log2fold Group-Control P.Value Group-Control fold Group-Control</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 geneA              1.1781147            0.59374671           2.262809</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 geneB             -3.6698269            0.84401845         -12.727057</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 geneC              0.0842527            0.25708661           1.060138</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 geneD             -0.4569238            0.38992803          -1.372612</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 geneE             -1.0217770            0.04991258          -2.030418</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 geneF             -1.5149908            0.47738895          -2.857970</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 geneA              1.5163421          8.252273e-01           2.860648</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 geneB              0.9225730          6.387370e-01           1.895493</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 geneC              0.9680046          2.502431e-01           1.956133</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 geneD             -1.6330128          1.375335e-02          -3.101600</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 geneE             -1.7015228          3.603060e-06          -3.252441</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 geneF              1.2107613          6.554372e-01           2.314597</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   adj.P.Val Group-Control</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1              0.59374671</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2              0.84401845</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3              0.25708661</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4              0.38992803</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5              0.04991258</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6              0.47738895</span>
-<span class="r-in"><span class="fu">find_colname</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"p.val"</span>, <span class="st">"pval"</span><span class="op">)</span>, <span class="va">x</span><span class="op">)</span>;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1            8.252273e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2            6.387370e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3            2.502431e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4            1.375335e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5            3.603060e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6            6.554372e-01</span>
+<span class="r-in"><span><span class="fu">find_colname</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"p.val"</span>, <span class="st">"pval"</span><span class="op">)</span>, <span class="va">x</span><span class="op">)</span>;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "P.Value Group-Control"</span>
-<span class="r-in"><span class="fu">find_colname</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fold"</span>, <span class="st">"fc"</span>, <span class="st">"ratio"</span><span class="op">)</span>, <span class="va">x</span><span class="op">)</span>;</span>
+<span class="r-in"><span><span class="fu">find_colname</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fold"</span>, <span class="st">"fc"</span>, <span class="st">"ratio"</span><span class="op">)</span>, <span class="va">x</span><span class="op">)</span>;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "fold Group-Control"</span>
-<span class="r-in"><span class="fu">find_colname</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"logfold"</span>, <span class="st">"log2fold"</span>, <span class="st">"lfc"</span>, <span class="st">"log2ratio"</span>, <span class="st">"logratio"</span><span class="op">)</span>, <span class="va">x</span><span class="op">)</span>;</span>
+<span class="r-in"><span><span class="fu">find_colname</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"logfold"</span>, <span class="st">"log2fold"</span>, <span class="st">"lfc"</span>, <span class="st">"log2ratio"</span>, <span class="st">"logratio"</span><span class="op">)</span>, <span class="va">x</span><span class="op">)</span>;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "log2fold Group-Control"</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## use exclude_pattern</span></span>
-<span class="r-in"><span class="co">## if the input data has no "P.Value" but has "adj.P.Val"</span></span>
-<span class="r-in"><span class="va">y</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">4</span>,<span class="fl">5</span><span class="op">)</span><span class="op">]</span>;</span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span>;</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## use exclude_pattern</span></span></span>
+<span class="r-in"><span><span class="co">## if the input data has no "P.Value" but has "adj.P.Val"</span></span></span>
+<span class="r-in"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">4</span>,<span class="fl">5</span><span class="op">)</span><span class="op">]</span>;</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span>;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Gene log2fold Group-Control fold Group-Control adj.P.Val Group-Control</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 geneA              1.1781147           2.262809              0.59374671</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 geneB             -3.6698269         -12.727057              0.84401845</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 geneC              0.0842527           1.060138              0.25708661</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 geneD             -0.4569238          -1.372612              0.38992803</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 geneE             -1.0217770          -2.030418              0.04991258</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 geneF             -1.5149908          -2.857970              0.47738895</span>
-<span class="r-in"><span class="fu">find_colname</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"p.val"</span><span class="op">)</span>, <span class="va">y</span>, exclude_pattern<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"adj"</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 geneA              1.5163421           2.860648            8.252273e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 geneB              0.9225730           1.895493            6.387370e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 geneC              0.9680046           1.956133            2.502431e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 geneD             -1.6330128          -3.101600            1.375335e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 geneE             -1.7015228          -3.252441            3.603060e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 geneF              1.2107613           2.314597            6.554372e-01</span>
+<span class="r-in"><span><span class="fu">find_colname</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"p.val"</span><span class="op">)</span>, <span class="va">y</span>, exclude_pattern<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"adj"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -183,8 +213,7 @@ preferentially match <code>"P.Value"</code> and not <code>"adj.P.Val"</code>.</p
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-1.9000.9000.9000.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

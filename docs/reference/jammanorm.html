@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">jamma</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.29.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.33.900</span>
       </span>
     </div>
 
@@ -62,33 +62,38 @@
     <p>Normalize data using MA-plot logic</p>
     </div>
 
-    <div class="ref-usage sourceCode"><pre class="sourceCode r"><code><span class="fu">jammanorm</span><span class="op">(</span>
-  <span class="va">x</span>,
-  controlGenes <span class="op">=</span> <span class="cn">NULL</span>,
-  minimum_mean <span class="op">=</span> <span class="fl">0</span>,
-  controlSamples <span class="op">=</span> <span class="cn">NULL</span>,
-  centerGroups <span class="op">=</span> <span class="cn">NULL</span>,
-  useMedian <span class="op">=</span> <span class="cn">TRUE</span>,
-  useMean <span class="op">=</span> <span class="cn">NULL</span>,
-  noise_floor <span class="op">=</span> <span class="op">-</span><span class="cn">Inf</span>,
-  noise_floor_value <span class="op">=</span> <span class="va">noise_floor</span>,
-  verbose <span class="op">=</span> <span class="cn">FALSE</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div id="ref-usage">
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">jammanorm</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  controlGenes <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  minimum_mean <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  controlSamples <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  centerGroups <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  useMedian <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  useMean <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  noise_floor <span class="op">=</span> <span class="op">-</span><span class="cn">Inf</span>,</span>
+<span>  noise_floor_value <span class="op">=</span> <span class="va">noise_floor</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+    </div>
 
-    <div id="ref-sections">
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p><code>numeric</code> matrix with expression data suitable for use
 by <code><a href="jammaplot.html">jammaplot()</a></code>. Gene expression data is typically transformed
 using <code>log2(1+x)</code> to represent reasonably normal distribution.</p></dd>
+
+
 <dt>minimum_mean</dt>
 <dd><p><code>numeric</code> value used to filter <code>controlGenes</code>,
 a control gene must have at least this level of expression to
 be included in the normalization, where the expression is
 determined by the mean or median value analogous to the x-axis
 value in MA-plots.</p></dd>
+
+
 <dt>controlSamples</dt>
 <dd><p><code>character</code> vector of <code>colnames(x)</code> passed
 to <code><a href="centerGeneData.html">centerGeneData()</a></code> which defines the control samples during
@@ -99,6 +104,8 @@ calculated across all samples, which effectively uses all
 However, it is quite useful sometimes to provide a subset of
 samples especially if there are known quality samples, to which
 new samples of unknown quality are being compared.</p></dd>
+
+
 <dt>centerGroups</dt>
 <dd><p><code>character</code> vector of groups passed to
 <code><a href="centerGeneData.html">jamma::centerGeneData()</a></code> which determines how data is centered.
@@ -111,25 +118,31 @@ Another useful alternative is to center by each sample
 group in order to view the variability among group
 replicates, which should be much lower than variability across
 sample groups. See <code><a href="centerGeneData.html">centerGeneData()</a></code> for more specific examples.</p></dd>
+
+
 <dt>useMedian</dt>
 <dd><p><code>logical</code> indicates whether to center data
 using the <code>median</code> value, where <code>useMedian=FALSE</code> by default.
-For consistency, this argument is preferred to <code>useMean</code> which
-is deprecated and will be removed in future. The median is
-preferred in cases where outliers should not influence the
-centering. The mean is preferred in cases where the data
-should visualize data consistent with downstream parametric
-statistical analysis. When a particular sample
-is a technical outlier, one option is to define
-<code>controlSamples</code> to exclude the outlier sample(s), so
-the data centering will be applied using the non-outlier
+The median is preferred in cases where outliers should not influence
+centering.
+The mean is preferred in cases where the data should visualize
+data in a manner consistent with downstream parametric
+statistical analysis.
+When a particular sample represents a technical outlier,
+one option to visualize data without being skewed by the outlier
+is to define <code>controlSamples</code> to exclude the outlier sample(s).
+In this way, data centering will be applied using the non-outlier
 samples as reference.</p></dd>
+
+
 <dt>useMean</dt>
-<dd><p><code>logical</code> (deprecated), use <code>useMean</code>. This argument
+<dd><p>(deprecated) <code>logical</code>, use <code>useMedian</code>. This argument
 indicates whether to center data using the <code>mean</code> value.
 When <code>useMean=NULL</code> the argument <code>useMedian</code> is preferred.
 For backward compatibility, when <code>useMean</code> is not <code>NULL</code>,
 then <code>useMedian</code> is defined by <code>useMedian &lt;- !useMean</code>.</p></dd>
+
+
 <dt>noise_floor, noise_floor_value</dt>
 <dd><p><code>numeric</code> values passed
 to <code><a href="jammacalc.html">jammacalc()</a></code>. The <code>noise_floor</code> is the value below which
@@ -137,15 +150,24 @@ a floor is applied. The floor sets all values below this floor
 to <code>noise_floor_value</code>. For example, one could apply <code>noise_floor=0</code>
 and <code>noise_floor_value=NA</code> which would change any value below 0
 to <code>NA</code>.</p></dd>
+
+
 <dt>verbose</dt>
 <dd><p>logical indicating whether to print verbose output.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>additional parameters sent to downstream functions,
-<code><a href="https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html" class="external-link">jamba::plotSmoothScatter</a></code>, <code><a href="centerGeneData.html">centerGeneData</a></code>.</p></dd>
+<code><a href="https://rdrr.io/pkg/jamba/man/plotSmoothScatter.html" class="external-link">jamba::plotSmoothScatter()</a></code>, <code><a href="jammacalc.html">jammacalc()</a></code>, <code><a href="centerGeneData.html">centerGeneData()</a></code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p><code>numeric</code><code>matrix</code> whose columns have been normalized,
+    
+
+<p><code>numeric</code></p>
+<p></p>
+<p><code>matrix</code> whose columns have been normalized,
 with the following named <code>attributes</code>:</p><ul><li><p><code>"nf"</code> numeric vector of normalization factors;</p></li>
 <li><p><code>"hk"</code> a <code>character</code> vector of controlGenes for each sample;</p></li>
 <li><p><code>"hk_count"</code> the <code>integer</code> number of controlGenes for each sample.</p></li>
@@ -222,7 +244,7 @@ to include batch, so the data will be centered for each batch
 independently. If this centering resolves the non-horizontal
 signal, then batch is very likely to be a component to be modeled
 in the experiment. See <code><a href="https://rdrr.io/pkg/limma/man/removeBatchEffect.html" class="external-link">limma::removeBatchEffect()</a></code>. The batch effect
-adjustment by  <code><a href="https://rdrr.io/pkg/limma/man/removeBatchEffect.html" class="external-link">limma::removeBatchEffect()</a></code> and <code><a href="https://rdrr.io/pkg/sva/man/ComBat.html" class="external-link">sva::ComBat()</a></code>
+adjustment by  <code><a href="https://rdrr.io/pkg/limma/man/removeBatchEffect.html" class="external-link">limma::removeBatchEffect()</a></code> and <code>sva::ComBat()</code>
 almost exactly subtract the batch component from the signal.</p>
 <p>That said, it may or may not be ideal to apply batch adjustment
 prior to running downstream statistical tests, as opposed to
@@ -308,7 +330,6 @@ the effective input RNA concentration.</p>
 <code><a href="jammacalc.html">jammacalc</a>()</code>,
 <code><a href="matrix_to_column_rank.html">matrix_to_column_rank</a>()</code></p></div>
     </div>
-    </div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -322,8 +343,7 @@ the effective input RNA concentration.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-1.9000.9000.9000.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>
