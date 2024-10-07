@@ -654,6 +654,7 @@ centerGeneData <- function
       rmOutliers=rmOutliers,
       madFactor=madFactor,
       rowStatsFunc=rowStatsFunc,
+      includeAttributes=FALSE,
       verbose=verbose,
       ...);
 
@@ -699,6 +700,7 @@ centerGeneData <- function
             rmOutliers=rmOutliers,
             madFactor=madFactor,
             rowStatsFunc=rowStatsFunc,
+            includeAttributes=FALSE,
             verbose=verbose,
             ...);
          x_group[is.na(x_group)] <- x_group_full[is.na(x_group)]

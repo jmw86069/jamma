@@ -11,13 +11,16 @@
 #'    GeneSE <- farrisdata::farrisGeneSE;
 #'
 #'    titleBoxColor <- jamba::nameVector(
-#'       farrisdata::colorSub[as.character(colData(GeneSE)$groupName)],
+#'       farrisdata::colorSub[as.character(
+#'          SummarizedExperiment::colData(GeneSE)$groupName)],
 #'       colnames(GeneSE));
 #'    options("warn"=FALSE);
 #'
 #'    gg <- ggjammaplot(GeneSE,
 #'       ncol=6,
 #'       base_size=12,
+#'       maintitle="Farris raw RNAseq data",
+#'       titleBoxColor=jamba::rgb2col(col2rgb(titleBoxColor)),
 #'       assay_name="raw_counts")
 #'
 #'    gg <- ggjammaplot(GeneSE,
@@ -227,14 +230,15 @@ ggjammaplot <- function
  centerFunc=centerGeneData,
  whichSamples=NULL,
  useRank=FALSE,
+ apply_transform_limit=40,
  titleBoxColor="lightgoldenrod1",
  titleCex=1,
  outlierColor="lemonchiffon",
  fillBackground=TRUE,
  maintitle=NULL,
  subtitle=NULL,
- summary="mean",
- difference="difference",
+ summary="Mean",
+ difference="Difference",
  transFactor=0.25,
  doPlot=TRUE,
  highlightPoints=NULL,
@@ -246,6 +250,7 @@ ggjammaplot <- function
  base_size=12,
  panel.grid.major.colour="grey90",
  panel.grid.minor.colour="grey95",
+ axis.text.x.angle=90,
  return_type=c("ggplot",
     "data"),
  xlim=NULL,
@@ -256,7 +261,23 @@ ggjammaplot <- function
  verbose=FALSE,
  ...)
 {
+   # deal with missing colnames
+   if (!is.list(x) && length(dim(x)) >= 2) {
+      if (length(colnames(x)) == 0) {
+         colnames(x) <- paste0("column",
+            as.character(seq_len(ncol(x))));
+      }
+      # deal with missing rownames
+      if (length(rownames(x)) == 0) {
+         rownames(x) <- paste0(#"row",
+            as.character(seq_len(nrow(x))));
+      }
+   }
+
    # expand titleBoxColor as needed
+   if (length(titleBoxColor) == 0) {
+      titleBoxColor <- "lightgoldenrod1";
+   }
    if (length(names(titleBoxColor)) == 0) {
       if (is.list(x)) {
          titleBoxColor <- jamba::nameVector(
@@ -266,10 +287,11 @@ ggjammaplot <- function
       } else {
          titleBoxColor <- jamba::nameVector(
             rep(titleBoxColor,
-               length.out=length(colnames(x))),
+               length.out=ncol(x)),
             colnames(x));
       }
    }
+   # jamba::printDebugI(titleBoxColor);# debug
    naControlAction <- match.arg(naControlAction);
 
    # newer method of calling jammacalc()
@@ -280,12 +302,24 @@ ggjammaplot <- function
       jp2 <- x;
       rm(x);
    } else {
-      if ("SummarizedExperiment" %in% class(x)) {
+      if (inherits(x, "SummarizedExperiment")) {
          x <- get_se_assaydata(x,
             assay_name=assay_name,
             verbose=verbose);
       }
-
+      ## Optionally apply log2(1 + x) transform?
+      if (!TRUE %in% useRank &&
+            any(x > apply_transform_limit)) {
+         if (verbose) {
+            jamba::printDebug("ggjammaplot(): ",
+               "Applied transform due to values above ",
+               apply_transform_limit, ": ",
+               "log2(1 + x)");
+         }
+         x <- jamba::log2signed(x,
+            offset=1);
+      }
+      # call jammacalc()
       jp2 <- jammacalc(x,
          na.rm=TRUE,
          useMedian=useMedian,
@@ -309,7 +343,9 @@ ggjammaplot <- function
       whichSamples <- names(jp2);
    }
 
+   # jamba::printDebug("whichSamples:");print(whichSamples);# debug
    titleBoxColor <- titleBoxColor[whichSamples];
+   # jamba::printDebug("titleBoxColor:");print(titleBoxColor);# debug
 
    if (length(whichSamples) == 0) {
       whichSamples <- names(jp2);
@@ -321,6 +357,7 @@ ggjammaplot <- function
 
    return_type <- match.arg(return_type);
    # quick pivot
+   # jamba::printDebug("head(jp2[[1]], 10):");print(head(jp2[[1]], 10));# debug
    jp2tall <- jamba::rbindList(
       lapply(unname(whichSamples), function(iname){
          idf <- jp2[[iname]];
@@ -430,8 +467,9 @@ ggjammaplot <- function
       ylim <- c(-1,1) * round(nrow(jp2[[1]]) * 0.30);
    }
    # if more than 40% of all points are outside ylim, then adjust
+   # jamba::printDebug("head(jp2tall, 10):");print(head(jp2tall, 10));# debug
    if (length(ylim) == 2 &&
-         (sum(abs(jp2tall[,"difference"]) > max(ylim)) / nrow(jp2tall)) > 0.4) {
+         (sum(abs(jp2tall[, "difference"]) > max(ylim)) / nrow(jp2tall)) > 0.4) {
       if (verbose > 1) {
          jamba::printDebug("ggjammaplot(): ",
             "over-riding ylim because >40% values were outside range.");
@@ -477,12 +515,14 @@ ggjammaplot <- function
    # h values for MASS::kde2()
    bw_factor <- rep(bw_factor,
       length.out=2);
-   hx <- diff(range(xlim, na.rm=TRUE)) / (30 * bw_factor[1] * detail_factor);
-   hy <- diff(range(ylim, na.rm=TRUE)) / (30 * bw_factor[2] * detail_factor);
+   hx <- diff(range(xlim, na.rm=TRUE)) / (20 * bw_factor[1] * detail_factor);
+   hy <- diff(range(ylim, na.rm=TRUE)) / (20 * bw_factor[2] * detail_factor);
    # hx <- max(c(hx, hy));
    # hy <- hx;
 
-   nbin <- detail_factor * nbin_factor * 400 / sqrt(length(jp2)) * 2;
+   ## updated default values
+   # nbin <- detail_factor * nbin_factor * 400 / sqrt(length(jp2)) * 2;
+   nbin <- detail_factor * (nbin_factor / 3) * 400 / sqrt(length(jp2)) * 2;
    if (verbose > 1) {
       jamba::printDebug("ggjammaplot(): ",
          "kde2d() argument hx: ", format(hx, digits=2),
@@ -523,14 +563,16 @@ ggjammaplot <- function
          show.legend=FALSE,
          h=c(hx, hy),
          contour=FALSE) +
-      ggplot2::facet_wrap(~name,
-         drop=FALSE,
-         nrow=nrow,
-         ncol=ncol) +
-      colorjam::theme_jam(strip.background.fill=strip_bg,
+      # ggplot2::facet_wrap(~name,
+      #    drop=FALSE,
+      #    nrow=nrow,
+      #    ncol=ncol) +
+      colorjam::theme_jam(
+         strip.background.fill=strip_bg,
          strip.text.size=ggplot2::rel(0.6 * titleCex),
          panel.grid.major.colour=panel.grid.major.colour,
          panel.grid.minor.colour=panel.grid.minor.colour,
+         axis.text.x.angle=axis.text.x.angle,
          base_size=base_size);
 
    # attempt to detect the gradient density range used thus far
@@ -675,18 +717,21 @@ ggjammaplot <- function
          ggplot2::scale_color_manual(values=highlightColorSub);
    }
 
-   # manually adjust titleBoxColor with strip text background color
-   if (length(unique(titleBoxColor)) > 1 &&
-         jamba::check_pkg_installed("ggtext")) {
-      p <- p +
-         ggplot2::theme(
-            strip.background=ggplot2::element_blank(),
-            strip.text=element_textbox_colorsub(
-               colorSub=titleBoxColor,
-               box.colour="black"
-            )
-         );
-   }
+   # apply titleBoxColor to strip background and text colors
+   facet_colors <- ggh4x::strip_themed(
+      background_x=ggh4x::elem_list_rect(fill=titleBoxColor),
+      text_x=lapply(titleBoxColor, function(i){
+         ggplot2::element_text(
+            colour=jamba::setTextContrastColor(
+            i))
+      }))
+   # add to ggplot
+   p <- p +
+      ggh4x::facet_wrap2(~name,
+         drop=FALSE,
+         nrow=nrow,
+         ncol=ncol,
+         strip=facet_colors)
 
    # optional title
    if (length(maintitle) > 0 || length(subtitle) > 0) {

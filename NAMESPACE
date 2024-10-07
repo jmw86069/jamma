@@ -3,8 +3,6 @@
 export(blockArrowMargin)
 export(centerGeneData)
 export(centerGeneData_v1)
-export(element_grob.element_textbox_colorsub)
-export(element_textbox_colorsub)
 export(find_colname)
 export(fold_to_log2fold)
 export(get_se_assaydata)

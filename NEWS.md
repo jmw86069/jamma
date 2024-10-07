@@ -1,3 +1,41 @@
+# jamma 0.0.34.900
+
+* Added dependency `ggh4x` to handle facet fill color. In future, it
+may provide improved faceting options, groups, multiple layers, etc.
+
+## bug fixes
+
+* `ggjammaplot()`
+
+   * fixed error with missing `colnames(x)` or `rownames(x)`
+
+## updates
+
+* Bumped jamba version dependency to 0.0.104.900 to support SparseMatrix
+objects as with `SingleCellExperient` and `Seurat` matrix data.
+* `centerGeneData()`
+
+   * Updated to add `includeAttributes=FALSE` with `jamba::rowGroupMeans()`.
+   * Added tests to all basic use cases, and to cover SparseMatrix input.
+
+* `jammaplot()`
+
+   * Removed argument `ma_method`, it was deprecated.
+   * Added argument `apply_transform_limit=40` to apply `jamba::log2signed()`
+   when any value is above this threshold, only when `useRank=FALSE`.
+
+* `ggjammaplot()`
+
+   * Added argument `apply_transform_limit=40` to apply `jamba::log2signed()`
+   when any value is above this threshold, only when `useRank=FALSE`.
+   * Now uses `ggh4x::facet_wrap2()` to apply color to facet strips.
+
+## internal functions removed
+
+* `element_textbox_colorsub()`, `element_grob.element_textbox_colorsub()`
+were removed, in favor of using `ggh4x` functions for ggplot2 facet strip
+color fill.
+
 # jamma 0.0.33.900
 
 ## changes to existing functions

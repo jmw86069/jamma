@@ -647,11 +647,6 @@ NULL
 #'    the background of the plot device, for example `colramp="viridis"`).
 #'    This argument is also used with `outlierColor` to add visual emphasis
 #'    to plot panels where the MAD factor exceeds `outlierMAD`.
-#' @param ma_method (deprecated) `character` string indicating the
-#'    internal method used for MA-plot calculations:
-#'    * `"old"` to use the previous (older) calculation method, which
-#'    is deprecated and will be removed in future.
-#'    * `"jammacalc"` which uses the independent function `jammacalc()`.
 #' @param panel_hook_function optional custom `function` called
 #'    as a "hook" after each MA-plot panel has been drawn. This function
 #'    can be used to display custom axis labels, add plot panel visual
@@ -797,7 +792,7 @@ jammaplot <- function
  blankPlotPos=NULL,
  fillBackground=TRUE,
  useRank=FALSE,
- ma_method=c("jammacalc", "old"),
+ apply_transform_limit=40,
  panel_hook_function=NULL,
  doPlot=TRUE,
  verbose=FALSE,
@@ -880,7 +875,6 @@ jammaplot <- function
          apply(x, 2, median, na.rm=na.rm);
       }
    }
-   ma_method <- match.arg(ma_method);
    controlIndicator <- match.arg(controlIndicator);
    naControlAction <- match.arg(naControlAction);
 
@@ -1185,229 +1179,58 @@ jammaplot <- function
          #xlim <- c(0, xlim1);
       }
       mvaDatas <- x;
-   } else {
-      ## Prepare MA-plot data
-      if (ma_method %in% "jammacalc") {
-         ## Newer method using jammacalc()
-      } else {
-         jamba::printDebug("jammaplot(): ",
-            sep="",
-            c("deprecated method ", "ma_method='old'",
-               " will be removed in future, please use ",
-               "ma_method='jammacalc'"),
-            fgText="red")
-         if (verbose) {
-            jamba::printDebug("jammaplot(): ",
-               "Processing matrix input type, dim(x)", dim(x));
-         }
-         if (TRUE %in% filterNA && !(NA %in% filterNAreplacement)) {
-            x[is.na(x)] <- filterNAreplacement;
-         }
-         if (TRUE %in% filterNeg) {
-            x[x <= 0] <- 0;
-         }
-         if (length(noise_floor) > 0) {
-            x[!is.na(x) & x <= noise_floor] <- noise_floor_value;
-         }
-
-         # apply rank here
-         if (TRUE %in% useRank) {
-            if (is.list(x)) {
-               stop("Cannot combine useRank=TRUE with list input, it requires numeric matrix input.");
-            }
-            ## Convert x to rank per column
-            if (verbose) {
-               jamba::printDebug("jammaplot(): ",
-                  "Converting input matrix to per-column rank values.");
-            }
-            x <- matrix_to_column_rank(x, keepNA=TRUE)
-            if (all(abs(ylim) == 4)) {
-               ylim <- c(-1,1) * round(nrow(x) * .40);
-            }
-         }
-
-         if (length(controlSamples) == 0) {
-            controlSamples <- x_names;
-         } else {
-            controlSamples <- intersect(controlSamples, x_names);
-            if (length(controlSamples) == 0) {
-               controlSamples <- x_names;
-            }
-         }
-         ## Calculate the summary value per row of input data x,
-         ## used as the x-axis value for each panel
-         if (groupedX && length(unique(centerGroups)) > 1) {
-            yM <- centerGeneData(x,
-               useMedian=useMedian,
-               controlSamples=controlSamples,
-               centerGroups=centerGroups,
-               returnValues=FALSE,
-               returnGroupedValues=TRUE);
-            centerGroups <- jamba::nameVector(centerGroups, x_names);
-            ## TODO: Apply rowGroupsMeans() for custom y-values per group
-            if (useMedian) {
-               y <- rowMedians(yM, na.rm=TRUE);
-            } else {
-               y <- rowMeans(yM, na.rm=TRUE);
-            }
-         } else {
-            if (length(customFunc) > 0) {
-               y <- customFunc(x[,controlSamples,drop=FALSE], na.rm=TRUE);
-            } else if (useMedian) {
-               y <- rowMedians(x[,controlSamples,drop=FALSE], na.rm=TRUE);
-            } else {
-               y <- rowMeans(x[,controlSamples,drop=FALSE], na.rm=TRUE);
-            }
-         }
-         if (verbose) {
-            jamba::printDebug("jammaplot(): ",
-               "Processing matrix input type, dim(x)", dim(x));
-            jamba::printDebug("jammaplot(): ",
-               "Processing matrix input type, dim(y):", dim(y));
-         }
-         if (is.null(xlim)) {
-            ## Calculate x range using the range of data overall
-            xlim <- range(c(range(x, na.rm=TRUE), range(y, na.rm=TRUE)));
-            #xlimMax <- mean(c(max(object, na.rm=TRUE), max(y, na.rm=TRUE)));
-         }
-         mvaDatas <- lapply(jamba::nameVector(whichSamples), function(i){NA});
-      }
    }
 
-   if (ma_method %in% "jammacalc") {
-      ## Newer method using jammacalc()
+   ## Newer method using jammacalc()
+   if (verbose) {
+      jamba::printDebug("jammaplot(): ",
+         "Calling jammacalc().",
+         "useMedian:", useMedian);
+   }
+   ## Optionally apply log2(1 + x) transform?
+   if (!TRUE %in% useRank &&
+         any(x > apply_transform_limit)) {
       if (verbose) {
-         jamba::printDebug("jammaplot(): ",
-            "Calling jammacalc().",
-            "useMedian:", useMedian);
+         jamba::printDebug("ggjammaplot(): ",
+            "Applied transform due to values above ",
+            apply_transform_limit, ": ",
+            "log2(1 + x)");
       }
-      mvaDatas <- jammacalc(x=x,
-         na.rm=TRUE,
-         useMedian=useMedian,
-         controlSamples=controlSamples,
-         centerGroups=centerGroups,
-         controlFloor=controlFloor,
-         naControlAction=naControlAction,
-         naControlFloor=naControlFloor,
-         groupedX=groupedX,
-         grouped_mad=groupedMAD,
-         whichSamples=whichSamples,
-         noise_floor=noise_floor,
-         noise_floor_value=noise_floor_value,
-         naValue=filterNAreplacement,
-         centerFunc=centerGeneData,
-         returnType="ma_list",
-         mad_row_min=outlierRowMin,
-         useRank=useRank,
-         verbose=verbose,
-         ...);
-      # for useRank=TRUE adjust default ylim
-      if (TRUE %in% useRank && all(abs(ylim) == 4)) {
-         ylim <- c(-1,1) * round(nrow(x) * .40);
-      }
-   } else {
-      if (length(centerGroups) > 0) {
-         objectCtr <- centerGeneData(x,
-            centerGroups=centerGroups,
-            useMedian=useMedian,
-            returnGroupedValues=FALSE,
-            returnValues=TRUE,
-            controlSamples=controlSamples,
-            verbose=verbose,
-            ...);
-         if (verbose) {
-            jamba::printDebug("jammaplot(): ",
-               "objectCtr:");
-            print(head(objectCtr));
-            jamba::printDebug("head(y): ",
-               round(head(y), digits=2));
-         }
-      }
+      x <- jamba::log2signed(x,
+         offset=1);
+   }
 
-      ## If not given MVA data, then calculate the MVA data upfront
-      ## so we can test for outliers beforehand
-      if (!gaveMVA) {
-         if (verbose) {
-            jamba::printDebug("jammaplot(): ",
-               "Calculating MVA data.");
-         }
-         for (i in whichSamples) {
-            if (groupedX && length(unique(centerGroups)) > 1) {
-               ## Optionally, if centerGroups are supplied,
-               ## we center within each controlGroup,
-               ## and plot the difference within each controlGroup
-               iCol <- x_names[i];
-               iGroup <- centerGroups[iCol];
-               yUse <- yM[,iGroup];
-               #x <- objectCtr[,i] + y;
-               xi <- objectCtr[,i] + yUse;
-               if (verbose) {
-                  jamba::printDebug("jammaplot(): ",
-                     "Applying unique x per centerGroups");
-               }
-            } else {
-               ## Typical values use difference from median on y-axis and
-               ## average of current with median on x-axis
-               ##
-               ## New Jam values will retain the y-axis,
-               ## but use the median on the x-axis
-               #mvaValues <- c((x + y)/2, (x - y));
-               xi <- x[,i];
-               yUse <- y;
-            }
-            mvaValues <- c(yUse, (xi - yUse));
-            mvaData <- matrix(data=mvaValues,
-               nrow=length(xi),
-               byrow=FALSE,
-               dimnames=list(genes=rownames(x),
-                  MAcoords=c("x", "y")));
-            mvaDatas[[i]] <- mvaData;
-            names(mvaDatas)[i] <- x_names[i];
-         }
-      }
+   mvaDatas <- jammacalc(x=x,
+      na.rm=TRUE,
+      useMedian=useMedian,
+      controlSamples=controlSamples,
+      centerGroups=centerGroups,
+      controlFloor=controlFloor,
+      naControlAction=naControlAction,
+      naControlFloor=naControlFloor,
+      groupedX=groupedX,
+      grouped_mad=groupedMAD,
+      whichSamples=whichSamples,
+      noise_floor=noise_floor,
+      noise_floor_value=noise_floor_value,
+      naValue=filterNAreplacement,
+      centerFunc=centerGeneData,
+      returnType="ma_list",
+      mad_row_min=outlierRowMin,
+      useRank=useRank,
+      verbose=verbose,
+      ...);
+   # for useRank=TRUE adjust default ylim
+   if (TRUE %in% useRank && all(abs(ylim) == 4)) {
+      ylim <- c(-1,1) * round(nrow(x) * .40);
    }
 
    ## Optionally calculate the MAD per panel
    ## assumptions: that zero should be the median, all deviations are absolute values since
    ## we are comparing with zero, and we are not subtracting an actual median value
-   if (ma_method %in% "jammacalc") {
-      mvaMADs <- attr(mvaDatas, "MADs");
-      mvaMADfactors <- attr(mvaDatas, "MADfactors");
-   } else {
-      if (verbose) {
-         jamba::printDebug("jammaplot():",
-            "Calculating MA data MAD factors.");
-      }
-      mvaMADs <- sapply(jamba::nameVector(whichSamples, x_names[whichSamples]), function(i){
-         if (verbose) {
-            jamba::printDebug("   i:",
-               i);
-         }
-         mvaData <- mvaDatas[[x_names[i]]];
-         iWhich <- (!is.na(mvaData[,"x"]) & abs(mvaData[,"x"]) >= outlierRowMin);
-         jamba::rmNA(
-            median(abs(mvaData[iWhich,"y"]),
-               na.rm=TRUE),
-            naValue=Inf);
-      });
+   mvaMADs <- attr(mvaDatas, "MADs");
+   mvaMADfactors <- attr(mvaDatas, "MADfactors");
 
-      ## Calculate MAD factor, a ratio to the median
-      if (groupedMAD && length(centerGroups) > 0) {
-         ## if grouped, use the median of each center group
-         mvaMADfactors <- unlist(unname(
-            tapply(mvaMADs, centerGroups, function(i){
-               i / median(i, na.rm=TRUE);
-            })))[names(mvaMADs)];
-      } else {
-         ## if not grouped, use the overall median across all samples
-         mvaMAD <- median(mvaMADs, na.rm=TRUE);
-         mvaMADfactors <- mvaMADs/mvaMAD;
-      }
-
-      #mvaMADthreshold <- outlierMAD * mvaMAD;
-      names(mvaMADfactors) <- names(whichSamples);
-      names(mvaMADs) <- names(whichSamples);
-   }
    mvaMADoutliers <- x_names[whichSamples][which(mvaMADfactors >= outlierMAD)];
    if (verbose) {
       jamba::printDebug("jammaplot(): ",

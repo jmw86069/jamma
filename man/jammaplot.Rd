@@ -35,14 +35,15 @@ ggjammaplot(
   centerFunc = centerGeneData,
   whichSamples = NULL,
   useRank = FALSE,
+  apply_transform_limit = 40,
   titleBoxColor = "lightgoldenrod1",
   titleCex = 1,
   outlierColor = "lemonchiffon",
   fillBackground = TRUE,
   maintitle = NULL,
   subtitle = NULL,
-  summary = "mean",
-  difference = "difference",
+  summary = "Mean",
+  difference = "Difference",
   transFactor = 0.25,
   doPlot = TRUE,
   highlightPoints = NULL,
@@ -54,6 +55,7 @@ ggjammaplot(
   base_size = 12,
   panel.grid.major.colour = "grey90",
   panel.grid.minor.colour = "grey95",
+  axis.text.x.angle = 90,
   return_type = c("ggplot", "data"),
   xlim = NULL,
   ylim = c(-6, 6),
@@ -139,7 +141,7 @@ jammaplot(
   blankPlotPos = NULL,
   fillBackground = TRUE,
   useRank = FALSE,
-  ma_method = c("jammacalc", "old"),
+  apply_transform_limit = 40,
   panel_hook_function = NULL,
   doPlot = TRUE,
   verbose = FALSE,
@@ -651,14 +653,6 @@ can be helpful to apply \code{xlim=c(0.01, 20)} and
 indicating to produce colored ANSI text plot output, for example
 to a text terminal.}
 
-\item{ma_method}{(deprecated) \code{character} string indicating the
-internal method used for MA-plot calculations:
-\itemize{
-\item \code{"old"} to use the previous (older) calculation method, which
-is deprecated and will be removed in future.
-\item \code{"jammacalc"} which uses the independent function \code{jammacalc()}.
-}}
-
 \item{panel_hook_function}{optional custom \code{function} called
 as a "hook" after each MA-plot panel has been drawn. This function
 can be used to display custom axis labels, add plot panel visual
@@ -867,13 +861,16 @@ if (jamba::check_pkg_installed("SummarizedExperiment") &&
    GeneSE <- farrisdata::farrisGeneSE;
 
    titleBoxColor <- jamba::nameVector(
-      farrisdata::colorSub[as.character(colData(GeneSE)$groupName)],
+      farrisdata::colorSub[as.character(
+         SummarizedExperiment::colData(GeneSE)$groupName)],
       colnames(GeneSE));
    options("warn"=FALSE);
 
    gg <- ggjammaplot(GeneSE,
       ncol=6,
       base_size=12,
+      maintitle="Farris raw RNAseq data",
+      titleBoxColor=jamba::rgb2col(col2rgb(titleBoxColor)),
       assay_name="raw_counts")
 
    gg <- ggjammaplot(GeneSE,

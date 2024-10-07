@@ -1,5 +1,222 @@
 # TODO for jamma
 
+## 07oct2024
+
+* DONE. Fix `ggjammaplot()` bug where ggplot2 facet strip background color
+no longer applies `titleBoxColor` properly. Unclear when this stopped
+working, probably something in the ggplot2 3.5.x update.
+
+   * Fix was to use `ggh4x::facet_wrap2()` to apply color and fill to
+   ggplot facet strip rectangles.
+
+* Enable `subtitle` arguments for `ggjammaplot()` consistent with
+`jammaplot()`.
+
+
+## 17sep2024
+
+* Add support for `SingleCellExperiment`/`Seurat` objects.
+
+   * Adopt similar mechanism used in `jamses::heatmap_se()`
+   * Use `rowRanges()` when necessary.
+
+* Update `centerGeneData()` to handle `Matrix` objects, not just `matrix`
+
+   * for example, SingleCellExperiment data may provide `dgCMatrix`
+   * `inherits(x, "sparseMatrix")` is valid for Matrix sparse matrices,
+   and `sparseMatrixStats` may provide equivalent methods to `matrixStats`
+   if installed.
+   * Check if matrix is sparse, check if `sparseMatrixStats` is installed,
+   if so use `sparseMatrixStats::rowMedians()`, otherwise `apply(x, 1, median)`
+
+* Consider `subtitle` ability to use `colData()` colnames.
+* Consider `colorSub` to define colors used by arguments
+`titleBoxColor` and `subtitleBoxColor`.
+* Add asterisk to corner of `ggjammaplot()` output
+
+## 14aug2024
+
+* Consider other data centering options:
+
+   * Use case:
+   
+      * Compare GroupA to GroupB and GroupC.
+      * Goal is to show up-regulated genes in GroupA.
+      * Center versus GroupA shows everything down in GroupB/GroupC.
+      * Centering by GroupB/GroupC uses the mean of GroupB/GroupC.
+      * Proposal is to center by group "min" or group "max" instead
+      of group "mean".
+      * Possible to accomplish with `rowStatsFunc` argument?
+      * If the goal is a heatmap, `jamses::heatmap_se()` could accomplish
+      it entirely with custom code:
+      
+         * Define custom `rowStatsFunc` function that recognized colnames,
+         assigned them to groups, returned the appropriate group stat
+         (min, max, mean, median).
+         * It also needs to label the centering accordingly.
+         Entirely specific to `heatmap_se()`. Or is it?
+
+   * Consider including attributes which describe the centering.
+   
+      * Method: mean/median
+      * controlSamples
+      * centerGroups
+      * Optional labels? `control_label`, `centerby_label`
+
+   * Consider method which accepts `SummarizedExperiment` data, and arguments:
+   
+      * `assay_name` - if one value, one `matrix` is returned, otherwise `list`
+      * `centerby_colnames` - to define `centerGroups`
+      * `controlSamples` - same as usual, to define controls for centering
+      * Output includes attribures including consistent centering label,
+      to be used by MA-plots, `jamses::heatmap_se()` and other tools.
+
+
+## 09jul2024
+
+* Consider RLE plot - which is a flattened form of MA-plot
+
+   * Motivation: single cell data with thousands of columns, they should
+   not become independent panels.
+   * Could be useful for bulk 'omics data by providing a quick global view.
+   * "Problem samples" could be expanded to show the full MA-plot.
+   * For reference see https://davislaboratory.github.io/GeoMXAnalysisWorkflow/articles/GeoMXAnalysisWorkflow.html
+   the `plotRLExpr()` function shows example before and after normalization.
+   * Weakness of this style is that it doesn't show non-linear MA-plot,
+   however the box-whisker/median with range is effective at showing
+   when one sample has much different variability than others.
+
+* Consider adding signed-significance plot, perhaps `ssplot()`
+
+   * Goal is to provide two `data.frame` objects that have identifiers (gene?)
+   that can be aligned to one another.
+   * Each data has significance column (adjusted P-value, P-value, Q-value, FDR)
+   and a directional column (fold change, log fold change, ratio, etc.).
+   * The `-log10(significance) * sign(fold)` is used for each axis.
+   * Statistical thresholds are drawn for each dataset, usually P-value
+   threshold. Shown as dotted/dashed lines on respective axes.
+   * Consider option to impose fold change threshold for each data also?
+   * Consider option to use log fold change on each axis.
+
+## 30may2024
+
+* `volcano_plot()`
+
+   * return `data.frame` equivalent to the data plotted, make it easy
+   to find hits, and highlighted points.
+
+## 13mar2024
+
+* Consider how to utilize `colData()` sample annotations.
+
+   * Go with "easiest thing that works" since in most cases, MA-plots
+   are data-agnostic QC for technical quality assessment.
+   However, centering within known sample annotations could be convenient.
+   * For example: colorized `subtitle` boxes, or augmented labeling.
+   * Situation is that `SummarizedExperiment` input offers more sample
+   annotations than are easily added via `subtitle`.
+   * Could mimic arguments in `jamses::heatmap_se()`: `centerby_colnames`,
+   `colData_colnames`.
+   * Could apply sort order to samples by argument `colData_byCols`,
+   pass to: `mixedSortDF(colData(se), byCols=colData_byCols)`
+   * New argument `sample_color_list`, optional color assignment for `colData`
+   columns.
+
+## 27sep2023
+
+* develop better method to organize MA-plot panels
+
+   * for example columns organized by batch
+   * generally some assignment of sample to panel number
+
+## 01aug2023
+
+* `centerGeneData()`
+
+   * Enable `SummarizedExperiment` input, either as a separate function,
+   or as option for this function. It should require `assay_name`,
+   and return a `numeric` matrix.
+
+* Figure out a reasonable way to include experiment design factors in
+`jammaplot()` and `ggjammaplot()` panel labels.
+
+   * For example `"BAH013760_101_NEG_MS1"` is not a helpful identifier,
+   it would be much more interesting to include `"Male, Dex-Treated, Time 3"`.
+   * Bonus points for including each factor on its own line, using
+   categorical colors for each value to make it easier to scan by eye.
+
+* Fix missing strip text colors in `ggjammaplot()` when multiple colors
+are supplied for `titleBoxColor`.
+
+   * Somehow the ggplot2 `element_grob()` dispatch is not calling
+   the custom functon `element_grob.element_textbox_colorsub()`.
+
+## 31jul2023
+
+* DONE. Fix error `ggjammaplot()` when input data `x` does not
+contain colnames, or rownames. Either case produces an error.
+
+
+## 19jul2023
+
+* Some method to detect non-linear (non-horizontal) MA-plot signal
+
+   * Example case is one sample whose values are nearly all zero,
+   the MA-plot looks like a diagonal line aiming down from left to right.
+   After log-ratio normalization (for example with `jammanorm()`),
+   the signal is shift up so the mean signal is at y=0, however
+   the diagonal is still there.
+   * Simplest possible idea is to fit a line to points above
+   the minimum threshold defined by `mad_row_min`, and test the
+   slope.
+   * It is unclear how much to trust a linear fit, and assuming the linear
+   fit is reasonably good, what to do with the slope afterward.
+   
+      * How much deviation from slope=0 is tolerable?
+      * Should the range of acceptable slopes be data-defined?
+   
+   * Another idea: Could `jammanorm()` only normalize using rows
+   where the **raw** values are above the noise threshold `mad_row_min`?
+   Currently the process uses the x-axis calculated value (row mean/median)
+   to apply that threshold. Logically it seems reasonable that
+   measurements below a "noise floor" are noise, and therefore
+   should not be considered during normalization.
+   
+      * For samples where signal is completely "below noise"
+      it would result in data not being normalized, which is
+      preferable since there is no reliable signal. In this
+      case the usual MA outlier strategy would be effective.
+      * For samples with reasonable signal with slope deviating from zero,
+      it should have no effect (no negative effect).
+
+## 27jun2023
+
+* `jammaplot()` and `ggjammaplot()` - controlSamples
+
+   * improve the indication that a sample (panel) was used as a control
+   during data centering. Currently displays an asterisk "*" in the top-left,
+   however it is not visible in all plots, especially when there are outlier
+   samples. Also, there is no legend indicating the meaning of the asterisk.
+   * Consider using asterisk only for samples excluded during centering,
+   therefore by default no asterisk is necessary.
+   * Consider using `ComplexHeatmap::Legend()` to create a custom legend.
+   It would be used to display `"* - samples excluded during centering"`
+   and optional highlight points.
+   * Consider argument to display/hide the color legend, useful when the
+   color legend might be too large to display comfortably.
+   Instead provide method for users to create their own legend.
+
+* `jammaplot()` and `ggjammaplot()` - MAD factor label box
+
+   * Consider displaying the MAD factor inside a label box, to improve
+   legibility when the text overlaps the point density. This change
+   could be optional, controlled with a new argument.
+   * Consider using `grid` functions for `drawLabels()` to allow much more
+   control over label placement, for example avoiding overlaps
+   between `subtitle` and `MAD factor` labels by shifting one label by
+   the height of the other label.
+   This suggestion might affect `jamba::drawLabels()`.
+
 ## 30may2023
 
 * `volcano_plot()`
