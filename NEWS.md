@@ -1,3 +1,18 @@
+# jamma 0.0.35.900
+
+## changes
+
+* `jammaplot()` now uses `jamba::shadowText()` for `displayMAD=TRUE`,
+and the control asterisk labels, to improve visibility. It might be
+an improvement or distraction.
+
+## bug fixes
+
+* Fixed `jammaplot()` for data with NA values when checking
+`apply_transform_limit`. Now `apply_transform_limit` can be NULL,
+skipping this step, otherwise it only checks non-NA values.
+
+
 # jamma 0.0.34.900
 
 * Added dependency `ggh4x` to handle facet fill color. In future, it

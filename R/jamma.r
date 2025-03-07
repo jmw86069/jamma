@@ -98,18 +98,25 @@
 #' ## Core functions:
 #'
 #' * `jammaplot()`
+#' * `ggjammaplot()`
 #' * `centerGeneData()`
 #' * `jammanorm()`
 #' * `jammacalc()`
 #' * `volcano_plot()`
 #'
 #' ## Additional plot functions:
+#'
+#' * `blockArrowMargin()` - base R plot, block arrows drawn outside margins.
 #' * `points2polygonHull()`
 #' * `outer_legend()`
 #'
-#' @docType package
-#' @name jamma
-NULL
+#' ## Additional math functions:
+#'
+#' * `log2fold_to_fold()`, `fold_to_log2fold()`
+#' * `matrix_to_column_rank()`
+#'
+#' @keywords internal
+"_PACKAGE"
 
 
 #' Produce MA-plot of omics data.
@@ -1188,8 +1195,9 @@ jammaplot <- function
          "useMedian:", useMedian);
    }
    ## Optionally apply log2(1 + x) transform?
-   if (!TRUE %in% useRank &&
-         any(x > apply_transform_limit)) {
+   if (length(apply_transform_limit) == 1 &&
+      !TRUE %in% useRank &&
+      any(!is.na(x) & x > apply_transform_limit)) {
       if (verbose) {
          jamba::printDebug("ggjammaplot(): ",
             "Applied transform due to values above ",
@@ -1609,6 +1617,7 @@ jammaplot <- function
                adjPreset=adjPreset_star,
                panelWidth="default",
                txt=" * ",
+               text_fn=jamba::shadowText,
                drawBox=FALSE,
                labelCol="black",
                labelCex=titleCex[i]*1.5,
@@ -1628,6 +1637,7 @@ jammaplot <- function
             labelBaseCol);
          if (length(outlierMAD) > 0 && displayMAD == 1) {
             jamba::drawLabels(preset="bottomright",
+               text_fn=jamba::shadowText,
                labelCex=titleCex[i]*0.9,
                font=titleFont[i],
                txt=paste0("MAD x",
@@ -1639,6 +1649,7 @@ jammaplot <- function
                );
          } else if (length(outlierMAD) > 0 && displayMAD == 2) {
             jamba::drawLabels(preset="bottomright",
+               text_fn=jamba::shadowText,
                labelCex=titleCex[i]*0.9,
                font=titleFont[i],
                txt=paste0("MAD:",

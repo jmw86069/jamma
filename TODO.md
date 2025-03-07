@@ -1,5 +1,35 @@
 # TODO for jamma
 
+## 07mar2025
+
+* DONE. Fix bug in `jammaplot()` when NA values are present,
+causing an error with `any(x > apply_transform_limit)`.
+
+## 21feb2025
+
+* Prepare for publishing a brief report.
+
+   * Useful references on MA-plots:
+   
+      * Futshick et al 2018
+      https://www.sciencedirect.com/science/article/pii/B9780128027615000079
+      Molecular Pathology textbook
+      https://doi.org/10.1016/B978-0-12-802761-5.00007-9
+
+## 03feb2025
+
+* Better idea for categorical coloring to indicate factor values
+
+   * Allow one or more `colnames(colData(se))` to be used with
+   `sample_color_list` which will add one tile per factor value
+   in the corner of each panel. Potential replacement for `subtitle`
+   and `subtitleBoxColor`.
+
+## 24jan2025
+
+* DONE. Display MAD factor using `shadowText()` or equivalent.
+* DONE. Display control asterisk using `shadowText()` or equivalent.
+
 ## 07oct2024
 
 * DONE. Fix `ggjammaplot()` bug where ggplot2 facet strip background color
@@ -17,6 +47,10 @@ working, probably something in the ggplot2 3.5.x update.
 
 * Add support for `SingleCellExperiment`/`Seurat` objects.
 
+   * Todo: Ensure input to `jammaplot()` and `ggjammaplot()`
+   work for Seurat objects.
+   * Todo: Ensure all steps are properly compatible with alternate
+   matrix objects, mostly from Matrix package.
    * Adopt similar mechanism used in `jamses::heatmap_se()`
    * Use `rowRanges()` when necessary.
 
