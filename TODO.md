@@ -1,5 +1,14 @@
 # TODO for jamma
 
+## 14mar2025
+
+* Add visual tests, as used in venndir.
+* Consider multi-page output with `ggjammaplot()`.
+Similarly, consider padding empty cells when `ncol` and `nrow`
+are provided but do not fill all available rows/columns.
+* DONE. Consider improving visual detail with ggplot2 smooth scatter output.
+* Add control asterisk to `ggjammaplot()`.
+
 ## 07mar2025
 
 * DONE. Fix bug in `jammaplot()` when NA values are present,

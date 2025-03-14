@@ -59,6 +59,7 @@ Other jam utility functions:
 \code{\link{find_colname}()},
 \code{\link{fold_to_log2fold}()},
 \code{\link{get_se_assaydata}()},
+\code{\link{get_se_colData}()},
 \code{\link{handle_highlightPoints}()},
 \code{\link{log2fold_to_fold}()},
 \code{\link{logAxis}()},

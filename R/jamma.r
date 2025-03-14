@@ -315,13 +315,15 @@
 #'    However, it is quite useful sometimes to provide a subset of
 #'    samples especially if there are known quality samples, to which
 #'    new samples of unknown quality are being compared.
-#' @param colramp one of several inputs recognized by
-#'    `jamba::getColorRamp()`. It typically recognizes either the name of
-#'    a color ramp from RColorBrewer, the name of functions from the
-#'    `viridis` package such as `viridis::viridis()`, or single R colors, or
-#'    a vector of R colors. When a single color is supplied, a gradient
-#'    is created from white to that color, where the default base color
-#'    can be customized with `defaultBaseColor="black"` for example.
+#' @param colramp `character` input recognized by
+#'    `jamba::getColorRamp()`. Some examples:
+#'    * name of color palette from RColorBrewer
+#'    * the name of a function from the 'viridis' or 'viridisLite' package,
+#'    either as `viridisLite::viridis()` or "viridis"
+#'    * a single `character` colors, from which a gradient is created
+#'    from white (default is `defaultBaseColor="white"`) to the
+#'    specified color
+#'    * vector of R colors
 #' @param colrampOutlier one of several inputs recognized by
 #'    `jamba::getColorRamp()` to define a specific color ramp for
 #'    MA-plot outlier panels, used when `outlierMAD` is defined.
@@ -361,9 +363,12 @@
 #'    The default `subtitleAdjPreset="topright"` places labels to the
 #'    top-right of the subtitle position, which by default is the bottom-left
 #'    corner of each panel.
-#' @param titleColor `character` vector of colors applied to title text
-#'    in each MA-plot panel. When `doTitleBox=TRUE` and `titleColor`
-#'    contains only one or no value, the title color is defined by
+#' @param colorSub `character` vector of colors, whose names assign each
+#'    color to a character value. Alternatively a `list` from which
+#'    named colors will be extracted.
+#' @param titleColor `character` vector of colors applied to the title
+#'    box in each plot panel, but only when multiple `titleColor`
+#'    are supplied. Otherwise, the title color is defined by
 #'    `jamba::setTextContrastColor()` along with `titleBoxColor`.
 #' @param doTitleBox `logical` indicating whether to draw plot
 #'    titles using a colored box. When `doTitleBox=TRUE` the
@@ -393,8 +398,8 @@
 #'    text, as used by `graphics::title()`.
 #' @param groupSuffix (deprecated) `character` text appended to each MA-plot
 #'    panel title. Use argment `subtitle` as the preferred alternative.
-#' @param highlightPoints optional set of rows to highlight on each
-#'    MA-plot panel, drawn as a set of points on top of the in one of the following forms:
+#' @param highlightPoints `character` rownames, default NULL, with optional
+#'    rows to highlight in each MA-plot panel. Input also recognizes:
 #'    * `character` vector matching `rownames(x)`, indicating a single
 #'    set of points to highlight in one color defined in `highlightColor`.
 #'    Internally, it is converted to a `list` containing one vector.
@@ -757,6 +762,7 @@ jammaplot <- function
  titleCexFactor=1,
  titleCex=NULL,
  doTitleBox=TRUE,
+ colorSub=NULL,
  titleColor="black",
  titleFont=2,
  titlePreset="top",
@@ -774,7 +780,7 @@ jammaplot <- function
  doHighlightLegend=TRUE,
  smoothPtCol="#00000055",
  margins=c(2.5, 0.5, 2.0, 0.2),
- outer_margins=c(0, 1.5, 0, 0.2),
+ outer_margins=c(0, 2.5, 0, 0.2),
  useRaster=TRUE,
  ncol=NULL,
  nrow=NULL,
@@ -909,15 +915,58 @@ jammaplot <- function
    transformation <- function(x){
       x^transFactor;
    }
+   ## Handle various types of input
    if ("list" %in% class(x)) {
       nsamples <- length(x);
       x_names <- names(x);
    } else if ("SummarizedExperiment" %in% class(x)) {
-      x <- get_se_assaydata(x,
+      if (!requireNamespace("SummarizedExperiment", quietly=TRUE)) {
+         stop(paste0("SummarizedExperiment input requires the ",
+            "SummarizedExperiment package."))
+      }
+      se <- x;
+      x <- get_se_assaydata(se,
          assay_name=assay_name,
          verbose=verbose);
       nsamples <- ncol(x);
       x_names <- colnames(x);
+      # centerGroups using colData
+      if (length(centerGroups) > 0) {
+         centerGroups <- get_se_colData(se,
+            use_values=centerGroups)
+      }
+      # subtitle using colData
+      if (length(subtitle) > 0) {
+         subtitle <- get_se_colData(se,
+            use_values=subtitle)
+      }
+      # titleBoxColor using colData
+      if (length(titleBoxColor) > 0) {
+         if (!all(jamba::isColor(titleBoxColor))) {
+            titleBoxColor <- get_se_colData(se,
+               use_values=titleBoxColor)
+            if (!all(jamba::isColor(titleBoxColor))) {
+               # convert to color values
+               titleBoxColor[] <- colorjam::group2colors(titleBoxColor,
+                  colorSub=colorSub,
+                  ...);
+            }
+         }
+      }
+      # subtitleBoxColor using colData
+      if (length(subtitleBoxColor) > 0) {
+         if (!all(jamba::isColor(subtitleBoxColor))) {
+            subtitleBoxColor <- get_se_colData(se,
+               use_values=subtitleBoxColor)
+            if (!all(jamba::isColor(subtitleBoxColor))) {
+               # convert to color values
+               subtitleBoxColor[] <- colorjam::group2colors(subtitleBoxColor,
+                  colorSub=colorSub,
+                  ...);
+            }
+         }
+      }
+
       if (length(x) == 0) {
          stop("assays(x)[[assay_name]] did not produce a usable data matrix.");
       }
@@ -1079,8 +1128,8 @@ jammaplot <- function
 
    ## Define a new par for panel layout
    if (doPar) {
-      oPar <- par(no.readonly=TRUE);
-      on.exit(par(oPar));
+      # oPar <- par(no.readonly=TRUE);
+      # on.exit(par(oPar));
       if (is.null(ncol)) {
          if (is.null(nrow)) {
             parMfrow <- jamba::decideMfrow(nsamples);
@@ -1092,6 +1141,15 @@ jammaplot <- function
       } else if (is.null(nrow)) {
          nrow <- ceiling(nsamples / ncol);
       }
+      #
+      if (length(margins) == 0) {
+         margins <- c(2.5, 0.5, 2, 0.2);
+      }
+      margins <- rep(margins, length.out=4);
+      margins <- pmax(
+         margins,
+         c(0, 0, 1 + titleCex, 0))
+      #
       if (length(outer_margins) == 0) {
          outer_margins <- 0;
       }
@@ -1101,25 +1159,41 @@ jammaplot <- function
          # margins <- margins + c(0, 2, 0, 0);
          outer_margins <- outer_margins + c(0, 2, 0, 0);
       }
-      par("oma"=outer_margins)
-      par(mfrow=c(nrow, ncol));
+      withr::local_par(list(mfrow=c(nrow, ncol)));
       if (length(maintitle) > 0) {
          maintitle_nlines <- length(unlist(strsplit(maintitle, "\n")));
-         par("oma"=pmax(par("oma"),
-            c(0, 0, 1.5 * (maintitle_nlines + 3), 0)));
+         outer_margins <- pmax(
+            outer_margins,
+            c(0, 0, 1.5 * (maintitle_nlines + 3), 0))
       }
       # if highlightPoints, add margin at the bottom
       if (length(highlightPoints) > 0 && doHighlightLegend) {
-         par("oma"=pmax(par("oma"),
-            c(3, 0, 0, 0)));
+         outer_margins <- pmax(
+            outer_margins,
+            c(3.5, 0, 0, 0))
       }
+      withr::local_par(list(oma=outer_margins))
    }
    if (length(titleCex) == 0) {
       titleCex <- 1;
    }
    titleCex <- rep(titleCex, length.out=nsamples);
    titleFont <- rep(titleFont, length.out=nsamples);
-   titleBoxColor <- rep(titleBoxColor, length.out=nsamples);
+   if (length(titleBoxColor) == 0) {
+      if (all(colnames(x) %in% names(colorSub))) {
+         titleBoxColor <- colorSub[colnames(x)]
+      }
+   }
+   if (length(titleBoxColor) != nsamples) {
+      titleBoxColor <- rep(titleBoxColor, length.out=nsamples);
+      names(titleBoxColor) <- colnames(x);
+   }
+   if (length(subtitle) > 0 && length(subtitleBoxColor) == 0) {
+      if (all(subtitle %in% names(colorSub))) {
+         subtitleBoxColor <- colorSub[subtitle];
+         names(subtitleBoxColor) <- colnames(x);
+      }
+   }
 
    ## Adjust titleColor to have contrast from the titleBoxColor
    if (length(titleColor) <= 1) {
@@ -1134,7 +1208,7 @@ jammaplot <- function
    }
 
    if (doPar) {
-      par("mar"=margins);
+      withr::local_par(list(mar=margins))
    }
    if (length(whichSamples) == 0) {
       whichSamples <- seq_len(nsamples);
@@ -1230,7 +1304,18 @@ jammaplot <- function
       ...);
    # for useRank=TRUE adjust default ylim
    if (TRUE %in% useRank && all(abs(ylim) == 4)) {
-      ylim <- c(-1,1) * round(nrow(x) * .40);
+      ylim <- c(-1, 1) * round(nrow(x) * .40);
+   }
+   if (length(unique(ylim)) == 1) {
+      if (all(ylim == 0)) {
+         if (TRUE %in% useRank) {
+            ylim <- c(-1, 1) * round(nrow(x) * .40);
+         } else {
+            ylim <- c(-4, 4);
+         }
+      } else {
+         ylim <- abs(unique(ylim)) * c(-1, 1)
+      }
    }
 
    ## Optionally calculate the MAD per panel
@@ -1366,11 +1451,10 @@ jammaplot <- function
                }
             }
          }
-         par("mar"=margins);
+         withr::local_par(list(mar=margins));
          groupName <- paste(c(x_names[i],
             groupSuffix[i]),
             collapse="");
-         # titleText <- x_names[i];
          titleText <- sample_labels[i];
 
          ## Calculate the MAD, i.e. the median absolute deviation from zero
@@ -1385,11 +1469,12 @@ jammaplot <- function
          }
 
          # version 0.0.33.900: Define missing xlim when required
-         if (length(jamba::rmNA(xlim)) == 0) {
-            if (length(jamba::rmNA(mvaData[,"x"])) == 0) {
-               use_xlim <- NULL;
-            } else {
-               use_xlim <- range(mvaData[,"x"], na.rm=TRUE)
+         if (length(jamba::rmNA(xlim)) <= 1) {
+            use_xlim <- range(mvaData[,"x"], na.rm=TRUE);
+            if (all(is.infinite(use_xlim))) {
+               use_xlim <- c(0, 1);
+            } else if (length(unique(use_xlim)) == 1) {
+               use_xlim <- use_xlim + c(0, 1)
             }
          } else {
             use_xlim <- xlim
@@ -1405,7 +1490,8 @@ jammaplot <- function
             jamba::usrBox(fill=outlierColor)
             box();
          } else {
-            mva <- smoothScatterFunc(mvaData[,c("x","y")],
+            mva <- smoothScatterFunc(
+               mvaData[, c("x","y"), drop=FALSE],
                colramp=colrampUse(21),
                xlab="",
                ylab="",
@@ -1555,21 +1641,21 @@ jammaplot <- function
                   bgText=list(NA, titleBoxColor[i]),
                   fgText=list("orange", titleColor[i]));
             }
-            parXpd <- par("xpd");
-            par("xpd"=NA);
-            ## Use drawLabels() for more control over the text box
-            jamba::drawLabels(preset=titlePreset,
-               adjPreset=titleAdjPreset,
-               panelWidth="minimum",
-               txt=titleText,
-               boxColor=titleBoxColor[i],
-               boxBorderColor=jamba::makeColorDarker(titleBoxColor[i]),
-               labelCol=titleColor[i],
-               labelCex=titleCex[i],
-               drawBox=doTitleBox,
-               font=titleFont[i],
-               ...);
-            par("xpd"=parXpd);
+            # temporarily ignore plot boundaries
+            withr::with_par(list(xpd=NA), code={
+               ## Use drawLabels() for more control over the text box
+               jamba::drawLabels(preset=titlePreset,
+                  adjPreset=titleAdjPreset,
+                  panelWidth="minimum",
+                  txt=titleText,
+                  boxColor=titleBoxColor[i],
+                  boxBorderColor=jamba::makeColorDarker(titleBoxColor[i]),
+                  labelCol=titleColor[i],
+                  labelCex=titleCex[i],
+                  drawBox=doTitleBox,
+                  font=titleFont[i],
+                  ...);
+            })
          } else {
             titleLine <- margins[3] - 1.5;
             title(main="",

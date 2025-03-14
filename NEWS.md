@@ -1,3 +1,25 @@
+# jamma 0.0.36.900
+
+## changes
+
+* Added 'withr' to dependencies.
+* Bumped 'jamba' requirement to CRAN version 1.0.2, woot!
+* `jammaplot()`
+
+   * 'SummarizedExperiment' input now allows args `centerGroups`,
+   `titleBoxColor`, `subtitle`, `subtitleBoxColor` to match `colData(x)`.
+   * ylim,xlim can no longer have length 1 to avoid errors in smooth scatter.
+   * Calls to `par()` use `withr::local_par()` or `withr::with_par()`
+   to revert changes.
+
+* `ggjammaplot()`
+
+   * 'SummarizedExperiment' input now allows args `centerGroups`,
+   `titleBoxColor`, `subtitle`, `subtitleBoxColor` to match `colData(x)`.
+   * `subtitle` is displayed consistent with `jammaplot()`, bottom-left
+   corner, and not as a 'ggplot2' subtitle.
+   * MAD factor is displayed in the bottom-right corner.
+
 # jamma 0.0.35.900
 
 ## changes

@@ -51,6 +51,7 @@ Other jam utility functions:
 \code{\link{blockArrowMargin}()},
 \code{\link{find_colname}()},
 \code{\link{get_se_assaydata}()},
+\code{\link{get_se_colData}()},
 \code{\link{gradient_rect}()},
 \code{\link{handle_highlightPoints}()},
 \code{\link{log2fold_to_fold}()},

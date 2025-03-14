@@ -38,6 +38,7 @@ ggjammaplot(
   apply_transform_limit = 40,
   titleBoxColor = "lightgoldenrod1",
   titleCex = 1,
+  subtitleBoxColor = titleBoxColor,
   outlierColor = "lemonchiffon",
   fillBackground = TRUE,
   maintitle = NULL,
@@ -99,6 +100,7 @@ jammaplot(
   titleCexFactor = 1,
   titleCex = NULL,
   doTitleBox = TRUE,
+  colorSub = NULL,
   titleColor = "black",
   titleFont = 2,
   titlePreset = "top",
@@ -116,7 +118,7 @@ jammaplot(
   doHighlightLegend = TRUE,
   smoothPtCol = "#00000055",
   margins = c(2.5, 0.5, 2, 0.2),
-  outer_margins = c(0, 1.5, 0, 0.2),
+  outer_margins = c(0, 2.5, 0, 0.2),
   useRaster = TRUE,
   ncol = NULL,
   nrow = NULL,
@@ -217,13 +219,17 @@ group in order to view the variability among group
 replicates, which should be much lower than variability across
 sample groups. See \code{centerGeneData()} for more specific examples.}
 
-\item{colramp}{one of several inputs recognized by
-\code{jamba::getColorRamp()}. It typically recognizes either the name of
-a color ramp from RColorBrewer, the name of functions from the
-\code{viridis} package such as \code{viridis::viridis()}, or single R colors, or
-a vector of R colors. When a single color is supplied, a gradient
-is created from white to that color, where the default base color
-can be customized with \code{defaultBaseColor="black"} for example.}
+\item{colramp}{\code{character} input recognized by
+\code{jamba::getColorRamp()}. Some examples:
+\itemize{
+\item name of color palette from RColorBrewer
+\item the name of a function from the 'viridis' or 'viridisLite' package,
+either as \code{viridisLite::viridis()} or "viridis"
+\item a single \code{character} colors, from which a gradient is created
+from white (default is \code{defaultBaseColor="white"}) to the
+specified color
+\item vector of R colors
+}}
 
 \item{groupedX}{\code{logical} indicating whether the x-axis value, which
 represents the median or mean value, should be calculated independently
@@ -371,8 +377,8 @@ point density less visually intense.}
 \item{doPlot}{\code{logical} indicating whether to create plots. When
 \code{doPlot=FALSE} only the MA-plot panel data is returned.}
 
-\item{highlightPoints}{optional set of rows to highlight on each
-MA-plot panel, drawn as a set of points on top of the in one of the following forms:
+\item{highlightPoints}{\code{character} rownames, default NULL, with optional
+rows to highlight in each MA-plot panel. Input also recognizes:
 \itemize{
 \item \code{character} vector matching \code{rownames(x)}, indicating a single
 set of points to highlight in one color defined in \code{highlightColor}.
@@ -518,9 +524,13 @@ the top of each plot panel, with \code{drawBox=TRUE}. When
 \code{doTitleBox=FALSE}, \code{jamba::drawLabels()} is called with
 \code{drawBox=FALSE}.}
 
-\item{titleColor}{\code{character} vector of colors applied to title text
-in each MA-plot panel. When \code{doTitleBox=TRUE} and \code{titleColor}
-contains only one or no value, the title color is defined by
+\item{colorSub}{\code{character} vector of colors, whose names assign each
+color to a character value. Alternatively a \code{list} from which
+named colors will be extracted.}
+
+\item{titleColor}{\code{character} vector of colors applied to the title
+box in each plot panel, but only when multiple \code{titleColor}
+are supplied. Otherwise, the title color is defined by
 \code{jamba::setTextContrastColor()} along with \code{titleBoxColor}.}
 
 \item{titleFont}{\code{integer} font compatible with \code{par("font")}.
@@ -854,8 +864,8 @@ used. For example indicate \code{'sampleID vs groupA'} instead of
 
 }}
 \examples{
-if (jamba::check_pkg_installed("SummarizedExperiment") &&
-   jamba::check_pkg_installed("farrisdata")) {
+if (requireNamespace("SummarizedExperiment", quietly=TRUE)) &&
+   requireNamespace("farrisdata", quietly=TRUE)) {
    suppressPackageStartupMessages(require(SummarizedExperiment));
 
    GeneSE <- farrisdata::farrisGeneSE;

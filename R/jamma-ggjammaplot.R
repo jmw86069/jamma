@@ -4,8 +4,8 @@
 #' @family jam plot functions
 #'
 #' @examples
-#' if (jamba::check_pkg_installed("SummarizedExperiment") &&
-#'    jamba::check_pkg_installed("farrisdata")) {
+#' if (requireNamespace("SummarizedExperiment", quietly=TRUE)) &&
+#'    requireNamespace("farrisdata", quietly=TRUE)) {
 #'    suppressPackageStartupMessages(require(SummarizedExperiment));
 #'
 #'    GeneSE <- farrisdata::farrisGeneSE;
@@ -233,6 +233,7 @@ ggjammaplot <- function
  apply_transform_limit=40,
  titleBoxColor="lightgoldenrod1",
  titleCex=1,
+ subtitleBoxColor=titleBoxColor,
  outlierColor="lemonchiffon",
  fillBackground=TRUE,
  maintitle=NULL,
@@ -278,19 +279,6 @@ ggjammaplot <- function
    if (length(titleBoxColor) == 0) {
       titleBoxColor <- "lightgoldenrod1";
    }
-   if (length(names(titleBoxColor)) == 0) {
-      if (is.list(x)) {
-         titleBoxColor <- jamba::nameVector(
-            rep(titleBoxColor,
-               length.out=length(x)),
-            names(x));
-      } else {
-         titleBoxColor <- jamba::nameVector(
-            rep(titleBoxColor,
-               length.out=ncol(x)),
-            colnames(x));
-      }
-   }
    # jamba::printDebugI(titleBoxColor);# debug
    naControlAction <- match.arg(naControlAction);
 
@@ -303,11 +291,60 @@ ggjammaplot <- function
       rm(x);
    } else {
       if (inherits(x, "SummarizedExperiment")) {
+         se <- x;
          x <- get_se_assaydata(x,
             assay_name=assay_name,
             verbose=verbose);
+         # handle other arguments
+         # centerGroups using colData
+         if (length(centerGroups) > 0) {
+            centerGroups <- get_se_colData(se,
+               use_values=centerGroups)
+         }
+         # subtitle using colData
+         if (length(subtitle) > 0) {
+            subtitle <- get_se_colData(se,
+               use_values=subtitle)
+         }
+         # titleBoxColor using colData
+         if (length(titleBoxColor) > 0) {
+            if (!all(jamba::isColor(titleBoxColor))) {
+               titleBoxColor <- get_se_colData(se,
+                  use_values=titleBoxColor)
+               if (!all(jamba::isColor(titleBoxColor))) {
+                  # convert to color values
+                  titleBoxColor[] <- colorjam::group2colors(titleBoxColor);
+               }
+            }
+         }
+         # subtitleBoxColor using colData
+         if (length(subtitleBoxColor) > 0) {
+            if (!all(jamba::isColor(subtitleBoxColor))) {
+               subtitleBoxColor <- get_se_colData(se,
+                  use_values=subtitleBoxColor)
+               if (!all(jamba::isColor(subtitleBoxColor))) {
+                  # convert to color values
+                  subtitleBoxColor[] <- colorjam::group2colors(subtitleBoxColor);
+               }
+            }
+         }
       }
-      ## Optionally apply log2(1 + x) transform?
+
+      if (length(names(titleBoxColor)) == 0) {
+         if (is.list(x)) {
+            titleBoxColor <- jamba::nameVector(
+               rep(titleBoxColor,
+                  length.out=length(x)),
+               names(x));
+         } else {
+            titleBoxColor <- jamba::nameVector(
+               rep(titleBoxColor,
+                  length.out=ncol(x)),
+               colnames(x));
+         }
+      }
+
+      # Optionally apply log2(1 + x) transform?
       if (!TRUE %in% useRank &&
             any(x > apply_transform_limit)) {
          if (verbose) {
@@ -343,9 +380,7 @@ ggjammaplot <- function
       whichSamples <- names(jp2);
    }
 
-   # jamba::printDebug("whichSamples:");print(whichSamples);# debug
    titleBoxColor <- titleBoxColor[whichSamples];
-   # jamba::printDebug("titleBoxColor:");print(titleBoxColor);# debug
 
    if (length(whichSamples) == 0) {
       whichSamples <- names(jp2);
@@ -357,7 +392,6 @@ ggjammaplot <- function
 
    return_type <- match.arg(return_type);
    # quick pivot
-   # jamba::printDebug("head(jp2[[1]], 10):");print(head(jp2[[1]], 10));# debug
    jp2tall <- jamba::rbindList(
       lapply(unname(whichSamples), function(iname){
          idf <- jp2[[iname]];
@@ -420,7 +454,7 @@ ggjammaplot <- function
    jp2tall <- subset(jp2tall, !is.na(mean) & !is.na(difference))
 
    # titleBoxColor
-   if (length(unique(titleBoxColor)) <= 1) {
+   if (length(unique(titleBoxColor)) == 1) {
       strip_bg <- unique(titleBoxColor);
    } else {
       strip_bg <- "transparent";
@@ -530,6 +564,14 @@ ggjammaplot <- function
          ", n: ", format(nbin[1], digits=2));
    }
 
+   # subtitle
+   if (length(subtitle) == 0 &&
+         length(unique(centerGroups)) > 1) {
+      subtitle <- rep(centerGroups,
+         length.out=ncol(x));
+      names(subtitle) <- colnames(x);
+   }
+
    # ggplot MA-plot
    nrow_x <- nrow(x);
    p <- ggplot2::ggplot(
@@ -542,6 +584,7 @@ ggjammaplot <- function
       ggplot2::xlab(summary) +
       ggplot2::ylab(difference);
       # ggplot2::scale_y_continuous(name=summary)
+
    if (fillBackground) {
       p <- p +
          ggplot2::geom_rect(
@@ -553,21 +596,46 @@ ggjammaplot <- function
             ymin=y_exp[1],
             ymax=y_exp[2])
    }
-   p <- p +
-      ggplot2::stat_density_2d(
-         geom="raster",
-         # stat="density_2d",
-         data=subset(jp2tall, !outlier),
-         ggplot2::aes(fill=(ggplot2::after_stat(count) / nrow_x)^transFactor),
-         n=nbin,
-         show.legend=FALSE,
-         h=c(hx, hy),
-         contour=FALSE) +
+   # original default method
+   if (TRUE) {
+      exp_aspect <- diff(x_exp) / diff(y_exp);
+      # message(paste0("nbin: ", format(nbin)));# debug
+      # message(paste0("exp_aspect: ", format(exp_aspect)));# debug
+      p <- p +
+         ggplot2::stat_density_2d(
+            geom="raster",
+            # stat="density_2d",
+            data=subset(jp2tall, !outlier),
+            ggplot2::aes(fill=(ggplot2::after_stat(count) / nrow_x)^transFactor),
+            # n=round(c(nbin * exp_aspect, nbin)),
+            # n=round(c(nbin, nbin / exp_aspect)),
+            n=round(c(nbin * 2, nbin)),
+            adjust=c(1, 1)/2,
+            show.legend=FALSE,
+            h=c(hx, hy * 2) *2/3,
+            # h=c(hx, hy * 2) *1/2,
+            contour=FALSE) +
+         ggplot2::coord_fixed(exp_aspect / 2)
+   } else {
+      # comparison using hexbin, unfortunately also flattens hexes
+      exp_aspect <- diff(x_exp) / diff(y_exp);
+      message(paste0("nbin: ", format(nbin)));# debug
+      message(paste0("exp_aspect: ", format(exp_aspect)));# debug
+      p <- p +
+         ggplot2::geom_hex(
+            # geom="raster",
+            # stat="density_2d",
+            data=subset(jp2tall, !outlier),
+            ggplot2::aes(fill=(ggplot2::after_stat(count) / nrow_x)^transFactor),
+            bins=c(nbin, nbin / exp_aspect) / 2,
+            # bins=c(nbin/3, nbin/3),
+            show.legend=FALSE)
+   }
       # ggplot2::facet_wrap(~name,
       #    drop=FALSE,
       #    nrow=nrow,
       #    ncol=ncol) +
-      colorjam::theme_jam(
+   p <- p + colorjam::theme_jam(
          strip.background.fill=strip_bg,
          strip.text.size=ggplot2::rel(0.6 * titleCex),
          panel.grid.major.colour=panel.grid.major.colour,
@@ -624,6 +692,38 @@ ggjammaplot <- function
             limits=gradient_range_1);
    }
 
+   # optional ablines
+   if (length(ablineH) > 0) {
+      p <- p +
+         ggplot2::geom_hline(yintercept=ablineH,
+            linetype="dashed",
+            color="#111111",
+            alpha=0.5) +
+         ggplot2::geom_hline(yintercept=ablineH,
+            linetype="dashed",
+            color="#FFFFFF",
+            alpha=0.5);
+   }
+
+   # optional subtitle in each panel
+   if (length(subtitle) > 0) {
+      stdf <- data.frame(name=names(subtitle),
+         x=-Inf,
+         y=-Inf,
+         label=subtitle,
+         fill=subtitleBoxColor,
+         col=jamba::setTextContrastColor(subtitleBoxColor))
+      p <- p +
+         ggplot2::geom_label(data=stdf,
+            ggplot2::aes(x=x,
+               y=y,
+               label=label),
+            hjust=0,
+            vjust=0,
+            fill=subtitleBoxColor,
+            col=jamba::setTextContrastColor(subtitleBoxColor))
+   }
+
    # optionally display MAD factors
    if (displayMAD && length(attr(jp2, "MADfactors")) > 0) {
       mad_factors <- attr(jp2, "MADfactors");
@@ -644,39 +744,33 @@ ggjammaplot <- function
       alt_outlierColor <- ifelse(alt_outlierColorL > 50,
          "gold",
          "red3");
-      p <- p +
-         ggplot2::geom_text(
-            data=subset(mad_df, mad_factors < outlierMAD),
-            ggplot2::aes(x=x,
-               y=y,
-               label=label),
-            col=alt_baseColor,
-            hjust=1.1,
-            vjust=-1.0);
-      if (length(mad_outliers) > 0) {
+      # mad_df$mad_factors <- jamba::rmNA(mad_df$mad_factors, naValue=0.1);
+      use_mad_df <- subset(mad_df, mad_factors < outlierMAD);
+      if (nrow(use_mad_df) > 0) {
          p <- p +
-            ggplot2::geom_text(
-               data=subset(mad_df, mad_factors >= outlierMAD),
+            ggplot2::geom_label(
+               data=use_mad_df,
+               ggplot2::aes(x=x,
+                  y=y,
+                  label=label),
+               col=alt_baseColor,
+               hjust=1,
+               vjust=0);
+         # hjust=1,
+               # vjust=-1);
+      }
+      use_mad_df2 <- subset(mad_df, mad_factors >= outlierMAD);
+      if (length(mad_outliers) > 0 && nrow(use_mad_df2) > 0) {
+         p <- p +
+            ggplot2::geom_label(
+               data=use_mad_df2,
                ggplot2::aes(x=x,
                   y=y,
                   label=label),
                col=alt_outlierColor,
-               hjust=1.1,
-               vjust=-1.0);
+               hjust=1,
+               vjust=0);
       }
-   }
-
-   # optional ablines
-   if (length(ablineH) > 0) {
-      p <- p +
-         ggplot2::geom_hline(yintercept=ablineH,
-            linetype="dashed",
-            color="#111111",
-            alpha=0.5) +
-         ggplot2::geom_hline(yintercept=ablineH,
-            linetype="dashed",
-            color="#FFFFFF",
-            alpha=0.5);
    }
 
    # optional highlight points
@@ -734,10 +828,11 @@ ggjammaplot <- function
          strip=facet_colors)
 
    # optional title
-   if (length(maintitle) > 0 || length(subtitle) > 0) {
+   # if (length(maintitle) > 0 || length(subtitle) > 0) {
+   if (length(maintitle) > 0) {
       p <- p +
-         ggplot2::ggtitle(label=maintitle,
-            subtitle=subtitle);
+         ggplot2::ggtitle(label=maintitle)
+            # subtitle=subtitle);
    }
 
    # optionally return ggplot object here
@@ -758,56 +853,6 @@ ggjammaplot <- function
 }
 
 
-#' Get SummarizedExperiment assay matrix data
-#'
-#' @family jam utility functions
-#'
-#' @param x `SummarizedExperiment` object
-#' @param assay_name `character` string that should match one entry
-#'    in `names(assays(x))`.
-#' @param verbose `logical` indicating whether to print verbose output.
-#' @param ... additional arguments are ignored.
-#'
-#' @export
-get_se_assaydata <- function
-(x,
- assay_name=NULL,
- verbose=FALSE,
- ...)
-{
-   if ("SummarizedExperiment" %in% class(x)) {
-      if (!jamba::check_pkg_installed("SummarizedExperiment")) {
-         stop("The 'SummarizedExperiment' is required for SummarizedExperiment input x.");
-      }
-      #assay_name <- intersect(assay_name,
-      #   names(SummarizedExperiment::assays(x)));
-      if (length(assay_name) == 0) {
-         assay_name <- head(names(SummarizedExperiment::assays(x)), 1);
-         if (verbose) {
-            jamba::printDebug("get_se_assaydata(): ",
-               c("Using first assay_name: '", assay_name, "'"),
-               sep="");
-         }
-      }
-      if (is.numeric(assay_name)) {
-         if (assay_name > length(SummarizedExperiment::assays(x))) {
-            assay_name <- length(SummarizedExperiment::assays(x));
-         }
-         assay_name <- names(SummarizedExperiment::assays(x))[assay_name];
-      }
-      x <- SummarizedExperiment::assays(x)[[assay_name]];
-      x_names <- colnames(x);
-      nsamples <- length(x_names);
-      if (length(x) == 0) {
-         stop("assays(x)[[assay_name]] did not produce a usable data matrix.");
-      }
-   } else {
-      if (!(is.matrix(x) && is.numeric(x))) {
-         stop("x must be a numeric matrix or SummarizedExperiment.");
-      }
-   }
-   x;
-}
 
 #' Handle highlightPoints argument to jammaplot()
 #'
@@ -815,10 +860,10 @@ get_se_assaydata <- function
 #'
 handle_highlightPoints <- function
 (highlightPoints=NULL,
-   highlightColor=NULL,
-   highlightPch=21,
-   highlightCex=1.5,
-   ...)
+ highlightColor=NULL,
+ highlightPch=21,
+ highlightCex=1.5,
+ ...)
 {
    #
    if (length(highlightPoints) == 0) {
