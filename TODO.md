@@ -2,6 +2,7 @@
 
 ## 14mar2025
 
+* Accept DESeq2::DESeqDataset
 * Add visual tests, as used in venndir.
 * Consider multi-page output with `ggjammaplot()`.
 Similarly, consider padding empty cells when `ncol` and `nrow`
