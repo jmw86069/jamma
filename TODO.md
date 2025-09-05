@@ -1,8 +1,15 @@
 # TODO for jamma
 
+## 05sep2025
+
+* DONE. Fix the warning about `pmax(margins, ...)`
+* IN PROGRESS. Consider using `cli` for better messaging.
+* PARTIAL. Support `NanoStringGeoMxSet` in jammaplot.
+* Add `testthat` for `jammaplot()`, `ggjammaplot()`.
+
 ## 14mar2025
 
-* Accept DESeq2::DESeqDataset
+* Accept `DESeq2::DESeqDataset`
 * Add visual tests, as used in venndir.
 * Consider multi-page output with `ggjammaplot()`.
 Similarly, consider padding empty cells when `ncol` and `nrow`

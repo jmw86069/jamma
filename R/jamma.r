@@ -233,10 +233,13 @@
 #' above `outlierMAD` are considered outliers, and the color ramp
 #' uses `outlierColramp` or `outlierColor` as a visual cue.
 #'
-#' Putative outlier samples should usually not be determined
-#' when:
+#' Putative outlier samples should typically **not** be determined when:
 #'
-#'  * `controlSamples` are defined to include only a subset
+#' * Data are not yet normalized. One major purpose of MA-plots is to
+#' assess relative signal (divergence from y=0 across sample panels).
+#' The outlier MAD calculation is based upon the assumption that each
+#' panel is already normalized as best as possible to y=0.
+#' * `controlSamples` is defined to include only a subset
 #' of sample groups,
 #' * `centerGroups` is not defined, or represents more than one
 #' set of sample groups that are not intended to be statistically
@@ -244,30 +247,40 @@
 #'
 #' Putative outlier samples may be defined when:
 #'
-#' * `centerGroups` represents a set of sample groups that are
-#' intended to be involved in direct comparisons
-#' * `centerGroups` represents each sample group
+#' * Data are appropriately normalized.
+#' * There are sufficient measurements that it is reasonable to assume
+#' that the mean or median signal is centered at y=0.
+#' * `centerGroups` represents sets of sample groups that are
+#' intended to be involved in direct comparisons.
+#' * `centerGroups` represents each sample group.
 #'
 #' Potential sample outliers may be identified by setting a threshold
-#' with `outlierMAD`, by default 5xMAD. For a sample to be considered
+#' with `outlierMAD`, by default `outlierMAD=5`. For a sample to be considered
 #' an outlier, its median difference from mean/median needs to be
-#' five times higher than the median across samples.
+#' **5** times higher than the median across samples.
 #'
-#' We typically recommend an `outlierMAD=2` when centering
-#' by sample groups, or when centering within experiment subsets.
+#' That said, we typically recommend an `outlierMAD=2` when centering
+#' by sample groups, or when centering within experimental subsets.
 #' For one sample to have 2xMAD factor, its variance needs
-#' to be uniquely twice as high as the majority of other samples, which
-#' is typically symptomatic of possible technical failure.
+#' to be twice as high as the majority of other samples, which
+#' is symptomatic of potential technical failure.
 #'
 #' There are exceptions to this suggested guideline, which includes
-#' scenarios where a batch effect may be involved.
+#' scenarios where a batch effect may be involved, use of clinical or
+#' animal samples with relatively small sample sizes, or scenarios
+#' in which variability is known or strongly suspected to be biological
+#' variance and not technical variance.
+#'
+#' * Biological variability is to be maintained.
+#' * Technical variability is also to be maintained, but only where the
+#' technical variability is reasonably consistent from sample to sample.
 #'
 #'
 #' To do:
 #' \itemize{
 #'    \item{Accept other object types as input, including Bioconductor
-#'       classes: `ExpressionSet`, `SummarizedExperiment`,
-#'       `MultiExperimentSet`}
+#'       classes: `ExpressionSet` (DONE), `SummarizedExperiment` (DONE),
+#'       `MultiExperimentSet` (TODO)}
 #'    \item{Make it efficient to convey group information, for example
 #'       define `titleBoxColor` with group colors, allow `centerByGroup=TRUE`
 #'       which would re-use known sample group information.}
@@ -916,16 +929,12 @@ jammaplot <- function
       x^transFactor;
    }
    ## Handle various types of input
-   if ("list" %in% class(x)) {
+   if (inherits(x, "list")) {
       nsamples <- length(x);
       x_names <- names(x);
-   } else if ("SummarizedExperiment" %in% class(x)) {
-      if (!requireNamespace("SummarizedExperiment", quietly=TRUE)) {
-         stop(paste0("SummarizedExperiment input requires the ",
-            "SummarizedExperiment package."))
-      }
+   } else if (inherits(x, c("SummarizedExperiment", "ExpressionSet"))) {
       se <- x;
-      x <- get_se_assaydata(se,
+      x <- jamses::get_se_assaydata(se,
          assay_name=assay_name,
          verbose=verbose);
       nsamples <- ncol(x);
@@ -1148,7 +1157,7 @@ jammaplot <- function
       margins <- rep(margins, length.out=4);
       margins <- pmax(
          margins,
-         c(0, 0, 1 + titleCex, 0))
+         c(0, 0, sum(1, titleCex), 0))
       #
       if (length(outer_margins) == 0) {
          outer_margins <- 0;
@@ -1164,7 +1173,7 @@ jammaplot <- function
          maintitle_nlines <- length(unlist(strsplit(maintitle, "\n")));
          outer_margins <- pmax(
             outer_margins,
-            c(0, 0, 1.5 * (maintitle_nlines + 3), 0))
+            c(0, 0, 1.5 * sum(c(maintitle_nlines, 3)), 0))
       }
       # if highlightPoints, add margin at the bottom
       if (length(highlightPoints) > 0 && doHighlightLegend) {

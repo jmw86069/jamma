@@ -1,3 +1,25 @@
+# jamma 0.0.37.900
+
+* Added Enhances: 'SummarizedExperiment', 'Biobase', to support additional
+input object types, but are not "Suggests" so they avoid some CRAN checks.
+* Added Imports: 'cli' for improved commandline messaging.
+
+## changes to existing functions
+
+* `jammaplot()`, `ggjammaplot()`
+
+   * Added support for `ExpressionSet` input class, which includes
+   NanoStringGeoMxSet for example.
+   * Fixed the warning regarding `pmax(margins, ...)`.
+   * Arguments `centerGroups`, `subtitle`, `titleBoxColor`, `subtitleBoxColor`
+   now accept an unnamed vector if `length(centerGroups)` equals `ncol(x)`,
+   making it easier to use.
+   It is preferred to use colnames from `SummarizedExperiment`
+   or `ExpressionSet` which pulls from colData/pData.
+
+* `get_se_assaydata()` and `get_se_colData()` now support `ExpressionSet`.
+
+
 # jamma 0.0.36.900
 
 ## changes

@@ -811,10 +811,13 @@ to the relevant median MAD value. MA-plot panels with MAD factor
 above \code{outlierMAD} are considered outliers, and the color ramp
 uses \code{outlierColramp} or \code{outlierColor} as a visual cue.
 
-Putative outlier samples should usually not be determined
-when:
+Putative outlier samples should typically \strong{not} be determined when:
 \itemize{
-\item \code{controlSamples} are defined to include only a subset
+\item Data are not yet normalized. One major purpose of MA-plots is to
+assess relative signal (divergence from y=0 across sample panels).
+The outlier MAD calculation is based upon the assumption that each
+panel is already normalized as best as possible to y=0.
+\item \code{controlSamples} is defined to include only a subset
 of sample groups,
 \item \code{centerGroups} is not defined, or represents more than one
 set of sample groups that are not intended to be statistically
@@ -823,30 +826,41 @@ compared directly to one another.
 
 Putative outlier samples may be defined when:
 \itemize{
-\item \code{centerGroups} represents a set of sample groups that are
-intended to be involved in direct comparisons
-\item \code{centerGroups} represents each sample group
+\item Data are appropriately normalized.
+\item There are sufficient measurements that it is reasonable to assume
+that the mean or median signal is centered at y=0.
+\item \code{centerGroups} represents sets of sample groups that are
+intended to be involved in direct comparisons.
+\item \code{centerGroups} represents each sample group.
 }
 
 Potential sample outliers may be identified by setting a threshold
-with \code{outlierMAD}, by default 5xMAD. For a sample to be considered
+with \code{outlierMAD}, by default \code{outlierMAD=5}. For a sample to be considered
 an outlier, its median difference from mean/median needs to be
-five times higher than the median across samples.
+\strong{5} times higher than the median across samples.
 
-We typically recommend an \code{outlierMAD=2} when centering
-by sample groups, or when centering within experiment subsets.
+That said, we typically recommend an \code{outlierMAD=2} when centering
+by sample groups, or when centering within experimental subsets.
 For one sample to have 2xMAD factor, its variance needs
-to be uniquely twice as high as the majority of other samples, which
-is typically symptomatic of possible technical failure.
+to be twice as high as the majority of other samples, which
+is symptomatic of potential technical failure.
 
 There are exceptions to this suggested guideline, which includes
-scenarios where a batch effect may be involved.
+scenarios where a batch effect may be involved, use of clinical or
+animal samples with relatively small sample sizes, or scenarios
+in which variability is known or strongly suspected to be biological
+variance and not technical variance.
+\itemize{
+\item Biological variability is to be maintained.
+\item Technical variability is also to be maintained, but only where the
+technical variability is reasonably consistent from sample to sample.
+}
 
 To do:
 \itemize{
 \item{Accept other object types as input, including Bioconductor
-classes: \code{ExpressionSet}, \code{SummarizedExperiment},
-\code{MultiExperimentSet}}
+classes: \code{ExpressionSet} (DONE), \code{SummarizedExperiment} (DONE),
+\code{MultiExperimentSet} (TODO)}
 \item{Make it efficient to convey group information, for example
 define \code{titleBoxColor} with group colors, allow \code{centerByGroup=TRUE}
 which would re-use known sample group information.}

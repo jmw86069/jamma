@@ -19,6 +19,16 @@ in \code{names(assays(x))}.}
 \description{
 Get SummarizedExperiment assay matrix data
 }
+\details{
+Simple function to generalize obtaining the assay data
+from any object that inherits "SummarizedExperiment",
+which includes for example "SingleCellExperiment",
+"DESeqDataSet", "RangedSummarizedExperiment", "SpatialExperiment",
+and others.
+
+It also supports GeomxTools "NanoStringGeoMxSet" if the "GeomxTools"
+R package is available.
+}
 \seealso{
 Other jam utility functions: 
 \code{\link{blockArrowMargin}()},

@@ -290,7 +290,7 @@ ggjammaplot <- function
       jp2 <- x;
       rm(x);
    } else {
-      if (inherits(x, "SummarizedExperiment")) {
+      if (inherits(x, c("SummarizedExperiment", "ExpressionSet"))) {
          se <- x;
          x <- get_se_assaydata(x,
             assay_name=assay_name,
@@ -313,7 +313,9 @@ ggjammaplot <- function
                   use_values=titleBoxColor)
                if (!all(jamba::isColor(titleBoxColor))) {
                   # convert to color values
-                  titleBoxColor[] <- colorjam::group2colors(titleBoxColor);
+                  titleBoxColor[] <- colorjam::group2colors(titleBoxColor,
+                     colorSub=colorSub,
+                     ...);
                }
             }
          }
@@ -324,7 +326,9 @@ ggjammaplot <- function
                   use_values=subtitleBoxColor)
                if (!all(jamba::isColor(subtitleBoxColor))) {
                   # convert to color values
-                  subtitleBoxColor[] <- colorjam::group2colors(subtitleBoxColor);
+                  subtitleBoxColor[] <- colorjam::group2colors(subtitleBoxColor,
+                     colorSub=colorSub,
+                     ...);
                }
             }
          }
@@ -380,11 +384,11 @@ ggjammaplot <- function
       whichSamples <- names(jp2);
    }
 
-   titleBoxColor <- titleBoxColor[whichSamples];
-
    if (length(whichSamples) == 0) {
       whichSamples <- names(jp2);
    }
+   titleBoxColor <- titleBoxColor[whichSamples];
+
    if (any(c("integer", "numeric") %in% class(whichSamples))) {
       whichSamples <- whichSamples[whichSamples %in% seq_along(jp2)];
       whichSamples <- names(jp2)[whichSamples];

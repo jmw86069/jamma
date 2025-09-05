@@ -1,6 +1,17 @@
 
 #' Get SummarizedExperiment assay matrix data
 #'
+#' Get SummarizedExperiment assay matrix data
+#'
+#' Simple function to generalize obtaining the assay data
+#' from any object that inherits "SummarizedExperiment",
+#' which includes for example "SingleCellExperiment",
+#' "DESeqDataSet", "RangedSummarizedExperiment", "SpatialExperiment",
+#' and others.
+#'
+#' It also supports GeomxTools "NanoStringGeoMxSet" if the "GeomxTools"
+#' R package is available.
+#'
 #' @family jam utility functions
 #'
 #' @param x `SummarizedExperiment` object
@@ -16,9 +27,42 @@ get_se_assaydata <- function
  verbose=FALSE,
  ...)
 {
-   if (inherits(x, "SummarizedExperiment")) {
+   # Test input object type
+   if (inherits(x, "ExpressionSet")) {
+      if (!requireNamespace("Biobase", quietly=TRUE)) {
+         cli::cli_abort(paste0(
+            "The {.var Biobase} package is required for ",
+            "{.var ExpressionSet} input."));
+         stop("The 'Biobase' is required for ExpressionSet input.");
+      }
+      # Get data
+      if (length(assay_name) == 0) {
+         assay_name <- head(names(Biobase::assayData(x)), 1);
+         if (verbose) {
+            jamba::printDebug("get_se_assaydata(): ",
+               c("Using first assay_name: '", assay_name, "'"),
+               sep="");
+         }
+      }
+      if (is.numeric(assay_name)) {
+         if (assay_name > length(Biobase::assayData(x))) {
+            assay_name <- length(Biobase::assayData(x));
+         }
+         assay_name <- names(Biobase::assayData(x))[assay_name];
+      }
+      x <- Biobase::assayData(x)[[assay_name]];
+      x_names <- colnames(x);
+      nsamples <- length(x_names);
+      if (length(x) == 0) {
+         stop("assays(x)[[assay_name]] did not produce a usable data matrix.");
+      }
+
+   } else if (inherits(x, "SummarizedExperiment")) {
       if (!requireNamespace("SummarizedExperiment", quietly=TRUE)) {
-         stop("The 'SummarizedExperiment' is required for SummarizedExperiment input x.");
+         cli::cli_abort(paste0(
+            "The {.var SummarizedExperiment} package is required for ",
+            "{.var SummarizedExperiment} input."));
+         stop("The 'SummarizedExperiment' is required for this input.");
       }
       #assay_name <- intersect(assay_name,
       #   names(SummarizedExperiment::assays(x)));
@@ -106,18 +150,39 @@ get_se_colData <- function
  verbose=FALSE,
  ...)
 {
-   if (!inherits(x, "SummarizedExperiment")) {
+   if (inherits(x, "ExpressionSet")) {
+      if (!requireNamespace("Biobase", quietly=TRUE)) {
+         cli::cli_abort(paste0(
+            "The {.var Biobase} package is required for ",
+            "{.var ExpressionSet} input."));
+         stop("The 'Biobase' is required for ExpressionSet input.");
+      }
+      # This step may fail if a column cannot be coerced to data.frame
+      se_colData <- as(Biobase::pData(x), "data.frame")
+   } else if (!inherits(x, "SummarizedExperiment")) {
+      cli::cli_abort(paste0(
+         "Input requires {.var SummarizedExperiment} or {.var ExpressionSet}"
+      ));
       stop("SummarizedExperiment input is required by get_se_colData()");
+   } else if (!requireNamespace("SummarizedExperiment", quietly=TRUE)) {
+      cli::cli_abort(paste0(
+         "The {.var SummarizedExperiment} package is required for ",
+         "{.var SummarizedExperiment} input."));
+      stop("The 'SummarizedExperiment' is required for this input.");
+   } else {
+      se_colData <- SummarizedExperiment::colData(x)
    }
-   if (!requireNamespace("SummarizedExperiment", quietly=TRUE)) {
-      stop("The 'SummarizedExperiment' is required for SummarizedExperiment input x.");
-   }
-   se_colData <- SummarizedExperiment::colData(x)
+
    # handle use_values when supplied
    if (length(use_values) > 0) {
+      if (length(names(use_values)) == 0 && length(use_values) == ncol(x)) {
+         names(use_values) <- colnames(x);
+      }
       if (all(colnames(x) %in% names(use_values))) {
+         # use as named vector, ordered by colnames(x)
          use_values <- use_values[colnames(x)];
       } else {
+         # or use colData columns
          if (any(use_values %in% colnames(se_colData))) {
             centerGroups_cols <- intersect(use_values,
                colnames(se_colData));
@@ -125,13 +190,11 @@ get_se_colData <- function
                jamba::pasteByRow(
                   se_colData[, centerGroups_cols, drop=FALSE]),
                colnames(x))
-         } else if (length(use_values) == ncol(x)) {
-            if (length(names(use_values)) == 0) {
-               names(use_values) <- colnames(x);
-            } else {
-               stop("colnames(x) must be present in names(use_values)");
-            }
          } else {
+            cli::cli_abort(paste0(
+               "When {.var names(use_values)} does not have names, it must ",
+               "have {.var length} equal to {.var ncol(x)}, ",
+               "or {.var names(use_values)} should match {.var colnames(x)}."))
             stop(paste0("names(use_values) must match colnames(x), or",
                "use_values values must be in colnames(colData(x))"))
          }
