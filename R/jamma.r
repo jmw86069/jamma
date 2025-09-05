@@ -934,7 +934,7 @@ jammaplot <- function
       x_names <- names(x);
    } else if (inherits(x, c("SummarizedExperiment", "ExpressionSet"))) {
       se <- x;
-      x <- jamses::get_se_assaydata(se,
+      x <- get_se_assaydata(se,
          assay_name=assay_name,
          verbose=verbose);
       nsamples <- ncol(x);
