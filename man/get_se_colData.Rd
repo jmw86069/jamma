@@ -35,7 +35,7 @@ is supplied.
 Get SummarizedExperiment column  data from colData
 }
 \examples{
-\dontshow{if ({requireNamespace("SummarizedExperiment", quietly=TRUE)}) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if ({requireNamespace("SummarizedExperiment", quietly=TRUE)}) withAutoprint(\{ # examplesIf}
 set.seed(123)
 m <- matrix(rnorm(8100), ncol=9)
 colnames(m) <- head(letters, 9)

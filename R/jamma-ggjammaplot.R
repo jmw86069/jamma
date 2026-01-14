@@ -350,7 +350,7 @@ ggjammaplot <- function
 
       # Optionally apply log2(1 + x) transform?
       if (!TRUE %in% useRank &&
-            any(x > apply_transform_limit)) {
+            any(!is.na(x) & x > apply_transform_limit)) {
          if (verbose) {
             jamba::printDebug("ggjammaplot(): ",
                "Applied transform due to values above ",

@@ -109,7 +109,6 @@ jammaplot(
   xlabline = 2,
   ylab = "",
   ylabline = 1.5,
-  groupSuffix = NULL,
   highlightPch = 21,
   highlightCex = 1.5,
   highlightColor = "#00AAAA66",
@@ -128,7 +127,6 @@ jammaplot(
   customFunc = NULL,
   filterNA = TRUE,
   filterNAreplacement = NA,
-  filterNeg = FALSE,
   noise_floor = 0,
   noise_floor_value = NA,
   filterFloor = NULL,
@@ -231,11 +229,13 @@ specified color
 \item vector of R colors
 }}
 
-\item{groupedX}{\code{logical} indicating whether the x-axis value, which
-represents the median or mean value, should be calculated independently
-for each group when \code{centerGroups} is used with multiple groups.
-Typically \code{groupedX=TRUE} is recommended, however it can be beneficial
-to share an overall x-axis value in specific circumstances.}
+\item{groupedX}{\code{logical} default TRUE, whether to calculate the
+x-axis value within each group, when \code{centerGroups} are defined.
+The default is TRUE, which means the mean/median value used on the
+x-axis represents the summary value for each group, which in most
+cases is appropriate. The y-value (difference from mean/median)
+is of course affected by the x-value used, so this option will
+affect the calculation and display of y-values.}
 
 \item{grouped_mad}{\code{logical} indicating whether the MAD factor calculation
 of variability among samples should be performed independently
@@ -328,17 +328,28 @@ samples in \code{whichSamples} are displayed. This argument keeps
 the MA-plot calculations consistent even when viewing only
 one or a subset of samples in more detail.}
 
-\item{useRank}{\code{logical} indicating whether to create column-wide
-ranks, then create MA-plots using the rank data. When \code{useRank=TRUE}
-the y-axis represents the rank difference from mean, and the
-x-axis represents the mean rank. Using \code{useRank=TRUE} is a good
-method to evaluate whether data can be normalized, or whether
-data across samples is inherently noisy.}
+\item{useRank}{\code{logical}, default FALSE, whether to use rank-MA plots.
+Data are converted to column-wide rank, with 1 for lowest value,
+then MA-plots are created using the rank data.
+When \code{useRank=TRUE} the y-axis is the rank difference from mean rank,
+and the x-axis represents the mean rank.
+Using \code{useRank=TRUE} is a good method to evaluate whether data
+can be normalized, or whether data across samples is inherently noisy
+or in need of batch adjustment.}
+
+\item{apply_transform_limit}{\code{numeric} threshold above which raw data
+values are assumed to need a numeric transformation using \code{log2(1 + x)}.
+Default \code{40} will apply transformation when any non-NA value is above 40.
+Use \code{Inf} (infinite) or NULL to skip this step.}
 
 \item{titleBoxColor}{\code{character} vector of R colors, where
 \code{titleBoxColor} is equal to \code{ncol(x)}, or where
 \code{names(titleBoxColor)} matches \code{colnames(x)}. When supplied, each
 plot panel strip background will be colored accordingly.}
+
+\item{titleCex}{\code{numeric} default NULL, to use a specific cex value
+with \code{graphics::title()} to control the title size. The default
+scales the title with the number of panels.}
 
 \item{outlierColor}{\code{character} string representing one R color,
 used when \code{colrampOutlier} is \code{NULL} and when \code{outlierMAD} is
@@ -346,11 +357,10 @@ defined. This color is used for MA-plot outlier panels by
 substituting the first color from the \code{colramp} color ramp,
 to act as a visual cue that the panel represents an outlier.}
 
-\item{fillBackground}{\code{logical} currently used for base R graphics
-output, and passed to \code{jamba::plotSmoothScatter()},
-indicating whether to fill the plot panel using the
-first color in the color ramp for each MA-plot panel, or when
-a plot panel is an outlier, it uses \code{outlierColor}.
+\item{fillBackground}{\code{logical}, default TRUE, whether to apply
+background fill before rendering the plot in each panel.
+It uses the first color in the color ramp, except for outlier
+samples it uses the \code{outlierColor}.
 This argument is useful for all plot panels especially when the
 \code{colramp} base color is not white (or otherwise does not match
 the background of the plot device, for example \code{colramp="viridis"}).
@@ -365,17 +375,22 @@ margin.}
 the bottom left corner of each plot panel, the location
 is defined by \code{subtitlePreset}.}
 
-\item{transFactor}{\code{numeric} adjustment to the visual density of
+\item{transFactor}{\code{numeric} default 0.18, adjusts the visual density of
 smooth scatter points. For base R graphics, this argument is
 passed to \code{jamba::plotSmoothScatter()}. The argument value is based upon
-\code{graphics::smoothScatter()} argument \code{transformation}, which uses
-default \code{function(x)x^0.25}. The \code{transFactor} is equivalent to the
-exponential in the form: \code{function(x)x^transFactor}. Lower values
-make the point density more visually intense, higher values make the
-point density less visually intense.}
+\code{graphics::smoothScatter()} argument \code{transformation}, which itself used
+default \code{function(x)x^0.25}.
+The \code{transFactor} applies an exponential in the form:
+\code{function(x)x^transFactor}.
+\itemize{
+\item Lower values (0.18 to 0.10 or lower) make the point density
+more visually intense,
+\item Higher values (0.3 to 0.5 and above) make the point density
+less visually intense.
+}}
 
-\item{doPlot}{\code{logical} indicating whether to create plots. When
-\code{doPlot=FALSE} only the MA-plot panel data is returned.}
+\item{doPlot}{\code{logical} indicating whether to create plots, default TRUE.
+When \code{doPlot=FALSE} only the MA-plot panel data is returned.}
 
 \item{highlightPoints}{\code{character} rownames, default NULL, with optional
 rows to highlight in each MA-plot panel. Input also recognizes:
@@ -390,26 +405,32 @@ Each vector is highlighted as a set, using colors defined in
 \item \code{NULL} no points are highlighted.
 }}
 
-\item{highlightCex}{\code{numeric} vector used when \code{highlightPoints}
-is defined. It is recycled to \code{length(highlightPoints)} after
+\item{highlightPch}{\code{numeric} vector, default 21, used to define point
+shape when \code{highlightPoints} is defined. It is applied to each
+vector in the \code{list} of \code{highlightPoints}, and recycled as needed.}
+
+\item{highlightCex}{\code{numeric} vector, default 1.5, used when
+\code{highlightPoints} is defined.
+It is recycled to \code{length(highlightPoints)} after
 \code{highlightPoints} is converted to a \code{list} if necessary.
-Values are therefore applied to each set of points in the \code{list}.
+Values are therefore applied to each vector of points in the \code{list}.
 It can be supplied as a \code{list}, which will be recycled to
 \code{length(highlightPoints)} and applied in order to each \code{vector}
 of points highlighted.}
 
-\item{highlightColor}{\code{character} vector used when \code{highlightPoints}
-is defined. It is recycled to \code{length(highlightPoints)} after
+\item{highlightColor}{\code{character} vector, default \code{"#00AAAA66"} (aqua),
+used when \code{highlightPoints} is defined.
+It is recycled to \code{length(highlightPoints)} after
 \code{highlightPoints} is converted to a \code{list} if necessary.
 Colors are therefore applied to each set of points in the \code{list}.}
 
-\item{doHighlightLegend}{\code{logical} indicating whether to print a
-color legend when \code{highlightPoints} is defined. The legend is
-displayed in the bottom outer margin of the page using
+\item{doHighlightLegend}{\code{logical} default TRUE, whether to print a
+color legend when \code{highlightPoints} is defined.
+The legend is displayed in the bottom outer margin of the page using
 \code{outer_legend()}, and the page is adjusted to add bottom
 outer margin. When the legend is particularly large, it may
 be preferable to hide the color legend and display the legend
-another way, for example \code{legend()}.}
+another way, for example by calling \code{legend()} with custom options.}
 
 \item{ablineH, ablineV}{\code{numeric} vector indicating position of
 horizontal and vertical lines in each MA-plot panel.
@@ -451,14 +472,16 @@ The range \code{c(-4, 4)} should be adjusted
 relative to the typical ranges expected for the data.}
 
 \item{ncol, nrow}{\code{integer} number of MA-plot panel columns and rows
-passed to \code{graphics::par("mfrow")} when \code{doPar=TRUE}. When only one
-value is supplied, \code{nrow} or \code{ncol}, the other value is defined
-by \code{ncol(x)} and \code{blankPlotPos} so all panels can be contained on
-one page. When \code{nrow} and \code{ncol} are defined such that multiple
+passed to \code{graphics::par("mfrow")} when \code{doPar=TRUE}.
+When only one value is supplied, \code{nrow} or \code{ncol}, the other value
+is defined by \code{ncol(x)} and \code{blankPlotPos} so all panels can be
+contained on one page.
+When \code{nrow} and \code{ncol} are defined such that multiple
 pages are produced, each page will be annotated with \code{maintitle}
-and \code{doHighlightLegend} if relevant.}
+and \code{doHighlightLegend} as relevant, to produce multi-page
+layout.}
 
-\item{blankPlotPos}{\code{NULL} or \code{integer} vector indicating
+\item{blankPlotPos}{\code{integer}, default \code{NULL}, indicating
 plot panel positions to be drawn blank, and therefore skipped.
 This argument is intended to allow manual placement of plot panels
 with spacing that reinforces a logical layout.
@@ -517,7 +540,7 @@ The default \code{subtitleAdjPreset="topright"} places labels to the
 top-right of the subtitle position, which by default is the bottom-left
 corner of each panel.}
 
-\item{doTitleBox}{\code{logical} indicating whether to draw plot
+\item{doTitleBox}{\code{logical} default TRUE, whether to draw plot
 titles using a colored box. When \code{doTitleBox=TRUE} the
 \code{jamba::drawLabels()} is called to display a label box at
 the top of each plot panel, with \code{drawBox=TRUE}. When
@@ -554,64 +577,70 @@ The default values are blank \code{""} because there are a wide variety
 of possible labels, and the labels take up more space
 than is often useful for most MA-plots.}
 
-\item{xlabline, ylabline}{\code{numeric} number indicating the text line
-distance from the edge of plot border to place \code{xlab} and \code{ylab}
-text, as used by \code{graphics::title()}.}
+\item{xlabline, ylabline}{\code{numeric} number, default 2 and 1.5, respectively,
+the text line (distance) from the edge of plot border to place
+\code{xlab} and \code{ylab} text, as used by \code{graphics::title()}.}
 
-\item{groupSuffix}{(deprecated) \code{character} text appended to each MA-plot
-panel title. Use argment \code{subtitle} as the preferred alternative.}
+\item{doHighlightPolygon}{\code{logical} default FALSE, whether to draw
+a shaded polygon encompassing \code{highlightPoints}, with each
+\code{highlightColor}.
+The polygon is defined by \code{grDevices::chull()}
+via the function \code{points2polygonHull()}.
+The primary purpose is to help identify patterns where expected,
+for example linearity of positive and negative control points.}
 
-\item{doHighlightPolygon}{\code{logical} indicating whether to draw
-a shaded polygon encompassing \code{highlightPoints}, using each
-\code{highlightColor}.The polygon is defined by \code{grDevices::chull()}
-via the function \code{points2polygonHull()}.}
-
-\item{highlightPolygonAlpha}{\code{numeric} value indicating alpha
-transparency used for the highlight polygon when
+\item{highlightPolygonAlpha}{\code{numeric} default 0.3, indicating alpha
+opacity used for the highlight polygon when
 \code{doHighlightPolygon=TRUE}, where \code{0} is fully transparent,
 and \code{1} is completely not transparent (opaque).}
 
-\item{smoothPtCol}{\code{color} used to draw points when \code{nrpoints} is
-non-zero, which draws points in the extremities of the
-smooth scatter plot. See \code{jamba::plotSmoothScatter()}.
-The effect can also be achieved by adjusting \code{transFactor} to
+\item{smoothPtCol}{\code{color}, default is slightly transparent black,
+used for point color when \code{nrpoints} is non-zero.
+A similar effect can be achieved by adjusting \code{transFactor} to
 a lower value, which increases the visual contrast of individual
 points in the point density.}
 
 \item{margins}{\code{numeric} vector of margins compatible with
-\code{graphics::par("mar")}.
-Default values are provided here for convenience.
+\code{graphics::par("mar")}, default \code{c(2.5, 0.5, 2, 0.2)}.
 Since version \verb{0.0.31.900} the \code{outer_margins} are used to control
 y-axis label whitespace, and and y-axis labels are not displayed
-on every plot panel when \code{doPar=TRUE}.}
+on every plot panel when \code{doPar=TRUE}. This output is more similar
+to ggplot2 output, as with \code{ggjammaplot()}.}
 
 \item{outer_margins}{\code{numeric} vector of margins compatible with
-\code{graphics::par("oma")}.
-Default values are provided here for convenience.
-The left outer marging is used to allow whitespace to display
+\code{graphics::par("oma")} default \code{c(0, 2.5, 0, 0.2)}.
+The left outer margin is used to allow whitespace to display
 y-axis labels.
 Note when \code{useRank=TRUE} the y-axis whitespace is increased
 to accomodate larger integer label values.}
 
-\item{useRaster}{\code{logical} indicating whether to draw the
+\item{useRaster}{\code{logical}, default TRUE, whether to draw the
 smooth scatter plot using raster logic, \code{useRaster=TRUE} is
 passed to \code{jamba::plotSmoothScatter()}. The default \code{TRUE}
 creates a much smaller plot object by rendering each plot
 panel as a single raster image instead of rendering individual
-colored rectangles. There is no driving reason to use \code{useRaster=FALSE}
-except if the rasterization process itself is problematic.}
+colored rectangles as discrete graphical objects.
+There is no driving reason to use \code{useRaster=FALSE}
+except if the rasterization process itself is problematic,
+which may occur in very rare occassions if the estimated/recognized
+resolution of the graphical display device for output is incorrect.}
 
-\item{doPar}{\code{logical} indicating whether to apply
+\item{doPar}{\code{logical}, default TRUE, whether to apply
 \code{graphics::par("mfrow")} to define MA-plot panel rows and columns.
 When \code{doPar=FALSE} each plot panel is rendered without
 adjusting the \code{graphics::par("mfrow")} setting, which is appropriate
-for displaying each plot panel individually.}
+for displaying each plot panel individually.
+The \code{doPar=FALSE} option is mostly used when trying to control
+the visual rendering directly.}
 
 \item{las}{\code{integer} value \code{1} or \code{2} indicating whether axis labels
-should be parallel or perpendicular to the axes, respectively.}
+should be parallel or perpendicular to the axes, respectively.
+Default is 2.}
 
 \item{customFunc}{optional \code{function} used instead of the summary
 function defined by \code{useMedian} during the data centering step.
+Default is NULL which thereby applies \code{jam::rowGroupMeans()}
+with \code{useMedian} by default.
 This function should take a \code{matrix} of \code{numeric} values as input,
 and must return a \code{numeric} vector length equal to \code{nrow(x)}.
 This option is intended to allow custom row statistics,
@@ -630,34 +659,39 @@ be left as \code{NA} values, so that data centering does not use these values,
 and so the MA-plot panel does not draw a point when no measurement
 exists.}
 
-\item{filterNeg}{(deprecated) \code{logical} argument, use \code{noise_floor}.}
-
 \item{filterFloor, filterFloorReplacement}{(deprecated) in favor of
 \code{noise_floor}, and \code{noise_floor_replacement} respectively.}
 
-\item{nrpoints}{\code{integer} or \code{NULL} indicating the number of points
-to display on the extremity of the smooth scatter density,
-passed to \code{jamba::plotSmoothScatter()}.}
+\item{nrpoints}{\code{integer} or \code{NULL}, default 0, the number of points
+to display at the extremity of the smooth scatter density,
+passed to \code{jamba::plotSmoothScatter()}.
+This argument is inherited from \code{graphics::smoothScatter()} but
+is not typically used otherwise.}
 
 \item{smoothScatterFunc}{\code{function} used to produce a smooth scatter plot
 in base R graphics. The default \code{jamba::plotSmoothScatter()} controls
 the level of detail in the density calculation, and in the graphical
 resolution of that density in each plot panel. The custom function
 should accept argument \code{transformation} as described in \code{transFactor},
-even if the argument is not used. This argument could be useful to
+even if the argument is not used.
+The \code{smoothScatterFunc} usage is intended to
 specify customizations not convenient to apply otherwise.}
 
-\item{applyRangeCeiling}{\code{logical} passed to
-\code{jamba::plotSmoothScatter()} which determines how to handle points
-outside the plot x-axis and y-axis range: \code{applyRangeCeiling=TRUE}
+\item{applyRangeCeiling}{\code{logical} default TRUE, passed to
+\code{jamba::plotSmoothScatter()}, whether to display points at the extreme
+range of the MA-plot (TRUE), or whether to crop and hide points outside
+the visible range (FALSE).
+\itemize{
+\item \code{applyRangeCeiling=TRUE}
 will place points at the border of the plot, which is helpful
-to indicate that there are more points outside the viewing range;
-\code{applyRangeCeiling=FALSE} will crop and remove points outside
+to indicate that there are more points outside the viewing range.
+\item \code{applyRangeCeiling=FALSE} will crop and remove points outside
 the viewing range, which is helpful for example when a large
 number of points are at zero and overwhelm the point density.
 When there are a large proportion of values at zero, it
 can be helpful to apply \code{xlim=c(0.01, 20)} and
-\code{applyRangeCeiling=FALSE}.}
+\code{applyRangeCeiling=FALSE}.
+}}
 
 \item{doTxtplot}{\code{logical} (not yet implemented in \code{jamma}),
 indicating to produce colored ANSI text plot output, for example

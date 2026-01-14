@@ -346,17 +346,6 @@
 #'    defined. This color is used for MA-plot outlier panels by
 #'    substituting the first color from the `colramp` color ramp,
 #'    to act as a visual cue that the panel represents an outlier.
-#' @param applyRangeCeiling `logical` passed to
-#'    `jamba::plotSmoothScatter()` which determines how to handle points
-#'    outside the plot x-axis and y-axis range: `applyRangeCeiling=TRUE`
-#'    will place points at the border of the plot, which is helpful
-#'    to indicate that there are more points outside the viewing range;
-#'    `applyRangeCeiling=FALSE` will crop and remove points outside
-#'    the viewing range, which is helpful for example when a large
-#'    number of points are at zero and overwhelm the point density.
-#'    When there are a large proportion of values at zero, it
-#'    can be helpful to apply `xlim=c(0.01, 20)` and
-#'    `applyRangeCeiling=FALSE`.
 #' @param whichSamples `NULL` or `integer` vector, representing
 #'    an index subset of samples to include in the MA-plots. When
 #'    `whichSamples` represents a subset of samples in `x`, the
@@ -376,41 +365,6 @@
 #'    The default `subtitleAdjPreset="topright"` places labels to the
 #'    top-right of the subtitle position, which by default is the bottom-left
 #'    corner of each panel.
-#' @param colorSub `character` vector of colors, whose names assign each
-#'    color to a character value. Alternatively a `list` from which
-#'    named colors will be extracted.
-#' @param titleColor `character` vector of colors applied to the title
-#'    box in each plot panel, but only when multiple `titleColor`
-#'    are supplied. Otherwise, the title color is defined by
-#'    `jamba::setTextContrastColor()` along with `titleBoxColor`.
-#' @param doTitleBox `logical` indicating whether to draw plot
-#'    titles using a colored box. When `doTitleBox=TRUE` the
-#'    `jamba::drawLabels()` is called to display a label box at
-#'    the top of each plot panel, with `drawBox=TRUE`. When
-#'    `doTitleBox=FALSE`, `jamba::drawLabels()` is called with
-#'    `drawBox=FALSE`.
-#' @param titleFont `integer` font compatible with `par("font")`.
-#'    Values are recycled across panels, so each panel can use a custom
-#'    value if needed.
-#' @param titlePreset `character` string passed to `jamba::coordPresets()`.
-#'    The default `titlePreset="top"` defines the top edge of each panel,
-#'    and default `titleAdjPreset="top"` places the title at the top
-#'    edge of this position.
-#' @param titleAdjPreset `character` string passed to `jamba::coordPresets()`.
-#'    The default `titleAdjPreset="top"` places labels above the `titlePreset`
-#'    location, by default above the top edge of each panel.
-#'    To place the title inside (below) the top edge of the plot panel,
-#'    use `titlePreset="top", titleAdjPreset="bottom"`, however the
-#'    title box may overlap and hide data points in the plot panel.
-#' @param xlab,ylab `character` x- and y-axis labels, respectively.
-#'    The default values are blank `""` because there are a wide variety
-#'    of possible labels, and the labels take up more space
-#'    than is often useful for most MA-plots.
-#' @param xlabline,ylabline `numeric` number indicating the text line
-#'    distance from the edge of plot border to place `xlab` and `ylab`
-#'    text, as used by `graphics::title()`.
-#' @param groupSuffix (deprecated) `character` text appended to each MA-plot
-#'    panel title. Use argment `subtitle` as the preferred alternative.
 #' @param highlightPoints `character` rownames, default NULL, with optional
 #'    rows to highlight in each MA-plot panel. Input also recognizes:
 #'    * `character` vector matching `rownames(x)`, indicating a single
@@ -421,72 +375,6 @@
 #'    `highlightColor` which ideally should have length equal to
 #'    `length(highlightPoints)`.
 #'    * `NULL` no points are highlighted.
-#' @param highlightColor `character` vector used when `highlightPoints`
-#'    is defined. It is recycled to `length(highlightPoints)` after
-#'    `highlightPoints` is converted to a `list` if necessary.
-#'    Colors are therefore applied to each set of points in the `list`.
-#' @param highlightCex `numeric` vector used when `highlightPoints`
-#'    is defined. It is recycled to `length(highlightPoints)` after
-#'    `highlightPoints` is converted to a `list` if necessary.
-#'    Values are therefore applied to each set of points in the `list`.
-#'    It can be supplied as a `list`, which will be recycled to
-#'    `length(highlightPoints)` and applied in order to each `vector`
-#'    of points highlighted.
-#' @param doHighlightPolygon `logical` indicating whether to draw
-#'    a shaded polygon encompassing `highlightPoints`, using each
-#'    `highlightColor`.The polygon is defined by `grDevices::chull()`
-#'    via the function `points2polygonHull()`.
-#' @param highlightPolygonAlpha `numeric` value indicating alpha
-#'    transparency used for the highlight polygon when
-#'    `doHighlightPolygon=TRUE`, where `0` is fully transparent,
-#'    and `1` is completely not transparent (opaque).
-#' @param doHighlightLegend `logical` indicating whether to print a
-#'    color legend when `highlightPoints` is defined. The legend is
-#'    displayed in the bottom outer margin of the page using
-#'    `outer_legend()`, and the page is adjusted to add bottom
-#'    outer margin. When the legend is particularly large, it may
-#'    be preferable to hide the color legend and display the legend
-#'    another way, for example `legend()`.
-#' @param smoothPtCol `color` used to draw points when `nrpoints` is
-#'    non-zero, which draws points in the extremities of the
-#'    smooth scatter plot. See `jamba::plotSmoothScatter()`.
-#'    The effect can also be achieved by adjusting `transFactor` to
-#'    a lower value, which increases the visual contrast of individual
-#'    points in the point density.
-#' @param margins `numeric` vector of margins compatible with
-#'    `graphics::par("mar")`.
-#'    Default values are provided here for convenience.
-#'    Since version `0.0.31.900` the `outer_margins` are used to control
-#'    y-axis label whitespace, and and y-axis labels are not displayed
-#'    on every plot panel when `doPar=TRUE`.
-#' @param outer_margins `numeric` vector of margins compatible with
-#'    `graphics::par("oma")`.
-#'    Default values are provided here for convenience.
-#'    The left outer marging is used to allow whitespace to display
-#'    y-axis labels.
-#'    Note when `useRank=TRUE` the y-axis whitespace is increased
-#'    to accomodate larger integer label values.
-#' @param useRaster `logical` indicating whether to draw the
-#'    smooth scatter plot using raster logic, `useRaster=TRUE` is
-#'    passed to `jamba::plotSmoothScatter()`. The default `TRUE`
-#'    creates a much smaller plot object by rendering each plot
-#'    panel as a single raster image instead of rendering individual
-#'    colored rectangles. There is no driving reason to use `useRaster=FALSE`
-#'    except if the rasterization process itself is problematic.
-#' @param ncol,nrow `integer` number of MA-plot panel columns and rows
-#'    passed to `graphics::par("mfrow")` when `doPar=TRUE`. When only one
-#'    value is supplied, `nrow` or `ncol`, the other value is defined
-#'    by `ncol(x)` and `blankPlotPos` so all panels can be contained on
-#'    one page. When `nrow` and `ncol` are defined such that multiple
-#'    pages are produced, each page will be annotated with `maintitle`
-#'    and `doHighlightLegend` if relevant.
-#' @param doPar `logical` indicating whether to apply
-#'    `graphics::par("mfrow")` to define MA-plot panel rows and columns.
-#'    When `doPar=FALSE` each plot panel is rendered without
-#'    adjusting the `graphics::par("mfrow")` setting, which is appropriate
-#'    for displaying each plot panel individually.
-#' @param las `integer` value `1` or `2` indicating whether axis labels
-#'    should be parallel or perpendicular to the axes, respectively.
 #' @param ylim,xlim `NULL` or `numeric` vector `length=2` indicating
 #'    the y-axis and x-axis ranges, respectively. The values are useful
 #'    to define consistent dimensions across all panels. The
@@ -533,92 +421,6 @@
 #'    When `useMean=NULL` the argument `useMedian` is preferred.
 #'    For backward compatibility, when `useMean` is not `NULL`,
 #'    then `useMedian` is defined by `useMedian <- !useMean`.
-#' @param customFunc optional `function` used instead of the summary
-#'    function defined by `useMedian` during the data centering step.
-#'    This function should take a `matrix` of `numeric` values as input,
-#'    and must return a `numeric` vector length equal to `nrow(x)`.
-#'    This option is intended to allow custom row statistics,
-#'    for example geometric mean, or other row summary functions.
-#' @param filterNeg (deprecated) `logical` argument, use `noise_floor`.
-#' @param filterNA,filterNAreplacement `logical` and `vector` respectively.
-#'    When `filterNA=TRUE`, all `NA` values are replaced with
-#'    `filterNAreplacement`.
-#'    This process is conceptually opposite of `noise_floor` which replaces
-#'    a `numeric` value with `NA` or another `numeric` value.
-#'    Instead, `filterNA` is intended to convert `NA` values into
-#'    a known `numeric` value, typically using an appropriate noise floor
-#'    value such as zero `0`.
-#'    Practically speaking, `NA` values should probably
-#'    be left as `NA` values, so that data centering does not use these values,
-#'    and so the MA-plot panel does not draw a point when no measurement
-#'    exists.
-#' @param noise_floor,noise_floor_value `numeric` to define a numeric
-#'    floor, or `NULL` for no numeric floor. Values **at or below**
-#'    `noise_floor` are set to `noise_floor_value`, intended for two
-#'    potential uses:
-#'    1. Filter out value below a threshold, so they do not affect centering.
-#'       * This option is valuable to remove zeros when a zero `0` is considered
-#'       "no measurement observed", typically for count data such as RNA-seq,
-#'       NanoString, and especially single-cell protocols or other protocols
-#'       that produce a large number of missing values.
-#'       * One can typically tell whether input data includes zero `0`
-#'       values by the presence of characteristic 45-degree angle lines
-#'       originating from `x=0` angled toward the right. The points along
-#'       this line are rows with more measurements of zero than non-zero,
-#'       there this sample has a non-zero value.
-#'
-#'    2. Set values at a noise floor to the noise floor, to retain the
-#'    measurement but minimize the effect during centering to the lowest
-#'    realiable measurement for the platform technology.
-#'       * This value may be set to a platform noise floor
-#'       for something like microarray data where the intensity may be
-#'       unreliable below a threshold; or
-#'       * for quantitative PCR measurements where cycle threshold (Ct)
-#'       values may become unreliable, for example above CT=40 or CT=35.
-#'       Data is often transformed to abundance with `2 ^ (40 - CT)` then
-#'       log2-transformed for analysis. In this case, to apply a `noise_floor`
-#'       effective for CT=35, one would use `noise_floor=5`.
-#' @param filterFloor,filterFloorReplacement (deprecated) in favor of
-#'    `noise_floor`, and `noise_floor_replacement` respectively.
-#' @param transFactor `numeric` adjustment to the visual density of
-#'    smooth scatter points. For base R graphics, this argument is
-#'    passed to `jamba::plotSmoothScatter()`. The argument value is based upon
-#'    `graphics::smoothScatter()` argument `transformation`, which uses
-#'    default `function(x)x^0.25`. The `transFactor` is equivalent to the
-#'    exponential in the form: `function(x)x^transFactor`. Lower values
-#'    make the point density more visually intense, higher values make the
-#'    point density less visually intense.
-#' @param nrpoints `integer` or `NULL` indicating the number of points
-#'    to display on the extremity of the smooth scatter density,
-#'    passed to `jamba::plotSmoothScatter()`.
-#' @param smoothScatterFunc `function` used to produce a smooth scatter plot
-#'    in base R graphics. The default `jamba::plotSmoothScatter()` controls
-#'    the level of detail in the density calculation, and in the graphical
-#'    resolution of that density in each plot panel. The custom function
-#'    should accept argument `transformation` as described in `transFactor`,
-#'    even if the argument is not used. This argument could be useful to
-#'    specify customizations not convenient to apply otherwise.
-#' @param ablineH,ablineV `numeric` vector indicating position of
-#'    horizontal and vertical lines in each MA-plot panel.
-#'    Either argument can be supplied as a `list`, which will be applied
-#'    to each plot panel in order, which allows specifying specific
-#'    abline values in individual panels.
-#' @param doTxtplot `logical` (not yet implemented in `jamma`),
-#'    indicating to produce colored ANSI text plot output, for example
-#'    to a text terminal.
-#' @param blankPlotPos `NULL` or `integer` vector indicating
-#'    plot panel positions to be drawn blank, and therefore skipped.
-#'    This argument is intended to allow manual placement of plot panels
-#'    with spacing that reinforces a logical layout.
-#'    Plot panels are drawn in the exact order of `colnames(x)` received,
-#'    with panels placed into a number of columns and rows defined
-#'    with `ncol`, `nrow` or `jamba::decideMfrow()` when `doPar=TRUE`.
-#'    Blank panel positions are intended to help customize the visual
-#'    alignment of MA-plot panels. The mechanism is similar to
-#'    `ggplot2::facet_wrap()` except that blank positions can be manually
-#'    defined by what makes sense for the experiment design.
-#'    This method is not particularly user-friendly, but allows fine
-#'    control over plot panel spacing.
 #' @param displayMAD `logical` indicating whether to display each
 #'    MA-plot panel MAD factor (median absolute deviation). A MAD
 #'    value for each panel is calculated by taking the median absolute
@@ -662,16 +464,256 @@
 #'    a noise threshold from being included, therefore only including
 #'    points whose mean measurement is above noise and represents
 #'    "typical" variability.
-#' @param fillBackground `logical` currently used for base R graphics
-#'    output, and passed to `jamba::plotSmoothScatter()`,
-#'    indicating whether to fill the plot panel using the
-#'    first color in the color ramp for each MA-plot panel, or when
-#'    a plot panel is an outlier, it uses `outlierColor`.
+#' @param titleCex `numeric` default NULL, to use a specific cex value
+#'    with `graphics::title()` to control the title size. The default
+#'    scales the title with the number of panels.
+#' @param doTitleBox `logical` default TRUE, whether to draw plot
+#'    titles using a colored box. When `doTitleBox=TRUE` the
+#'    `jamba::drawLabels()` is called to display a label box at
+#'    the top of each plot panel, with `drawBox=TRUE`. When
+#'    `doTitleBox=FALSE`, `jamba::drawLabels()` is called with
+#'    `drawBox=FALSE`.
+#' @param colorSub `character` vector of colors, whose names assign each
+#'    color to a character value. Alternatively a `list` from which
+#'    named colors will be extracted.
+#' @param titleColor `character` vector of colors applied to the title
+#'    box in each plot panel, but only when multiple `titleColor`
+#'    are supplied. Otherwise, the title color is defined by
+#'    `jamba::setTextContrastColor()` along with `titleBoxColor`.
+#' @param titleFont `integer` font compatible with `par("font")`.
+#'    Values are recycled across panels, so each panel can use a custom
+#'    value if needed.
+#' @param titlePreset `character` string passed to `jamba::coordPresets()`.
+#'    The default `titlePreset="top"` defines the top edge of each panel,
+#'    and default `titleAdjPreset="top"` places the title at the top
+#'    edge of this position.
+#' @param titleAdjPreset `character` string passed to `jamba::coordPresets()`.
+#'    The default `titleAdjPreset="top"` places labels above the `titlePreset`
+#'    location, by default above the top edge of each panel.
+#'    To place the title inside (below) the top edge of the plot panel,
+#'    use `titlePreset="top", titleAdjPreset="bottom"`, however the
+#'    title box may overlap and hide data points in the plot panel.
+#' @param xlab,ylab `character` x- and y-axis labels, respectively.
+#'    The default values are blank `""` because there are a wide variety
+#'    of possible labels, and the labels take up more space
+#'    than is often useful for most MA-plots.
+#' @param xlabline,ylabline `numeric` number, default 2 and 1.5, respectively,
+#'    the text line (distance) from the edge of plot border to place
+#'    `xlab` and `ylab` text, as used by `graphics::title()`.
+#' @param highlightPch `numeric` vector, default 21, used to define point
+#'    shape when `highlightPoints` is defined. It is applied to each
+#'    vector in the `list` of `highlightPoints`, and recycled as needed.
+#' @param highlightCex `numeric` vector, default 1.5, used when
+#'    `highlightPoints` is defined.
+#'    It is recycled to `length(highlightPoints)` after
+#'    `highlightPoints` is converted to a `list` if necessary.
+#'    Values are therefore applied to each vector of points in the `list`.
+#'    It can be supplied as a `list`, which will be recycled to
+#'    `length(highlightPoints)` and applied in order to each `vector`
+#'    of points highlighted.
+#' @param highlightColor `character` vector, default `"#00AAAA66"` (aqua),
+#'    used when `highlightPoints` is defined.
+#'    It is recycled to `length(highlightPoints)` after
+#'    `highlightPoints` is converted to a `list` if necessary.
+#'    Colors are therefore applied to each set of points in the `list`.
+#' @param doHighlightPolygon `logical` default FALSE, whether to draw
+#'    a shaded polygon encompassing `highlightPoints`, with each
+#'    `highlightColor`.  
+#'    The polygon is defined by `grDevices::chull()`
+#'    via the function `points2polygonHull()`.
+#'    The primary purpose is to help identify patterns where expected,
+#'    for example linearity of positive and negative control points.
+#' @param highlightPolygonAlpha `numeric` default 0.3, indicating alpha
+#'    opacity used for the highlight polygon when
+#'    `doHighlightPolygon=TRUE`, where `0` is fully transparent,
+#'    and `1` is completely not transparent (opaque).
+#' @param doHighlightLegend `logical` default TRUE, whether to print a
+#'    color legend when `highlightPoints` is defined.
+#'    The legend is displayed in the bottom outer margin of the page using
+#'    `outer_legend()`, and the page is adjusted to add bottom
+#'    outer margin. When the legend is particularly large, it may
+#'    be preferable to hide the color legend and display the legend
+#'    another way, for example by calling `legend()` with custom options.
+#' @param smoothPtCol `color`, default is slightly transparent black,
+#'    used for point color when `nrpoints` is non-zero.
+#'    A similar effect can be achieved by adjusting `transFactor` to
+#'    a lower value, which increases the visual contrast of individual
+#'    points in the point density.
+#' @param margins `numeric` vector of margins compatible with
+#'    `graphics::par("mar")`, default `c(2.5, 0.5, 2, 0.2)`.
+#'    Since version `0.0.31.900` the `outer_margins` are used to control
+#'    y-axis label whitespace, and and y-axis labels are not displayed
+#'    on every plot panel when `doPar=TRUE`. This output is more similar
+#'    to ggplot2 output, as with `ggjammaplot()`.
+#' @param outer_margins `numeric` vector of margins compatible with
+#'    `graphics::par("oma")` default `c(0, 2.5, 0, 0.2)`.
+#'    The left outer margin is used to allow whitespace to display
+#'    y-axis labels.
+#'    Note when `useRank=TRUE` the y-axis whitespace is increased
+#'    to accomodate larger integer label values.
+#' @param useRaster `logical`, default TRUE, whether to draw the
+#'    smooth scatter plot using raster logic, `useRaster=TRUE` is
+#'    passed to `jamba::plotSmoothScatter()`. The default `TRUE`
+#'    creates a much smaller plot object by rendering each plot
+#'    panel as a single raster image instead of rendering individual
+#'    colored rectangles as discrete graphical objects.
+#'    There is no driving reason to use `useRaster=FALSE`
+#'    except if the rasterization process itself is problematic,
+#'    which may occur in very rare occassions if the estimated/recognized
+#'    resolution of the graphical display device for output is incorrect.
+#' @param ncol,nrow `integer` number of MA-plot panel columns and rows
+#'    passed to `graphics::par("mfrow")` when `doPar=TRUE`.
+#'    When only one value is supplied, `nrow` or `ncol`, the other value
+#'    is defined by `ncol(x)` and `blankPlotPos` so all panels can be
+#'    contained on one page.
+#'    When `nrow` and `ncol` are defined such that multiple
+#'    pages are produced, each page will be annotated with `maintitle`
+#'    and `doHighlightLegend` as relevant, to produce multi-page
+#'    layout.
+#' @param doPar `logical`, default TRUE, whether to apply
+#'    `graphics::par("mfrow")` to define MA-plot panel rows and columns.
+#'    When `doPar=FALSE` each plot panel is rendered without
+#'    adjusting the `graphics::par("mfrow")` setting, which is appropriate
+#'    for displaying each plot panel individually.  
+#'    The `doPar=FALSE` option is mostly used when trying to control
+#'    the visual rendering directly.
+#' @param las `integer` value `1` or `2` indicating whether axis labels
+#'    should be parallel or perpendicular to the axes, respectively.
+#'    Default is 2.
+#' @param groupedX `logical` default TRUE, whether to calculate the
+#'    x-axis value within each group, when `centerGroups` are defined.
+#'    The default is TRUE, which means the mean/median value used on the
+#'    x-axis represents the summary value for each group, which in most
+#'    cases is appropriate. The y-value (difference from mean/median)
+#'    is of course affected by the x-value used, so this option will
+#'    affect the calculation and display of y-values.
+#' @param customFunc optional `function` used instead of the summary
+#'    function defined by `useMedian` during the data centering step.
+#'    Default is NULL which thereby applies `jam::rowGroupMeans()`
+#'    with `useMedian` by default.  
+#'    This function should take a `matrix` of `numeric` values as input,
+#'    and must return a `numeric` vector length equal to `nrow(x)`.
+#'    This option is intended to allow custom row statistics,
+#'    for example geometric mean, or other row summary functions.
+#' @param filterNA,filterNAreplacement `logical` and `vector` respectively.
+#'    When `filterNA=TRUE`, all `NA` values are replaced with
+#'    `filterNAreplacement`.
+#'    This process is conceptually opposite of `noise_floor` which replaces
+#'    a `numeric` value with `NA` or another `numeric` value.
+#'    Instead, `filterNA` is intended to convert `NA` values into
+#'    a known `numeric` value, typically using an appropriate noise floor
+#'    value such as zero `0`.
+#'    Practically speaking, `NA` values should probably
+#'    be left as `NA` values, so that data centering does not use these values,
+#'    and so the MA-plot panel does not draw a point when no measurement
+#'    exists.
+#' @param noise_floor,noise_floor_value `numeric` to define a numeric
+#'    floor, or `NULL` for no numeric floor. Values **at or below**
+#'    `noise_floor` are set to `noise_floor_value`, intended for two
+#'    potential uses:
+#'    1. Filter out value below a threshold, so they do not affect centering.
+#'       * This option is valuable to remove zeros when a zero `0` is considered
+#'       "no measurement observed", typically for count data such as RNA-seq,
+#'       NanoString, and especially single-cell protocols or other protocols
+#'       that produce a large number of missing values.
+#'       * One can typically tell whether input data includes zero `0`
+#'       values by the presence of characteristic 45-degree angle lines
+#'       originating from `x=0` angled toward the right. The points along
+#'       this line are rows with more measurements of zero than non-zero,
+#'       there this sample has a non-zero value.
+#'
+#'    2. Set values at a noise floor to the noise floor, to retain the
+#'    measurement but minimize the effect during centering to the lowest
+#'    realiable measurement for the platform technology.
+#'       * This value may be set to a platform noise floor
+#'       for something like microarray data where the intensity may be
+#'       unreliable below a threshold; or
+#'       * for quantitative PCR measurements where cycle threshold (Ct)
+#'       values may become unreliable, for example above CT=40 or CT=35.
+#'       Data is often transformed to abundance with `2 ^ (40 - CT)` then
+#'       log2-transformed for analysis. In this case, to apply a `noise_floor`
+#'       effective for CT=35, one would use `noise_floor=5`.
+#' @param filterFloor,filterFloorReplacement (deprecated) in favor of
+#'    `noise_floor`, and `noise_floor_replacement` respectively.
+#' @param transFactor `numeric` default 0.18, adjusts the visual density of
+#'    smooth scatter points. For base R graphics, this argument is
+#'    passed to `jamba::plotSmoothScatter()`. The argument value is based upon
+#'    `graphics::smoothScatter()` argument `transformation`, which itself used
+#'    default `function(x)x^0.25`.  
+#'    The `transFactor` applies an exponential in the form:  
+#'    `function(x)x^transFactor`.  
+#'    * Lower values (0.18 to 0.10 or lower) make the point density
+#'    more visually intense,
+#'    * Higher values (0.3 to 0.5 and above) make the point density
+#'    less visually intense.
+#' @param nrpoints `integer` or `NULL`, default 0, the number of points
+#'    to display at the extremity of the smooth scatter density,
+#'    passed to `jamba::plotSmoothScatter()`.  
+#'    This argument is inherited from `graphics::smoothScatter()` but
+#'    is not typically used otherwise.
+#' @param smoothScatterFunc `function` used to produce a smooth scatter plot
+#'    in base R graphics. The default `jamba::plotSmoothScatter()` controls
+#'    the level of detail in the density calculation, and in the graphical
+#'    resolution of that density in each plot panel. The custom function
+#'    should accept argument `transformation` as described in `transFactor`,
+#'    even if the argument is not used.  
+#'    The `smoothScatterFunc` usage is intended to
+#'    specify customizations not convenient to apply otherwise.
+#' @param applyRangeCeiling `logical` default TRUE, passed to
+#'    `jamba::plotSmoothScatter()`, whether to display points at the extreme
+#'    range of the MA-plot (TRUE), or whether to crop and hide points outside
+#'    the visible range (FALSE).  
+#'    * `applyRangeCeiling=TRUE` 
+#'    will place points at the border of the plot, which is helpful
+#'    to indicate that there are more points outside the viewing range.
+#'    * `applyRangeCeiling=FALSE` will crop and remove points outside
+#'    the viewing range, which is helpful for example when a large
+#'    number of points are at zero and overwhelm the point density.
+#'    When there are a large proportion of values at zero, it
+#'    can be helpful to apply `xlim=c(0.01, 20)` and
+#'    `applyRangeCeiling=FALSE`.
+#' @param doTxtplot `logical` (not yet implemented in `jamma`),
+#'    indicating to produce colored ANSI text plot output, for example
+#'    to a text terminal.
+#' @param ablineH,ablineV `numeric` vector indicating position of
+#'    horizontal and vertical lines in each MA-plot panel.
+#'    Either argument can be supplied as a `list`, which will be applied
+#'    to each plot panel in order, which allows specifying specific
+#'    abline values in individual panels.
+#' @param blankPlotPos `integer`, default `NULL`, indicating
+#'    plot panel positions to be drawn blank, and therefore skipped.
+#'    This argument is intended to allow manual placement of plot panels
+#'    with spacing that reinforces a logical layout.  
+#'    Plot panels are drawn in the exact order of `colnames(x)` received,
+#'    with panels placed into a number of columns and rows defined
+#'    with `ncol`, `nrow` or `jamba::decideMfrow()` when `doPar=TRUE`.
+#'    Blank panel positions are intended to help customize the visual
+#'    alignment of MA-plot panels. The mechanism is similar to
+#'    `ggplot2::facet_wrap()` except that blank positions can be manually
+#'    defined by what makes sense for the experiment design.
+#'    This method is not particularly user-friendly, but allows fine
+#'    control over plot panel spacing.
+#' @param fillBackground `logical`, default TRUE, whether to apply
+#'    background fill before rendering the plot in each panel.
+#'    It uses the first color in the color ramp, except for outlier
+#'    samples it uses the `outlierColor`.  
 #'    This argument is useful for all plot panels especially when the
 #'    `colramp` base color is not white (or otherwise does not match
 #'    the background of the plot device, for example `colramp="viridis"`).
 #'    This argument is also used with `outlierColor` to add visual emphasis
 #'    to plot panels where the MAD factor exceeds `outlierMAD`.
+#' @param useRank `logical`, default FALSE, whether to use rank-MA plots.
+#'    Data are converted to column-wide rank, with 1 for lowest value,
+#'    then MA-plots are created using the rank data.
+#'    When `useRank=TRUE` the y-axis is the rank difference from mean rank,
+#'    and the x-axis represents the mean rank.
+#'    Using `useRank=TRUE` is a good method to evaluate whether data
+#'    can be normalized, or whether data across samples is inherently noisy
+#'    or in need of batch adjustment.
+#' @param apply_transform_limit `numeric` threshold above which raw data
+#'    values are assumed to need a numeric transformation using `log2(1 + x)`.
+#'    Default `40` will apply transformation when any non-NA value is above 40.
+#'    Use `Inf` (infinite) or NULL to skip this step.
 #' @param panel_hook_function optional custom `function` called
 #'    as a "hook" after each MA-plot panel has been drawn. This function
 #'    can be used to display custom axis labels, add plot panel visual
@@ -689,14 +731,8 @@
 #'    hook function as a by-product of calling this function within
 #'    the environment of the active `jammaplot()`, therefore any
 #'    argument values will be available for use inside that function.
-#' @param doPlot `logical` indicating whether to create plots. When
-#'    `doPlot=FALSE` only the MA-plot panel data is returned.
-#' @param useRank `logical` indicating whether to create column-wide
-#'    ranks, then create MA-plots using the rank data. When `useRank=TRUE`
-#'    the y-axis represents the rank difference from mean, and the
-#'    x-axis represents the mean rank. Using `useRank=TRUE` is a good
-#'    method to evaluate whether data can be normalized, or whether
-#'    data across samples is inherently noisy.
+#' @param doPlot `logical` indicating whether to create plots, default TRUE.
+#'    When `doPlot=FALSE` only the MA-plot panel data is returned.
 #' @param verbose logical indicating whether to print verbose output.
 #' @param ... additional parameters sent to downstream functions,
 #'    `jamba::plotSmoothScatter()`, `jammacalc()`, `centerGeneData()`.
@@ -784,7 +820,6 @@ jammaplot <- function
  xlabline=2,
  ylab="",
  ylabline=1.5,
- groupSuffix=NULL,
  highlightPch=21,
  highlightCex=1.5,
  highlightColor="#00AAAA66",
@@ -803,7 +838,6 @@ jammaplot <- function
  customFunc=NULL,
  filterNA=TRUE,
  filterNAreplacement=NA,
- filterNeg=FALSE,
  noise_floor=0,
  noise_floor_value=NA,
  filterFloor=NULL,
@@ -824,43 +858,6 @@ jammaplot <- function
  verbose=FALSE,
  ...)
 {
-   ## Purpose is to provide an MA plot, based upon the MVAplotMED from
-   ## the defunct Agi4x44PreProcess package,  except in this case using
-   ## smoothScatter since 20k to 40k datapoints is too many to show without
-   ## them being occluded.
-   ##
-   ## You must manually specify the number columns and rows, and set doPar=TRUE
-   ## for this function to define multi-panel plotting, e.g.
-   ## "nrow=5, ncol=4, doPar=TRUE"
-   ## Otherwise, you can manually set these parameters with
-   ## "par('mfrow'=c(5,4));"
-   ##
-   ## This function also uses "useRaster=TRUE" by default which causes the
-   ## imageDefault() function used by smoothScatter() to produce a temporary
-   ## raster image which is then resized with interpolation to produce a
-   ## properly-blended representation of the full image. This process also
-   ## substantially reduces the image size when saving as a vector output
-   ## format like PDF or SVG.
-   ##
-   ## To highlight certain points, e.g. marked outliers, or statistical hits,
-   ## supply rownames into highlightPoints as a vector, or a list of vectors.
-   ## If using a list of vectors, also supply a list of colors in
-   ## highlightColor, so each subset is colored uniquely.
-   ##
-   ## ctrlSamples is deprecated in favor of controlSamples.
-   ##
-   ## controlSamples indicates which samples should be used for centering
-   ## data, by default all samples. However, centering by control samples
-   ## visually indicates changes from those control samples.
-   ##
-   ## centerGroups is used to apply the centering to subsets of columns
-   ## of data, for example if two very different cell types should be separately
-   ## centered for closer scrutiny of the within-cell variability.
-   ## One can take this further, and center each sample group, which has
-   ## the helpful effect of displaying variability of replicates per
-   ## sample group. This method is quite useful for reviewing whether any
-   ## replicates are notably different than counterparts in the same
-   ## sample group.
    ##
    ## Note: the "filterNAandNeg" will floor log2 values at 0, which has the
    ## effect of adding the "45 degree lines" originating from c(0,0).
@@ -905,6 +902,7 @@ jammaplot <- function
    naControlAction <- match.arg(naControlAction);
 
    if (doTxtplot) {
+      stop("doTxtplot is not yet implemented.");
       blankPlotPos <- NULL;
       smoothScatterFunc <- function(...){
          plotTextSmoothScatter(height=20,
@@ -1060,13 +1058,6 @@ jammaplot <- function
          }
          colrampOutlier[[i]] <- icolrampOutlier;
       }
-   }
-
-   ## If groupSuffix is supplied, make sure its length
-   ## is length(x_names)
-   if (length(groupSuffix) > 0) {
-      groupSuffix <- rep(groupSuffix,
-         length.out=length(x_names));
    }
 
    ## highlightPoints
@@ -1461,9 +1452,7 @@ jammaplot <- function
             }
          }
          withr::local_par(list(mar=margins));
-         groupName <- paste(c(x_names[i],
-            groupSuffix[i]),
-            collapse="");
+         groupName <- x_names[i];
          titleText <- sample_labels[i];
 
          ## Calculate the MAD, i.e. the median absolute deviation from zero
@@ -1635,12 +1624,7 @@ jammaplot <- function
          ## Optionally indicate control with asterisk in the plot title
          if (x_names[i] %in% controlSamples &&
                "titlestar" %in% controlIndicator) {
-            titleText <- paste0(titleText,
-               "*",
-               groupSuffix[i]);
-         } else {
-            titleText <- paste0(titleText,
-               groupSuffix[i]);
+            titleText <- paste0(titleText, "*");
          }
          if (doTitleBox) {
             if (verbose) {

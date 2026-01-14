@@ -1,3 +1,14 @@
+# jamma 0.0.38.900
+
+* Removed dependencies: crayon, ggtext
+
+## Updates to existing functions
+
+* `jammaplot()`
+
+   * Fixed bug with `apply_transform_limit` when input data contained NA.
+   * Removed deprecated arguments: filterNeg, groupSuffix
+
 # jamma 0.0.37.900
 
 * Added Enhances: 'SummarizedExperiment', 'Biobase', to support additional

@@ -1,5 +1,36 @@
 # TODO for jamma
 
+## 14jan2025
+
+* Write a proper vignette and intro to jamma. Explain proper review of data,
+normalization quality, technical noise, and review of batch effects.
+* DONE. Fix bug in `ggjammaplot()` using `apply_transform_limit` when data
+contains NA values.
+* Implement proper function argument deprecation methods.
+* Add visual diff graphical tests to the test suite.
+* Consider removing matrixStats methods.
+* Update use of `ggh4x` package functions, newer approaches to colorize strips.
+* Expand use of `cli` package functions for messaging.
+
+## 04dec2025
+
+* `volcano_plot()`
+
+   * consider option to change x/y axis numerical style
+   to show log-transformed values instead of normal space labels.
+   E.g. x-axis could show log2(fold) from -4,-3,-2,-1,0,1,2,3,4;
+   y-axis could show the -log10(P) from 0,1,2,3,4,5,6.
+   * `ggvolcano_plot()` variation using ggplot2, motivated to
+   permit `ggrepel` for gene labels.
+
+* `ggjammaplot()`
+
+   * Use `ggrepel` to enable gene labels, add to Suggests.
+
+## 04nov2025
+
+* Consider example sources: https://github.com/ycl6/Simple-R-gists/tree/main/RNA-seq_Count_Normalisation
+
 ## 05sep2025
 
 * DONE. Fix the warning about `pmax(margins, ...)`

@@ -1,16 +1,17 @@
 Package: jamma
 Title: MA-plots for omics data
-Version: 0.0.37.900
+Version: 0.0.38.900
 Authors@R: person("James", "Ward", email="jmw86069@gmail.com", role=c("aut", "cre"))
 Description: Create MA-plots with specific control samples,
-    using sample groups. Volcano plots with hit filtering by gene.
-    All plots use smooth scatter plots for large number of points.
+    using centering groups as relevant to experiment design.
+    Volcano plots with hit filtering by gene.
+    All plots use smooth scatter plots to visualize a large
+    number of points efficiently, thereby revealing proper point
+    density.
 Depends: R (>= 3.5.0)
 Imports: jamba (>= 1.0.2),
     grDevices,
-    KernSmooth,
     methods,
-    grDevices,
     colorjam,
     matrixStats,
     ggplot2,
@@ -18,11 +19,9 @@ Imports: jamba (>= 1.0.2),
     withr,
     cli
 Suggests: 
-    crayon,
     knitr,
     rmarkdown,
     affydata,
-    ggtext,
     testthat (>= 3.0.0)
 Enhances:
     SummarizedExperiment,
@@ -33,7 +32,7 @@ Encoding: UTF-8
 LazyData: true
 URL: https://github.com/jmw86069/jamma
 BugReports: https://github.com/jmw86069/jamma/issues
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 VignetteBuilder: knitr
 Remotes:
     github::jmw86069/colorjam

@@ -122,7 +122,7 @@ testthat::test_that("centerGeneData naControlAction", {
 })
 
 testthat::test_that("centerGeneData SparseMatrix", {
-   if (jamba::check_pkg_installed("Matrix")) {
+   if (requireNamespace("Matrix", quietly=TRUE)) {
       # define test data
       testmatrix <- matrix(1:25 + 20, ncol=5)
       colnames(testmatrix) <- paste0(rep(c("A", "B"), c(3, 2)),
