@@ -883,7 +883,7 @@ handle_highlightPoints <- function
    if (!is.list(highlightPoints)) {
       if (length(highlightPoints) == length(highlightColor)) {
          if (length(names(highlightPoints)) == 0) {
-            names(highlightPoints) <- makeNames(highlightPoints);
+            names(highlightPoints) <- jamba::makeNames(highlightPoints);
          }
          highlightPoints <- as.list(highlightPoints);
       } else {
@@ -891,7 +891,7 @@ handle_highlightPoints <- function
       }
    } else {
       if (length(names(highlightPoints)) == 0) {
-         names(highlightPoints) <- makeNames(
+         names(highlightPoints) <- jamba::makeNames(
             rep("highlight",
                length.out=length(highlightPoints)));
       }
