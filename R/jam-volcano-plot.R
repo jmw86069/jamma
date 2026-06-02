@@ -1,5 +1,9 @@
 
 ## volcano plot functions
+#
+# Todo:
+# - test setting the aspect ratio given plot limits,
+#   so the plot retains reasonably consistent ratio.
 
 #' Volcano plot
 #'
@@ -74,6 +78,11 @@
 #'    if `lfc_colname` successfully finds a value, the `fold_colname`
 #'    is not used.
 #'    The colname if used will appear as the x-axis label.
+#' @param fold_style `character` style of x-axis label, default 'fold':
+#'    * 'fold': shows normal space fold change, on log2 visual scale.
+#'    For example 1, 2, 4, 8, 16.
+#'    * 'log2fold', 'log2', 'log', or 'lfc': shows log2 fold change.
+#'    For example 0, 1, 2, 3, 4.
 #' @param sig_colname `character` string or vector used to match
 #'    `colnames(x)` whose values should contain P-values of significance.
 #'    The P-values can be unadjusted (raw) P-values, or adjusted
@@ -191,6 +200,16 @@
 #'    points.
 #' @param hi_cex `numeric` size adjustment for highlight points,
 #'    relative to the size of other points in the figure.
+#' @param hi_do_label `logical` with length equivalent to `hi_points`,
+#'    and recycled to match length or lengths of hi_points.
+#' @param max_labels `integer` maximum labels to display when
+#'    `hi_do_label` is enabled. When the total potential labels is
+#'    more than `max_labels`, a subset of points will be shown based
+#'    upon point density, similar to how `smoothScatter()` argument
+#'    'nrpoints' chooses extreme points at the edges of the point
+#'    density. Note the point density uses the full range of values,
+#'    not the xlim and ylim ranges, in order to include the most
+#'    relevant extremes.
 #' @param do_both `logical` indicating whether to draw both a smooth
 #'    scatter and individual points on the same figure.
 #' @param label_hits `logical` indicating whether to add a text label
@@ -205,6 +224,11 @@
 #'    the default is to use the relevant colname: x-axis uses
 #'    either `lfc_colname` or `fold_colname`; y-axis uses `sig_colname`.
 #' @param cex.axis `numeric` adjustment for axis label font sizes.
+#' @param mar_min `numeric` vector to set minimum plot margins for base
+#'    R output. Default is c(6, 5, 6, 5) in units of character lines,
+#'    and in order: bottom, left, top, right.
+#'    Note when `blockarrow=FALSE` the top and right margins are subtracted
+#'    by 2, imposing a minimum `0.1`.
 #' @param include_axis_prefix `logical` indicating whether to include
 #'    a prefix for the x-axis and y-axis labels: x-axis `"Change"`;
 #'    y-axis `"Significance"`.
@@ -217,6 +241,10 @@
 #'    by `jamba::plotSmoothScatter()` to adjust the number of
 #'    bins used to display the density of points, where a higher
 #'    value shows more detail, and a lower value shows less detail.
+#' @param bw_factor `numeric` scalar to adjust the bandwidth relative
+#'    detail, with larger numbers displaying more granular detail in
+#'    the point density shown. It is passed to `jamba::plotSmoothScatter()`
+#'    in the form of adjusting the `bwpi` bandwidth-per-inch.
 #' @param verbose `logical` indicating whether to print verbose output.
 #'    Note that `verbose=2` will enable much more verbose output.
 #' @param ... additional arguments are ignored.
@@ -235,9 +263,9 @@
 #'    `mgm Group-Contol`=((rnorm(1500)+5)^2)/5,
 #'    check.names=FALSE);
 #'
-#' volcano_plot(x);
+#' vdf <- volcano_plot(x);
 #' volcano_plot(x, expr_cutoff=3);
-#' # volcano_plot(x, mar_min=c(7, 6, 6, 5), blockarrow_cex=1);
+#' # volcano_plot(x, mar_min=c(7, 6, 6, 5), blockarrow_font=2, blockarrow_cex=1.5);
 #'
 #' # par("mfrow"=c(2, 1));
 #' # volcano_plot(x);
@@ -248,7 +276,9 @@
 #' x[["adj.P.Val Group-Control"]] <- x[["P.Value Group-Control"]];
 #'
 #' volcano_plot(x, hi_hits=TRUE);
-#'
+#' 
+#' volcano_plot(x, hi_hits=TRUE, label_hits=TRUE)
+#' 
 #' @export
 volcano_plot <- function
 (x,
@@ -264,6 +294,10 @@ volcano_plot <- function
    fold_colname=c("fold",
       "fc",
       "ratio"),
+   fold_style=c('fold',
+      'log2fold',
+      'log2',
+      'lfc'),
    fold_cutoff=1.5,
    fold_max_range=16,
    fold_min_range=4,
@@ -286,12 +320,20 @@ volcano_plot <- function
       "tpm",
       "cpm"),
    expr_cutoff=NULL,
+   # gene options
+   gene_colname=c("gene",
+      "symbol",
+      "protein",
+      "probe",
+      "assay",
+      "rownames"),
    # label options
    label_colname=c("gene",
       "symbol",
       "protein",
       "probe",
-      "assay"),
+      "assay",
+      "rownames"),
    # plot title options
    main="Volcano Plot",
    submain=NULL,
@@ -340,9 +382,12 @@ volcano_plot <- function
    hi_colors=NULL,
    hi_hits=FALSE,
    hi_cex=1,
+   hi_do_label=FALSE,
+   max_labels=50,
    do_both=FALSE,
    label_hits=FALSE,
    add_plot=FALSE,
+   do_plot=TRUE,
    xlab=NULL,
    ylab=NULL,
    cex.axis=1.2,
@@ -350,7 +395,8 @@ volcano_plot <- function
    transFactor=0.24,
    transformation=function(x){x^transFactor}, # use 0.14 for very large datasets
    nbin=256,
-   verbose=TRUE,
+   bw_factor=1,
+   verbose=FALSE,
    ...)
 {
 
@@ -371,6 +417,8 @@ volcano_plot <- function
    ## are technically being reported in normal space. However, to give it a log2 axis label:
    ## xlab=expression(log[2]*"(Fold change)"
    blockarrow_cex <- rep(blockarrow_cex, length.out=2);
+
+   fold_style <- match.arg(fold_style);
 
    ## Only alter parameters which were provided in the function call,
    ## but keep default values which were not defined
@@ -405,9 +453,25 @@ volcano_plot <- function
       rownames(x) <- jamba::makeNames(rep("row", n));
    }
 
+   ## gene
+   gene_colname <- find_colname(gene_colname,
+      x);
+   gene_values <- rownames(x);
+   if (length(gene_colname) == 1) {
+      if (!"rownames" %in% gene_colname) {
+         gene_values <- x[[gene_colname]];
+      }
+   }
+      
    ## label
    label_colname <- find_colname(label_colname,
       x);
+   label_values <- rownames(x);
+   if (length(label_colname) == 1) {
+      if (!"rownames" %in% label_colname) {
+         label_values <- x[[label_colname]];
+      }
+   }
 
    ## significance
    sig_colname <- find_colname(sig_colname,
@@ -465,13 +529,14 @@ volcano_plot <- function
    }
 
    ## expression
+   expr_colname <- find_colname(expr_colname,
+      x,
+      max=Inf,
+      col_types=c("integer", "numeric"));
+   expr_values <- NA;
    met_expr <- rep(TRUE, nrow(x));
    if (length(expr_cutoff) > 0 && length(expr_colname) > 0) {
       expr_cutoff <- head(expr_cutoff, 1);
-      expr_colname <- find_colname(expr_colname,
-         x,
-         max=Inf,
-         col_types=c("integer", "numeric"));
       if (length(expr_colname) > 0) {
          if (verbose) {
             jamba::printDebug("volcano_plot(): ",
@@ -485,11 +550,11 @@ volcano_plot <- function
                " to expr_colname:",
                expr_colname);
          }
-         expr_max <- matrixStats::rowMaxs(
+         expr_values <- apply(
             as.matrix(x[, expr_colname, drop=FALSE]),
-            na.rm=TRUE);
-         met_expr <- (!is.na(expr_max) &
-               expr_max >= expr_cutoff);
+            1, max, na.rm=TRUE);
+         met_expr <- (!is.na(expr_values) &
+            expr_values >= expr_cutoff);
          if (verbose) {
             jamba::printDebug("volcano_plot(): ",
                sum(met_expr),
@@ -520,29 +585,71 @@ volcano_plot <- function
 
    ## Allow highlighting a subset of points
    hi_points_list <- NULL;
+   hi_points_label <- rep(FALSE, nrow(x));
    if (length(hi_points) > 0) {
-      if (is.list(hi_points)) {
-         hi_points_list <- hi_points;
-         hi_points <- Reduce("|", lapply(hi_points_list, function(hi_points_i){
+      # 0.0.39.900 - always convert to list
+      if (!is.list(hi_points)) {
+         hi_points <- list(Highlighted=hi_points);
+      }
+      if (length(hi_do_label) == 0) {
+         hi_do_label <- rep(list(FALSE),
+            length.out=length(hi_points));
+         names(hi_do_label) <- names(hi_points);
+      } else if (!is.list(hi_do_label)) {
+         if (length(hi_do_label) == length(hi_points)) {
+            hi_do_label <- as.list(hi_do_label);
+            names(hi_do_label) <- names(hi_points);
+         } else {
+            hi_do_label <- rep(list(hi_do_label),
+               length.out=length(hi_points));
+            names(hi_do_label) <- names(hi_points);
+         }
+      } else if (length(hi_do_label) != length(hi_points) &&
+         !all(names(hi_points) %in% names(hi_do_label))) {
+         # if length mismatch, and not all names are represented
+         hi_do_label <- rep(hi_do_label,
+            length.out=length(hi_points));
+         names(hi_do_label) <- names(hi_points);
+      } else {
+         hi_do_label <- hi_do_label[names(hi_points)];
+      }
+      hi_points_list <- hi_points;
+      # logical vector with length == nrow(x)
+      hi_points <- Reduce("|",
+         lapply(hi_points_list, function(hi_points_i){
             if (is.numeric(hi_points_i)) {
                seq_len(nrow(x)) %in% hi_points_i
             } else {
-               rownames(x) %in% hi_points_i
+               # 0.0.39.900 - use gene_values, not assume rownames(x)
+               # rownames(x) %in% hi_points_i
+               gene_values %in% hi_points_i
             }
          }))
-      } else if (is.numeric(hi_points)) {
-         hi_points <- seq_len(nrow(x)) %in% hi_points;
-      } else {
-         hi_points <- rownames(x) %in% hi_points;
-      }
+      # logical vector with length == nrow(x)
+      hi_points_label <- Reduce("|",
+         lapply(seq_along(hi_do_label), function(i){
+            hi_do_label_i <- hi_do_label[[i]];
+            use_logical <- rep(FALSE, length(gene_values));
+            if (is.numeric(hi_do_label_i) || is.logical(hi_do_label_i)) {
+               i_value <- hi_points_list[[i]][hi_do_label_i]
+               use_logical <- gene_values %in% i_value
+            } else if (inherits(hi_do_label_i, "character")) {
+               use_logical <- gene_values %in% hi_do_label_i
+            }
+            use_logical
+         }))
    } else {
       hi_points <- rep(FALSE, nrow(x));
+      hi_points_label <- rep(FALSE, nrow(x));
    }
-   if (hi_hits) {
+   if (length(label_colname) == 0) {
+      hi_points_label <- rep(FALSE, nrow(x));
+   }
+   if (isTRUE(hi_hits)) {
       hi_points <- hits_both | hi_points;
    }
-   if (any(!is.na(hi_points) & hi_points) && length(label_colname) > 0) {
-      hi_labels <- x[[label_colname]][hi_points];
+   if (isTRUE(label_hits)) {
+      hi_points_label <- hits_both | hi_points_label;
    }
 
    ## Define point colors by point_type
@@ -554,14 +661,19 @@ volcano_plot <- function
    point_type[hits_dn & hi_points] <- "hi_down";
 
    ## Optionally handle hi_points_list
+   if (isFALSE(blockarrow)) {
+      mar_min <- jamba::noiseFloor(minimum=0.1,
+         mar_min - c(0, 0, 2, 2));
+   }
    if (length(hi_points_list) > 0) {
       mar_min[1] <- mar_min[1] + 2;
       if (length(hi_colors) < length(hi_points_list)) {
          hi_colors <- jamba::alpha2col(alpha=1,
             colorjam::group2colors(names(hi_points_list),
-               Lrange=c(70, 88), Crange=c(80, 120)))
+               Lrange=c(70, 88),
+               Crange=c(80, 120)))
       } else {
-         if (all(names(hi_colors) == names(hi_points_list))) {
+         if (all(names(hi_points_list) %in% names(hi_colors))) {
             hi_colors <- hi_colors[names(hi_points_list)];
          } else {
             hi_colors <- rep(hi_colors,
@@ -574,12 +686,16 @@ volcano_plot <- function
          if (is.numeric(hi_points_i)) {
             hi_points_i <- seq_len(nrow(x)) %in% hi_points_i
          } else {
-            hi_points_i <- rownames(x) %in% hi_points_i
+            # 0.0.39.900 - use gene_values, not assume rownames(x)
+            # hi_points_i <- rownames(x) %in% hi_points_i
+            hi_points_i <- gene_values %in% hi_points_i
          }
          point_type[hi_points_i] <- hi_points_name;
       }
       color_set[names(hi_colors)] <- hi_colors;
-      border_set[names(hi_colors)] <- jamba::makeColorDarker(hi_colors, darkFactor=1.5, sFactor=1)
+      border_set[names(hi_colors)] <- jamba::makeColorDarker(hi_colors,
+         darkFactor=1.5,
+         sFactor=1)
    }
 
    if (verbose > 1) {
@@ -607,29 +723,65 @@ volcano_plot <- function
       jamba::printDebugI(head(unique(border_colors), 20));
    }
 
-   ## y-axis values
-   if (length(sig_max_range) == 1 &&
-         sig_max_range > 0 &&
-         any(!is.na(sig_values) & sig_values < sig_max_range)) {
-      sig_values[sig_values < sig_max_range] <- sig_max_range;
+   ## sig_min_range, sig_max_range
+   sig_max_range <- head(sig_max_range, 1);
+   if (length(sig_max_range) == 0 || is.na(sig_max_range) || sig_max_range < 1e-300) {
+      sig_max_range <- 1e-300;
    }
-   y_values <- -log10(sig_values);
+   sig_min_range <- head(sig_min_range, 1);
+   if (length(sig_min_range) == 0 || is.na(sig_min_range)) {
+      sig_min_range <- 1e-4;
+   }
+   if (sig_min_range < 1e-300) {
+      sig_min_range <- 1e-300;
+   }
+   if (sig_min_range < sig_max_range) {
+      sig_max_range <- sig_min_range;
+   }
 
-   ## x-axis values
-   if (length(fold_max_range) == 1 && !is.na(fold_max_range)) {
-      lfc_cap <- (!is.na(lfc_values) & abs(lfc_values) > log2(fold_max_range));
-      if (any(lfc_cap)) {
-         lfc_values[lfc_cap] <- log2(fold_max_range) * sign(lfc_values[lfc_cap]);
+   ## y-axis values
+   k <- (!is.na(sig_values) & sig_values < sig_max_range);
+   # 0.0.39.900 - apply cap to y_values not sig_values
+   y_values <- -log10(sig_values);
+   if (any(k)) {
+      y_values[k] <- -log10(sig_max_range);
+   }
+
+   ## fold_max_range
+   fold_max_range <- head(abs(fold_max_range), 1);
+   if (length(fold_max_range) == 0) {
+      fold_max_range <- Inf;
+   }
+   if (is.na(fold_max_range) || fold_max_range <= 1) {
+      fold_max_range <- 2;
+   }
+   if (length(fold_cutoff) == 1 && fold_max_range < fold_cutoff) {
+      fold_max_range <- (fold_cutoff - 1) * 6 + 1;
+   }
+
+   ## fold_min_range
+   fold_min_range <- head(fold_min_range, 1);
+   if (length(fold_min_range) == 0) {
+      if (length(fold_cutoff) == 1 && fold_cutoff > 1) {
+         fold_min_range <- (fold_cutoff - 1) * 6 + 1;
+      } else {
+         fold_min_range <- 4;
       }
    }
-   x_values <- lfc_values;
+   if (fold_min_range > fold_max_range) {
+      fold_max_range <- fold_min_range;
+   }
 
-   #if (!is.null(pointsToLabel)) {
-   #   row2name <- c(jamba::nameVector(rownames(x), x[,geneColumn]),
-   #      jamba::nameVector(rownames(x)));
-   #   pointsToLabel <- jamba::flipVector(row2name[pointsToLabel],
-   #      makeNamesFunc=c);
-   #}
+   ## x-axis values
+   lfc_cap <- (!is.na(lfc_values) &
+      abs(lfc_values) > log2(fold_max_range));
+   x_values <- lfc_values;
+   if (any(lfc_cap)) {
+      # 0.0.39.900 - apply cap to x_values not lfc_values
+      # lfc_values[lfc_cap] <- log2(fold_max_range) * sign(lfc_values[lfc_cap]);
+      x_values[lfc_cap] <- log2(fold_max_range) * sign(lfc_values[lfc_cap]);
+   }
+
    if (any(!is.na(hi_points) & hi_points)) {
       if (verbose > 1) {
          jamba::printDebug("Creating subset of points for highlighting.");
@@ -645,11 +797,12 @@ volcano_plot <- function
    ## optional do_jitter here
 
    if (length(xlim) == 0) {
-      fold_min <- log2(max(c(fold_cutoff, 2)) * 1.3) * c(-1, 1);
+      # 0.0.39.900 - skip fold_min since already used in fold_min_range
+      # fold_min <- log2(max(c(fold_cutoff, 1)) * 1.3) * c(-1, 1);
       fold_min_range <- log2(head(abs(fold_min_range), 1)) * c(-1, 1);
       xlim <- range(c(x_values,
-         fold_min_range,
-         fold_min),
+         # fold_min,
+         fold_min_range),
          na.rm=TRUE);
    }
    if (symmetric_axes) {
@@ -657,6 +810,13 @@ volcano_plot <- function
    }
    if (length(sig_max_range) == 0 || any(!is.na(sig_max_range) & sig_max_range < 1e-300)) {
       sig_max_range <- 1e-300;
+   }
+   sig_min_range <- head(sig_min_range, 1);
+   if (length(sig_min_range) == 0) {
+      sig_min_range <- 1e-4;
+   }
+   if (sig_min_range < sig_max_range) {
+      sig_max_range <- sig_min_range;
    }
    if (length(ylim) == 0) {
       sig_min <- max(-log10(c(sig_cutoff, 0.05))) * 1.3;
@@ -691,23 +851,23 @@ volcano_plot <- function
    do_overall_title <- function() {
       if ((length(main) > 0 && nchar(main) > 0) ||
             (length(submain) > 0 && nchar(submain) > 0)) {
-         origPar1 <- par("xpd"=TRUE);
-         font.main <- 1;
-         if (length(main) > 0 && nchar(main) > 0) {
-            nlines_main <- lengths(strsplit(main, "\n"));
-            line_main <- parMar[3] - 0.5 - 1.2 * nlines_main;
-            title(main=main,
-               line=line_main,
-               font.main=font.main,
-               cex.main=1.5);
-         }
-         if (length(submain) > 0 && nchar(submain) > 0) {
-            title(main=submain,
-               line=line_main - nlines_main / 2 - 0.4,
-               cex.main=1,
-               font.main=font.main);
-         }
-         par(origPar1);
+         withr::with_par(list(xpd=TRUE), {
+            font.main <- 1;
+            if (length(main) > 0 && nchar(main) > 0) {
+               nlines_main <- lengths(strsplit(main, "\n"));
+               line_main <- parMar[3] - 0.5 - 1.2 * nlines_main;
+               title(main=main,
+                  line=line_main,
+                  font.main=font.main,
+                  cex.main=1.5);
+            }
+            if (length(submain) > 0 && nchar(submain) > 0) {
+               title(main=submain,
+                  line=line_main - nlines_main / 2 - 0.4,
+                  cex.main=1,
+                  font.main=font.main);
+            }
+         })
       }
    }
 
@@ -718,21 +878,30 @@ volcano_plot <- function
    ## labelCoords will have the return data from addNonOverlappingLabels() but only
    ## if we end up calling that method
    labelCoords <- NULL;
-   parMarXpd <- par("mar", "xpd");
-   parMar <- parMarXpd$mar;
-   if (verbose > 1) {
-      jamba::printDebug("volcano_plot(): ",
-         "parMar: ",
-         parMar);
+   parMar <- mar_min;
+   if (do_plot) {
+      parMarXpd <- par("mar", "xpd");
+      parMar <- parMarXpd$mar;
+      if (verbose > 1) {
+         jamba::printDebug("volcano_plot(): ",
+            "parMar: ",
+            parMar);
+      }
    }
-   on.exit(par(parMarXpd));
+   # on.exit(par(parMarXpd));
    if (length(mar_min) > 0) {
       parMar <- pmax(parMar, mar_min);
    }
 
    ##########################################################
    ## tophist - histogram of hits along top border
-   if (!add_plot && length(tophist) > 0 && is.logical(tophist) && tophist) {
+   if (do_plot &&
+      !add_plot &&
+      length(tophist) > 0 &&
+      is.logical(tophist) &&
+      tophist) {
+      # Top histogram
+      #
       if (length(grep("pval", tophist_cutoffs)) > 0) {
          ## Apply P-value filtering
          pvHitsWhich <- met_sig;
@@ -771,49 +940,70 @@ volcano_plot <- function
             1-tophist_fraction));
       ## Change margins, then plot the top histogram
       ## default is par(mar=c(5.1, 4.1, 4.1, 2.1));
-      par("mar"=c(1, parMar[2], parMar[3], parMar[4]));
+      # par("mar"=c(1, parMar[2], parMar[3], parMar[4]));
 
       #parList[["preTopHist"]] <- origPar;
       #parList[["preTopHist"]]$mar <- c(1, parMar[2], parMar[3], parMar[4]);
 
       r1 <- as.integer(length(tophist_breaks)/2);
       tophist_col <- rep(tophist_colors, c(r1, r1+1));
-      parAxs <- par("xaxs"="i", "yaxs"="i");
-      expand <- c(0.04, 0.04);
-      xlim4 <- sort((c(-1,1) * diff(xlim) * expand[1]/2) + xlim);
-      graphics:::plot.histogram(tophist_data,
-         freq=TRUE,
-         xlim=xlim4,
-         ylim=range(tophist_data$counts) + c(0, 1),
-         main="", xlab="", ylab="",
-         axes=FALSE,
-         col=tophist_col);
-      jamba::minorLogTicksAxis(1,
-         logBase=2,
-         displayBase=2,
-         majorCex=cex.axis,
-         minorCex=cex.axis*0.7,
-         symmetricZero=TRUE,
-         doLabels=FALSE,
-         doMinorLabels=FALSE,
-         offset=0,
-         ...);
-      box();
-      par(parAxs);
-      prettyAt1 <- pretty(c(0, max(tophist_data$counts) + 1), n=5);
-      prettyAt1 <- prettyAt1[prettyAt1 <= max(tophist_data$counts)];
-      axis(2,
-         las=2,
-         cex.axis=1.3,
-         at=prettyAt1,
-         ...);
-      title(ylab="Hits");
-      #parList[["postTopHist"]] <- origPar;
-      #parList[["postTopHist"]]$mar <- c(parMar[1], parMar[2], 2, parMar[4]);
-      do_overall_title();
-      par("mar"=c(parMar[1], parMar[2], 3, parMar[4]));
-   } else {
-      par("mar"=parMar);
+      withr::with_par(list(
+         "xaxs"="i",
+         "yaxs"="i",
+         "mar"=c(1, parMar[2], parMar[3], parMar[4])), {
+         #
+         parAxs <- par("xaxs"="i", "yaxs"="i");
+         expand <- c(0.04, 0.04);
+         xlim4 <- sort((c(-1,1) * diff(xlim) * expand[1]/2) + xlim);
+         graphics:::plot.histogram(tophist_data,
+            freq=TRUE,
+            xlim=xlim4,
+            ylim=range(tophist_data$counts) + c(0, 1),
+            main="", xlab="", ylab="",
+            axes=FALSE,
+            col=tophist_col);
+         if ('fold' %in% fold_style) {
+            jamba::minorLogTicksAxis(1,
+               logBase=2,
+               displayBase=2,
+               majorCex=cex.axis,
+               minorCex=cex.axis*0.7,
+               symmetricZero=TRUE,
+               doLabels=FALSE,
+               doMinorLabels=FALSE,
+               offset=0,
+               ...);
+         } else {
+            jamba::minorLogTicksAxis(1,
+               logBase=2,
+               displayBase=2,
+               majorCex=cex.axis,
+               minorCex=cex.axis*0.0001,
+               symmetricZero=TRUE,
+               doLabels=FALSE,
+               doMinorLabels=FALSE,
+               offset=0,
+               ...);
+         }
+         box();
+         # par(parAxs);
+         prettyAt1 <- pretty(c(0, max(tophist_data$counts) + 1), n=5);
+         prettyAt1 <- prettyAt1[prettyAt1 <= max(tophist_data$counts)];
+         axis(2,
+            las=2,
+            cex.axis=1.3,
+            at=prettyAt1,
+            ...);
+         title(ylab="Hits");
+         #parList[["postTopHist"]] <- origPar;
+         #parList[["postTopHist"]]$mar <- c(parMar[1], parMar[2], 2, parMar[4]);
+         do_overall_title();
+      })
+      withr::local_par(list("mar"=c(parMar[1], parMar[2], 3, parMar[4])))
+      # par("mar"=c(parMar[1], parMar[2], 3, parMar[4]));
+   } else if (do_plot) {
+      withr::local_par(list("mar"=parMar))
+      # par("mar"=parMar);
    }
 
    if (length(xlab) == 0) {
@@ -821,6 +1011,13 @@ volcano_plot <- function
          xlab <- paste0("Change (", fold_colname_label, ")");
       } else {
          xlab <- fold_colname_label;
+      }
+      if ("fold" %in% fold_style) {
+         xlab <- gsub("l(fc)", "\\1",
+            ignore.case=TRUE,
+            gsub("(log2|log)[ ]*", "",
+               ignore.case=TRUE,
+               xlab));
       }
    }
    if (length(ylab) == 0) {
@@ -836,98 +1033,134 @@ volcano_plot <- function
    if (do_both) {
       smooth <- TRUE;
    }
-   if (smooth) {
-      ## Upright volcano plot (standard orientation)
-      smooth_func(x=x_values,
-         y=y_values,
-         xaxt="n",
-         yaxt="n",
-         xlab="",
-         ylab="",
-         transformation=transformation,
-         useRaster=TRUE,
-         xlim=xlim,
-         ylim=ylim,
-         nbin=nbin,
-         colramp=smooth_ramp,
-         add=FALSE,
-         nrpoints=0,
-         ...);
-      title(xlab=xlab,
-         line=mean(c(2.5, parMar[1] - 2.5)),
-         cex.lab=cex.axis,
-         ...);
-      title(ylab=ylab,
-         line=mean(c(3, parMar[2] - 1.2)),
-         cex.lab=cex.axis,
-         ...);
-      parUsr <- par("usr");
-      #parList[["postSmoothScatter"]] <- par(no.readonly=TRUE);
-   }
+   if (do_plot) {
+      if (smooth) {
+         ## Upright volcano plot (standard orientation)
+         smooth_func(x=x_values,
+            y=y_values,
+            xaxt="n",
+            yaxt="n",
+            xlab="",
+            ylab="",
+            transformation=transformation,
+            useRaster=TRUE,
+            xlim=xlim,
+            ylim=ylim,
+            nbin=nbin,
+            bwpi=120 * bw_factor,
+            colramp=smooth_ramp,
+            add=FALSE,
+            nrpoints=0,
+            ...);
+         title(xlab=xlab,
+            line=mean(c(2.5, parMar[1] - 2.5)),
+            cex.lab=cex.axis,
+            ...);
+         title(ylab=ylab,
+            line=mean(c(3, parMar[2] - 1.2)),
+            cex.lab=cex.axis,
+            ...);
+         # 0.0.39.900 - commented out par("usr")
+         # parUsr <- par("usr");
+         #parList[["postSmoothScatter"]] <- par(no.readonly=TRUE);
+      }
 
 
-   ## Non-smooth scatter points
-   if (!smooth) {
-      ## quick blank plot to set axis ranges
-      plot(NULL,
-         xlim=xlim,
-         ylim=ylim,
-         xaxt="n",
-         yaxt="n",
-         xlab="",
-         ylab="",
-         ...);
-      title(xlab=xlab,
-         line=mean(c(2.5, parMar[1] - 2.5)),
-         #line=2.5,
-         cex.axis=cex.axis,
-         ...);
-      title(ylab=ylab,
-         line=mean(c(3, parMar[2] - 1.2)),
-         #line=4,
-         cex.axis=cex.axis,
-         ...);
+      ## Non-smooth scatter points
+      if (!smooth) {
+         ## quick blank plot to set axis ranges
+         plot(NULL,
+            xlim=xlim,
+            ylim=ylim,
+            xaxt="n",
+            yaxt="n",
+            xlab="",
+            ylab="",
+            ...);
+         title(xlab=xlab,
+            line=mean(c(2.5, parMar[1] - 2.5)),
+            #line=2.5,
+            cex.axis=cex.axis,
+            ...);
+         title(ylab=ylab,
+            line=mean(c(3, parMar[2] - 1.2)),
+            #line=4,
+            cex.axis=cex.axis,
+            ...);
+      }
    }
+
+   ##################################
+   ## Highlight points
    if (any(!is.na(hi_points) & hi_points)) {
-      if (do_both) {
-         points(x=x_values[!hi_points],
-            y=y_values[!hi_points],
+      if (do_plot) {
+         if (do_both) {
+            points(x=x_values[!hi_points],
+               y=y_values[!hi_points],
+               pch=pt_pch,
+               cex=pt_cex,
+               bg=point_colors[!hi_points],
+               col=border_colors[!hi_points],
+               xaxt="n",
+               yaxt="n",
+               ...);
+         }
+         points(x=x_values[hi_points],
+            y=y_values[hi_points],
             pch=pt_pch,
-            cex=pt_cex,
-            bg=point_colors[!hi_points],
-            col=border_colors[!hi_points],
+            cex=hi_cex,
+            bg=point_colors[hi_points],
+            col=border_colors[hi_points],
             xaxt="n",
             yaxt="n",
             ...);
       }
-      points(x=x_values[hi_points],
-         y=y_values[hi_points],
-         pch=pt_pch,
-         cex=hi_cex,
-         bg=point_colors[hi_points],
-         col=border_colors[hi_points],
-         xaxt="n",
-         yaxt="n",
-         ...);
-      ## Optionally labels the highlighted points, using the addNonOverlappingLabels() function
-      if (label_hits) {
-         labelCoords <- addNonOverlappingLabels(
-            x=x_values[hi_points],
-            y=y_values[hi_points],
-            initialAngle=initialAngle,
-            txt=hi_labels,
-            n=labelN,
-            labelCex=labelCex,
-            labelMar=labelMar,
-            boxColor=boxColor,
-            boxBorderColor=boxBorderColor,
-            initialRadius=initialRadius,
-            fixedCoords=labelFixedCoords,
-            ...);
+      
+      ## points_by_density() - custom function to find extreme points
+
+      ## Label the highlighted points
+      ## Todo: Use non-overlapping labels (ggplot2 ggrepel?)
+      if (any(hi_points_label)) {
+         # 0.0.39.900 - replace with drawLabels() since
+         # addNonOverlappingLabels() is not in jamma yet.
+         # labelCoords <- addNonOverlappingLabels(
+
+         ## choose points using density
+         ## We have a choice: Use capped points (xlim,ylim limited)
+         ## or use full range.
+         ## For now, use full range, so it will pick actual extremes
+         use_x_capped <- cbind(
+            x=x_values[hi_points_label],
+            y=y_values[hi_points_label]);
+         use_x <- cbind(
+            x=lfc_values[hi_points_label],
+            y=-log10(sig_values[hi_points_label]));
+         set.seed(123);
+         use_hi_points <- points_by_density(
+            x=use_x,
+            nrpoints=max_labels,
+            return_type='index',
+            transformation=transformation)
+         label_cex <- 0.7;
+         hi_points_label_shown <- rep("", length(x_values));
+         hi_points_label_shown[hi_points_label][use_hi_points] <- (
+            label_values[hi_points_label][use_hi_points]);
+         
+         if (do_plot) {
+            labelCoords <- jamba::drawLabels(
+               x=use_x_capped[use_hi_points, 1],
+               y=use_x_capped[use_hi_points, 2],
+               txt=label_values[use_hi_points],
+               labelCex=label_cex,
+               labelMar=label_cex * 0.7,
+               boxColor=point_colors[hi_points_label][use_hi_points],
+               boxBorderColor=border_colors[hi_points_label][use_hi_points],
+               ...);
+         }
       }
       ## Add text labels indicating the number of highlighted points
       textAdjX <- c(0, 1);
-      if (label_hits) {
+      if (FALSE && label_hits) {
          #jamba::drawLabels(preset="topleft",
          for(i in seq_along(namesLabel)) {
             text(x=namesX[i],
@@ -936,7 +1169,7 @@ volcano_plot <- function
                adj=c(textAdjX[i], 0.5));
          }
       }
-   } else if (!smooth || do_both) {
+   } else if (do_plot && (!smooth || do_both)) {
       if (verbose > 1) {
          jamba::printDebug("volcano_plot(): ",
             "Following do_both=TRUE without hi_points.");
@@ -981,7 +1214,7 @@ volcano_plot <- function
       ## optional hits_by_gene
 
       ## draw hit labels
-      if (!add_plot && label_hits && !blockarrow) {
+      if (do_plot && !add_plot && label_hits && !blockarrow) {
          jamba::drawLabels(preset=c("topleft", "topright"),
             txt=c(label_dn, label_up),
             labelCex=1,
@@ -993,96 +1226,109 @@ volcano_plot <- function
       #origPar1 <- par("xpd"=FALSE);
       #on.exit(par(origPar1), add=TRUE);
 
-      y_at <- unique(as.integer(pretty(ylim, n=n_y_labels)));
-      logAxis(2,
-         at=y_at,
-         value=FALSE,
-         base=10,
-         makeNegative=TRUE,
-         cex.axis=cex.axis*1,
-         ...);
-      ## Add small label indicating the threshold
-      if (!-log10(sig_cutoff) %in% y_at) {
-         axis(2,
-            at=-log10(sig_cutoff),
-            labels=format(sig_cutoff),
-            las=2,
-            cex=cex.axis*0.8)
-      }
-      #logAxis(1, at=unique(as.integer(pretty(xRange, n=nXlabels))),
-      #   value=TRUE, base=2, cex.axis=cex.axis*0.8, ...);
-      jamba::minorLogTicksAxis(1,
-         logBase=2,
-         displayBase=2,
-         majorCex=cex.axis,
-         minorCex=cex.axis*0.7,
-         symmetricZero=TRUE,
-         offset=0,
-         ...);
-      par("xpd"=FALSE);
-      if (length(sig_cutoff) > 0) {
-         abline(h=-log10(sig_cutoff),
-            lty="dashed",
-            col=abline_color);
-      }
-      if (length(fold_cutoff) > 0) {
-         abline(v=unique(log2(fold_cutoff) * c(-1, 1)),
-            lty="dashed",
-            col=abline_color);
-      }
-      if (blockarrow) {
-         par("xpd"=TRUE);
-         hitCol <- hsv(h=0.06,
-            s=0.75,
-            v=0.9,
-            alpha=1);
-         if (tophist) {
-            right_adj <- 1.2;
+      if (do_plot) {
+         y_at <- unique(as.integer(pretty(ylim, n=n_y_labels)));
+         # log-fancy labels for 10^-3 and so forth
+         logAxis(2,
+            at=y_at,
+            value=FALSE,
+            base=10,
+            makeNegative=TRUE,
+            cex.axis=cex.axis*1,
+            ...);
+         ## Add small label indicating the threshold
+         if (!-log10(sig_cutoff) %in% y_at) {
+            axis(2,
+               at=-log10(sig_cutoff),
+               labels=format(sig_cutoff),
+               las=2,
+               cex=cex.axis*0.8)
+         }
+         #logAxis(1, at=unique(as.integer(pretty(xRange, n=nXlabels))),
+         #   value=TRUE, base=2, cex.axis=cex.axis*0.8, ...);
+         if ('fold' %in% fold_style) {
+            jamba::minorLogTicksAxis(1,
+               logBase=2,
+               displayBase=2,
+               majorCex=cex.axis,
+               minorCex=cex.axis*0.7,
+               doMinorLabels=diff(xlim) < 20,
+               doMinor=diff(xlim) < 20,
+               symmetricZero=TRUE,
+               offset=0,
+               ...);
          } else {
-            right_adj <- 1;
+            axis(1,
+               ...)
          }
-         blockarrow_label_colors <- jamba::setTextContrastColor(
-            jamba::makeColorDarker(blockarrow_colors,
-               darkFactor=1.3,
-               sFactor=1.3))
+         # 0.0.39.900 - silence xpd=FALSE
+         # par("xpd"=FALSE);
+         if (length(sig_cutoff) > 0) {
+            abline(h=-log10(sig_cutoff),
+               lty="dashed",
+               col=abline_color);
+         }
+         if (length(fold_cutoff) > 0) {
+            abline(v=unique(log2(fold_cutoff) * c(-1, 1)),
+               lty="dashed",
+               col=abline_color);
+         }
+         
+         if (isTRUE(blockarrow)) {
+            # 0.0.39.900 - silence xpd=TRUE
+            # par("xpd"=TRUE);
+            hitCol <- hsv(h=0.06,
+               s=0.75,
+               v=0.9,
+               alpha=1);
+            if (tophist) {
+               right_adj <- 1.2;
+            } else {
+               right_adj <- 1;
+            }
+            blockarrow_label_colors <- jamba::setTextContrastColor(
+               jamba::makeColorDarker(blockarrow_colors,
+                  darkFactor=1.3,
+                  sFactor=1.3))
 
-         blockarrow_cex <- rep(blockarrow_cex, length.out=2);
-         blockArrowMargin(axisPosition="rightAxis",
-            ybottom=-log10(sig_cutoff),
-            arrowPosition="top",
-            doShadowText=blockarrow_shadowtext,
-            blockWidthPercent=5*blockarrow_cex[2]*right_adj,
-            arrowLabel=label_both,
-            col=blockarrow_colors[["hit"]],
-            labelCex=blockarrow_label_cex * blockarrow_cex[2],
-            labelFont=blockarrow_font,
-            arrowLabelColor=blockarrow_label_colors[["hit"]],
-            arrowLabelBorder=jamba::alpha2col(blockarrow_label_colors[["hit"]], 0.3));
-         if (length(fold_cutoff) == 0) {
-            fold_cutoff <- 1;
+            blockarrow_cex <- rep(blockarrow_cex, length.out=2);
+            blockArrowMargin(axisPosition="rightAxis",
+               ybottom=-log10(sig_cutoff),
+               arrowPosition="top",
+               doShadowText=blockarrow_shadowtext,
+               blockWidthPercent=5*blockarrow_cex[2]*right_adj,
+               arrowLabel=label_both,
+               col=blockarrow_colors[["hit"]],
+               labelCex=blockarrow_label_cex * blockarrow_cex[2],
+               labelFont=blockarrow_font,
+               arrowLabelColor=blockarrow_label_colors[["hit"]],
+               arrowLabelBorder=jamba::alpha2col(blockarrow_label_colors[["hit"]], 0.3));
+            if (length(fold_cutoff) == 0) {
+               fold_cutoff <- 1;
+            }
+            blockArrowMargin(axisPosition="topAxis",
+               xleft=log2(fold_cutoff),
+               arrowPosition="right",
+               doShadowText=blockarrow_shadowtext,
+               blockWidthPercent=5*blockarrow_cex[1],
+               arrowLabel=label_up,
+               col=blockarrow_colors[["up"]],
+               labelCex=blockarrow_label_cex * blockarrow_cex[1],
+               labelFont=blockarrow_font,
+               arrowLabelColor=blockarrow_label_colors[["up"]],
+               arrowLabelBorder=alpha2col(blockarrow_label_colors[["up"]], 0.3));
+            blockArrowMargin(axisPosition="topAxis",
+               xright=-log2(fold_cutoff),
+               arrowPosition="left",
+               doShadowText=blockarrow_shadowtext,
+               blockWidthPercent=5*blockarrow_cex[1],
+               arrowLabel=label_dn,
+               col=blockarrow_colors[["down"]],
+               labelCex=blockarrow_label_cex * blockarrow_cex[1],
+               labelFont=blockarrow_font,
+               arrowLabelColor=blockarrow_label_colors[["down"]],
+               arrowLabelBorder=jamba::alpha2col(blockarrow_label_colors[["down"]], 0.3));
          }
-         blockArrowMargin(axisPosition="topAxis",
-            xleft=log2(fold_cutoff),
-            arrowPosition="right",
-            doShadowText=blockarrow_shadowtext,
-            blockWidthPercent=5*blockarrow_cex[1],
-            arrowLabel=label_up,
-            col=blockarrow_colors[["up"]],
-            labelCex=blockarrow_label_cex * blockarrow_cex[1],
-            labelFont=blockarrow_font,
-            arrowLabelColor=blockarrow_label_colors[["up"]],
-            arrowLabelBorder=alpha2col(blockarrow_label_colors[["up"]], 0.3));
-         blockArrowMargin(axisPosition="topAxis",
-            xright=-log2(fold_cutoff),
-            arrowPosition="left",
-            doShadowText=blockarrow_shadowtext,
-            blockWidthPercent=5*blockarrow_cex[1],
-            arrowLabel=label_dn,
-            col=blockarrow_colors[["down"]],
-            labelCex=blockarrow_label_cex * blockarrow_cex[1],
-            labelFont=blockarrow_font,
-            arrowLabelColor=blockarrow_label_colors[["down"]],
-            arrowLabelBorder=jamba::alpha2col(blockarrow_label_colors[["down"]], 0.3));
       }
 
       #parList[["postBlockArrows"]] <- par(no.readonly=TRUE);
@@ -1090,6 +1336,7 @@ volcano_plot <- function
       ## Display the significance cutoff used
       #subTitle <- paste("Significance cutoff <= ", pvalueCutoff, ", and fold change cutoff > ", round(digits=2, 2^fcCutoff));
 
+      caption_list <- list();
       if (do_cutoff_caption) {
          captions <- character(0);
          if (length(sig_cutoff) > 0) {
@@ -1134,10 +1381,12 @@ volcano_plot <- function
             caption <- paste(captions,
                collapse=", ");
          }
-         title(sub=caption,
-            adj=0.99,
-            cex.sub=caption_cex,
-            line=parMar[1] - 1.5 - 2 * (length(hi_points_list) > 0));
+         if (do_plot) {
+            title(sub=caption,
+               adj=0.99,
+               cex.sub=caption_cex,
+               line=parMar[1] - 1.5 - 2 * (length(hi_points_list) > 0));
+         }
 
          ## Display the total points
          total_sub <- paste0("Total points: ",
@@ -1148,19 +1397,24 @@ volcano_plot <- function
                format(big.mark=",", sum(met_expr)),
                " met signal)"))
          }
-         title(sub=total_sub,
-            adj=0.01,
-            cex.sub=caption_cex,
-            line=parMar[1] - 1.5 - 2 * (length(hi_points_list) > 0));
+         if (do_plot) {
+            title(sub=total_sub,
+               adj=0.01,
+               cex.sub=caption_cex,
+               line=parMar[1] - 1.5 - 2 * (length(hi_points_list) > 0));
+         }
+         caption_list <- list(
+            caption=caption,
+            total_sub=total_sub)
       }
 
       ## Overall Title
-      if (!tophist) {
+      if (do_plot && !tophist) {
          do_overall_title();
       }
 
       ## Optional color key for highlighted points
-      if (length(hi_points_list) > 0) {
+      if (do_plot && length(hi_points_list) > 0) {
          outer_legend(x="bottom",
             legend=names(hi_colors),
             col=unname(unlist(hi_colors)),
@@ -1170,12 +1424,53 @@ volcano_plot <- function
       }
    }
 
-
-   if (1 == 2 && tophist) {
-      par("mar"=origPar$mar);
-      par("plt"=origPar$plt);
-      par("usr"=origPar$usr);
+   # 0.0.39.900 - return data.frame
+   volcano_df <- data.frame(check.names=FALSE,
+      gene_values=gene_values,
+      label_values=label_values,
+      x=x_values,
+      y=y_values,
+      lfc_values=lfc_values,
+      sig_values=sig_values,
+      expr_values=expr_values,
+      point_type=point_type,
+      point_colors=point_colors,
+      border_colors=border_colors,
+      hi_points=hi_points)
+   if (any(hi_points_label)) {
+      volcano_df$hi_points_label <- hi_points_label;
+      # hi_points_label_shown
+      if (any(nchar(hi_points_label_shown)) > 0) {
+         volcano_df$hi_points_label_shown <- hi_points_label_shown;
+      }
    }
+   if (length(point_type) > 0) {
+      volcano_df$point_type <- point_type;
+   }
+   # attributes with other options
+   attr(volcano_df, "parList") <- parList;
+   attr(volcano_df, "color_set") <- color_set;
+   attr(volcano_df, "border_set") <- border_set;
+   attr(volcano_df, "caption_list") <- caption_list;
+   
+   argsList <- list();
+   argsList$xlab <- xlab;
+   argsList$ylab <- ylab;
+   argsList$lfc_colname <- lfc_colname;
+   argsList$fold_colname <- fold_colname;
+   argsList$sig_colname <- sig_colname;
+   argsList$expr_colname <- expr_colname;
+   argsList$gene_colname <- gene_colname;
+   argsList$label_colname <- label_colname;
+   argsList$fold_max_range <- fold_max_range;
+   argsList$fold_min_range <- fold_min_range;
+   argsList$sig_max_range <- sig_max_range;
+   argsList$sig_min_range <- sig_min_range;
+   argsList$max_labels <- max_labels;
+   attr(volcano_df, "argsList") <- argsList;
+
+   return(invisible(volcano_df));
+
    return(invisible(
       list(
          x=x_values,
@@ -1940,3 +2235,58 @@ logAxis <- function
    invisible(list(sa1));
 }
 
+#' Helper function to return points to highlight using density
+#' 
+#' Helper function to return points to highlight using density
+#' 
+#' This function is based upon internal code used within
+#' `smoothScatter()` with argument 'nrpoints' to display a subset
+#' of points "at the extremes" based upon the density of points.
+#' 
+#' @returns `integer` index when return_type='index'; or
+#'    `numeric` matrix when return_type='x'.
+#' 
+#' @param x `numeric` matrix with two columns
+#' @param nrpoints `integer` number of points, default 20
+#' @param return_type `character` default 'index'
+#'    * 'index' returns the `integer` index of points to use
+#'    from input `x`.
+#'    * `x` returns the `numeric` matrix of coordinates
+#'    to use, as a subset of input `x`.
+#' @param ... additional arguments are ignored.
+#' 
+#' @keywords internal
+#' @noRd
+points_by_density <- function
+(x,
+ nrpoints=20,
+ return_value=c('index',
+    'x'),
+ transformation=function(x)x^0.24,
+ ...)
+{
+   return_value <- match.arg(return_value);
+   nrpoints <- min(c(nrow(x), ceiling(nrpoints)));
+   if (nrpoints == nrow(x)) {
+      sel <- seq_len(nrow(x))
+   } else {
+      dmap <- jamba::jamCalcDensity(x, nbin=50)
+      # dmap <- grDevices:::.smoothScatterCalcDensity(x, nbin, bandwidth)
+      xm <- dmap$x1
+      ym <- dmap$x2
+      dens <- dmap$fhat
+      dens[] <- transformation(dens)
+      stopifnot(
+         (nx <- length(xm)) == nrow(dens),
+         (ny <- length(ym)) == ncol(dens))
+      ixm <- (1L + as.integer(
+         (nx - 1) * (x[, 1] - xm[1])/(xm[nx] - xm[1])));
+      iym <- (1L + as.integer(
+         (ny - 1) * (x[, 2] - ym[1])/(ym[ny] - ym[1])));
+      sel <- head(order(dens[cbind(ixm, iym)]), nrpoints)
+   }
+   if ('index' %in% return_value) {
+      return(sel)
+   }
+   return(x[sel, , drop=FALSE])
+}

@@ -31,19 +31,29 @@
 #' preferentially match `"P.Value"` and not `"adj.P.Val"`.
 #'
 #' @family jam utility functions
+#' 
+#' @returns `character` column name, or when `index=TRUE` it returns
+#'    an `integer` index of the column or columns. The number of entries
+#'    returned is defined by `max`, up to that many entries.
 #'
 #' @param pattern `character` vector of text strings and/or regular
-#'    expression patterns.
+#'    expression patterns. A special case 'rownames' is recognized
+#'    as `rownames(x)` and when present, it will be used as a
+#'    last option if no other patterns in `pattern` are matched.
 #' @param x `data.frame` or other object that contains `colnames(x)`.
 #' @param max `integer` maximum number of entries to return.
+#'    Default 1 returns only the first matching column.
 #' @param index `logical` indicating whether to return the column index,
-#'    that is the column number.
+#'    that is the column number, default FALSE.
+#'    When `pattern`includes 'rownames' and no other patterns are matched,
+#'    the rownames are used -- in this case the index is defined as zero 0.
 #' @param require_non_na `logical` indicating whether to require at
-#'    least one non-`NA` value in the matching colname. When
-#'    `require_non_na=TRUE` and all values in a column are `NA`,
-#'    that colname is not returned by this function.
+#'    least one non-`NA` value in the matching colname. Default TRUE.
+#'    When `require_non_na=TRUE` and all values in a column are `NA`,
+#'    that colname is excluded.
 #' @param exclude_pattern `character` vector of colnames or patterns
-#'    to exclude from returned results.
+#'    to exclude from returned results. Default NULL does not exclude
+#'    any columns.
 #' @param verbose `logical` indicating whether to print verbose output.
 #' @param ... additional arguments are ignored.
 #'
@@ -176,14 +186,27 @@ find_colname <- function
       x_vals <- unique(jamba::provigrep(pattern, x_colnames));
       return(head(x_vals, max));
    } else {
-      if (verbose) {
-         jamba::printDebug("find_colname(): ",
-            "No match found.");
+      if ("rownames" %in% pattern) {
+         if (verbose) {
+            jamba::printDebug("find_colname(): ",
+               "Returning rownames.");
+         }   
+         x_vals <- "rownames";
+         if (isTRUE(index)) {
+            x_vals <- 0;
+         }
+         return(x_vals);
+      } else {
+         if (verbose) {
+            jamba::printDebug("find_colname(): ",
+               "No match found.");
+         }
+         x_vals <- NULL;
+         return(x_vals);
       }
-      x_vals <- NULL;
    }
 
-   if (index && length(x_vals) > 0) {
+   if (isTRUE(index) && length(x_vals) > 0) {
       x_vals <- unique(match(x_vals, x_colnames));
    }
    return(head(x_vals, max));

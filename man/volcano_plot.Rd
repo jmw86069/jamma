@@ -9,6 +9,7 @@ volcano_plot(
   n = NULL,
   lfc_colname = c("logfc", "log2fold", "log2fc", "lfc", "l2fc", "logratio", "log2ratio"),
   fold_colname = c("fold", "fc", "ratio"),
+  fold_style = c("fold", "log2fold", "log2", "lfc"),
   fold_cutoff = 1.5,
   fold_max_range = 16,
   fold_min_range = 4,
@@ -18,7 +19,8 @@ volcano_plot(
   sig_min_range = 1e-04,
   expr_colname = c("mgm", "groupmean", "mean", "AveExpr", "fkpm", "rpkm", "tpm", "cpm"),
   expr_cutoff = NULL,
-  label_colname = c("gene", "symbol", "protein", "probe", "assay"),
+  gene_colname = c("gene", "symbol", "protein", "probe", "assay", "rownames"),
+  label_colname = c("gene", "symbol", "protein", "probe", "assay", "rownames"),
   main = "Volcano Plot",
   submain = NULL,
   blockarrow = TRUE,
@@ -58,9 +60,12 @@ volcano_plot(
   hi_colors = NULL,
   hi_hits = FALSE,
   hi_cex = 1,
+  hi_do_label = FALSE,
+  max_labels = 50,
   do_both = FALSE,
   label_hits = FALSE,
   add_plot = FALSE,
+  do_plot = TRUE,
   xlab = NULL,
   ylab = NULL,
   cex.axis = 1.2,
@@ -70,7 +75,8 @@ volcano_plot(
      x^transFactor
  },
   nbin = 256,
-  verbose = TRUE,
+  bw_factor = 1,
+  verbose = FALSE,
   ...
 )
 }
@@ -97,6 +103,14 @@ The colname used will appear as the x-axis label.}
 if \code{lfc_colname} successfully finds a value, the \code{fold_colname}
 is not used.
 The colname if used will appear as the x-axis label.}
+
+\item{fold_style}{\code{character} style of x-axis label, default 'fold':
+\itemize{
+\item 'fold': shows normal space fold change, on log2 visual scale.
+For example 1, 2, 4, 8, 16.
+\item 'log2fold', 'log2', 'log', or 'lfc': shows log2 fold change.
+For example 0, 1, 2, 3, 4.
+}}
 
 \item{fold_cutoff}{\code{numeric} threshold for values in \code{lfc_colname}
 or \code{fold_cutoff}, where normal fold change values at or above
@@ -254,6 +268,18 @@ points.}
 \item{hi_cex}{\code{numeric} size adjustment for highlight points,
 relative to the size of other points in the figure.}
 
+\item{hi_do_label}{\code{logical} with length equivalent to \code{hi_points},
+and recycled to match length or lengths of hi_points.}
+
+\item{max_labels}{\code{integer} maximum labels to display when
+\code{hi_do_label} is enabled. When the total potential labels is
+more than \code{max_labels}, a subset of points will be shown based
+upon point density, similar to how \code{smoothScatter()} argument
+'nrpoints' chooses extreme points at the edges of the point
+density. Note the point density uses the full range of values,
+not the xlim and ylim ranges, in order to include the most
+relevant extremes.}
+
 \item{do_both}{\code{logical} indicating whether to draw both a smooth
 scatter and individual points on the same figure.}
 
@@ -273,6 +299,12 @@ either \code{lfc_colname} or \code{fold_colname}; y-axis uses \code{sig_colname}
 
 \item{cex.axis}{\code{numeric} adjustment for axis label font sizes.}
 
+\item{mar_min}{\code{numeric} vector to set minimum plot margins for base
+R output. Default is c(6, 5, 6, 5) in units of character lines,
+and in order: bottom, left, top, right.
+Note when \code{blockarrow=FALSE} the top and right margins are subtracted
+by 2, imposing a minimum \code{0.1}.}
+
 \item{transformation}{\code{function} passed to \code{smooth_func} used to
 adjust the visual contrast of the resulting density plot.}
 
@@ -280,6 +312,11 @@ adjust the visual contrast of the resulting density plot.}
 by \code{jamba::plotSmoothScatter()} to adjust the number of
 bins used to display the density of points, where a higher
 value shows more detail, and a lower value shows less detail.}
+
+\item{bw_factor}{\code{numeric} scalar to adjust the bandwidth relative
+detail, with larger numbers displaying more granular detail in
+the point density shown. It is passed to \code{jamba::plotSmoothScatter()}
+in the form of adjusting the \code{bwpi} bandwidth-per-inch.}
 
 \item{verbose}{\code{logical} indicating whether to print verbose output.
 Note that \code{verbose=2} will enable much more verbose output.}
@@ -357,9 +394,9 @@ x <- data.frame(
    `mgm Group-Contol`=((rnorm(1500)+5)^2)/5,
    check.names=FALSE);
 
-volcano_plot(x);
+vdf <- volcano_plot(x);
 volcano_plot(x, expr_cutoff=3);
-# volcano_plot(x, mar_min=c(7, 6, 6, 5), blockarrow_cex=1);
+# volcano_plot(x, mar_min=c(7, 6, 6, 5), blockarrow_font=2, blockarrow_cex=1.5);
 
 # par("mfrow"=c(2, 1));
 # volcano_plot(x);
@@ -371,9 +408,12 @@ x[["adj.P.Val Group-Control"]] <- x[["P.Value Group-Control"]];
 
 volcano_plot(x, hi_hits=TRUE);
 
+volcano_plot(x, hi_hits=TRUE, label_hits=TRUE)
+
 }
 \seealso{
 Other jam plot functions: 
-\code{\link{ggjammaplot}()}
+\code{\link{ggjammaplot}()},
+\code{\link{ggvolcano_plot}()}
 }
 \concept{jam plot functions}

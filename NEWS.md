@@ -1,3 +1,35 @@
+# jamma 0.0.39.900
+
+* New ggplot2 volcano plot function, using density smooth
+scatter plot logic, adding option to label genes with
+ggrepel for non-overlapping labels!
+
+## New functions
+
+* `ggvolcano_plot()`
+
+   * in development, closely matches most features of `volcano plot()`
+   with exception of block arrows.
+   * Major addition is `ggrepel` used for non-overlapping labels.
+   * It does not yet include captions with total points, and cutoffs.
+   * It does not yet show the color legend when points are highlighted.
+
+## Changes to existing functions
+
+* `volcano_plot()`
+
+   * Returns `data.frame`.
+   * Argument `fold_style` allows displaying log2 units, instead
+   of normal space units on a log2 visual scale.
+   * x-axis label removes "log/log2" from the label when showing
+   normal space units.
+   * Log axis will hide minor ticks when the x-axis spans 20 or more
+   log units.
+   * When `blockarrow=FALSE` the margins are made slightly wider.
+   * Argument `hi_do_label=TRUE` will label entries in `hi_points`
+   up to `max_labels` number of labels.
+   Improving the point labeling will be subject of future development.
+
 # jamma 0.0.38.900
 
 * Removed dependencies: crayon, ggtext

@@ -1,5 +1,18 @@
 # TODO for jamma
 
+## 05may2026
+
+* `volcano_plot()`
+
+   * Return `data.frame` invisibly so it can be used.
+   * Add option to show log2 labels on the x-axis.
+   * Use ggplot2 in order to use ggrepel to label genes.
+   Use some type of pre-configured stat_2d similar to `ggjammaplot()`.
+   * Include option to hide block arrows.
+   * Consider some method with plotly for interactive use,
+   specifically for mouse-over labeling. (Might work best
+   if also not labeling non-significant genes?)
+
 ## 14jan2025
 
 * Write a proper vignette and intro to jamma. Explain proper review of data,
@@ -16,12 +29,16 @@ contains NA values.
 
 * `volcano_plot()`
 
+   * Fix blockarrow scaling when plot aspect ratio is not near 1:1.
+   `blockarrow_cex` should not scale fonts. `blockarrow_label_cex` should
+   expand to two values for row, column.
    * consider option to change x/y axis numerical style
    to show log-transformed values instead of normal space labels.
    E.g. x-axis could show log2(fold) from -4,-3,-2,-1,0,1,2,3,4;
    y-axis could show the -log10(P) from 0,1,2,3,4,5,6.
    * `ggvolcano_plot()` variation using ggplot2, motivated to
    permit `ggrepel` for gene labels.
+   * Bonus points: plotly/ggplotly output to show density and highlight points.
 
 * `ggjammaplot()`
 

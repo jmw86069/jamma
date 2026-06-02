@@ -1,6 +1,6 @@
 Package: jamma
 Title: MA-plots for omics data
-Version: 0.0.38.900
+Version: 0.0.39.900
 Authors@R: person("James", "Ward", email="jmw86069@gmail.com", role=c("aut", "cre"))
 Description: Create MA-plots with specific control samples,
     using centering groups as relevant to experiment design.
@@ -17,7 +17,9 @@ Imports: jamba (>= 1.0.2),
     ggplot2,
     ggh4x,
     withr,
-    cli
+    cli,
+    ggrepel,
+    scales
 Suggests: 
     knitr,
     rmarkdown,

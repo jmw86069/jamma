@@ -18,26 +18,37 @@ find_colname(
 }
 \arguments{
 \item{pattern}{\code{character} vector of text strings and/or regular
-expression patterns.}
+expression patterns. A special case 'rownames' is recognized
+as \code{rownames(x)} and when present, it will be used as a
+last option if no other patterns in \code{pattern} are matched.}
 
 \item{x}{\code{data.frame} or other object that contains \code{colnames(x)}.}
 
-\item{max}{\code{integer} maximum number of entries to return.}
+\item{max}{\code{integer} maximum number of entries to return.
+Default 1 returns only the first matching column.}
 
 \item{index}{\code{logical} indicating whether to return the column index,
-that is the column number.}
+that is the column number, default FALSE.
+When \code{pattern}includes 'rownames' and no other patterns are matched,
+the rownames are used -- in this case the index is defined as zero 0.}
 
 \item{require_non_na}{\code{logical} indicating whether to require at
-least one non-\code{NA} value in the matching colname. When
-\code{require_non_na=TRUE} and all values in a column are \code{NA},
-that colname is not returned by this function.}
+least one non-\code{NA} value in the matching colname. Default TRUE.
+When \code{require_non_na=TRUE} and all values in a column are \code{NA},
+that colname is excluded.}
 
 \item{exclude_pattern}{\code{character} vector of colnames or patterns
-to exclude from returned results.}
+to exclude from returned results. Default NULL does not exclude
+any columns.}
 
 \item{verbose}{\code{logical} indicating whether to print verbose output.}
 
 \item{...}{additional arguments are ignored.}
+}
+\value{
+\code{character} column name, or when \code{index=TRUE} it returns
+an \code{integer} index of the column or columns. The number of entries
+returned is defined by \code{max}, up to that many entries.
 }
 \description{
 Find colname by string or pattern, with option to require non-NA values.

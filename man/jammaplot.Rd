@@ -1025,9 +1025,11 @@ if (suppressPackageStartupMessages(require(affydata))) {
 \code{jamba::plotSmoothScatter()}
 
 Other jam plot functions: 
+\code{\link{ggvolcano_plot}()},
 \code{\link{volcano_plot}()}
 
 Other jam plot functions: 
+\code{\link{ggvolcano_plot}()},
 \code{\link{volcano_plot}()}
 }
 \concept{jam plot functions}
