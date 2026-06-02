@@ -17,7 +17,6 @@ ggvolcano_plot(
   panel.grid.major.colour = "grey90",
   panel.grid.minor.colour = "transparent",
   axis.text.x.angle = 60,
-  titleCex = 1,
   detail_factor = 1,
   nbin = 300,
   bw_factor = 1,
@@ -41,8 +40,6 @@ colors used for the major and minor grid lines.}
 
 \item{axis.text.x.angle}{\code{numeric} angle used for the x-axis
 label text, default 0.}
-
-\item{titleCex}{\code{numeric} title font adjustment}
 
 \item{detail_factor}{\code{numeric} adjustment to increase overall
 detail in the density plot.}

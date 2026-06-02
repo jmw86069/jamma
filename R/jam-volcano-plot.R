@@ -1456,6 +1456,15 @@ volcano_plot <- function
    argsList <- list();
    argsList$xlab <- xlab;
    argsList$ylab <- ylab;
+   argsList$xlim <- xlim;
+   argsList$ylim <- ylim;
+   argsList$main <- main;
+   argsList$submain <- submain;
+   argsList$color_set <- color_set;
+   argsList$border_set <- border_set;
+   argsList$caption_list <- caption_list;
+   argsList$hi_cex <- hi_cex;
+  
    argsList$lfc_colname <- lfc_colname;
    argsList$fold_colname <- fold_colname;
    argsList$sig_colname <- sig_colname;
@@ -1467,7 +1476,7 @@ volcano_plot <- function
    argsList$sig_max_range <- sig_max_range;
    argsList$sig_min_range <- sig_min_range;
    argsList$max_labels <- max_labels;
-   attr(volcano_df, "argsList") <- argsList;
+   attr(volcano_df, "volcano_options") <- argsList;
 
    return(invisible(volcano_df));
 

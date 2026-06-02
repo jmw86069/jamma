@@ -52,7 +52,6 @@
 #'    colors used for the major and minor grid lines.
 #' @param axis.text.x.angle `numeric` angle used for the x-axis
 #'    label text, default 0.
-#' @param titleCex `numeric` title font adjustment
 #' @param detail_factor `numeric` adjustment to increase overall
 #'    detail in the density plot.
 #' @param nbin `integer` number of bins to use for density plot.
@@ -99,7 +98,6 @@ ggvolcano_plot <- function
  panel.grid.major.colour="grey90",
  panel.grid.minor.colour="transparent",
  axis.text.x.angle=60,
- titleCex=1,
  detail_factor=1,
  nbin=300,
  bw_factor=1,
@@ -127,7 +125,20 @@ ggvolcano_plot <- function
       do_plot=FALSE,
       transFactor=transFactor,
       ...)
-   
+
+   # re-use useful values
+   argsList <- attr(vdf, "volcano_options")
+   use_xlab <- argsList$xlab;
+   use_ylab <- argsList$ylab;
+   xlim <- argsList$xlim;
+   ylim <- argsList$ylim;
+   main <- argsList$main;
+   submain <- argsList$submain;
+   hi_cex <- head(argsList$hi_cex, 1);
+   if (length(hi_cex) == 0) {
+      hi_cex <- 1;
+   }
+
    # h values for MASS::kde2()
    #
    if (verbose) {
@@ -135,8 +146,6 @@ ggvolcano_plot <- function
          "Preparing ggplot2 object.");
    }
 
-   xlim <- range(vdf$x)
-   ylim <- range(vdf$y)
    ylim <- round(digits=2,
       ylim);
    bw_factor <- rep(bw_factor,
@@ -153,10 +162,6 @@ ggvolcano_plot <- function
       
    nrow_x <- nrow(vdf)
 
-   argsList <- attr(vdf, "argsList")
-   use_xlab <- argsList$xlab;
-   use_ylab <- argsList$ylab;
-
    p <- ggplot2::ggplot(vdf, ggplot2::aes(x=x, y=y)) +
       ggplot2::stat_density_2d(
          geom="raster",
@@ -171,22 +176,26 @@ ggvolcano_plot <- function
          h=c(hx, hy * 2) * 1/2,   # slightly smaller point density
          # h=c(hx, hy * 2) * 2/3, # slightly larger point density
          contour=FALSE) +
-      ggplot2::lims(
-         x=xlim) +
-         # y=ylim) +
+      # ggplot2::lims(
+      #    x=xlim) +
+      #    # y=ylim) +
       ggplot2::xlab(use_xlab) +
       ggplot2::ylab(use_ylab)
 
    # adjust axis expansion
    # x-axis labels
+   x_step <- 1;
+   if (diff(xlim) >= 12) {
+      x_step <- 2;
+   }
    if ("fold" %in% fold_style) {
       # convert to normal space
       p <- p +
          ggplot2::scale_x_continuous(
-            # breaks=scales::breaks_width(1),
+            limits=xlim,
             breaks=function(y) {
                sort(unique(c(
-                  scales::breaks_width(1)(y),
+                  scales::breaks_width(x_step)(y),
                   log2(fold_cutoff) * c(-1, 1)
                )))
             },
@@ -199,10 +208,10 @@ ggvolcano_plot <- function
    } else {
       p <- p +
       ggplot2::scale_x_continuous(
-         # breaks=scales::breaks_width(1),
+         limits=xlim,
          breaks=function(y) {
             sort(unique(c(
-               scales::breaks_width(1)(y),
+               scales::breaks_width(x_step)(y),
                log2(fold_cutoff) * c(-1, 1)
             )))
          },
@@ -212,19 +221,29 @@ ggvolcano_plot <- function
             #    (-1 * 2^(abs(y))),
             #    (2^(abs(y))))
          },
-      expand=ggplot2::expansion(mult=0.01))
+         expand=ggplot2::expansion(mult=0.01))
    }
    ## y-axis labels
+   # - if y-axis range > 15 units, do step by 2
+   y_step <- 1;
+   if (diff(ylim) >= 15) {
+      y_step <- 2;
+   }
+   if (diff(ylim) >= 40) {
+      y_step <- 5;
+   }
+   if (diff(ylim) >= 100) {
+      y_step <- 10;
+   }
    p <- p +
       ggplot2::scale_y_continuous(
          limits=ylim,
          breaks=function(y) {
             sort(unique(c(
-               scales::breaks_width(1)(y),
+               scales::breaks_width(y_step)(y),
                -log10(sig_cutoff)
             )))
          },
-         # breaks=scales::breaks_width(1),
          labels=function(y){
             ifelse(y <= 2 | y == -log10(sig_cutoff),
                10^-y,
@@ -256,6 +275,16 @@ ggvolcano_plot <- function
    p <- p +
       ggplot2::coord_fixed(exp_aspect / 1.25 * aspect_adjust)
 
+   if (length(main) > 0 && any(nchar(main) > 0)) {
+      if (length(submain) > 0 && any(nchar(submain) > 0)) {
+         p <- p +
+            ggplot2::ggtitle(label=main,
+               subtitle=submain)
+      } else {
+         p <- p +
+            ggplot2::ggtitle(label=main)
+      }
+   }
 
    # FIll background solid?
    # if (fillBackground) {
@@ -273,7 +302,7 @@ ggvolcano_plot <- function
    # Plot theme
    p <- p + colorjam::theme_jam(
       # strip.background.fill=strip_bg,
-      strip.text.size=ggplot2::rel(0.6 * titleCex),
+      strip.text.size=ggplot2::rel(0.6 * 1),
       panel.grid.major.colour=panel.grid.major.colour,
       panel.grid.minor.colour=panel.grid.minor.colour,
       axis.text.x.angle=axis.text.x.angle,
@@ -304,7 +333,7 @@ ggvolcano_plot <- function
             bg=color_set[pt_vdf$point_type],
             color=border_set[pt_vdf$point_type],
             shape=21,
-            size=2.5,
+            size=2.5 * hi_cex,
             # show.legend=FALSE,
             data=pt_vdf) +
          ggplot2::scale_color_identity()
@@ -314,12 +343,18 @@ ggvolcano_plot <- function
    if (any(nchar(vdf$hi_points_label_shown) > 0)) {
       # add non-overlapping labels
       ptl_vdf <- subset(vdf, hi_points_label_shown > 0);
-      color_set_lt <- jamba::makeColorDarker(color_set,
-         darkFactor=-1.6,
-         sFactor=-1.5)
+      color_set_lt <- jamba::alpha2col(alpha=1,
+         jamba::makeColorDarker(color_set,
+            darkFactor=-1.6,
+            sFactor=-1.5));
       p <- p + ggrepel::geom_label_repel(
          ggplot2::aes(label=gene_values),
          bg=color_set_lt[ptl_vdf$point_type],
+         min.segment.length=0,
+         size=(base_size * 0.8 / 2.835), # convert mm size to point size
+         # point.padding=grid::unit(3, "mm"),
+         point.padding=0.25,
+         box.padding=0.75,
          color=jamba::setTextContrastColor(
             color_set_lt[ptl_vdf$point_type]),
          # border=border_set[ptl_vdf$point_type],
