@@ -1,14 +1,21 @@
 # TODO for jamma
 
+## 03jun2026
+
+* Add testthis unit tests for graphical output.
+* Update the core README and vignette with better summary
+of utility of the package. Add better examples of usage,
+and the various ways centering can be customized.
+
 ## 05may2026
 
 * `volcano_plot()`
 
-   * Return `data.frame` invisibly so it can be used.
-   * Add option to show log2 labels on the x-axis.
-   * Use ggplot2 in order to use ggrepel to label genes.
+   * DONE. Return `data.frame` invisibly so it can be used.
+   * DONE. Add option to show log2 labels on the x-axis.
+   * DONE. Use ggplot2 in order to use ggrepel to label genes.
    Use some type of pre-configured stat_2d similar to `ggjammaplot()`.
-   * Include option to hide block arrows.
+   * DONE. Include option to hide block arrows.
    * Consider some method with plotly for interactive use,
    specifically for mouse-over labeling. (Might work best
    if also not labeling non-significant genes?)

@@ -62,6 +62,11 @@
 #'    in the form `function(x)x^transFactor`.
 #' @param smooth_colors `character` vector of colors, or single color
 #'    or single color ramp name recognized by `jamba::getColorRamp()`.
+#' @param aspect_adjust `numeric` default 1, adjust the x:y aspect
+#'    ratio, which is otherwise intended to be relatively fixed
+#'    for a plot panel size with approximately 1:1 square size.
+#'    Set NULL to avoid setting the plot aspect ratio, which will
+#'    allow the plot to adjust to the current graphical device size.
 #' @param ... additional arguments are passed to `volcano_plot()`.
 #' 
 #' @examples
@@ -134,6 +139,14 @@ ggvolcano_plot <- function
    ylim <- argsList$ylim;
    main <- argsList$main;
    submain <- argsList$submain;
+   caption_list <- argsList$caption_list;
+   caption_cex <- argsList$caption_cex;
+   caption_text <- NULL;
+   if (length(caption_list) > 0) {
+      caption_text <- jamba::cPaste(
+         unlist(caption_list),
+         sep=",\n")
+   }
    hi_cex <- head(argsList$hi_cex, 1);
    if (length(hi_cex) == 0) {
       hi_cex <- 1;
@@ -271,21 +284,47 @@ ggvolcano_plot <- function
    }
 
    ## Set stable aspect ratio to accomodate xlim,ylim
-   exp_aspect <- diff(x_exp) / diff(y_exp);
-   p <- p +
-      ggplot2::coord_fixed(exp_aspect / 1.25 * aspect_adjust)
-
-   if (length(main) > 0 && any(nchar(main) > 0)) {
-      if (length(submain) > 0 && any(nchar(submain) > 0)) {
-         p <- p +
-            ggplot2::ggtitle(label=main,
-               subtitle=submain)
-      } else {
-         p <- p +
-            ggplot2::ggtitle(label=main)
-      }
+   if (length(aspect_adjust) == 1 && aspect_adjust > 0) {
+      exp_aspect <- diff(x_exp) / diff(y_exp);
+      p <- p +
+         ggplot2::coord_fixed(exp_aspect / 1.25 * aspect_adjust)
    }
 
+   use_alt_text <- "Volcano plot";
+   if (length(main) > 0 && any(nchar(main) > 0)) {
+      if (length(submain) > 0 && any(nchar(submain) > 0)) {
+         if (jamba::igrepHas("volcan", c(main, submain))) {
+            use_alt_text <- paste0(main, ". ", submain);
+         } else {
+            use_alt_text <- paste0(
+               "Volcano plot with title '",
+               main, "' and sub-title '", submain, "'");
+         }
+         p <- p +
+            ggplot2::labs(
+               title=main,
+               subtitle=submain,
+               alt=use_alt_text)
+      } else {
+         if (jamba::igrepHas("volcan", c(main, submain))) {
+            use_alt_text <- paste0(main);
+         } else {
+            use_alt_text <- paste0(
+               "Volcano plot with title '",
+               main, "'");
+         }
+         p <- p +
+            ggplot2::labs(
+               title=main,
+               alt=use_alt_text)
+      }
+   } else {
+      p <- p +
+         ggplot2::labs(
+            # title="",
+            alt=use_alt_text)
+   }
+   
    # FIll background solid?
    # if (fillBackground) {
    #    p <- p +
@@ -308,6 +347,17 @@ ggvolcano_plot <- function
       axis.text.x.angle=axis.text.x.angle,
       base_size=base_size);
 
+   ## Volcano caption text
+   if (length(caption_text) > 0 && nchar(caption_text) > 0) {
+      p <- p +
+         ggplot2::labs(caption=caption_text) +
+         ggplot2::theme(
+            plot.caption=ggplot2::element_text(
+               # vjust=0, # bottom-aligned
+               hjust=0  # left-aligned
+            ))
+   }
+   
    # Density colors
    if (length(smooth_colors)) {
       smooth_colors <- jamba::getColorRamp(smooth_colors,
@@ -363,7 +413,7 @@ ggvolcano_plot <- function
    }
    p
 
-}
+   }
 
 # vdf <- volcano_plot(x,
 #    hi_points=sample(subset(x, abs(x[,2]) > 1 & x[,3] < 0.01)[,1], 200),

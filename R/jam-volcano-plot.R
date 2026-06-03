@@ -1404,8 +1404,8 @@ volcano_plot <- function
                line=parMar[1] - 1.5 - 2 * (length(hi_points_list) > 0));
          }
          caption_list <- list(
-            caption=caption,
-            total_sub=total_sub)
+            total_sub=total_sub,
+            caption=caption)
       }
 
       ## Overall Title
@@ -1451,7 +1451,7 @@ volcano_plot <- function
    attr(volcano_df, "parList") <- parList;
    attr(volcano_df, "color_set") <- color_set;
    attr(volcano_df, "border_set") <- border_set;
-   attr(volcano_df, "caption_list") <- caption_list;
+   # attr(volcano_df, "caption_list") <- caption_list;
    
    argsList <- list();
    argsList$xlab <- xlab;
@@ -1463,6 +1463,7 @@ volcano_plot <- function
    argsList$color_set <- color_set;
    argsList$border_set <- border_set;
    argsList$caption_list <- caption_list;
+   argsList$caption_cex <- caption_cex;
    argsList$hi_cex <- hi_cex;
   
    argsList$lfc_colname <- lfc_colname;

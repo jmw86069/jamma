@@ -56,6 +56,12 @@ in the form \code{function(x)x^transFactor}.}
 \item{smooth_colors}{\code{character} vector of colors, or single color
 or single color ramp name recognized by \code{jamba::getColorRamp()}.}
 
+\item{aspect_adjust}{\code{numeric} default 1, adjust the x:y aspect
+ratio, which is otherwise intended to be relatively fixed
+for a plot panel size with approximately 1:1 square size.
+Set NULL to avoid setting the plot aspect ratio, which will
+allow the plot to adjust to the current graphical device size.}
+
 \item{...}{additional arguments are passed to \code{volcano_plot()}.}
 }
 \value{

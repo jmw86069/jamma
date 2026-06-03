@@ -1,3 +1,18 @@
+# jamma 0.0.39.950
+
+* Hotfix
+
+## Changes
+
+* `ggvolcano_plot()`
+
+   * now includes caption text, controlled with
+   `do_caption_cutoffs=TRUE`.
+   * aspect ratio is fixed unless `aspect_adjust=NULL`
+   then it scales to the plot size.
+   * Plots now define alt text by default.
+
+
 # jamma 0.0.39.900
 
 * New ggplot2 volcano plot function, using density smooth
