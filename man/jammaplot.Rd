@@ -72,7 +72,7 @@ jammaplot(
   assay_name = NULL,
   maintitle = NULL,
   titleBoxColor = "#DDBB9977",
-  subtitleBoxColor = titleBoxColor,
+  subtitleBoxColor = NULL,
   centerGroups = NULL,
   controlSamples = colnames(x),
   controlFloor = NA,
@@ -149,13 +149,24 @@ jammaplot(
 )
 }
 \arguments{
-\item{x}{\code{numeric} object usually a \code{matrix} that contains
-values with measurement rows, and sample/observation columns.
-For example, with gene or protein expression data, the genes
-or proteins (or the assays of genes or proteins) are
-represented in rows, and obtained samples are represented
-in columns. Alternatively \code{x} can be \code{SummarizedExperiment}
-object, used alongside argument \code{assay_name}.}
+\item{x}{one of the following:
+\itemize{
+\item \code{matrix} with \code{numeric} values, with samples/observations
+as columns, and measurements as rows.
+Note that counts will automatically be transformed with
+\code{log2(1 + x)} when any value exceeds \code{apply_transform_limit},
+default 40.
+\item \code{SummarizedExperiment} object and other objects that inherit
+its methods.
+\item \code{DESeq2::DESeqDataSet} object, which inherits \code{SummarizedExperiment}.
+Note that counts will automatically be transformed with
+\code{log2(1 + x)} when any value exceeds \code{apply_transform_limit},
+default 40.
+\item \code{edgeR::DGEList} object with count data.
+Note that counts will automatically be transformed with
+\code{log2(1 + x)} when any value exceeds \code{apply_transform_limit},
+default 40.
+}}
 
 \item{detail_factor}{\code{numeric} used to adjust the level
 of detail, as a multiplier for \code{nbin_factor} and \code{bw_factor}.}

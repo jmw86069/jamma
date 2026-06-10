@@ -1,3 +1,15 @@
+# jamma 0.0.40.900
+
+## Changes
+
+* `jammaplot()` and `ggjammaplot()` accept `edgeR::DGEList` input.
+* Added initial tests for jammaplot, ggjammaplot covering matrix,
+SummarizedExperiment, DGEList
+* `get_se_assays()`, `get_se_colData()`, `get_se_rowData()` (new),
+all now work with `SummarizedExperiment`, `ExpressionSet`,
+`DESeqDataSet`, and `DGEList` input.
+
+
 # jamma 0.0.39.950
 
 * Hotfix

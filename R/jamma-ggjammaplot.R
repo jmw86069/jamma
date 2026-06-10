@@ -87,14 +87,22 @@
 #' }
 #'
 #' @inheritParams jammaplot
-#' @param x one of the following inputs:
-#'    * `numeric` matrix
-#'    * `SummarizedExperiment` object, where the
-#'    assay data is defined using `assays(x)[[assay_name]]`. Accordingly,
-#'    `assay_name` can be either an integer index or `character` string
-#'    matching the `names(assays(x))`.
-#'    * `list` output from `jammacalc()` or `jammaplot()`, where each
-#'    element in the list is a two-column `matrix` with colnames `c("x", "y")`.
+#' @param x one of the following:
+#'    * `matrix` with `numeric` values, with samples/observations
+#'    as columns, and measurements as rows.
+#'    Note that counts will automatically be transformed with
+#'    `log2(1 + x)` when any value exceeds `apply_transform_limit`,
+#'    default 40.
+#'    * `SummarizedExperiment` object and other objects that inherit
+#'    its methods.
+#'    * `DESeq2::DESeqDataSet` object, which inherits `SummarizedExperiment`.
+#'    Note that counts will automatically be transformed with
+#'    `log2(1 + x)` when any value exceeds `apply_transform_limit`,
+#'    default 40.
+#'    * `edgeR::DGEList` object with count data.
+#'    Note that counts will automatically be transformed with
+#'    `log2(1 + x)` when any value exceeds `apply_transform_limit`,
+#'    default 40.
 #' @param detail_factor `numeric` used to adjust the level
 #'    of detail, as a multiplier for `nbin_factor` and `bw_factor`.
 #' @param nbin_factor `numeric` value used to adjust the number of bins
@@ -283,14 +291,18 @@ ggjammaplot <- function
    naControlAction <- match.arg(naControlAction);
 
    # newer method of calling jammacalc()
-   if (is.list(x) &&
+   inherits_se <- inherits(x, c("SummarizedExperiment",
+      "DGEList",
+      "ExpressionSet"));
+   
+   if (!inherits_se && is.list(x) &&
          "matrix" %in% class(x[[1]]) &&
          all(c("x", "y") %in% colnames(x[[1]]))) {
       # input is previous jammaplot()
       jp2 <- x;
       rm(x);
    } else {
-      if (inherits(x, c("SummarizedExperiment", "ExpressionSet"))) {
+      if (inherits_se) {
          se <- x;
          x <- get_se_assaydata(x,
             assay_name=assay_name,

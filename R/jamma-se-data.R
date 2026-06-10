@@ -56,7 +56,12 @@ get_se_assaydata <- function
       if (length(x) == 0) {
          stop("assays(x)[[assay_name]] did not produce a usable data matrix.");
       }
-
+   } else if (inherits(x, "DGEList")) {
+      # edgeR::DGEList stores only x$counts usually as integer values
+      x_names <- colnames(x$counts);
+      nsamples <- length(x_names);
+      # Todo: consider whether to apply log2(1 + x)
+      x <- x$counts;
    } else if (inherits(x, "SummarizedExperiment")) {
       if (!requireNamespace("SummarizedExperiment", quietly=TRUE)) {
          cli::cli_abort(paste0(
@@ -159,9 +164,15 @@ get_se_colData <- function
       }
       # This step may fail if a column cannot be coerced to data.frame
       se_colData <- as(Biobase::pData(x), "data.frame")
+   } else if (inherits(x, "DGEList")) {
+      # edgeR::DGEList stores x$samples
+      se_colData <- x$samples;
+      rownames(se_colData) <- colnames(x);
    } else if (!inherits(x, "SummarizedExperiment")) {
       cli::cli_abort(paste0(
-         "Input requires {.var SummarizedExperiment} or {.var ExpressionSet}"
+         "Input requires {.var SummarizedExperiment} ",
+         "or {.var ExpressionSet}",
+         "or {.var DGEList}"
       ));
       stop("SummarizedExperiment input is required by get_se_colData()");
    } else if (!requireNamespace("SummarizedExperiment", quietly=TRUE)) {
@@ -174,6 +185,9 @@ get_se_colData <- function
    }
 
    # handle use_values when supplied
+   if (length(use_values) == 1 && isFALSE(use_values)) {
+      return(NULL);
+   }
    if (length(use_values) > 0) {
       if (length(names(use_values)) == 0 && length(use_values) == ncol(x)) {
          names(use_values) <- colnames(x);
@@ -190,6 +204,9 @@ get_se_colData <- function
                jamba::pasteByRow(
                   se_colData[, centerGroups_cols, drop=FALSE]),
                colnames(x))
+         } else if (length(use_values) == 1 && jamba::isColor(use_values)) {
+            use_values <- rep(use_values, length.out=ncol(x));
+            names(use_values) <- colnames(x);
          } else {
             cli::cli_abort(paste0(
                "When {.var names(use_values)} does not have names, it must ",
@@ -202,4 +219,127 @@ get_se_colData <- function
       return(use_values);
    }
    return(se_colData);
+}
+
+
+#' Get SummarizedExperiment column  data from colData
+#'
+#' @family jam utility functions
+#'
+#' @param x `SummarizedExperiment` object
+#' @param use_values `character` values, default NULL. Optionally used
+#'    to validate input values in one of two ways:
+#'    1. Vector of values typically named by `colnames(x)` that should
+#'    be applied to each column in `x` matching the order of the colnames.
+#'    2. Vector of values that matches `colnames(colData(x))`, which
+#'    should be converted to named vector of values, with names matching
+#'    `colnames(x)`.
+#'
+#'    Either way, when `use_values` is supplied, the output will be
+#'    a named vector, with names defined using `colnames(x)`.
+#' @param verbose `logical` indicating whether to print verbose output.
+#' @param ... additional arguments are ignored.
+#'
+#' @returns `data.frame` or `DFrame` when `use_values` is not supplied,
+#'    or `character` vector named by `colnames(x)` when `use_values`
+#'    is supplied.
+#'
+#' @examplesIf {requireNamespace("SummarizedExperiment", quietly=TRUE)}
+#' set.seed(123)
+#' m <- matrix(rnorm(8100), ncol=9)
+#' colnames(m) <- head(letters, 9)
+#' rownames(m) <- as.character(1:900)
+#' countse <- SummarizedExperiment::SummarizedExperiment(
+#'    assays=list(counts=m))
+#' SummarizedExperiment::colData(countse)$type <- rep(LETTERS[1:3], each=3)
+#' SummarizedExperiment::colData(countse)$class <- rep(c("WT", "KO"), c(6, 3))
+#'
+#' # use colname in colData
+#' get_se_colData(countse, "type")
+#'
+#' # use two colnames in colData
+#' get_se_colData(countse, c("class", "type"))
+#'
+#' # use three colnames in colData, one is missing
+#' get_se_colData(countse, c("class", "type", "detail"))
+#'
+#' # use named vector, which put it into proper order colnames(x)
+#' use_values <- setNames(tail(LETTERS, 9), rev(head(letters, 9)))
+#' use_values
+#' get_se_colData(countse, use_values)
+#'
+#' # use unnamed vector, which does not re-order values
+#' unname(use_values)
+#' get_se_colData(countse, unname(use_values))
+#' @export
+get_se_rowData <- function
+(x,
+ use_values=NULL,
+ verbose=FALSE,
+ ...)
+{
+   if (inherits(x, "ExpressionSet")) {
+      if (!requireNamespace("Biobase", quietly=TRUE)) {
+         cli::cli_abort(paste0(
+            "The {.var Biobase} package is required for ",
+            "{.var ExpressionSet} input."));
+         stop("The 'Biobase' is required for ExpressionSet input.");
+      }
+      # This step may fail if a column cannot be coerced to data.frame
+      se_rowData <- as(Biobase::featureData(x), "data.frame")
+   } else if (inherits(x, "DGEList")) {
+      # edgeR::DGEList stores x$genes
+      se_rowData <- x$genes;
+      rownames(se_rowData) <- rownames(x);
+   } else if (!inherits(x, "SummarizedExperiment")) {
+      cli::cli_abort(paste0(
+         "Input requires {.var SummarizedExperiment} ",
+         "or {.var ExpressionSet}",
+         "or {.var DGEList}"
+      ));
+      stop("SummarizedExperiment input is required by get_se_rowData()");
+   } else if (!requireNamespace("SummarizedExperiment", quietly=TRUE)) {
+      cli::cli_abort(paste0(
+         "The {.var SummarizedExperiment} package is required for ",
+         "{.var SummarizedExperiment} input."));
+      stop("The 'SummarizedExperiment' is required for this input.");
+   } else {
+      se_rowData <- SummarizedExperiment::rowData(x)
+   }
+
+   # handle use_values when supplied
+   if (length(use_values) == 1 && isFALSE(use_values)) {
+      return(NULL);
+   }
+   if (length(use_values) > 0) {
+      if (length(names(use_values)) == 0 && length(use_values) == ncol(x)) {
+         names(use_values) <- colnames(x);
+      }
+      if (all(rownames(x) %in% names(use_values))) {
+         # use as named vector, ordered by rownames(x)
+         use_values <- use_values[rownames(x)];
+      } else {
+         # or use se_rowData columns
+         if (any(use_values %in% colnames(se_rowData))) {
+            centerGroups_cols <- intersect(use_values,
+               colnames(se_rowData));
+            use_values <- jamba::nameVector(
+               jamba::pasteByRow(
+                  se_rowData[, centerGroups_cols, drop=FALSE]),
+               colnames(x))
+         } else if (length(use_values) == 1 && jamba::isColor(use_values)) {
+            use_values <- rep(use_values, length.out=nrow(x));
+            names(use_values) <- rownames(x);
+         } else {
+            cli::cli_abort(paste0(
+               "When {.var names(use_values)} does not have names, it must ",
+               "have {.var length} equal to {.var ncol(x)}, ",
+               "or {.var names(use_values)} should match {.var colnames(x)}."))
+            stop(paste0("names(use_values) must match colnames(x), or",
+               "use_values values must be in colnames(rowData(x))"))
+         }
+      }
+      return(use_values);
+   }
+   return(se_rowData);
 }

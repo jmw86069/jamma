@@ -1,7 +1,13 @@
 # TODO for jamma
 
+## 10jun2026
+
+* Simplify the interface, perhaps method `JammaPlot()`?
+
 ## 03jun2026
 
+* DONE. Compatibility for `DESeq2::DESeqDataSet` input.
+* DONE. Compatibility for `edgeR::DEGList` input.
 * Add testthis unit tests for graphical output.
 * Update the core README and vignette with better summary
 of utility of the package. Add better examples of usage,

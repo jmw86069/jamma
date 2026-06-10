@@ -289,13 +289,22 @@
 #'       `'sampleID vs median'`.}
 #' }
 #'
-#' @param x `numeric` object usually a `matrix` that contains
-#'    values with measurement rows, and sample/observation columns.
-#'    For example, with gene or protein expression data, the genes
-#'    or proteins (or the assays of genes or proteins) are
-#'    represented in rows, and obtained samples are represented
-#'    in columns. Alternatively `x` can be `SummarizedExperiment`
-#'    object, used alongside argument `assay_name`.
+#' @param x one of the following:
+#'    * `matrix` with `numeric` values, with samples/observations
+#'    as columns, and measurements as rows.
+#'    Note that counts will automatically be transformed with
+#'    `log2(1 + x)` when any value exceeds `apply_transform_limit`,
+#'    default 40.
+#'    * `SummarizedExperiment` object and other objects that inherit
+#'    its methods.
+#'    * `DESeq2::DESeqDataSet` object, which inherits `SummarizedExperiment`.
+#'    Note that counts will automatically be transformed with
+#'    `log2(1 + x)` when any value exceeds `apply_transform_limit`,
+#'    default 40.
+#'    * `edgeR::DGEList` object with count data.
+#'    Note that counts will automatically be transformed with
+#'    `log2(1 + x)` when any value exceeds `apply_transform_limit`,
+#'    default 40.
 #' @param assay_name `character` used when `x` is a
 #'    `SummarizedExperiment` object, to determine which assay
 #'    `matrix` to use for the MA plots. When `assay_name=NULL`
@@ -780,7 +789,7 @@ jammaplot <- function
  assay_name=NULL,
  maintitle=NULL,
  titleBoxColor="#DDBB9977",
- subtitleBoxColor=titleBoxColor,
+ subtitleBoxColor=NULL,
  centerGroups=NULL,
  controlSamples=colnames(x),
  controlFloor=NA,
@@ -885,6 +894,7 @@ jammaplot <- function
    #}
    #if (suppressPackageStartupMessages(require(matrixStats))) {
    #   doMS <- TRUE;
+   doMS <- FALSE;
    if (jamba::check_pkg_installed("matrixStats")) {
       doMS <- TRUE;
       rowMedians <- matrixStats::rowMedians;
@@ -927,10 +937,9 @@ jammaplot <- function
       x^transFactor;
    }
    ## Handle various types of input
-   if (inherits(x, "list")) {
-      nsamples <- length(x);
-      x_names <- names(x);
-   } else if (inherits(x, c("SummarizedExperiment", "ExpressionSet"))) {
+   if (inherits(x, c("SummarizedExperiment",
+      "DGEList",
+      "ExpressionSet"))) {
       se <- x;
       x <- get_se_assaydata(se,
          assay_name=assay_name,
@@ -948,7 +957,9 @@ jammaplot <- function
             use_values=subtitle)
       }
       # titleBoxColor using colData
-      if (length(titleBoxColor) > 0) {
+      if (all(isFALSE(titleBoxColor))) {
+         titleBoxColor <- "transparent";
+      } else if (length(titleBoxColor) > 0) {
          if (!all(jamba::isColor(titleBoxColor))) {
             titleBoxColor <- get_se_colData(se,
                use_values=titleBoxColor)
@@ -961,7 +972,9 @@ jammaplot <- function
          }
       }
       # subtitleBoxColor using colData
-      if (length(subtitleBoxColor) > 0) {
+      if (all(isFALSE(subtitleBoxColor))) {
+         subtitleBoxColor <- "transparent";
+      } else if (length(subtitleBoxColor) > 0) {
          if (!all(jamba::isColor(subtitleBoxColor))) {
             subtitleBoxColor <- get_se_colData(se,
                use_values=subtitleBoxColor)
@@ -972,11 +985,22 @@ jammaplot <- function
                   ...);
             }
          }
+      } else {
+         if (length(centerGroups) > 0) {
+            subtitleBoxColor <- colorjam::group2colors(centerGroups,
+               colorSub=colorSub,
+               ...);
+         } else if (length(titleBoxColor) > 0) {
+            subtitleBoxColor <- titleBoxColor;
+         }
       }
 
       if (length(x) == 0) {
          stop("assays(x)[[assay_name]] did not produce a usable data matrix.");
       }
+   } else if (inherits(x, "list")) {
+      nsamples <- length(x);
+      x_names <- names(x);
    } else {
       nsamples <- ncol(x);
       x_names <- colnames(x);
