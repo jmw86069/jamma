@@ -1,3 +1,15 @@
+# jamma 0.0.41.900
+
+## Changes
+
+* `ggvolcano_plot()`
+
+   * Added block arrow with hit labels as with `volcano_plot()`.
+   They are rendered inside the plot boundary, but the data are
+   cropped as defined, and the plot boundary is slightly extended
+   to match the block arrow sizes.
+
+
 # jamma 0.0.40.900
 
 ## Changes

@@ -8,16 +8,16 @@
 #' arguments, and with a large number of customization options.
 #' The default plot uses smooth scatter plot for much improved
 #' display of point density.
-#' 
+#'
 #' See `volcano_plot()` for the detailed customization options.
-#' 
+#'
 #' Note that ggplot2 does not currently display block arrows with
 #' the number of hits that met statistical thresholds.
-#' 
+#'
 #' ## To label genes
-#' 
+#'
 #' * Define `hi_points` for the points to be highlighted.
-#' 
+#'
 #'    * It can be a `list` of `character` vectors, which are
 #'    matched with gene values in `gene_colname`.
 #'    The points are colored by `hi_colors` which should be
@@ -29,21 +29,21 @@
 #'    `character` vector.
 #'    * **The color legend is not yet implemented**
 #'    for `ggvolcano_plot()`.
-#' 
+#'
 #' * Define `hi_do_label` with `logical` vector, `character`
 #' vector, or `integer` index.
-#' 
+#'
 #'    * Labels use the column matched by `label_colname`, which
 #'    by default is the same column as `gene_colname`.
 #'    * The label color is inherited from `hi_colors` except it
 #'    it made much lighter, and desaturated, using
 #'    `jamba::makeColorDarker(..., darkFactor=-1.6, sFactor=-1.5)`
-#' 
+#'
 #' @family jam plot functions
-#' 
+#'
 #' @returns `ggplot2` graphics object, where the `data.frame`
 #'    is obtained with `gg@data`.
-#' 
+#'
 #' @param x `data.frame` with data suitable for volcano plot.
 #' @param base_size `numeric` base font point size used for the
 #'    ggplot2 theme `colorjam::theme_jam()`, default 20 intended
@@ -67,8 +67,23 @@
 #'    for a plot panel size with approximately 1:1 square size.
 #'    Set NULL to avoid setting the plot aspect ratio, which will
 #'    allow the plot to adjust to the current graphical device size.
+#' @param hit_type `character` string used to label hits, default 'hits'.
+#' @param blockarrow `logical` whether to draw block arrows with
+#'    the number of hits that met the statistical cutoffs.
+#' @param blockarrow_colors `character` vector of colors with names
+#'    'hit', 'up', 'down'.
+#' @param blockarrow_font `integer` to control the blockarrow label
+#'    font face, default 2 uses bold font face.
+#' @param blockarrow_cex `numeric` multiplier to adjust block arrow
+#'    size and font size, length 2. It controls the 'hits' on the right,
+#'    and up/down at the top, respectively. Default is `c(1, 1)`.
+#' @param blockarrow_label_cex `numeric` multiplier to adjust block
+#'    arrow font size, where the initial size is 16 point font.
+#'    It is expanded to length 2, and applied to 'hits' on the right,
+#'    and up/down at the top, respectively.
+#' @param arrow_type `character` with type of arrow, 'blockarrow' default.
 #' @param ... additional arguments are passed to `volcano_plot()`.
-#' 
+#'
 #' @examples
 #' n <- 15000;
 #' set.seed(12);
@@ -85,110 +100,120 @@
 #'
 #' ggvdf <- ggvolcano_plot(x);
 #' plot(ggvdf)
+#'
+#' ggvdf <- ggvolcano_plot(x, blockarrow=TRUE, arrow_type="blockarrow");
+#' plot(ggvdf)
 #' 
 #' @export
-ggvolcano_plot <- function
-(x,
- base_size=20,
- fold_cutoff=1.5,
- sig_cutoff=0.05,
- cutoff_color="#00000077",
- cutoff_linetype="dashed",
- cutoff_linewidth=1,
- fold_style=c('fold',
-    'log2fold',
-    'log2',
-    'lfc'),
- baseColor="white",
- panel.grid.major.colour="grey90",
- panel.grid.minor.colour="transparent",
- axis.text.x.angle=60,
- detail_factor=1,
- nbin=300,
- bw_factor=1,
- transFactor=0.24,
- smooth_colors=c("transparent",
-    "lightblue",
-    "lightskyblue3",
-    "royalblue",
-    "darkblue",
-    "orange",
-    "darkorange1",
-    "orangered2"),
- aspect_adjust=1,
- verbose=FALSE,
- ...)
-{
+ggvolcano_plot <- function(
+   x,
+   base_size = 20,
+   fold_cutoff = 1.5,
+   sig_cutoff = 0.05,
+   cutoff_color = "#00000077",
+   cutoff_linetype = "dashed",
+   cutoff_linewidth = 1,
+   fold_style = c('fold', 'log2fold', 'log2', 'lfc'),
+   baseColor = "white",
+   panel.grid.major.colour = "grey90",
+   panel.grid.minor.colour = "transparent",
+   axis.text.x.angle = 60,
+   detail_factor = 1,
+   nbin = 300,
+   bw_factor = 1,
+   transFactor = 0.24,
+   smooth_colors = c(
+      "transparent",
+      "lightblue",
+      "lightskyblue3",
+      "royalblue",
+      "darkblue",
+      "orange",
+      "darkorange1",
+      "orangered2"
+   ),
+   aspect_adjust = 1,
+   hit_type = "hits",
+   blockarrow = TRUE,
+   blockarrow_colors = c(
+      hit = "#E67739FF",
+      up = "#990000FF",
+      down = "#000099FF"
+   ),
+   blockarrow_font = 1,
+   blockarrow_cex=c(1, 1),
+   blockarrow_label_cex=1,
+   arrow_type = "blockarrow",
+   verbose = FALSE,
+   ...
+) {
    #
-   fold_style <- match.arg(fold_style);
+   fold_style <- match.arg(fold_style)
    #
    if (verbose) {
-      jamba::printDebug("ggvolcano_plot(): ",
-         "Calling volcano_plot().");
+      jamba::printDebug("ggvolcano_plot(): ", "Calling volcano_plot().")
    }
-   vdf <- volcano_plot(x,
-      do_plot=FALSE,
-      transFactor=transFactor,
-      ...)
+   vdf <- volcano_plot(x, do_plot = FALSE, transFactor = transFactor, ...)
 
    # re-use useful values
    argsList <- attr(vdf, "volcano_options")
-   use_xlab <- argsList$xlab;
-   use_ylab <- argsList$ylab;
-   xlim <- argsList$xlim;
-   ylim <- argsList$ylim;
-   main <- argsList$main;
-   submain <- argsList$submain;
-   caption_list <- argsList$caption_list;
-   caption_cex <- argsList$caption_cex;
-   caption_text <- NULL;
+   use_xlab <- argsList$xlab
+   use_ylab <- argsList$ylab
+   xlim <- argsList$xlim
+   ylim <- argsList$ylim
+   main <- argsList$main
+   submain <- argsList$submain
+   caption_list <- argsList$caption_list
+   caption_cex <- argsList$caption_cex
+   caption_text <- NULL
    if (length(caption_list) > 0) {
       caption_text <- jamba::cPaste(
          unlist(caption_list),
-         sep=",\n")
+         sep = ",\n"
+      )
    }
-   hi_cex <- head(argsList$hi_cex, 1);
+   hi_cex <- head(argsList$hi_cex, 1)
    if (length(hi_cex) == 0) {
-      hi_cex <- 1;
+      hi_cex <- 1
    }
 
    # h values for MASS::kde2()
    #
    if (verbose) {
-      jamba::printDebug("ggvolcano_plot(): ",
-         "Preparing ggplot2 object.");
+      jamba::printDebug("ggvolcano_plot(): ", "Preparing ggplot2 object.")
    }
 
-   ylim <- round(digits=2,
-      ylim);
-   bw_factor <- rep(bw_factor,
-      length.out=2);
-   hx <- diff(range(xlim, na.rm=TRUE)) / (80 * bw_factor[1] * (1/1.33) * aspect_adjust);
+   ylim <- round(digits = 2, ylim)
+   bw_factor <- rep(bw_factor, length.out = 2)
+   hx <- diff(range(xlim, na.rm = TRUE)) /
+      (80 * bw_factor[1] * (1 / 1.33) * aspect_adjust)
    # hx <- diff(range(xlim, na.rm=TRUE)) / (80 * bw_factor[1] * 6/8);
-   hy <- diff(range(ylim, na.rm=TRUE)) / (80 * bw_factor[2] * 1);
-   
+   hy <- diff(range(ylim, na.rm = TRUE)) / (80 * bw_factor[2] * 1)
+
    #
-   x_exp <- xlim + diff(range(xlim)) * c(-0.6, 0.6);
-   y_exp <- ylim + diff(range(ylim)) * c(-0.6, 0.6);
-   x_exp <- xlim + diff(range(xlim)) * c(-0.3, 0.3);
-   y_exp <- ylim + diff(range(ylim)) * c(-0.3, 0.3);
-      
+   x_exp <- xlim + diff(range(xlim)) * c(-0.6, 0.6)
+   y_exp <- ylim + diff(range(ylim)) * c(-0.6, 0.6)
+   x_exp <- xlim + diff(range(xlim)) * c(-0.3, 0.3)
+   y_exp <- ylim + diff(range(ylim)) * c(-0.3, 0.3)
+
    nrow_x <- nrow(vdf)
 
-   p <- ggplot2::ggplot(vdf, ggplot2::aes(x=x, y=y)) +
+   p <- ggplot2::ggplot(vdf, ggplot2::aes(x = x, y = y)) +
       ggplot2::stat_density_2d(
-         geom="raster",
+         geom = "raster",
          # data=subset(jp2tall, !outlier),
          ggplot2::aes(
-            fill=(ggplot2::after_stat(count) / nrow_x)^transFactor),
-         n=round(
-            c(nbin * 2 * detail_factor, 
-               nbin * detail_factor)),
-         adjust=c(1, 1)/2,
-         show.legend=FALSE,
-         h=c(hx, hy * 2) * 1/2,   # slightly smaller point density
+            fill = (ggplot2::after_stat(count) / nrow_x)^transFactor
+         ),
+         n = round(
+            c(nbin * 2 * detail_factor, nbin * detail_factor)
+         ),
+         adjust = c(1, 1) / 2,
+         show.legend = FALSE,
+         h = c(hx, hy * 2) * 1 / 2, # slightly smaller point density
          # h=c(hx, hy * 2) * 2/3, # slightly larger point density
-         contour=FALSE) +
+         contour = FALSE
+      ) +
       # ggplot2::lims(
       #    x=xlim) +
       #    # y=ylim) +
@@ -197,134 +222,268 @@ ggvolcano_plot <- function
 
    # adjust axis expansion
    # x-axis labels
-   x_step <- 1;
+   x_step <- 1
    if (diff(xlim) >= 12) {
-      x_step <- 2;
+      x_step <- 2
    }
+   blockarrow_cex <- rep(blockarrow_cex * 1.5, length.out=2);
    if ("fold" %in% fold_style) {
       # convert to normal space
       p <- p +
          ggplot2::scale_x_continuous(
-            limits=xlim,
-            breaks=function(y) {
+            limits = xlim,
+            breaks = function(y) {
                sort(unique(c(
                   scales::breaks_width(x_step)(y),
                   log2(fold_cutoff) * c(-1, 1)
                )))
             },
-            labels=function(y){
-               ifelse(y < 0,
-                  (-1 * 2^(abs(y))),
-                  (2^(abs(y))))
+            labels = function(y) {
+               ifelse(y < 0, (-1 * 2^(abs(y))), (2^(abs(y))))
             },
-            expand=ggplot2::expansion(mult=0.01))
+            expand = ggplot2::expansion(
+               mult = c(
+                  0.01,
+                  0.055 * blockarrow_cex[1] / 1.20 * aspect_adjust)
+            )
+         )
    } else {
       p <- p +
-      ggplot2::scale_x_continuous(
-         limits=xlim,
-         breaks=function(y) {
-            sort(unique(c(
-               scales::breaks_width(x_step)(y),
-               log2(fold_cutoff) * c(-1, 1)
-            )))
-         },
-         labels=function(y){
-            sapply(y, format)
-            # ifelse(y < 0,
-            #    (-1 * 2^(abs(y))),
-            #    (2^(abs(y))))
-         },
-         expand=ggplot2::expansion(mult=0.01))
+         ggplot2::scale_x_continuous(
+            limits = xlim,
+            breaks = function(y) {
+               sort(unique(c(
+                  scales::breaks_width(x_step)(y),
+                  log2(fold_cutoff) * c(-1, 1)
+               )))
+            },
+            labels = function(y) {
+               sapply(y, format)
+               # ifelse(y < 0,
+               #    (-1 * 2^(abs(y))),
+               #    (2^(abs(y))))
+            },
+            expand = ggplot2::expansion(
+               mult = c(
+                  0.01,
+                  0.055 * blockarrow_cex[1] / 1.20 * aspect_adjust
+               )
+            )
+         )
    }
    ## y-axis labels
    # - if y-axis range > 15 units, do step by 2
-   y_step <- 1;
+   y_step <- 1
    if (diff(ylim) >= 15) {
-      y_step <- 2;
+      y_step <- 2
    }
    if (diff(ylim) >= 40) {
-      y_step <- 5;
+      y_step <- 5
    }
    if (diff(ylim) >= 100) {
-      y_step <- 10;
+      y_step <- 10
    }
    p <- p +
       ggplot2::scale_y_continuous(
-         limits=ylim,
-         breaks=function(y) {
+         limits = ylim,
+         breaks = function(y) {
             sort(unique(c(
                scales::breaks_width(y_step)(y),
                -log10(sig_cutoff)
             )))
          },
-         labels=function(y){
-            ifelse(y <= 2 | y == -log10(sig_cutoff),
+         labels = function(y) {
+            ifelse(
+               y <= 2 | y == -log10(sig_cutoff),
                10^-y,
-               scales::label_math(10^{- .x})(y))
+               scales::label_math(
+                  10^{
+                     -.x
+                  }
+               )(y)
+            )
          },
-         expand=ggplot2::expansion(mult=0.01))
+         # expand = ggplot2::expansion(add = grid::unit(c(0.01, 0.05)*10, "native"))
+         expand = ggplot2::expansion(mult = c(0.01, 0.055 * blockarrow_cex[2]))
+      )
 
    ## fold cutoff ablines
    if (length(fold_cutoff) == 1 && fold_cutoff > 1) {
       p <- p +
          ggplot2::geom_vline(
-            xintercept=log2(fold_cutoff) * c(-1, 1),
-            linewidth=cutoff_linewidth,
-            linetype=cutoff_linetype,
-            color=cutoff_color)
+            xintercept = log2(fold_cutoff) * c(-1, 1),
+            linewidth = cutoff_linewidth,
+            linetype = cutoff_linetype,
+            color = cutoff_color
+         )
    }
    ## significance cutoff abline
    if (length(sig_cutoff) == 1 && sig_cutoff < 1) {
       p <- p +
          ggplot2::geom_hline(
-            yintercept=-log10(sig_cutoff),
-            linetype=cutoff_linetype,
-            linewidth=cutoff_linewidth,
-            color=cutoff_color)
+            yintercept = -log10(sig_cutoff),
+            linetype = cutoff_linetype,
+            linewidth = cutoff_linewidth,
+            color = cutoff_color
+         )
+   }
+
+   ## Label hits
+   make_hit_label <- function(n = 0, hit_type = "hits", suffix = NULL) {
+      if (!is.numeric(n) || length(n) != 1) {
+         n <- length(n)
+      }
+      label_up <- paste(format(big.mark = ",", n), hit_type)
+      if (n == 1) {
+         label_up <- gsub("s$", "", label_up)
+      }
+      if (length(suffix) == 1) {
+         label_up <- paste(label_up, "up")
+      }
+      label_up
+   }
+   # Count hits in different categories
+   hits_up <- sum(vdf$point_type %in% c("up", "hi_up"), na.rm = TRUE)
+   hits_dn <- sum(vdf$point_type %in% c("down", "hi_down"), na.rm = TRUE)
+   hits_both <- hits_up + hits_dn
+   # labels for the different hit types
+   label_up <- make_hit_label(sum(hits_up), hit_type = hit_type, suffix = "up")
+   label_both <- make_hit_label(
+      sum(hits_both),
+      hit_type = hit_type,
+      suffix = NULL
+   )
+   label_dn <- make_hit_label(sum(hits_dn), hit_type = hit_type, suffix = "down")
+
+   ## Block arrows in margins (if enabled)
+   if (isTRUE(blockarrow)) {
+      # Create data for margin rectangles
+      margin_rect_data <- data.frame(
+         xmin = c(
+            log2(fold_cutoff), # up hits on top
+            xlim[1]            # lower x-axis range
+            # -log2(fold_cutoff) # down hits on top
+         ),
+         xmax = c(xlim[2], -log2(fold_cutoff)),
+         ymin = c(-log10(sig_cutoff), -log10(sig_cutoff)),
+         ymax = c(ylim[2], ylim[2]),
+         fill = c(blockarrow_colors["up"], blockarrow_colors["down"]),
+         label = c(label_up, label_dn),
+         sides = c("t", "t"),
+         direction = c("r", "l")
+      )
+
+      blockmargin_df <- data.frame(
+         xmin = xlim[2],
+         xmax = xlim[2],
+         ymin = -log10(sig_cutoff),
+         ymax = ylim[2],
+         fill = blockarrow_colors["hit"],
+         label = label_both,
+         sides = "r",
+         direction = c("u")
+      )
+      blockarrow_font <- rep(blockarrow_font, length.out=2)
+      blockarrow_label_cex <- rep(blockarrow_label_cex, length.out = 2)
+      p <- p +
+         geom_blockmargin(
+            data = margin_rect_data,
+            ggplot2::aes(
+               xmin = xmin,
+               xmax = xmax,
+               ymin = ymin,
+               ymax = ymax,
+               label = label,
+               sides = sides,
+               direction = direction
+               # fill = fill
+            ),
+            label_size = 16 * blockarrow_label_cex[2] * blockarrow_cex[2],
+            font = blockarrow_font[2],
+            fill = margin_rect_data$fill,
+            colour = jamba::makeColorDarker(darkFactor=1.5,
+               margin_rect_data$fill),
+            arrow_type = arrow_type,
+            length = grid::unit(0.05 * blockarrow_cex[2], "snpc"),
+            inherit.aes = FALSE,
+            alpha = 0.8
+         ) +
+         # Also add rectangles on right side for significance
+         geom_blockmargin(
+            data = blockmargin_df,
+            ggplot2::aes(
+               xmin = xmin,
+               xmax = xmax,
+               ymin = ymin,
+               ymax = ymax,
+               label = label,
+               sides = sides,
+               direction = direction
+               # fill = fill
+            ),
+            label_size = 18 * blockarrow_label_cex[1] * blockarrow_cex[1],
+            font = blockarrow_font[1],
+            fill = blockmargin_df$fill,
+            colour = jamba::makeColorDarker(darkFactor=1.5,
+               blockmargin_df$fill),
+            arrow_type = arrow_type,
+            length = grid::unit(0.05 * blockarrow_cex[1], "snpc"),
+            inherit.aes = FALSE,
+            alpha = 0.8
+         )
    }
 
    ## Set stable aspect ratio to accomodate xlim,ylim
    if (length(aspect_adjust) == 1 && aspect_adjust > 0) {
-      exp_aspect <- diff(x_exp) / diff(y_exp);
+      exp_aspect <- diff(x_exp) / diff(y_exp)
       p <- p +
          ggplot2::coord_fixed(exp_aspect / 1.25 * aspect_adjust)
    }
 
-   use_alt_text <- "Volcano plot";
+   use_alt_text <- "Volcano plot"
    if (length(main) > 0 && any(nchar(main) > 0)) {
       if (length(submain) > 0 && any(nchar(submain) > 0)) {
          if (jamba::igrepHas("volcan", c(main, submain))) {
-            use_alt_text <- paste0(main, ". ", submain);
+            use_alt_text <- paste0(main, ". ", submain)
          } else {
             use_alt_text <- paste0(
                "Volcano plot with title '",
-               main, "' and sub-title '", submain, "'");
+               main,
+               "' and sub-title '",
+               submain,
+               "'"
+            )
          }
          p <- p +
             ggplot2::labs(
-               title=main,
-               subtitle=submain,
-               alt=use_alt_text)
+               title = main,
+               subtitle = submain,
+               alt = use_alt_text
+            )
       } else {
          if (jamba::igrepHas("volcan", c(main, submain))) {
-            use_alt_text <- paste0(main);
+            use_alt_text <- paste0(main)
          } else {
             use_alt_text <- paste0(
                "Volcano plot with title '",
-               main, "'");
+               main,
+               "'"
+            )
          }
          p <- p +
             ggplot2::labs(
-               title=main,
-               alt=use_alt_text)
+               title = main,
+               alt = use_alt_text
+            )
       }
    } else {
       p <- p +
          ggplot2::labs(
             # title="",
-            alt=use_alt_text)
+            alt = use_alt_text
+         )
    }
-   
+
    # FIll background solid?
    # if (fillBackground) {
    #    p <- p +
@@ -339,81 +498,87 @@ ggvolcano_plot <- function
    # }
 
    # Plot theme
-   p <- p + colorjam::theme_jam(
-      # strip.background.fill=strip_bg,
-      strip.text.size=ggplot2::rel(0.6 * 1),
-      panel.grid.major.colour=panel.grid.major.colour,
-      panel.grid.minor.colour=panel.grid.minor.colour,
-      axis.text.x.angle=axis.text.x.angle,
-      base_size=base_size);
+   p <- p +
+      colorjam::theme_jam(
+         # strip.background.fill=strip_bg,
+         strip.text.size = ggplot2::rel(0.6 * 1),
+         panel.grid.major.colour = panel.grid.major.colour,
+         panel.grid.minor.colour = panel.grid.minor.colour,
+         axis.text.x.angle = axis.text.x.angle,
+         base_size = base_size
+      )
 
    ## Volcano caption text
    if (length(caption_text) > 0 && nchar(caption_text) > 0) {
       p <- p +
-         ggplot2::labs(caption=caption_text) +
+         ggplot2::labs(caption = caption_text) +
          ggplot2::theme(
-            plot.caption=ggplot2::element_text(
+            plot.caption = ggplot2::element_text(
                # vjust=0, # bottom-aligned
-               hjust=0  # left-aligned
-            ))
+               hjust = 0 # left-aligned
+            )
+         )
    }
-   
+
    # Density colors
    if (length(smooth_colors)) {
-      smooth_colors <- jamba::getColorRamp(smooth_colors,
-         ...)
+      smooth_colors <- jamba::getColorRamp(smooth_colors, ...)
    }
    p <- p +
-      ggplot2::scale_fill_gradientn(colours=smooth_colors);
+      ggplot2::scale_fill_gradientn(colours = smooth_colors)
 
    # optional hi points
    if (any(nchar(vdf$hi_points) > 0)) {
       # add non-overlapping labels
-      pt_vdf <- subset(vdf, hi_points > 0);
+      pt_vdf <- subset(vdf, hi_points > 0)
       color_set <- attr(vdf, "color_set")
       border_set <- attr(vdf, "border_set")
       # Todo: Add second color scale,
       # look up proper gg method to do that
-      p <- p + 
+      p <- p +
          ggplot2::geom_point(
             ggplot2::aes(
                # bg=point_type,
                # color=point_type,
-               label=gene_values),
-            bg=color_set[pt_vdf$point_type],
-            color=border_set[pt_vdf$point_type],
-            shape=21,
-            size=2.5 * hi_cex,
+               label = gene_values
+            ),
+            bg = color_set[pt_vdf$point_type],
+            color = border_set[pt_vdf$point_type],
+            shape = 21,
+            size = 2.5 * hi_cex,
             # show.legend=FALSE,
-            data=pt_vdf) +
+            data = pt_vdf
+         ) +
          ggplot2::scale_color_identity()
    }
 
    # optional hi labels
    if (any(nchar(vdf$hi_points_label_shown) > 0)) {
       # add non-overlapping labels
-      ptl_vdf <- subset(vdf, hi_points_label_shown > 0);
-      color_set_lt <- jamba::alpha2col(alpha=1,
-         jamba::makeColorDarker(color_set,
-            darkFactor=-1.6,
-            sFactor=-1.5));
-      p <- p + ggrepel::geom_label_repel(
-         ggplot2::aes(label=gene_values),
-         bg=color_set_lt[ptl_vdf$point_type],
-         min.segment.length=0,
-         size=(base_size * 0.8 / 2.835), # convert mm size to point size
-         # point.padding=grid::unit(3, "mm"),
-         point.padding=0.25,
-         box.padding=0.75,
-         color=jamba::setTextContrastColor(
-            color_set_lt[ptl_vdf$point_type]),
-         # border=border_set[ptl_vdf$point_type],
-         data=ptl_vdf)
+      ptl_vdf <- subset(vdf, hi_points_label_shown > 0)
+      color_set_lt <- jamba::alpha2col(
+         alpha = 1,
+         jamba::makeColorDarker(color_set, darkFactor = -1.6, sFactor = -1.5)
+      )
+      p <- p +
+         ggrepel::geom_label_repel(
+            ggplot2::aes(label = gene_values),
+            bg = color_set_lt[ptl_vdf$point_type],
+            min.segment.length = 0,
+            size = (base_size * 0.8 / 2.835), # convert mm size to point size
+            # point.padding=grid::unit(3, "mm"),
+            point.padding = 0.25,
+            box.padding = 0.75,
+            color = jamba::setTextContrastColor(
+               color_set_lt[ptl_vdf$point_type]
+            ),
+            # border=border_set[ptl_vdf$point_type],
+            data = ptl_vdf
+         )
       p
    }
    p
-
-   }
+}
 
 # vdf <- volcano_plot(x,
 #    hi_points=sample(subset(x, abs(x[,2]) > 1 & x[,3] < 0.01)[,1], 200),

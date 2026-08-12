@@ -4,6 +4,7 @@
 # Todo:
 # - test setting the aspect ratio given plot limits,
 #   so the plot retains reasonably consistent ratio.
+# - port block arrows to ggplot2 style
 
 #' Volcano plot
 #'

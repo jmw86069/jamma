@@ -24,6 +24,13 @@ ggvolcano_plot(
   smooth_colors = c("transparent", "lightblue", "lightskyblue3", "royalblue", "darkblue",
     "orange", "darkorange1", "orangered2"),
   aspect_adjust = 1,
+  hit_type = "hits",
+  blockarrow = TRUE,
+  blockarrow_colors = c(hit = "#E67739FF", up = "#990000FF", down = "#000099FF"),
+  blockarrow_font = 1,
+  blockarrow_cex = c(1, 1),
+  blockarrow_label_cex = 1,
+  arrow_type = "blockarrow",
   verbose = FALSE,
   ...
 )
@@ -61,6 +68,28 @@ ratio, which is otherwise intended to be relatively fixed
 for a plot panel size with approximately 1:1 square size.
 Set NULL to avoid setting the plot aspect ratio, which will
 allow the plot to adjust to the current graphical device size.}
+
+\item{hit_type}{\code{character} string used to label hits, default 'hits'.}
+
+\item{blockarrow}{\code{logical} whether to draw block arrows with
+the number of hits that met the statistical cutoffs.}
+
+\item{blockarrow_colors}{\code{character} vector of colors with names
+'hit', 'up', 'down'.}
+
+\item{blockarrow_font}{\code{integer} to control the blockarrow label
+font face, default 2 uses bold font face.}
+
+\item{blockarrow_cex}{\code{numeric} multiplier to adjust block arrow
+size and font size, length 2. It controls the 'hits' on the right,
+and up/down at the top, respectively. Default is \code{c(1, 1)}.}
+
+\item{blockarrow_label_cex}{\code{numeric} multiplier to adjust block
+arrow font size, where the initial size is 16 point font.
+It is expanded to length 2, and applied to 'hits' on the right,
+and up/down at the top, respectively.}
+
+\item{arrow_type}{\code{character} with type of arrow, 'blockarrow' default.}
 
 \item{...}{additional arguments are passed to \code{volcano_plot()}.}
 }
@@ -121,13 +150,16 @@ x <- data.frame(
    `mgm Group-Contol`=((rnorm(1500)+5)^2)/5,
    check.names=FALSE);
 
-ggvdf <- ggvolcano_plot(x);
+ggvdf <- ggvolcano_plot(x, blockarrow=TRUE);
+plot(ggvdf)
+
+ggvdf <- ggvolcano_plot(x, blockarrow=TRUE, arrow_type="blockarrow");
 plot(ggvdf)
 
 }
 \seealso{
-Other jam plot functions: 
-\code{\link{ggjammaplot}()},
-\code{\link{volcano_plot}()}
+Other jam plot functions:
+\code{\link[=ggjammaplot]{ggjammaplot()}},
+\code{\link[=volcano_plot]{volcano_plot()}}
 }
 \concept{jam plot functions}

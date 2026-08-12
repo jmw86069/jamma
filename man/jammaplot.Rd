@@ -919,7 +919,7 @@ used. For example indicate \code{'sampleID vs groupA'} instead of
 }
 \section{Functions}{
 \itemize{
-\item \code{ggjammaplot()}: 
+\item \code{ggjammaplot()}: MA-plots with ggplot2 output
 
 }}
 \examples{
@@ -1035,12 +1035,8 @@ if (suppressPackageStartupMessages(require(affydata))) {
 \seealso{
 \code{jamba::plotSmoothScatter()}
 
-Other jam plot functions: 
-\code{\link{ggvolcano_plot}()},
-\code{\link{volcano_plot}()}
-
-Other jam plot functions: 
-\code{\link{ggvolcano_plot}()},
-\code{\link{volcano_plot}()}
+Other jam plot functions:
+\code{\link[=ggvolcano_plot]{ggvolcano_plot()}},
+\code{\link[=volcano_plot]{volcano_plot()}}
 }
 \concept{jam plot functions}

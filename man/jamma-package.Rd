@@ -103,6 +103,11 @@ Useful links:
 \author{
 \strong{Maintainer}: James Ward \email{jmw86069@gmail.com}
 
+Authors:
+\itemize{
+  \item James Ward \email{jmw86069@gmail.com}
+}
+
 }
 \concept{jamma package
 \subsection{Core functions:}{

@@ -258,9 +258,9 @@ the effective input RNA concentration.
 }
 }
 \seealso{
-Other jam matrix functions: 
-\code{\link{centerGeneData}()},
-\code{\link{jammacalc}()},
-\code{\link{matrix_to_column_rank}()}
+Other jam matrix functions:
+\code{\link[=centerGeneData]{centerGeneData()}},
+\code{\link[=jammacalc]{jammacalc()}},
+\code{\link[=matrix_to_column_rank]{matrix_to_column_rank()}}
 }
 \concept{jam matrix functions}

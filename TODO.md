@@ -1,5 +1,29 @@
 # TODO for jamma
 
+## 12aug2026
+
+* `ggvolcano_plot()` blockarrows should probably nudge out from
+the plot border, just a smidge.
+
+## 17jul2026
+
+* Consider staggered boxplot style of MAplot, similar to straight
+boxplot but with subsections ordered by increasing mean x-axis
+value, as a way to compress the x-axis range into nearly single
+narrow entry.
+
+## 15jun2026
+
+* `ggjammaplot()`, `jammaplot()`
+
+   * Accept `character` vector for titleBoxColor, subtitleBoxColor,
+   even without matching colnames. When they are not colors,
+   apply `colorjam::group2colors()`.
+   * Make aspect ratio adjustable for `ggjammaplot()`.
+   * Add option to label points similar to `volcano_plot()`,
+   finding extreme points and labeling up to `max_labels`.
+
+
 ## 10jun2026
 
 * Simplify the interface, perhaps method `JammaPlot()`?

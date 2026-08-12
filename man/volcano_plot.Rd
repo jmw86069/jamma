@@ -323,7 +323,7 @@ Note that \code{verbose=2} will enable much more verbose output.}
 
 \item{...}{additional arguments are ignored.}
 
-\item{`numeric`}{vector used to ensure that each margin size is
+\item{numeric}{vector used to ensure that each margin size is
 at least a minimum value, applied to \code{par("mar")} via
 the function \code{pmax()}.}
 }
@@ -412,8 +412,8 @@ volcano_plot(x, hi_hits=TRUE, label_hits=TRUE)
 
 }
 \seealso{
-Other jam plot functions: 
-\code{\link{ggjammaplot}()},
-\code{\link{ggvolcano_plot}()}
+Other jam plot functions:
+\code{\link[=ggjammaplot]{ggjammaplot()}},
+\code{\link[=ggvolcano_plot]{ggvolcano_plot()}}
 }
 \concept{jam plot functions}

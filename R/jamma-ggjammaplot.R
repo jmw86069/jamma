@@ -1,5 +1,5 @@
 
-#' @describeIn jammaplot
+#' @describeIn jammaplot MA-plots with ggplot2 output
 #'
 #' @family jam plot functions
 #'

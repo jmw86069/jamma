@@ -30,19 +30,19 @@ It also supports GeomxTools "NanoStringGeoMxSet" if the "GeomxTools"
 R package is available.
 }
 \seealso{
-Other jam utility functions: 
-\code{\link{blockArrowMargin}()},
-\code{\link{find_colname}()},
-\code{\link{fold_to_log2fold}()},
-\code{\link{get_se_colData}()},
-\code{\link{get_se_rowData}()},
-\code{\link{gradient_rect}()},
-\code{\link{handle_highlightPoints}()},
-\code{\link{log2fold_to_fold}()},
-\code{\link{logAxis}()},
-\code{\link{outer_legend}()},
-\code{\link{points2polygonHull}()},
-\code{\link{update_function_params}()},
-\code{\link{update_list_elements}()}
+Other jam utility functions:
+\code{\link[=blockArrowMargin]{blockArrowMargin()}},
+\code{\link[=find_colname]{find_colname()}},
+\code{\link[=fold_to_log2fold]{fold_to_log2fold()}},
+\code{\link[=get_se_colData]{get_se_colData()}},
+\code{\link[=get_se_rowData]{get_se_rowData()}},
+\code{\link[=gradient_rect]{gradient_rect()}},
+\code{\link[=handle_highlightPoints]{handle_highlightPoints()}},
+\code{\link[=log2fold_to_fold]{log2fold_to_fold()}},
+\code{\link[=logAxis]{logAxis()}},
+\code{\link[=outer_legend]{outer_legend()}},
+\code{\link[=points2polygonHull]{points2polygonHull()}},
+\code{\link[=update_function_params]{update_function_params()}},
+\code{\link[=update_list_elements]{update_list_elements()}}
 }
 \concept{jam utility functions}
