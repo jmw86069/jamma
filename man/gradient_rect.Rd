@@ -30,6 +30,10 @@ around the rectangle.}
 
 \item{...}{additional arguments are ignored.}
 }
+\value{
+This function is called for its effect, drawing a rectangle
+with gradient color fill.
+}
 \description{
 Rectangle with color gradient fill
 }
@@ -51,7 +55,6 @@ gradient_rect(xleft=2.5,
    ytop=4,
    gradient="y",
    col=jamba::getColorRamp("Reds", n=15))
-
 }
 \seealso{
 Other jam utility functions:

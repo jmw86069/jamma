@@ -161,6 +161,11 @@ at or above \code{expr_cutoff} can be considered statistically
 significant. This threshold is useful to filter out potential
 statistical hits whose signal is below a noise signal threshold.}
 
+\item{gene_colname}{\code{character} column name, or regular expression
+pattern, used to identify gene column name. If no matching
+column names are found, it uses \code{rownames(x)}.
+These values are used when \code{hi_points} is provided.}
+
 \item{label_colname}{\code{character} string or vector used to match
 \code{colnames(x)} whose values should contain a useful label,
 for example gene symbol or assay identifier.}
@@ -172,7 +177,11 @@ for example gene symbol or assay identifier.}
 \item{blockarrow}{\code{logical} indicating whether block arrows should
 be displayed and used to indicate the number of statistical hits.}
 
-\item{blockarrow_colors, blockarrow_font, blockarrow_label, blockarrow_shadowtext}{arguments used when \code{blockarrow=TRUE}.}
+\item{blockarrow_colors, blockarrow_font, blockarrow_label_cex, blockarrow_shadowtext}{arguments used when \code{blockarrow=TRUE}.}
+
+\item{blockarrow_cex}{\code{numeric} default 1.2, applied to adjust the
+overall relative size of block arrows, affecting arrow and label
+sizes.}
 
 \item{symmetric_axes}{\code{logical} indicating whether the x-axis
 log fold change range should be symmetric above and below zero.}
@@ -254,11 +263,17 @@ at the top of the volcano plot figure.}
 
 \item{tophist_cutoffs, tophist_breaks, tophist_fraction, tophist_by}{arguments used when \code{tophist=TRUE}.}
 
+\item{tophist_color}{\code{character} color used for the top histogram.}
+
 \item{hi_points}{\code{character} vector indicating points to highlight
 in the volcano plot, where values should match \code{rownames(x)}.
 This argument is useful to highlight a specific subset of points of
 interest on the figure. Note that \code{hi_points} are always
 rendered as individual points even when \code{smooth=TRUE}.}
+
+\item{hi_colors}{\code{character} vector of colors applied to
+points in \code{hi_points}. It assumes \code{hi_points} is a \code{list},
+and each color is applied to list elements in order.}
 
 \item{hi_hits}{\code{logical} indicating whether rows that meet all
 statistical cutoffs and are considered "hits" should also be
@@ -292,6 +307,8 @@ plot is created. This argument is useful to re-run the
 same volcano plot with alternate parameters, for example
 to display different subsets of highlighted points.}
 
+\item{do_plot}{\code{logical} whether to render the plot, default TRUE.}
+
 \item{xlab, ylab}{\code{character} strings used to specify the exact
 x-axis label and y-axis label. When either value is \code{NULL}
 the default is to use the relevant colname: x-axis uses
@@ -300,10 +317,14 @@ either \code{lfc_colname} or \code{fold_colname}; y-axis uses \code{sig_colname}
 \item{cex.axis}{\code{numeric} adjustment for axis label font sizes.}
 
 \item{mar_min}{\code{numeric} vector to set minimum plot margins for base
-R output. Default is c(6, 5, 6, 5) in units of character lines,
-and in order: bottom, left, top, right.
+R output. Default is \code{c(6, 5, 6, 5)} in units of character lines,
+in order: bottom, left, top, right.
 Note when \code{blockarrow=FALSE} the top and right margins are subtracted
 by 2, imposing a minimum \code{0.1}.}
+
+\item{transFactor}{\code{numeric} default 0.24 to control the intensity
+of the point density. Lower values increase the intensity.
+It is applied to \code{transformation} by default.}
 
 \item{transformation}{\code{function} passed to \code{smooth_func} used to
 adjust the visual contrast of the resulting density plot.}
@@ -322,10 +343,9 @@ in the form of adjusting the \code{bwpi} bandwidth-per-inch.}
 Note that \code{verbose=2} will enable much more verbose output.}
 
 \item{...}{additional arguments are ignored.}
-
-\item{numeric}{vector used to ensure that each margin size is
-at least a minimum value, applied to \code{par("mar")} via
-the function \code{pmax()}.}
+}
+\value{
+\code{data.frame} as used to create the plot.
 }
 \description{
 Draw a volcano plot using reasonable default arguments.

@@ -161,11 +161,18 @@
 #' the effective input RNA concentration.
 #'
 #'
-#' @return `numeric` `matrix` whose columns have been normalized,
-#' with the following named `attributes`:
-#'    * `"nf"` numeric vector of normalization factors;
-#'    * `"hk"` a `character` vector of controlGenes for each sample;
-#'    * `"hk_count"` the `integer` number of controlGenes for each sample.
+#' @returns `numeric` `matrix` whose columns have been normalized,
+#'    with the following `attributes`:
+#'    * `'nf'`: `numeric` normalization factors, which
+#'    were applied through addition `+` to original signal.
+#'    A value `NA` indicates that no `controlGenes` remained
+#'    after filtering by `minimum_mean` and `maximum_mean`.
+#'    * `'hk'`: `character` vector of `controlGenes` used for
+#'    each sample, after applying `minimum_mean` and `maximum_mean`
+#'    thresholds.
+#'    * `'hk_count'`: `integer` number of `controlGenes` for each
+#'    sample.
+#'    * `'params'`: `list` with other argument values provided.
 #'
 #' @inheritParams jammaplot
 #' @param x `numeric` matrix with expression data suitable for use
@@ -176,29 +183,79 @@
 #'    be included in the normalization, where the expression is
 #'    determined by the mean or median value analogous to the x-axis
 #'    value in MA-plots.
-#' @param noise_floor,noise_floor_value `numeric` values passed
-#'    to `jammacalc()`. The `noise_floor` is the value below which
-#'    a floor is applied. The floor sets all values below this floor
-#'    to `noise_floor_value`. For example, one could apply `noise_floor=0`
-#'    and `noise_floor_value=NA` which would change any value below 0
-#'    to `NA`.
+#'    
+#'    Some notes:
+#'    * For RNA-seq data, and other similar count-based 'Omics data,
+#'    a common default is `minimum_mean=5`. The value 5 in log2 space
+#'    corresponds to approximately 32 read counts (or pseudocounts)
+#'    in normal space counts.
+#'    For normalization, this default is effective at
+#'    avoiding "shot noise" from low integer counts.
+#'    * For NanoString data, we often use the lowest positive
+#'    control probe mean signal, or the point at which the positive
+#'    controls are still horizontal, in the event that the lowest
+#'    positive control probe becomes non-linear across the dilution
+#'    range.
+#'    * For hybridization-based platforms, it may be useful to review
+#'    MA-plots for the point at which variability becomes high, or
+#'    the point at which signal is no longer horizontal when compared
+#'    with other samples.
+#'    In the event the MA-plots are generally not consistently horizontal,
+#'    other normalization options are recommended, such as
+#'    quantile or LOESS normalization.
+#' @param maximum_mean `numeric`, default `Inf` (infinite), to define
+#'    the highest mean value for a row to be used in normalization.
+#'    The `maximum_mean` is useful to avoid using rows with extremely
+#'    high signal, which may have aberrant values that may therefore
+#'    skew the normalization.
+#' 
+#'    Together with `minimum_mean` one can define the exact minimum
+#'    and maximum mean values for control genes to be used.
+#' @param noise_floor `numeric` threshold below which values are
+#'    replaced with `noise_floor_value`. The default is `-Inf`
+#'    (negative infinite) which applies no floor.
+#'    Values are passed internally to `jammacalc()`.
+#'    * A common option is `noise_floor=0` which replaces any value
+#'    below `0` with the `noise_floor_value` whose default is
+#'    the `noise_floor`. It therefore replaces negative values
+#'    with `0`.
+#'    * Another common option is to define a platform noise floor,
+#'    a value below which the platform measurement is no longer
+#'    trustworthy.  
+#'    Values below the platform floor are replaced with the floor,
+#'    which has the effect of making any reported measurement
+#'    at or below the floor equivalent to the floor itself.
+#'    * For QPCR, in some circumstances, a cycle threshold
+#'    (Ct) value above 35 maybe considered outside of trusted
+#'    range. When using virtual abundance calculation  
+#'    `abundance = 2^(40 - Ct)`  
+#'    it would suggest `noise_floor=5`, equivalent to setting
+#'    any Ct higher than 35 to 35. It retains the measurement,
+#'    but does not inflate a potential fold change calculation.
+#' @param noise_floor_value `numeric` default is `noise_floor`
+#'    which replaces values below the `noise_floor` with the
+#'    `noise_floor` itself.
+#'    * A common alternative is to use `noise_floor=0`, and
+#'    `noise_floor_value=NA`, which replaces all values below `0`
+#'    with `NA`.
 #'
 #' @family jam matrix functions
 #'
 #' @export
-jammanorm <- function
-(x,
- controlGenes=NULL,
- minimum_mean=0,
- controlSamples=NULL,
- centerGroups=NULL,
- useMedian=TRUE,
- useMean=NULL,
- noise_floor=-Inf,
- noise_floor_value=noise_floor,
- verbose=FALSE,
- ...)
-{
+jammanorm <- function(
+   x,
+   controlGenes=NULL,
+   minimum_mean=0,
+   maximum_mean=Inf,
+   controlSamples=NULL,
+   centerGroups=NULL,
+   useMedian=FALSE,
+   useMean=NULL,
+   noise_floor=-Inf,
+   noise_floor_value=noise_floor,
+   verbose=FALSE,
+   ...
+) {
    ## Purpose is to use MA-plot logic to provide a normalization
    ## method designed to result in data centered at y=0.
    ##
@@ -221,6 +278,8 @@ jammanorm <- function
    if (length(useMedian) == 0) {
       useMedian <- FALSE;
    }
+   # use only one value overall
+   useMedian <- head(useMedian, 1);
 
    jpr <- jammacalc(x,
       controlSamples=controlSamples,
@@ -232,6 +291,9 @@ jammanorm <- function
 
    if (length(minimum_mean) == 0) {
       minimum_mean <- 0;
+   }
+   if (length(maximum_mean) == 0) {
+      maximum_mean <- Inf;
    }
    if (length(controlGenes) == 0) {
       controlGenes <- rownames(x);
@@ -245,19 +307,33 @@ jammanorm <- function
    ## Calculate HK genes and normalization factors
    jpr_hknf <- lapply(jpr, function(i){
       j <- as.data.frame(i);
-      hk <- intersect(controlGenes,
-         rownames(subset(j, x >= minimum_mean)));
+      hk <- intersect(
+         controlGenes,
+         rownames(
+            subset(
+               j,
+               !is.na(x) &
+               x >= minimum_mean &
+               x <= maximum_mean
+            )
+         )
+      )
       if (length(hk) == 0) {
+         # no rows remain to normalize data,
+         # return NA
          nf <- NA;
       } else {
-         y <- j[hk,"y"];
-         if (useMedian) {
+         y <- j[hk, "y"];
+         if (isTRUE(useMedian)) {
             nf <- median(y, na.rm=TRUE);
          } else {
             nf <- mean(y, na.rm=TRUE);
          }
       }
-      list(nf=nf, hk=hk);
+      list(
+         nf=nf,
+         hk=hk
+      );
    });
    jpr_nf <- unlist(lapply(jpr_hknf, function(i){
       i$nf;
@@ -270,9 +346,19 @@ jammanorm <- function
    x_hk <- t(t(x) - jpr_nf);
 
    ## attributes to store NF and HK
+   attr(x_hk, "nf") <- (- jpr_nf);
    attr(x_hk, "hk") <- jpr_hk;
    attr(x_hk, "hk_count") <- lengths(jpr_hk);
-   attr(x_hk, "nf") <- (- jpr_nf);
+   params <- list(
+      minimum_mean=minimum_mean,
+      maximum_mean=maximum_mean,
+      useMedian=useMedian,
+      centerGroups=centerGroups,
+      controlSamples=controlSamples,
+      noise_floor=noise_floor,
+      noise_floor_value=noise_floor_value
+   )
+   attr(x_hk, "params") <- params;
 
    x_hk;
 }

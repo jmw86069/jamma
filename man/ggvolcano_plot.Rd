@@ -150,7 +150,7 @@ x <- data.frame(
    `mgm Group-Contol`=((rnorm(1500)+5)^2)/5,
    check.names=FALSE);
 
-ggvdf <- ggvolcano_plot(x, blockarrow=TRUE);
+ggvdf <- ggvolcano_plot(x);
 plot(ggvdf)
 
 ggvdf <- ggvolcano_plot(x, blockarrow=TRUE, arrow_type="blockarrow");

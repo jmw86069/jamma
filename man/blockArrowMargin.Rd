@@ -35,6 +35,10 @@ blockArrowMargin(
   ...
 )
 }
+\value{
+\code{list} invisibly, however this function is called
+for the effect of drawing block arrows in base R margins.
+}
 \description{
 Draw block arrows in plot margins
 }

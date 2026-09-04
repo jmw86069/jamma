@@ -8,9 +8,10 @@ jammanorm(
   x,
   controlGenes = NULL,
   minimum_mean = 0,
+  maximum_mean = Inf,
   controlSamples = NULL,
   centerGroups = NULL,
-  useMedian = TRUE,
+  useMedian = FALSE,
   useMean = NULL,
   noise_floor = -Inf,
   noise_floor_value = noise_floor,
@@ -27,7 +28,38 @@ using \code{log2(1+x)} to represent reasonably normal distribution.}
 a control gene must have at least this level of expression to
 be included in the normalization, where the expression is
 determined by the mean or median value analogous to the x-axis
-value in MA-plots.}
+value in MA-plots.
+
+Some notes:
+\itemize{
+\item For RNA-seq data, and other similar count-based 'Omics data,
+a common default is \code{minimum_mean=5}. The value 5 in log2 space
+corresponds to approximately 32 read counts (or pseudocounts)
+in normal space counts.
+For normalization, this default is effective at
+avoiding "shot noise" from low integer counts.
+\item For NanoString data, we often use the lowest positive
+control probe mean signal, or the point at which the positive
+controls are still horizontal, in the event that the lowest
+positive control probe becomes non-linear across the dilution
+range.
+\item For hybridization-based platforms, it may be useful to review
+MA-plots for the point at which variability becomes high, or
+the point at which signal is no longer horizontal when compared
+with other samples.
+In the event the MA-plots are generally not consistently horizontal,
+other normalization options are recommended, such as
+quantile or LOESS normalization.
+}}
+
+\item{maximum_mean}{\code{numeric}, default \code{Inf} (infinite), to define
+the highest mean value for a row to be used in normalization.
+The \code{maximum_mean} is useful to avoid using rows with extremely
+high signal, which may have aberrant values that may therefore
+skew the normalization.
+
+Together with \code{minimum_mean} one can define the exact minimum
+and maximum mean values for control genes to be used.}
 
 \item{controlSamples}{\code{character} vector of \code{colnames(x)} passed
 to \code{centerGeneData()} which defines the control samples during
@@ -70,12 +102,38 @@ When \code{useMean=NULL} the argument \code{useMedian} is preferred.
 For backward compatibility, when \code{useMean} is not \code{NULL},
 then \code{useMedian} is defined by \code{useMedian <- !useMean}.}
 
-\item{noise_floor, noise_floor_value}{\code{numeric} values passed
-to \code{jammacalc()}. The \code{noise_floor} is the value below which
-a floor is applied. The floor sets all values below this floor
-to \code{noise_floor_value}. For example, one could apply \code{noise_floor=0}
-and \code{noise_floor_value=NA} which would change any value below 0
-to \code{NA}.}
+\item{noise_floor}{\code{numeric} threshold below which values are
+replaced with \code{noise_floor_value}. The default is \code{-Inf}
+(negative infinite) which applies no floor.
+Values are passed internally to \code{jammacalc()}.
+\itemize{
+\item A common option is \code{noise_floor=0} which replaces any value
+below \code{0} with the \code{noise_floor_value} whose default is
+the \code{noise_floor}. It therefore replaces negative values
+with \code{0}.
+\item Another common option is to define a platform noise floor,
+a value below which the platform measurement is no longer
+trustworthy.
+Values below the platform floor are replaced with the floor,
+which has the effect of making any reported measurement
+at or below the floor equivalent to the floor itself.
+\item For QPCR, in some circumstances, a cycle threshold
+(Ct) value above 35 maybe considered outside of trusted
+range. When using virtual abundance calculation
+\code{abundance = 2^(40 - Ct)}
+it would suggest \code{noise_floor=5}, equivalent to setting
+any Ct higher than 35 to 35. It retains the measurement,
+but does not inflate a potential fold change calculation.
+}}
+
+\item{noise_floor_value}{\code{numeric} default is \code{noise_floor}
+which replaces values below the \code{noise_floor} with the
+\code{noise_floor} itself.
+\itemize{
+\item A common alternative is to use \code{noise_floor=0}, and
+\code{noise_floor_value=NA}, which replaces all values below \code{0}
+with \code{NA}.
+}}
 
 \item{verbose}{logical indicating whether to print verbose output.}
 
@@ -84,11 +142,18 @@ to \code{NA}.}
 }
 \value{
 \code{numeric} \code{matrix} whose columns have been normalized,
-with the following named \code{attributes}:
+with the following \code{attributes}:
 \itemize{
-\item \code{"nf"} numeric vector of normalization factors;
-\item \code{"hk"} a \code{character} vector of controlGenes for each sample;
-\item \code{"hk_count"} the \code{integer} number of controlGenes for each sample.
+\item \code{'nf'}: \code{numeric} normalization factors, which
+were applied through addition \code{+} to original signal.
+A value \code{NA} indicates that no \code{controlGenes} remained
+after filtering by \code{minimum_mean} and \code{maximum_mean}.
+\item \code{'hk'}: \code{character} vector of \code{controlGenes} used for
+each sample, after applying \code{minimum_mean} and \code{maximum_mean}
+thresholds.
+\item \code{'hk_count'}: \code{integer} number of \code{controlGenes} for each
+sample.
+\item \code{'params'}: \code{list} with other argument values provided.
 }
 }
 \description{

@@ -22,6 +22,9 @@ logAxis(
   ...
 )
 }
+\value{
+This function is called for its effect.
+}
 \description{
 Log-scaled axis including transformed P-values
 }

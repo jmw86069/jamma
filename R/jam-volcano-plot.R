@@ -110,6 +110,10 @@
 #'    at or above `expr_cutoff` can be considered statistically
 #'    significant. This threshold is useful to filter out potential
 #'    statistical hits whose signal is below a noise signal threshold.
+#' @param gene_colname `character` column name, or regular expression
+#'    pattern, used to identify gene column name. If no matching
+#'    column names are found, it uses `rownames(x)`.
+#'    These values are used when `hi_points` is provided.
 #' @param main `character` string used as the main title of the figure.
 #' @param submain `character` string used as a sub-title of the figure.
 #' @param symmetric_axes `logical` indicating whether the x-axis
@@ -184,17 +188,24 @@
 #'    the color gradient to use when `smooth=TRUE`.
 #' @param blockarrow `logical` indicating whether block arrows should
 #'    be displayed and used to indicate the number of statistical hits.
-#' @param blockarrow_colors,blockarrow_font,blockarrow_label,blockarrow_shadowtext
+#' @param blockarrow_cex `numeric` default 1.2, applied to adjust the
+#'    overall relative size of block arrows, affecting arrow and label
+#'    sizes.
+#' @param blockarrow_colors,blockarrow_font,blockarrow_label_cex,blockarrow_shadowtext
 #'    arguments used when `blockarrow=TRUE`.
 #' @param tophist `logical` indicating whether to display a histogram
 #'    at the top of the volcano plot figure.
 #' @param tophist_cutoffs,tophist_breaks,tophist_fraction,tophist_by
 #'    arguments used when `tophist=TRUE`.
+#' @param tophist_color `character` color used for the top histogram.
 #' @param hi_points `character` vector indicating points to highlight
 #'    in the volcano plot, where values should match `rownames(x)`.
 #'    This argument is useful to highlight a specific subset of points of
 #'    interest on the figure. Note that `hi_points` are always
 #'    rendered as individual points even when `smooth=TRUE`.
+#' @param hi_colors `character` vector of colors applied to
+#'    points in `hi_points`. It assumes `hi_points` is a `list`,
+#'    and each color is applied to list elements in order.
 #' @param hi_hits `logical` indicating whether rows that meet all
 #'    statistical cutoffs and are considered "hits" should also be
 #'    treated as `hi_points` for the purpose of rendering individual
@@ -215,6 +226,7 @@
 #'    scatter and individual points on the same figure.
 #' @param label_hits `logical` indicating whether to add a text label
 #'    for points that are statistical hits.
+#' @param do_plot `logical` whether to render the plot, default TRUE.
 #' @param add_plot `logical` indicating whether the plot should be
 #'    added to an existing plot, or when `add_plot=FALSE` a new
 #'    plot is created. This argument is useful to re-run the
@@ -226,16 +238,16 @@
 #'    either `lfc_colname` or `fold_colname`; y-axis uses `sig_colname`.
 #' @param cex.axis `numeric` adjustment for axis label font sizes.
 #' @param mar_min `numeric` vector to set minimum plot margins for base
-#'    R output. Default is c(6, 5, 6, 5) in units of character lines,
-#'    and in order: bottom, left, top, right.
+#'    R output. Default is `c(6, 5, 6, 5)` in units of character lines,
+#'    in order: bottom, left, top, right.  
 #'    Note when `blockarrow=FALSE` the top and right margins are subtracted
 #'    by 2, imposing a minimum `0.1`.
 #' @param include_axis_prefix `logical` indicating whether to include
 #'    a prefix for the x-axis and y-axis labels: x-axis `"Change"`;
 #'    y-axis `"Significance"`.
-#' @param `numeric` vector used to ensure that each margin size is
-#'    at least a minimum value, applied to `par("mar")` via
-#'    the function `pmax()`.
+#' @param transFactor `numeric` default 0.24 to control the intensity
+#'    of the point density. Lower values increase the intensity.
+#'    It is applied to `transformation` by default.
 #' @param transformation `function` passed to `smooth_func` used to
 #'    adjust the visual contrast of the resulting density plot.
 #' @param nbin `numeric` value passed to `smooth_func` and used
@@ -280,9 +292,11 @@
 #' 
 #' volcano_plot(x, hi_hits=TRUE, label_hits=TRUE)
 #' 
+#' @returns `data.frame` as used to create the plot.
+#' 
 #' @export
-volcano_plot <- function
-(x,
+volcano_plot <- function(
+   x,
    n=NULL,
    # fold change options
    lfc_colname=c("logfc",
@@ -312,7 +326,8 @@ volcano_plot <- function
    sig_max_range=1e-10,
    sig_min_range=1e-4,
    # expression level options
-   expr_colname=c("mgm",
+   expr_colname=c(
+      "mgm",
       "groupmean",
       "mean",
       "AveExpr",
@@ -322,7 +337,8 @@ volcano_plot <- function
       "cpm"),
    expr_cutoff=NULL,
    # gene options
-   gene_colname=c("gene",
+   gene_colname=c(
+      "gene",
       "symbol",
       "protein",
       "probe",
@@ -398,8 +414,8 @@ volcano_plot <- function
    nbin=256,
    bw_factor=1,
    verbose=FALSE,
-   ...)
-{
+   ...
+) {
 
    ## Purpose is to wrapper a simple volcano plot with log-friendly axis labels
    ##
@@ -417,7 +433,7 @@ volcano_plot <- function
    ## The graph plots fold change on the x-axis, but with log2 scale, the numbers
    ## are technically being reported in normal space. However, to give it a log2 axis label:
    ## xlab=expression(log[2]*"(Fold change)"
-   blockarrow_cex <- rep(blockarrow_cex, length.out=2);
+   blockarrow_cex <- rep_len(blockarrow_cex, 2);
 
    fold_style <- match.arg(fold_style);
 
@@ -458,20 +474,18 @@ volcano_plot <- function
    gene_colname <- find_colname(gene_colname,
       x);
    gene_values <- rownames(x);
-   if (length(gene_colname) == 1) {
-      if (!"rownames" %in% gene_colname) {
+   if (length(gene_colname) == 1 &&
+      !"rownames" %in% gene_colname) {
          gene_values <- x[[gene_colname]];
-      }
    }
       
    ## label
    label_colname <- find_colname(label_colname,
       x);
    label_values <- rownames(x);
-   if (length(label_colname) == 1) {
-      if (!"rownames" %in% label_colname) {
+   if (length(label_colname) == 1 &&
+      !"rownames" %in% label_colname) {
          label_values <- x[[label_colname]];
-      }
    }
 
    ## significance
@@ -677,8 +691,7 @@ volcano_plot <- function
          if (all(names(hi_points_list) %in% names(hi_colors))) {
             hi_colors <- hi_colors[names(hi_points_list)];
          } else {
-            hi_colors <- rep(hi_colors,
-               length.out=length(hi_points_list));
+            hi_colors <- rep_len(hi_colors, length(hi_points_list));
             names(hi_colors) <- names(hi_points_list);
          }
       }
@@ -705,12 +718,12 @@ volcano_plot <- function
    if (length(point_colors) == 0) {
       point_colors <- color_set[point_type];
    } else {
-      point_colors <- rep(point_colors, length.out=nrow(x));
+      point_colors <- rep_len(point_colors, nrow(x));
    }
    if (length(border_colors) == 0) {
       border_colors <- border_set[point_type];
    } else {
-      border_colors <- rep(border_colors, length.out=nrow(x));
+      border_colors <- rep_len(border_colors, nrow(x));
    }
    if (verbose > 1) {
       jamba::printDebug("volcano_plot(): ",
@@ -791,7 +804,7 @@ volcano_plot <- function
       ## Generate hit counts among the highlighted points
       hi_up_count <- sum(point_type[hi_points] %in% "hi_up");
       hi_dn_count <- sum(point_type[hi_points] %in% "hi_dn");
-      hi_other_count <- sum(hi_points) - hi_up_count - hi_dn_count;
+      # hi_other_count <- sum(hi_points) - hi_up_count - hi_dn_count;
    }
    ## optional plot_only_subset=TRUE here
 
@@ -820,7 +833,8 @@ volcano_plot <- function
       sig_max_range <- sig_min_range;
    }
    if (length(ylim) == 0) {
-      sig_min <- max(-log10(c(sig_cutoff, 0.05))) * 1.3;
+      # sig_min <- max(-log10(c(sig_cutoff, 0.05))) * 1.3;
+
       # sig_min_range
       ylim <- range(c(0,
          min(c(max(y_values),
@@ -850,11 +864,11 @@ volcano_plot <- function
 
    ## Overall Title
    do_overall_title <- function() {
-      if ((length(main) > 0 && nchar(main) > 0) ||
-            (length(submain) > 0 && nchar(submain) > 0)) {
+      if ((length(main) > 0 && nzchar(main)) ||
+            (length(submain) > 0 && nzchar(submain))) {
          withr::with_par(list(xpd=TRUE), {
             font.main <- 1;
-            if (length(main) > 0 && nchar(main) > 0) {
+            if (length(main) > 0 && nzchar(main)) {
                nlines_main <- lengths(strsplit(main, "\n"));
                line_main <- parMar[3] - 0.5 - 1.2 * nlines_main;
                title(main=main,
@@ -862,7 +876,7 @@ volcano_plot <- function
                   font.main=font.main,
                   cex.main=1.5);
             }
-            if (length(submain) > 0 && nchar(submain) > 0) {
+            if (length(submain) > 0 && nzchar(submain)) {
                title(main=submain,
                   line=line_main - nlines_main / 2 - 0.4,
                   cex.main=1,
@@ -878,7 +892,7 @@ volcano_plot <- function
 
    ## labelCoords will have the return data from addNonOverlappingLabels() but only
    ## if we end up calling that method
-   labelCoords <- NULL;
+   # labelCoords <- NULL;
    parMar <- mar_min;
    if (do_plot) {
       parMarXpd <- par("mar", "xpd");
@@ -903,7 +917,7 @@ volcano_plot <- function
       tophist) {
       # Top histogram
       #
-      if (length(grep("pval", tophist_cutoffs)) > 0) {
+      if (length(grep("pval", fixed=TRUE, tophist_cutoffs)) > 0) {
          ## Apply P-value filtering
          pvHitsWhich <- met_sig;
       } else {
@@ -913,7 +927,7 @@ volcano_plot <- function
          ## Apply fold change filtering
          fcHitsWhich <- met_fold;
       } else {
-         fcHitsWhich <- 1:n;
+         fcHitsWhich <- seq_len(n);
       }
       hist_which <- (pvHitsWhich & fcHitsWhich);
 
@@ -1148,7 +1162,8 @@ volcano_plot <- function
             label_values[hi_points_label][use_hi_points]);
          
          if (do_plot) {
-            labelCoords <- jamba::drawLabels(
+            # labelCoords <- jamba::drawLabels(
+            jamba::drawLabels(
                x=use_x_capped[use_hi_points, 1],
                y=use_x_capped[use_hi_points, 2],
                txt=label_values[use_hi_points],
@@ -1187,8 +1202,8 @@ volcano_plot <- function
    }
    #parList[["postScatter"]] <- par(no.readonly=TRUE);
 
-   multiGenesUp <- character(0);
-   multiGenesDown <- character(0);
+   # multiGenesUp <- character(0);
+   # multiGenesDown <- character(0);
    if (!add_plot) {
       ## Define labels
       label_up <- paste(format(big.mark=",", sum(hits_up)),
@@ -1278,10 +1293,10 @@ volcano_plot <- function
          if (isTRUE(blockarrow)) {
             # 0.0.39.900 - silence xpd=TRUE
             # par("xpd"=TRUE);
-            hitCol <- hsv(h=0.06,
-               s=0.75,
-               v=0.9,
-               alpha=1);
+            # hitCol <- hsv(h=0.06,
+            #    s=0.75,
+            #    v=0.9,
+            #    alpha=1);
             if (tophist) {
                right_adj <- 1.2;
             } else {
@@ -1292,7 +1307,7 @@ volcano_plot <- function
                   darkFactor=1.3,
                   sFactor=1.3))
 
-            blockarrow_cex <- rep(blockarrow_cex, length.out=2);
+            blockarrow_cex <- rep_len(blockarrow_cex, 2);
             blockArrowMargin(axisPosition="rightAxis",
                ybottom=-log10(sig_cutoff),
                arrowPosition="top",
@@ -1392,7 +1407,7 @@ volcano_plot <- function
          ## Display the total points
          total_sub <- paste0("Total points: ",
             format(big.mark=",", nrow(x)));
-         if (any(!met_expr)) {
+         if (!all(met_expr)) {
             total_sub <- paste(total_sub,
             paste0("(",
                format(big.mark=",", sum(met_expr)),
@@ -1466,7 +1481,7 @@ volcano_plot <- function
    argsList$caption_list <- caption_list;
    argsList$caption_cex <- caption_cex;
    argsList$hi_cex <- hi_cex;
-  
+
    argsList$lfc_colname <- lfc_colname;
    argsList$fold_colname <- fold_colname;
    argsList$sig_colname <- sig_colname;
@@ -1482,15 +1497,15 @@ volcano_plot <- function
 
    return(invisible(volcano_df));
 
-   return(invisible(
-      list(
-         x=x_values,
-         y=y_values,
-         point_type=point_type,
-         point_colors=point_colors,
-         border_colors=border_colors,
-         hi_points=hi_points,
-         parList=parList)));
+   # return(invisible(
+   #    list(
+   #       x=x_values,
+   #       y=y_values,
+   #       point_type=point_type,
+   #       point_colors=point_colors,
+   #       border_colors=border_colors,
+   #       hi_points=hi_points,
+   #       parList=parList)));
 }
 
 #' Draw block arrows in plot margins
@@ -1510,7 +1525,10 @@ volcano_plot <- function
 #'
 #' @examples
 #' blockArrowMargin(doExample=TRUE)
-#'
+#' 
+#' @returns `list` invisibly, however this function is called
+#'    for the effect of drawing block arrows in base R margins.
+#' 
 #' @export
 blockArrowMargin <- function
 (axisPosition="rightAxis",
@@ -1635,7 +1653,7 @@ blockArrowMargin <- function
 
    ## figure aspect, greater than 1 is wider than tall
    parFin <- par("fin");
-   fig_aspect <- par("fin")[1] / par("fin")[2];
+   fig_aspect <- parFin[1] / parFin[2];
    if (jamba::igrepHas("left|right", axisPosition)) {
       if (fig_aspect < 1) {
          blockWidthPercent <- blockWidthPercent * fig_aspect;
@@ -1911,7 +1929,7 @@ blockArrowMargin <- function
       arrowSides <- paste(names(arrowSides)[arrowSides], collapse="");
       if (arrowSides %in% c("bottom", "left")) {
          colGradient <- rev(colGradient);
-         col21 <- col1;
+         # col21 <- col1;
          col1 <- col2;
          col2 <- col1;
       }
@@ -1932,7 +1950,9 @@ blockArrowMargin <- function
          col=tail(colGradient,1),
          border=border,
          xpd=TRUE);
-      gr1 <- gradient_rect(col=colGradient,
+      # gr1 <- gradient_rect(col=colGradient,
+      gradient_rect(
+         col=colGradient,
          gradient=gradientXY,
          xleft=arrowBoxX[1],
          xright=arrowBoxX[2],
@@ -2034,18 +2054,20 @@ blockArrowMargin <- function
 #'    ytop=4,
 #'    gradient="y",
 #'    col=jamba::getColorRamp("Reds", n=15))
-#'
+#' @returns This function is called for its effect, drawing a rectangle
+#'    with gradient color fill.
+#' 
 #' @export
-gradient_rect <- function
-(xleft,
- ybottom,
- xright,
- ytop,
- col,
- gradient="x",
- border=par("fg"),
- ...)
-{
+gradient_rect <- function(
+   xleft,
+   ybottom,
+   xright,
+   ytop,
+   col,
+   gradient="x",
+   border=par("fg"),
+   ...
+) {
    nslices <- length(col)
 
    nrect <- max(unlist(lapply(list(xleft, ybottom, xright, ytop),
@@ -2053,14 +2075,14 @@ gradient_rect <- function
    oldxpd <- par(xpd = NA)
    if (nrect > 1) {
       if (length(xleft) < nrect)
-         xleft <- rep(xleft, length.out=nrect)
+         xleft <- rep_len(xleft, nrect)
       if (length(ybottom) < nrect)
-         ybottom <- rep(ybottom, length.out=nrect)
+         ybottom <- rep_len(ybottom, nrect)
       if (length(xright) < nrect)
-         xright <- rep(xright, length.out=nrect)
+         xright <- rep_len(xright, nrect)
       if (length(ytop) < nrect)
-         ytop <- rep(ytop, length.out=nrect)
-      for (i in 1:nrect) {
+         ytop <- rep_len(ytop, nrect)
+      for (i in seq_len(nrect)) {
          gradient_rect(xleft[i],
             ybottom[i],
             xright[i],
@@ -2116,7 +2138,9 @@ gradient_rect <- function
 #' Log-scaled axis including transformed P-values
 #'
 #' @family jam utility functions
-#'
+#' 
+#' @returns This function is called for its effect.
+#' 
 #' @export
 logAxis <- function
 (side,
@@ -2215,7 +2239,7 @@ logAxis <- function
             b <- as.character(b);
             j1 <- as.character(j1);
             if (font.axis == 1) {
-               if (grepl("e", format(xLabels))) {
+               if (grepl("e", fixed=TRUE, format(xLabels))) {
                   # if format() would use exponent, we display exponent
                   axis(side=side,
                      at=j,

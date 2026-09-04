@@ -1,3 +1,21 @@
+# jamma 0.0.42.900
+
+## Changes
+
+* `jammanorm`
+   * new argument `maximum_mean`
+   * new default `useMedian=FALSE` to match `jammaplot()`
+   * Output returns attributes with new entry 'params'
+   with other options useful to store as reference,
+   including useMedian, minimum_mean, maximum_mean,
+   noise_floor, noise_floor_value. The decisions that
+   could affect the normalized output.
+
+* `matrix_normalize()`, `se_normalize()`
+   * Added 'cyclicLoess' normalization.
+
+* `volcano_plot()` numerous syntax updates.
+
 # jamma 0.0.41.900
 
 ## Changes

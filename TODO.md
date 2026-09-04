@@ -1,9 +1,25 @@
 # TODO for jamma
 
+## 02sep2026
+
+* Change `ggjammaplot()` geom to `ggplot2::geom_bin_2d()`
+* Fix color assignment with `ggjammaplot()` with
+titleBoxColor, subtitleBoxColor.
+* `jammanorm()`
+   * new option `maximum_mean`, so it is possible to define a
+   min/max window inside which the control genes are used.
+   * Is it possible to extend `matrix` so that subsetting
+   by column will also subset the attributes in order?
+
 ## 12aug2026
 
-* `ggvolcano_plot()` blockarrows should probably nudge out from
-the plot border, just a smidge.
+* `ggvolcano_plot()`
+
+   * blockarrows should probably nudge out from
+   the plot border, just a smidge.
+   * blockarrows ideally have slight gradient as with base R.
+   * block arrow labels should use outline. Review the grid
+   outline option, before deciding to use shadowtext.
 
 ## 17jul2026
 
